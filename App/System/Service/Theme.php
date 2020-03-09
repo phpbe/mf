@@ -47,10 +47,10 @@ class Theme extends \Be\System\Service
 
     public function setDefaultTheme($theme)
     {
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
         $configSystem->theme = $theme;
 
-        Be::getService('System', 'Config')->updateConfig('System', $configSystem);
+        Be::getService('System.Config')->updateConfig('System', $configSystem);
     }
 
 
@@ -100,7 +100,7 @@ class Theme extends \Be\System\Service
     // 删除主题
     public function uninstallTheme($theme)
     {
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         if ($configSystem->theme == $theme) {
             throw new ServiceException('正在使用的默认主题不能删除');

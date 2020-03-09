@@ -189,7 +189,7 @@ class Template extends \Be\System\Service
         $className = array_pop($parts);
 
         $codePhp = '<?php' . "\n";
-        $codePhp .= 'namespace Cache\\System\\'.($admin ? 'AdminTemplate' : 'Template').'\\' . $theme . '\\' .  $app . '\\' . implode('\\', $parts) . ';' . "\n";
+        $codePhp .= 'namespace Be\\Cache\\System\\'.($admin ? 'AdminTemplate' : 'Template').'\\' . $theme . '\\' .  $app . '\\' . implode('\\', $parts) . ';' . "\n";
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";

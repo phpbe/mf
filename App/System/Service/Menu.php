@@ -130,7 +130,7 @@ class Menu extends Service
             ->getObjects();
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\Menu;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\Menu;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $group->class_name . ' extends \\Be\\System\\Menu' . "\n";
         $code .= '{' . "\n";
@@ -199,7 +199,7 @@ class Menu extends Service
 
         $adminMenu = [];
 
-        $apps = Be::getService('System', 'App')->getApps();
+        $apps = Be::getService('System.App')->getApps();
         foreach ($apps as $app) {
 
             $appName = $app->name;
@@ -305,7 +305,7 @@ class Menu extends Service
         $adminMenu = $this->getAdminMenu();
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\Menu;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\Menu;' . "\n";
         $code .= "\n";
         $code .= 'class Admin extends \\Be\\System\\AdminMenu' . "\n";
         $code .= '{' . "\n";

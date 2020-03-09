@@ -68,7 +68,7 @@ class AdminRole extends \Be\System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\AdminRole;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\AdminRole;' . "\n";
         $code .= "\n";
         $code .= 'class AdminRole' . $roleId . ' extends \\Be\\System\\AdminRole' . "\n";
         $code .= '{' . "\n";

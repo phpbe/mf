@@ -14,7 +14,7 @@ class Config extends Service
      */
     public function getConfigTree()
     {
-        $apps = Be::getService('System', 'App')->getApps();
+        $apps = Be::getService('System.App')->getApps();
 
         $configTree = [];
         foreach ($apps as $app) {
@@ -55,7 +55,7 @@ class Config extends Service
      */
     public function getConfigSummary($app, $config)
     {
-        $className = 'App\\' . $app . '\\Config\\' . $config;
+        $className = 'Be\\App\\' . $app . '\\Config\\' . $config;
 
         if (!class_exists($className)) return [];
         $reflection = $this->getReflectionClass($className);
@@ -99,10 +99,10 @@ class Config extends Service
      */
     public function getConfig($app, $config)
     {
-        $className = 'App\\' . $app . '\\Config\\' . $config;
+        $className = 'Be\\App\\' . $app . '\\Config\\' . $config;
         if (!class_exists($className)) return [];
 
-        $instance = Be::getConfig($app, $config);
+        $instance = Be::getConfig($app.'.'.$config);
 
 
         $config = [
@@ -327,7 +327,7 @@ class Config extends Service
         $config = $this->getConfig($appName, $configName);
 
         $code = "<?php\n";
-        $code .= 'namespace Data\\System\\Config\\' . $appName . ';' . "\n\n";
+        $code .= 'namespace Be\\Data\\System\\Config\\' . $appName . ';' . "\n\n";
         $code .= 'class ' . $configName . "\n";
         $code .= "{\n";
 

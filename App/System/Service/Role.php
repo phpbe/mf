@@ -56,7 +56,7 @@ class Role extends \Be\System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\Role;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\Role;' . "\n";
         $code .= "\n";
         $code .= 'class Role' . $roleId . ' extends \\Be\\System\\Role' . "\n";
         $code .= '{' . "\n";

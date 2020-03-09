@@ -78,7 +78,7 @@ class Db extends \Be\System\Service
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Data\\System\\TableConfig;' . "\n";
+        $code .= 'namespace Be\\Data\\System\\TableConfig;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\TableConfig' . "\n";
         $code .= '{' . "\n";
@@ -131,7 +131,7 @@ class Db extends \Be\System\Service
         //$formattedFields = $this->formatTableFields($app, $name, $fields);
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\Table;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\Table;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\Table' . "\n";
         $code .= '{' . "\n";
@@ -177,7 +177,7 @@ class Db extends \Be\System\Service
         $formattedFields = $this->formatTableFields($tableName, $fields);
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Cache\\System\\Tuple;' . "\n";
+        $code .= 'namespace Be\\Cache\\System\\Tuple;' . "\n";
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\Tuple' . "\n";
         $code .= '{' . "\n";

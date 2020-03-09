@@ -15,7 +15,7 @@ class UserConnectSina extends \Be\System\Service
     // 构造函数
     public function __construct()
     {
-		$config = Be::getConfig('System', 'User');
+		$config = Be::getConfig('System.User');
         $this->appKey = $config->connectSinaAppKey;
 		$this->appSecret = $config->connectSinaAppSecret;
     }
@@ -107,7 +107,7 @@ class UserConnectSina extends \Be\System\Service
 
 	public function register($userInfo)
 	{
-		$configUser = Be::getConfig('System', 'User');
+		$configUser = Be::getConfig('System.User');
 
 		$t = time();
 		$tupleUser = Be::newTuple('system_user');
@@ -151,7 +151,7 @@ class UserConnectSina extends \Be\System\Service
 
 	public function systemLogin($userId)
 	{
-        Be::getService('System', 'User')->makeLogin($userId);
+        Be::getService('System.User')->makeLogin($userId);
 	}
 
 }

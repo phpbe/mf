@@ -15,7 +15,7 @@ class Mail extends \Be\System\Service
         $this->mailer = new PHPMailer(true);
         $this->mailer->SetLanguage('zh_cn');
 
-        $config = Be::getConfig('System', 'Mail');
+        $config = Be::getConfig('System.Mail');
         if ($config->fromMail) $this->mailer->From = $config->fromMail;
         if ($config->fromName) $this->mailer->FromName = $config->fromName;
 
