@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Service;
+namespace Be\App\System\Service;
 
 
 class DocCommentParser {

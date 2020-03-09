@@ -1,5 +1,5 @@
 <?php
-namespace App\System\AdminController;
+namespace Be\App\System\AdminController;
 
 use Be\System\Be;
 use Be\System\AdminController;

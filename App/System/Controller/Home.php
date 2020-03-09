@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Controller;
+namespace Be\App\System\Controller;
 
 use Be\System\Be;
 use Be\System\Response;
@@ -9,7 +9,7 @@ class Home extends Controller
 {
 	public function home()
 	{
-		$configSystem = Be::getConfig('System', 'System');
+		$configSystem = Be::getConfig('System.System');
 		Response::setTitle($configSystem->homeTitle);
         Response::setMetaKeywords($configSystem->homeMetaKeywords);
         Response::setMetaDescription($configSystem->homeMetaDescription);

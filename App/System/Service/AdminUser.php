@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Service;
+namespace Be\App\System\Service;
 
 use GuzzleHttp\Exception\ServerException;
 use Be\System\Be;

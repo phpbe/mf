@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Helper;
+namespace Be\App\System\Helper;
 
 
 class DocComment

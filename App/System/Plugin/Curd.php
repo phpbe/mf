@@ -1,6 +1,6 @@
 <?php
 
-namespace App\System\Plugin;
+namespace Be\App\System\Plugin;
 
 use Be\System\Be;
 use Be\System\Db\Tuple;

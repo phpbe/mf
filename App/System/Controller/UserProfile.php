@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Controller;
+namespace Be\App\System\Controller;
 
 use Be\System\Be;
 use Be\System\Controller;
@@ -13,7 +13,7 @@ class UserProfile extends Controller
     {
         $my = Be::getUser();
         if ($my->id == 0) {
-            Response::error('登陆超时，请重新登陆！', url('System', 'User', 'login', ['return' => 'httpReferer']), -1);
+            Response::error('登陆超时，请重新登陆！', url('System.User.login', ['return' => 'httpReferer']), -1);
         }
     }
 
@@ -30,7 +30,7 @@ class UserProfile extends Controller
         if (Request::isPost()) {
             $my = Be::getUser();
             try {
-                Be::getService('System', 'User')->uploadAvatar($my->id, Request::files('avatar'));
+                Be::getService('System.User')->uploadAvatar($my->id, Request::files('avatar'));
                 Response::success('您的头像已更新！');
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
@@ -48,9 +48,9 @@ class UserProfile extends Controller
     {
         $my = Be::getUser();
 
-        $return = url('System', 'UserProfile', 'editAvatar');
+        $return = url('System.UserProfile.editAvatar');
         try {
-            Be::getService('System', 'User')->initAvatar($my->id);
+            Be::getService('System.User')->initAvatar($my->id);
         } catch (\Exception $e) {
             Response::error($e->getMessage(), $return);
         }
@@ -72,7 +72,7 @@ class UserProfile extends Controller
             try {
                 $my = Be::getUser();
 
-                $tupleUser = Be::getService('System', 'User')->edit($my->id, Request::post());
+                $tupleUser = Be::getService('System.User')->edit($my->id, Request::post());
 
                 $my->name = $tupleUser->name;
                 $my->gender = $tupleUser->gender;
@@ -104,7 +104,7 @@ class UserProfile extends Controller
             }
 
             try {
-                Be::getService('System', 'User')->changePassword(Be::getUser()->id, $password, $password1);
+                Be::getService('System.User')->changePassword(Be::getUser()->id, $password, $password1);
             } catch (\Exception $e) {
                 Response::error($e->getMessage(), 'error');
             }

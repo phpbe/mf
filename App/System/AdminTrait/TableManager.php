@@ -1,5 +1,5 @@
 <?php
-namespace App\System\AdminTrait;
+namespace Be\App\System\AdminTrait;
 
 use Be\System\Be;
 use Be\System\Request;

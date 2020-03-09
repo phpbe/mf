@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Config;
+namespace Be\App\System\Config;
 
 /**
  * @be-config-label 已安装的资源

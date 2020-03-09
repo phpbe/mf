@@ -1,5 +1,5 @@
 <?php
-namespace App\System\AdminController;
+namespace Be\App\System\AdminController;
 
 use App\System\Plugin\Curd;
 use Be\System\Be;

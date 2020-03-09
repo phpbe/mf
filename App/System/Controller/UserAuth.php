@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Controller;
+namespace Be\App\System\Controller;
 
 use Be\System\Be;
 use Be\System\Request;
@@ -12,7 +12,7 @@ class UserAuth extends Controller
     {
 		$my = Be::getUser();
         if ($my->isGuest()) {
-            Response::error('登陆超时，请重新登陆！', url('System', 'User', 'login', ['return'=>Request::url()]), -1);
+            Response::error('登陆超时，请重新登陆！', url('System.User.login', ['return'=>Request::url()]), -1);
 		}
     }
 }

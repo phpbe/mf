@@ -215,12 +215,12 @@ abstract class Be
         $app = $names[0];
         $name = $names[1];
 
-        $class = 'Data\\System\\Config\\' . $app . '\\' . $name;
+        $class = 'Be\\Data\\System\\Config\\' . $app . '\\' . $name;
         if (class_exists($class)) {
             return new $class();
         }
 
-        $class = 'App\\' . $app . '\\Config\\' . $name;
+        $class = 'Be\\App\\' . $app . '\\Config\\' . $name;
         if (class_exists($class)) {
             return new $class();
         }
@@ -257,7 +257,7 @@ abstract class Be
         $name = $names[1];
 
         $parts = explode('.', $name);
-        $class = 'App\\' . $app . '\\Service\\' . implode('\\', $parts);
+        $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
         if (!class_exists($class)) throw new RuntimeException('服务 ' . $name . ' 不存在！');
 
         return new $class();
@@ -287,7 +287,7 @@ abstract class Be
      */
     public static function newTuple($name)
     {
-        $class = 'Cache\\System\\Tuple\\' . $name;
+        $class = 'Be\\Cache\\System\\Tuple\\' . $name;
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
@@ -324,7 +324,7 @@ abstract class Be
      */
     public static function newTable($name)
     {
-        $class = 'Cache\\System\\Table\\' . $name;
+        $class = 'Be\\Cache\\System\\Table\\' . $name;
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
@@ -366,7 +366,7 @@ abstract class Be
         $key = 'TableConfig:' .  $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Data\\System\\TableConfig\\' . $name;
+        $class = 'Be\\Data\\System\\TableConfig\\' . $name;
         if (class_exists($class)) {
             self::$cache[$key] = new $class();;
             return self::$cache[$key];
@@ -413,7 +413,7 @@ abstract class Be
         $key = 'Menu:' . $menu;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Cache\\System\\Menu\\' . $menu;
+        $class = 'Be\\Cache\\System\\Menu\\' . $menu;
         if (class_exists($class)) {
             self::$cache[$key] = new $class();
             return self::$cache[$key];
@@ -444,7 +444,7 @@ abstract class Be
         $key = 'Role:' . $roleId;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Cache\\System\\Role\\Role' . $roleId;
+        $class = 'Be\\Cache\\System\\Role\\Role' . $roleId;
         if (class_exists($class)) {
             self::$cache[$key] = new $class();
             return self::$cache[$key];
@@ -475,7 +475,7 @@ abstract class Be
         $key = 'AdminRole:' . $roleId;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Cache\\System\\AdminRole\\AdminRole' . $roleId;
+        $class = 'Be\\Cache\\System\\AdminRole\\AdminRole' . $roleId;
         if (class_exists($class)) {
             self::$cache[$key] = new $class();
             return self::$cache[$key];
@@ -506,7 +506,7 @@ abstract class Be
         $key = 'App:' . $app;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'App\\' . $app . '\\App';
+        $class = 'Be\\App\\' . $app . '\\App';
         if (!class_exists($class)) throw new RuntimeException('应用 ' . $app . ' 不存在！');
         $instance = new $class();
 
@@ -530,7 +530,7 @@ abstract class Be
         $config = Be::getConfig('System.System');
         if ($theme === null) $theme = $config->theme;
 
-        $class = 'Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
+        $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
         $path = self::$runtime->getCachePath() . '/System/Template/' .  $theme . '/'. $app . '/' . implode('/', $parts) . '.php';
@@ -561,7 +561,7 @@ abstract class Be
         $config = Be::getConfig('System.Admin');
         if ($theme === null) $theme = $config->theme;
 
-        $class = 'Cache\\System\\AdminTemplate\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
+        $class = 'Be\\Cache\\System\\AdminTemplate\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
         $path = self::$runtime->getCachePath() . '/System/AdminTemplate/' .  $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
@@ -576,58 +576,6 @@ abstract class Be
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];
-    }
-
-    /**
-     * 获取指定的一个路由（单例）
-     *
-     * @param string $name 路由名
-     * @return Router
-     * @throws RuntimeException
-     */
-    public static function getRouter($name)
-    {
-        $key = 'Router:' . $name;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $names = explode('.', $name);
-        $app = $names[0];
-        $name = $names[1];
-
-        $path = self::$runtime->getRootPath() . '/App/' .  $app . '/Router/' .  $name . '.php';
-        if (file_exists($path)) {
-            $className = '\\App\\' . $app . '\\Router\\' . $name;
-            self::$cache[$key] = new $className();
-        } else {
-            self::$cache[$key] = new Router();
-        }
-        return self::$cache[$key];
-    }
-
-    /**
-     * 获取指定的一个后台路由（单例）
-     *
-     * @param string $name 路由名
-     * @return AdminRouter
-     * @throws RuntimeException
-     */
-    public static function getAdminRouter($name)
-    {
-        $key = 'AdminRouter:' . $name;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $names = explode('.', $name);
-        $app = $names[0];
-        $name = $names[1];
-
-        $path = self::$runtime->getRootPath() . '/App/' .  $app . '/AdminRouter/' .  $name . '.php';
-        if (file_exists($path)) {
-            $className = '\\App\\' . $app . '\\AdminRouter\\' . $name;
-            self::$cache[$key] = new $className();
-        } else {
-            self::$cache[$key] = new AdminRouter();
-        }
-        return self::$cache[$key];
     }
 
     /**

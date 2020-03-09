@@ -1,6 +1,6 @@
 <?php
 
-namespace App\System\Service;
+namespace Be\App\System\Service;
 
 use App\System\Helper\DocComment;
 use Be\System\Be;

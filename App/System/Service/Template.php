@@ -1,5 +1,5 @@
 <?php
-namespace App\System\Service;
+namespace Be\App\System\Service;
 
 use Be\System\Be;
 use Be\System\Service\ServiceException;
