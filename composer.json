@@ -25,6 +25,8 @@
         "psr-4": {
             "Be\\System\\": "src/System",
             "Be\\Plugin": "src/Plugin",
+            "Be\\Lib": "src/Lib",
+            "Be\\Util": "src/Util",
             "Be\\App\\System": "src/App/System"
         },
         "files": [
