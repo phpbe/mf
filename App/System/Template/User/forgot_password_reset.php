@@ -4,8 +4,8 @@ use Be\System\Request;
 ?>
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/forgotPasswordReset.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/forgotPasswordReset.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/forgotPasswordReset.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/js/forgotPasswordReset.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->

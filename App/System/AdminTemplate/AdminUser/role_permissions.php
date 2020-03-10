@@ -7,7 +7,7 @@ use Be\System\Be;
 $adminUiEditor = Be::getUi('editor');
 $adminUiEditor->head();
 ?>
-<script type="text/javascript" language="javascript" src="vendor/be/app-system/src/AdminTemplate/adminUser/js/rolePermissions.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/adminUser/js/rolePermissions.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -17,9 +17,9 @@ $apps = $this->apps;
 
 $adminUiEditor = Be::getUi('editor');
 
-$adminUiEditor->setAction('save', adminUrl('System', 'AdminUser', 'rolePermissionsSave'));	// 显示提交按钮
+$adminUiEditor->setAction('save', adminUrl('System.AdminUser.rolePermissionsSave'));	// 显示提交按钮
 $adminUiEditor->setAction('reset');// 显示重设按钮
-$adminUiEditor->setAction('back', adminUrl('System', 'AdminUser', 'roles'));	// 显示返回按钮
+$adminUiEditor->setAction('back', adminUrl('System.AdminUser.roles'));	// 显示返回按钮
 
 
 $adminUiEditor->addField(

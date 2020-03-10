@@ -3,7 +3,7 @@ use Be\System\Be;
 ?>
 
 <!--{head}-->
-<script type="text/javascript" language="javascript" src="vendor/be/app-system/src/AdminTemplate/adminUser/js/roles.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/adminUser/js/roles.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -11,8 +11,8 @@ use Be\System\Be;
 $roles = $this->get('roles');
 
 $adminUiCategory = Be::getUi('category');
-$adminUiCategory->setAction('save', adminUrl('System', 'AdminUser', 'rolesSave'));
-$adminUiCategory->setAction('delete', adminUrl('System', 'AdminUser', 'ajaxRoleDelete'));
+$adminUiCategory->setAction('save', adminUrl('System.AdminUser.rolesSave'));
+$adminUiCategory->setAction('delete', adminUrl('System.AdminUser.ajaxRoleDelete'));
 
 foreach ($roles as $role) {
     $role->htmlUserCount = '<span class="badge'.($role->userCount>0?' badge-success userCount':'').'">'.$role->userCount.'</span>';

@@ -95,7 +95,7 @@ $logCount = $this->logCount;
 if (count($logs)) {
     $uiGrid = Be::getUi('grid');
 
-    $uiGrid->setAction('listing', adminUrl('System', 'System', 'logs'));
+    $uiGrid->setAction('listing', adminUrl('System.System.logs'));
 
     $formattedLogs = [];
     foreach ($logs as $i => $log) {

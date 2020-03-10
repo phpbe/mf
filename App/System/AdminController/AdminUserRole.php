@@ -35,15 +35,15 @@ class AdminUserRole extends AdminController
                 }
             }
 
-            $serviceAdminUser = Be::getService('System', 'AdminUser');
+            $serviceAdminUser = Be::getService('System.AdminUser');
             $serviceAdminUser->updateAdminUserRoles();
 
             adminLog('修改后台管理员组');
 
-            Response::success('修改后台管理员组成功！', adminUrl('System', 'AdminUser', 'roles'));
+            Response::success('修改后台管理员组成功！', adminUrl('System.AdminUser.roles'));
 
         } else {
-            $serviceAdminUser = Be::getService('System', 'AdminUser');
+            $serviceAdminUser = Be::getService('System.AdminUser');
             $roles = $serviceAdminUser->getRoles();
 
             foreach ($roles as $role) {
@@ -76,7 +76,7 @@ class AdminUserRole extends AdminController
             Response::ajax();
         }
 
-        $adminServiceUser = Be::getService('System', 'User');
+        $adminServiceUser = Be::getService('System.User');
         $userCount = $adminServiceUser->getUserCount(array('roleId' => $roleId));
         if ($userCount > 0) {
             Response::set('error', 3);
@@ -102,7 +102,7 @@ class AdminUserRole extends AdminController
         $tupleAdminUserRole->load($roleId);
         if ($tupleAdminUserRole->id == 0) Response::end('不存在的分组！');
 
-        $adminServiceApp = Be::getService('System', 'app');
+        $adminServiceApp = Be::getService('System.app');
         $apps = $adminServiceApp->getApps();
 
         Response::setTitle('管理员组(' . $tupleAdminUserRole->name . ')权限设置');
@@ -123,7 +123,7 @@ class AdminUserRole extends AdminController
 
         if ($tupleAdminUserRole->permission == -1) {
             $publicPermissions = [];
-            $adminServiceApp = Be::getService('System', 'app');
+            $adminServiceApp = Be::getService('System.app');
             $apps = $adminServiceApp->getApps();
             foreach ($apps as $app) {
                 $appPermissions = $app->getAdminPermissions();
@@ -146,12 +146,12 @@ class AdminUserRole extends AdminController
 
         $tupleAdminUserRole->save();
 
-        $serviceAdminUser = Be::getService('System', 'AdminUser');
+        $serviceAdminUser = Be::getService('System.AdminUser');
         $serviceAdminUser->updateAdminUserRole($roleId);
 
         adminLog('修改管理员组(' . $tupleAdminUserRole->name . ')权限');
 
-        Response::success('修改管理员组权限成功！', adminUrl('System', 'AdminUser', 'roles'));
+        Response::success('修改管理员组权限成功！', adminUrl('System.AdminUser.roles'));
     }
 
 

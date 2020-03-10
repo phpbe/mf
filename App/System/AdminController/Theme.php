@@ -15,7 +15,7 @@ class Theme extends \Be\System\AdminController
     // 主题管理
     public function themes()
     {
-        $adminServiceTheme = Be::getService('System', 'Theme');
+        $adminServiceTheme = Be::getService('System.Theme');
         $themes = $adminServiceTheme->getThemes(Request::post());
 
         Response::setTitle('已安装的主题');
@@ -31,7 +31,7 @@ class Theme extends \Be\System\AdminController
             Response::set('error', 1);
             Response::set('message', '参数(theme)缺失！');
         } else {
-            $adminServiceTheme = Be::getService('System', 'Theme');
+            $adminServiceTheme = Be::getService('System.Theme');
             if ($adminServiceTheme->setDefaultTheme($theme)) {
                 adminLog('设置主题（' . $theme . ') 为默认主题！');
 
@@ -49,7 +49,7 @@ class Theme extends \Be\System\AdminController
     // 在线主题
     public function remoteThemes()
     {
-        $adminServiceTheme = Be::getService('System', 'Theme');
+        $adminServiceTheme = Be::getService('System.Theme');
 
         $localThemes = $adminServiceTheme->getThemes();
         $remoteThemes = $adminServiceTheme->getRemoteThemes(Request::post());
@@ -70,7 +70,7 @@ class Theme extends \Be\System\AdminController
             Response::ajax();
         }
 
-        $adminServiceSystem = Be::getService('System', 'Admin');
+        $adminServiceSystem = Be::getService('System.Admin');
         $remoteTheme = $adminServiceSystem->getRemoteTheme($themeId);
 
         if ($remoteTheme->status != '0') {
@@ -103,7 +103,7 @@ class Theme extends \Be\System\AdminController
             Response::ajax();
         }
 
-        $adminServiceSystem = Be::getService('System', 'Admin');
+        $adminServiceSystem = Be::getService('System.Admin');
         if ($adminServiceSystem->uninstallTheme($theme)) {
             adminLog('卸载主题：' . $theme);
 

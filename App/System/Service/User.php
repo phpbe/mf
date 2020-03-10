@@ -224,7 +224,7 @@ class User extends \Be\System\Service
 
         $t = time();
 
-        $configUser = Be::getConfig('System', 'User');
+        $configUser = Be::getConfig('System.User');
 
         $salt = Random::complex(32);
 
@@ -240,9 +240,9 @@ class User extends \Be\System\Service
         $tupleUser->block = ($configUser->emailValid == '1' ? 1 : 0);
         $tupleUser->save();
 
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
-        $configUser = Be::getConfig('System', 'User');
+        $configUser = Be::getConfig('System.User');
         if ($configUser->emailValid == '1') {
             $activationUrl = url('System', 'User', 'activate', ['userId' => $tupleUser->id, 'token' => $tupleUser->token]);
 
@@ -372,7 +372,7 @@ class User extends \Be\System\Service
         $tupleUser->token = Random::complex(32);
         $tupleUser->save();
 
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         $resetPasswordUrl = url('System', 'User', 'forgotPassword', ['reset&userId' => $tupleUser->id, 'token' => $tupleUser->token]);
 
@@ -380,7 +380,7 @@ class User extends \Be\System\Service
             'siteName' => $configSystem->siteName,
             'resetPasswordUrl' => $resetPasswordUrl
         ];
-        $configUser = Be::getConfig('System', 'User');
+        $configUser = Be::getConfig('System.User');
 
         $libMail = Be::getLib('Mail');
 
@@ -432,14 +432,14 @@ class User extends \Be\System\Service
         $tupleUser->token = '';
         $tupleUser->save();
 
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         $data = [
             'siteName' => $configSystem->siteName,
             'siteUrl' => url()
         ];
 
-        $configUser = Be::getConfig('System', 'User');
+        $configUser = Be::getConfig('System.User');
 
         $libMail = Be::getLib('Mail');
 
@@ -537,7 +537,7 @@ class User extends \Be\System\Service
      */
     public function uploadAvatar($tupleUser, $avatarFile)
     {
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
         if ($avatarFile['error'] == 0) {
             $name = strtolower($avatarFile['name']);
@@ -554,7 +554,7 @@ class User extends \Be\System\Service
                 if (!$libImage->isImage()) {
                     throw new ServiceException('您上传的不是合法的图像文件！');
                 } else {
-                    $configUser = Be::getConfig('System', 'User');
+                    $configUser = Be::getConfig('System.User');
 
                     $avatarDir = Be::getRuntime()->getDataPath() . '/System/User/Avatar/';
                     if (!file_exists($avatarDir)) {

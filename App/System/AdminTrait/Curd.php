@@ -167,7 +167,7 @@ trait Curd
             if ($cookieLimit > 0) {
                 $limit = $cookieLimit;
             } else {
-                $limit = Be::getConfig('System', 'Admin')->limit;
+                $limit = Be::getConfig('System.Admin')->limit;
             }
         } else {
             Cookie::set($cookieLimitKey, $limit, 86400 * 30);
@@ -273,7 +273,7 @@ trait Curd
                 $tuple->save();
                 $this->afterCreate($tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -341,7 +341,7 @@ trait Curd
                 $tuple->save();
                 $this->afterEdit($tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -415,7 +415,7 @@ trait Curd
                     $tuple->save();
                     $this->afterBlock($tuple);
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -435,7 +435,7 @@ trait Curd
                 $tuple->save();
                 $this->afterBlock($tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -503,7 +503,7 @@ trait Curd
                     $tuple->save();
                     $this->afterUnblock($tuple);
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -523,7 +523,7 @@ trait Curd
                 $tuple->save();
                 $this->afterUnblock($tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -602,7 +602,7 @@ trait Curd
                         $this->afterDelete($tuple);
                     }
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -631,7 +631,7 @@ trait Curd
                     $this->afterDelete($tuple);
                 }
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -708,7 +708,7 @@ trait Curd
         }
 
         fclose($handler) or die("can't close php://output");
-        Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：导出记录！');
+        Be::getService('System.AdminLog')->addLog($this->config['name'] . '：导出记录！');
     }
 
 

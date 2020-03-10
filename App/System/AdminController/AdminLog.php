@@ -45,7 +45,7 @@ class AdminLog extends \Be\System\AdminController
                     'toolbar' => [
                         [
                             'name' => '删除三个月前后台日志',
-                            'url' => adminUrl('System', 'AdminLog', 'deleteLogs'),
+                            'url' => adminUrl('System.AdminLog.deleteLogs'),
                             'icon' => 'fa fa-times-circle',
                             'class' => 'text-danger',
                         ],
@@ -83,8 +83,8 @@ class AdminLog extends \Be\System\AdminController
     {
         Be::getDb()->startTransaction();
         try {
-            Be::getService('System', 'AdminLog')->deleteLogs();
-            Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：删除三个月前后台日志！');
+            Be::getService('System.AdminLog')->deleteLogs();
+            Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除三个月前后台日志！');
 
             Be::getDb()->commit();
 

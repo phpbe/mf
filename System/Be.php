@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\System;
 
 
@@ -363,7 +364,7 @@ abstract class Be
      */
     public static function newTableConfig($name)
     {
-        $key = 'TableConfig:' .  $name;
+        $key = 'TableConfig:' . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $class = 'Be\\Data\\System\\TableConfig\\' . $name;
@@ -386,7 +387,7 @@ abstract class Be
         $key = 'Html:' . $class;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $path = self::$runtime->getCachePath() . '/System/Html/' .  $class . '.html';
+        $path = self::$runtime->getCachePath() . '/System/Html/' . $class . '.html';
         if (!file_exists($path)) {
             $service = self::getService('System.Html');
             $service->update($class);
@@ -419,7 +420,7 @@ abstract class Be
             return self::$cache[$key];
         }
 
-        $path = self::$runtime->getCachePath() . '/System/Menu/' .  $menu . '.php';
+        $path = self::$runtime->getCachePath() . '/System/Menu/' . $menu . '.php';
         $service = self::getService('System.Menu');
         $service->update($menu);
         include_once $path;
@@ -495,19 +496,20 @@ abstract class Be
     }
 
     /**
-     * 获取一个应用（单例）
+     * 获取一个属性（单例）
      *
-     * @param string $app 应用名
-     * @return \Be\System\App\App
+     * @param string $name 名称
+     * @return mixed
      * @throws RuntimeException
      */
-    public static function getApp($app)
+    public static function getProperty($name)
     {
-        $key = 'App:' . $app;
+        $key = 'Property:' . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\App\\' . $app . '\\App';
-        if (!class_exists($class)) throw new RuntimeException('应用 ' . $app . ' 不存在！');
+        $parts = explode('.', $name);
+        $class = 'Be\\' . implode('\\', $parts) . '\\Property';
+        if (!class_exists($class)) throw new RuntimeException('属性 ' . $name . ' 不存在！');
         $instance = new $class();
 
         self::$cache[$key] = $instance;
@@ -533,7 +535,7 @@ abstract class Be
         $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = self::$runtime->getCachePath() . '/System/Template/' .  $theme . '/'. $app . '/' . implode('/', $parts) . '.php';
+        $path = self::$runtime->getCachePath() . '/System/Template/' . $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
         if (!file_exists($path)) {
             $service = self::getService('System.Template');
             $service->update($app, $template, $theme);
@@ -564,7 +566,7 @@ abstract class Be
         $class = 'Be\\Cache\\System\\AdminTemplate\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = self::$runtime->getCachePath() . '/System/AdminTemplate/' .  $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
+        $path = self::$runtime->getCachePath() . '/System/AdminTemplate/' . $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
         if (!file_exists($path)) {
             $serviceSystem = self::getService('System.Template');
             $serviceSystem->update($app, $template, $theme, true);
@@ -639,7 +641,8 @@ abstract class Be
      * @param string $key 缓存key
      * @param mixed $value 缓存内容
      */
-    public static function setCache($key, $value) {
+    public static function setCache($key, $value)
+    {
         self::$cache[$key] = $value;
     }
 
@@ -648,7 +651,8 @@ abstract class Be
      *
      * @param string $key 指定缓存key，未指定时清除所有缓存数据
      */
-    public static function cleanCache($key = null) {
+    public static function cleanCache($key = null)
+    {
         if ($key === null) {
             self::$cache = [];
         } else {

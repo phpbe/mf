@@ -3,7 +3,7 @@ namespace Be\App\System\Config;
 
 /**
  * @be-config-label 邮件
- * @be-config-test adminUrl('System', 'Mail', 'test')
+ * @be-config-test adminUrl('System.Mail.test')
  */
 class Mail
 {

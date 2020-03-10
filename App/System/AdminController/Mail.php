@@ -27,7 +27,7 @@ class Mail extends \Be\System\AdminController
             $body = Request::post('body', '', 'html');
 
             try {
-                $serviceMail = Be::getService('System', 'Mail');
+                $serviceMail = Be::getService('System.Mail');
                 $serviceMail->subject($subject);
                 $serviceMail->body($body);
                 $serviceMail->to($toEmail);

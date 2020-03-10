@@ -100,7 +100,7 @@ class App extends \Be\System\Service
 		$appObj->setName($app->name);
 		$appObj->install();
 
-		$adminConfigSystem = Be::getConfig('System', 'admin');
+		$adminConfigSystem = Be::getConfig('System.admin');
         $serviceSystem = Be::getService('system');
 		if (!in_array($app->name, $adminConfigSystem->apps)) {
 			$adminConfigSystem->apps[] = $app->name;

@@ -12,7 +12,7 @@ use Be\System\Be;
 
 <!--{center}-->
 <?php
-$serviceSystem = Be::getService('System', 'Admin');
+$serviceSystem = Be::getService('System.Admin');
 $installedApps = $serviceSystem->getApps();
 
 $remoteApp = $this->get('remoteApp');

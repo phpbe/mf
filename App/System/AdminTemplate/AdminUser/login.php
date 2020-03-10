@@ -3,12 +3,12 @@ use Be\System\Be;
 use Be\System\Request;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="vendor/be/app-system/src/AdminTemplate/AdminUser/css/login.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/AdminUser/css/login.css" />
 <!--{/head}-->
 
 <!--{body}-->
 <?php
-$config = Be::getConfig('System', 'System');
+$config = Be::getConfig('System.System');
 ?>
 <div id="app">
 
@@ -42,7 +42,7 @@ $config = Be::getConfig('System', 'System');
 <?php
 $return = Request::get('return', '');
 if ($return=='') {
-    $return = adminUrl('System', 'System', 'dashboard');
+    $return = adminUrl('System.System.dashboard');
 } else {
     $return = base64_decode($return);
 }
@@ -73,7 +73,7 @@ if ($return=='') {
             login: function() {
                 var _this = this;
                 _this.loginLoading = true;
-                this.$http.post("<?php echo adminUrl('System', 'AdminUser', 'login'); ?>", _this.formData)
+                this.$http.post("<?php echo adminUrl('System.AdminUser.login'); ?>", _this.formData)
                     .then(function (response) {
                         _this.loginLoading = false;
                         if (response.status == 200) {

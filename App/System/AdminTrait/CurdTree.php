@@ -92,7 +92,7 @@ trait CurdTree
                 if ($cookieLimit > 0) {
                     $limit = $cookieLimit;
                 } else {
-                    $limit = Be::getConfig('System', 'Admin')->limit;
+                    $limit = Be::getConfig('System.Admin')->limit;
                 }
             } else {
                 Cookie::set($cookieLimitKey, $limit, 86400 * 30);
@@ -157,7 +157,7 @@ trait CurdTree
                 $tuple->bind(Request::post());
                 $tuple->save();
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 $this->afterEdit($tuple);
 
@@ -237,7 +237,7 @@ trait CurdTree
 
                     $tupleList[] = $tuple;
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -257,7 +257,7 @@ trait CurdTree
 
                 $tupleList = $tuple;
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             $this->afterBlock($tupleList);
@@ -331,7 +331,7 @@ trait CurdTree
 
                     $tupleList[] = $tuple;
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -351,7 +351,7 @@ trait CurdTree
 
                 $tupleList = $tuple;
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             $this->afterUnblock($tupleList);
@@ -435,7 +435,7 @@ trait CurdTree
                         $tupleList[] = $tuple;
                     }
 
-                    Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -466,7 +466,7 @@ trait CurdTree
                     $tupleList = $tuple;
                 }
 
-                Be::getService('System', 'AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             $this->afterDelete($tupleList);

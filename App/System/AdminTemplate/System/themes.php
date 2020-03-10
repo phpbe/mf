@@ -10,8 +10,8 @@ $uiGrid->head();
 <link type="text/css" rel="stylesheet" href="bootstrap/2.3.2/css/bootstrap-lightbox.css" />
 <script type="text/javascript" language="javascript" src="bootstrap/2.3.2/js/bootstrap-lightbox.js"></script>
 
-<link type="text/css" rel="stylesheet" href="template/system/css/themes.css">
-<script type="text/javascript" language="javascript" src="template/system/js/themes.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/themes.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/themes.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -20,11 +20,11 @@ $themes = $this->get('themes');
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('listing', adminUrl('System', 'System', 'themes'));
-$uiGrid->setAction('create', adminUrl('System', 'System', 'remoteThemes'), '安装新主题');
+$uiGrid->setAction('listing', adminUrl('System.System.themes'));
+$uiGrid->setAction('create', adminUrl('System.System.remoteThemes'), '安装新主题');
 
 
-$configSystem = Be::getConfig('System', 'System');
+$configSystem = Be::getConfig('System.System');
 foreach ($themes as $key=>$theme) {
     $theme->key = $key;
 

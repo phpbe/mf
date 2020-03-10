@@ -45,7 +45,7 @@ class DataItemImage extends Driver
 
         // 允许上传的文件类型
         if (!isset($this->option['allowUploadImageTypes']) || !is_array($this->option['allowUploadImageTypes'])) {
-            $this->option['allowUploadImageTypes'] = Be::getConfig('System', 'System')->allowUploadImageTypes;
+            $this->option['allowUploadImageTypes'] = Be::getConfig('System.System')->allowUploadImageTypes;
         }
         // 最大宽度
         if (!isset($this->option['maxWidth']) || !is_numeric($this->option['maxWidth']) || $this->option['maxWidth'] < 0) {

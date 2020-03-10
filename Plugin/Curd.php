@@ -56,7 +56,7 @@ class Curd
 
         $page = Request::post('page', 1, 'int');
         $pageSize = Request::post('pageSize', 0, 'int');
-        $defaultPageSize = Be::getConfig('System', 'Admin')->pageSize;
+        $defaultPageSize = Be::getConfig('System.Admin')->pageSize;
 
         $cookiePageSizeKey = '_' . $app . '_' . $controller . '_pageSize';
         if (!$pageSize) {
@@ -159,7 +159,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterCreate', $tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
+                Be::getService('System.AdminLog')->addLog($config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -206,7 +206,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterEdit', $tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -259,7 +259,7 @@ class Curd
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterBlock', $tuple);
 
-                    Be::getService('System', 'AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -279,7 +279,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterBlock', $tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -327,7 +327,7 @@ class Curd
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
 
-                    Be::getService('System', 'AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -347,7 +347,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
 
-                Be::getService('System', 'AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -406,7 +406,7 @@ class Curd
                         Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                     }
 
-                    Be::getService('System', 'AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    Be::getService('System.AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -435,7 +435,7 @@ class Curd
                     Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                 }
 
-                Be::getService('System', 'AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                Be::getService('System.AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -487,7 +487,7 @@ class Curd
         }
         $exporter->end();
 
-        Be::getService('System', 'AdminLog')->addLog($config['name'] . '：导出记录！');
+        Be::getService('System.AdminLog')->addLog($config['name'] . '：导出记录！');
     }
 
 

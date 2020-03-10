@@ -22,7 +22,7 @@ class UserRole extends AdminController
      */
     public function roles()
     {
-        $adminServiceUser = Be::getService('System', 'User');
+        $adminServiceUser = Be::getService('System.User');
         $roles = $adminServiceUser->getRoles();
 
         foreach ($roles as $role) {
@@ -60,12 +60,12 @@ class UserRole extends AdminController
             }
         }
 
-        $adminServiceUser = Be::getService('System', 'User');
+        $adminServiceUser = Be::getService('System.User');
         $adminServiceUser->updateUserRoles();
 
         adminLog('修改用户角色');
 
-        Response::success('修改用户角色成功！', adminUrl('System', 'User', 'roles'));
+        Response::success('修改用户角色成功！', adminUrl('System.User.roles'));
     }
 
     /**
@@ -123,7 +123,7 @@ class UserRole extends AdminController
             Response::ajax();
         }
 
-        $adminServiceUser = Be::getService('System', 'User');
+        $adminServiceUser = Be::getService('System.User');
         $userCount = $adminServiceUser->getUserCount(array('roleId' => $roleId));
         if ($userCount > 0) {
             Response::set('error', 4);
@@ -152,7 +152,7 @@ class UserRole extends AdminController
         $tupleUserRole->load($roleId);
         if ($tupleUserRole->id == 0) Response::end('不存在的角色！');
 
-        $adminServiceApp = Be::getService('System', 'App');
+        $adminServiceApp = Be::getService('System.App');
         $apps = $adminServiceApp->getApps();
 
         Response::setTitle('用户角色(' . $tupleUserRole->name . ')权限设置');
@@ -176,7 +176,7 @@ class UserRole extends AdminController
 
         if ($tupleUserRole->permission == -1) {
             $publicPermissions = [];
-            $adminServiceApp = Be::getService('System', 'App');
+            $adminServiceApp = Be::getService('System.App');
             $apps = $adminServiceApp->getApps();
             foreach ($apps as $app) {
                 $appPermissions = $app->getPermissions();
@@ -198,12 +198,12 @@ class UserRole extends AdminController
 
         $tupleUserRole->save();
 
-        $serviceRole = Be::getService('System', 'Role');
+        $serviceRole = Be::getService('System.Role');
         $serviceRole->update($roleId);
 
         adminLog('修改用户角色 ' . $tupleUserRole->name . ' 权限');
 
-        Response::success('修改用户角色权限成功！', adminUrl('System', 'User', 'roles'));
+        Response::success('修改用户角色权限成功！', adminUrl('System.User.roles'));
     }
 
 }

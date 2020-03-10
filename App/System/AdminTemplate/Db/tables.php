@@ -7,7 +7,7 @@ use Be\System\Be;
 <script type="text/javascript" language="javascript">
 
 </script>
-<script type="text/javascript" language="javascript" src="/app/System/AdminTemplate/Db/js/tables.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/Db/js/tables.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -16,7 +16,7 @@ use Be\System\Be;
         <?php
         foreach($this->apps as $app => $name) {
             ?>
-            <li data-url="<?php echo adminUrl('System', 'Db', 'tables', ['type' => 'lists', 'app' => $app]); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
+            <li data-url="<?php echo adminUrl('System.Db.tables', ['type' => 'lists', 'app' => $app]); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
             <?php
         }
         ?>

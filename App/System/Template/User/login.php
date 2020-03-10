@@ -1,6 +1,10 @@
+<?php
+use Be\System\Be;
+?>
+
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/login.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/login.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/login.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/js/login.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -40,7 +44,7 @@
 					<div class="col-12">
 						<div class="val">
 							<input type="text" name="captcha" class="input" style="width:90px;" />
-							<img src="<?php echo url('System', 'User', 'captchaLogin'); ?>" onclick="javascript:this.src='/?app=System&controller=User&action=captchaLogin&_='+Math.random();" style="cursor:pointer;" />
+							<img src="<?php echo url('System.User.captchaLogin'); ?>" onclick="this.src='/?action=System.User.captchaLogin&_='+Math.random();" style="cursor:pointer;" />
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -53,7 +57,7 @@
 					<div class="col-8"></div>
 					<div class="col-12">
 						<div class="val">
-							<a href="<?php echo url('System', 'User', 'forgotPassword'); ?>">忘记密码？</a>
+							<a href="<?php echo url('System.User.forgotPassword'); ?>">忘记密码？</a>
 						</div>
 					</div>
 					<div class="clear-left"></div>
@@ -69,13 +73,13 @@
 							<?php
 							if ($configUser->connectQq == '1') {
 							?>
-							<a href="<?php echo url('System', 'User', 'qqLogin'); ?>"><img src="/app/System/Template/User/images/qqLogin.png" /></a> &nbsp;
+							<a href="<?php echo url('System.User.qqLogin'); ?>"><img src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/images/qqLogin.png" /></a> &nbsp;
 							<?php
 							}
 							
 							if ($configUser->connectSina == '1') {
 							?>
-							<a href="<?php echo url('System', 'User', 'sinaLogin'); ?>"><img src="/app/System/Template/User/images/sinaLogin.png" /></a>
+							<a href="<?php echo url('System.User.sinaLogin'); ?>"><img src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/images/sinaLogin.png" /></a>
 							<?php
 							}
 							?>

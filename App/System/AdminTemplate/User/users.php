@@ -59,7 +59,7 @@ $uiGrid->setFilters(
    )
 );
 
-$configUser = Be::getConfig('System', 'User');
+$configUser = Be::getConfig('System.User');
 
 $adminConfigUserGroup->names[0] = '';
 foreach ($users as $user) {

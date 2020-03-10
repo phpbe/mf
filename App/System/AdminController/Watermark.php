@@ -32,7 +32,7 @@ class Watermark extends \Be\System\AdminController
 
         sleep(1);
 
-        $adminServiceSystem = Be::getService('System', 'Admin');
+        $adminServiceSystem = Be::getService('System.Admin');
         $adminServiceSystem->watermark($dst);
 
         Response::setTitle('水印预览');

@@ -68,7 +68,7 @@ class AdminUser extends AdminController
                         'name' => 'role_id',
                         'label' => '角色',
                         'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
-                        'keyValues' => Be::getService('System', 'AdminRole')->getRoleKeyValues()
+                        'keyValues' => Be::getService('System.AdminRole')->getRoleKeyValues()
                     ]
                 ]
 
@@ -191,7 +191,7 @@ class AdminUser extends AdminController
     public function create() {
         Curd::on('BeforeCreate', function(Tuple $tuple) {
             $salt = Random::complex(32);
-            $tuple->password = Be::getService('System', 'AdminUser')->encryptPassword($tuple->password, $salt);
+            $tuple->password = Be::getService('System.AdminUser')->encryptPassword($tuple->password, $salt);
             $tuple->register_time = time();
             $tuple->last_login_time = 0;
         });
@@ -200,7 +200,7 @@ class AdminUser extends AdminController
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System', 'AdminUser')->uploadAvatar($tuple, $avatar);
+                Be::getService('System.AdminUser')->uploadAvatar($tuple, $avatar);
             }
         });
 
@@ -218,7 +218,7 @@ class AdminUser extends AdminController
     public function edit() {
         Curd::on('BeforeEdit', function($tuple) {
             if ($tuple->password != '') {
-                $tuple->password = Be::getService('System', 'AdminUser')->encryptPassword($tuple->password);
+                $tuple->password = Be::getService('System.AdminUser')->encryptPassword($tuple->password);
             } else {
                 unset($tuple->password);
                 unset($tuple->register_time);
@@ -230,7 +230,7 @@ class AdminUser extends AdminController
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System', 'AdminUser')->uploadAvatar($tuple, $avatar);
+                Be::getService('System.AdminUser')->uploadAvatar($tuple, $avatar);
             }
         });
 
@@ -332,7 +332,7 @@ class AdminUser extends AdminController
             $password = Request::json('password', '');
             $ip = Request::ip();
             try {
-                $serviceAdminUser = Be::getService('System', 'AdminUser');
+                $serviceAdminUser = Be::getService('System.AdminUser');
                 $serviceAdminUser->login($username, $password, $ip);
                 Response::success('登录成功！');
             } catch (\Exception $e) {
@@ -342,7 +342,7 @@ class AdminUser extends AdminController
 
             $my = Be::getAdminUser();
             if ($my->id > 0) {
-                Response::redirect(adminUrl('System', 'System', 'dashboard'));
+                Response::redirect(adminUrl('System.System.dashboard'));
             }
 
             Response::setTitle('登录');
@@ -355,8 +355,8 @@ class AdminUser extends AdminController
     public function logout()
     {
         try {
-            Be::getService('System', 'AdminUser')->logout();
-            Response::success('成功退出！', adminUrl('System', 'AdminUser', 'login'));
+            Be::getService('System.AdminUser')->logout();
+            Response::success('成功退出！', adminUrl('System.AdminUser.login'));
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -369,9 +369,9 @@ class AdminUser extends AdminController
         try {
 
             $id = Request::get('id', 0, 'int');
-            Be::getService('System', 'AdminUser')->initAvatar($id);
+            Be::getService('System.AdminUser')->initAvatar($id);
 
-            Be::getService('System', 'AdminLog')->addLog('删除管理员账号：#' . $id . ' 头像');
+            Be::getService('System.AdminLog')->addLog('删除管理员账号：#' . $id . ' 头像');
             
             Be::getDb()->commit();
         } catch (\Exception $e) {

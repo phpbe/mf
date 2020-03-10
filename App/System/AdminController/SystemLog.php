@@ -18,13 +18,13 @@ class SystemLog extends \Be\System\AdminController
 
         $limit = Request::post('limit', -1, 'int');
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System', 'Admin');
+            $adminConfigSystem = Be::getConfig('System.Admin');
             $limit = $adminConfigSystem->limit;
         }
 
         Response::setTitle('系统日志列表');
 
-        $serviceSystemLog = Be::getService('System', 'SystemLog');
+        $serviceSystemLog = Be::getService('System.SystemLog');
         $years = $serviceSystemLog->getYears();
         Response::set('years', $years);
 
@@ -75,7 +75,7 @@ class SystemLog extends \Be\System\AdminController
         $hash = Request::request('hash');
 
         try {
-            $serviceSystemLog = Be::getService('System', 'SystemLog');
+            $serviceSystemLog = Be::getService('System.SystemLog');
             $log = $serviceSystemLog->getlog($year, $month, $day, $hash);
             Response::setTitle('系统日志详情');
             Response::set('log', $log);
@@ -92,7 +92,7 @@ class SystemLog extends \Be\System\AdminController
         $day = Request::request('day', 0, 'int');
 
         try {
-            $serviceSystemLog = Be::getService('System', 'SystemLog');
+            $serviceSystemLog = Be::getService('System.SystemLog');
             $serviceSystemLog->deleteLogs($year, $month, $day);
             Response::success('删除日志成功！');
         } catch (\Exception $e) {

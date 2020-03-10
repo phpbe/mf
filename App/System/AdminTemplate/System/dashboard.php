@@ -3,8 +3,8 @@ use Be\System\Be;
 ?>
 
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="template/system/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="template/system/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/dashboard.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -16,7 +16,7 @@ $userCount = $this->userCount;
 $appCount = $this->appCount;
 $themeCount = $this->themeCount;
 
-$configUser = Be::getConfig('System', 'User');
+$configUser = Be::getConfig('System.User');
 ?>
 <div id="app">
  <div class="row-fluid">
@@ -84,7 +84,7 @@ $configUser = Be::getConfig('System', 'User');
     <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>最近操作日志</span>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo adminUrl('System', 'AdminLogs', 'logs')?>'">更多..</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo adminUrl('System.AdminLogs.logs')?>'">更多..</el-button>
         </div>
 
         <el-table :data="recentLogs" stripe style="width: 100%;">

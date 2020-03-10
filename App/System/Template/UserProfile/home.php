@@ -2,10 +2,10 @@
 use Be\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/js/dashboard.js"></script>
 
-<link type="text/css" rel="stylesheet" href="/app/System/Template/userProfile/css/home.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/userProfile/css/home.css" />
 
 <style type="text/css">
     .theme-center .profile .profileItem{ background-color:<?php echo $this->getColor(); ?>;}
@@ -18,7 +18,7 @@ use Be\System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include Be::getRuntime()->getRootPath() . '/template/userProfile/west.php'
+        include Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->path . '/Template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>
@@ -33,7 +33,7 @@ use Be\System\Be;
 
         <!--{center}-->
         <?php
-        $configUser = Be::getConfig('System', 'User');
+        $configUser = Be::getConfig('System.User');
         $my = Be::getUser();
         ?>
         <div class="theme-box-container">

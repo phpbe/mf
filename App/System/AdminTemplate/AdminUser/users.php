@@ -21,12 +21,12 @@ foreach ($roles as $role) {
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('list', adminUrl('System', 'AdminUser', 'users'));
-$uiGrid->setAction('create', adminUrl('System', 'AdminUser', 'edit'));
-$uiGrid->setAction('edit', adminUrl('System', 'AdminUser', 'edit'));
-$uiGrid->setAction('unblock', adminUrl('System', 'AdminUser', 'unblock'), '启用');
-$uiGrid->setAction('block', adminUrl('System', 'AdminUser', 'block'));
-$uiGrid->setAction('delete', adminUrl('System', 'AdminUser', 'delete'));
+$uiGrid->setAction('list', adminUrl('System.AdminUser.users'));
+$uiGrid->setAction('create', adminUrl('System.AdminUser.edit'));
+$uiGrid->setAction('edit', adminUrl('System.AdminUser.edit'));
+$uiGrid->setAction('unblock', adminUrl('System.AdminUser.unblock'), '启用');
+$uiGrid->setAction('block', adminUrl('System.AdminUser.block'));
+$uiGrid->setAction('delete', adminUrl('System.AdminUser.delete'));
 
 $uiGrid->setFilters(
     array(
@@ -57,7 +57,7 @@ $uiGrid->setFilters(
    )
 );
 
-$configAdminUser = Be::getConfig('System', 'AdminUser');
+$configAdminUser = Be::getConfig('System.AdminUser');
 
 foreach ($users as $user) {
     $user->register_time =	date('Y-m-d H:i',$user->register_time);

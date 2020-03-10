@@ -151,7 +151,7 @@ class Menu extends Service
                     }
                 }
 
-//                $configSystem = Be::getConfig('System', 'Config');
+//                $configSystem = Be::getConfig('System.Config');
 //                if (serialize($configSystem->homeParams) != serialize($homeParams)) {
 //                    $configSystem->homeParams = $homeParams;
 //                    $configSystem->updateConfig('System', $configSystem);

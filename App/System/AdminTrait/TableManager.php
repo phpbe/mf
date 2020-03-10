@@ -89,7 +89,7 @@ trait TableManager
                 if ($cookieLimit > 0) {
                     $limit = $cookieLimit;
                 } else {
-                    $limit = Be::getConfig('System', 'Admin')->limit;
+                    $limit = Be::getConfig('System.Admin')->limit;
                 }
             } else {
                 Cookie::set($cookieLimitKey, $limit, 86400 * 30);
@@ -274,7 +274,7 @@ trait TableManager
 
     public function exportTaskNew()
     {
-        $exportTaskService = Be::getService('System', 'ExportTask');
+        $exportTaskService = Be::getService('System.ExportTask');
         $name = $this->config['base']['name'] . '（' . date('YmdHis') . '）';
         $condition = array(
             'get' => Request::get(),
@@ -304,7 +304,7 @@ trait TableManager
         if (!$return) $return = $_SERVER['HTTP_REFERER'];
         Session::set($sessionReturnKey, $return);
 
-        $exportTaskService = Be::getService('System', 'ExportTask');
+        $exportTaskService = Be::getService('System.ExportTask');
         $tasks = $exportTaskService->getTasks();
 
         if (Request::isAjax()) {
@@ -332,7 +332,7 @@ trait TableManager
         echo '已启动！<script>setTimeout(function(){window.close()}, 3000)</script>';
 
         $taskId = Request::get('taskId');
-        $exportTaskService = Be::getService('System', 'ExportTask');
+        $exportTaskService = Be::getService('System.ExportTask');
         $task = $exportTaskService->getTask($taskId);
 
         try {
@@ -364,7 +364,7 @@ trait TableManager
     {
         $taskId = Request::get('taskId');
 
-        $exportTaskService = Be::getService('System', 'ExportTask');
+        $exportTaskService = Be::getService('System.ExportTask');
         $task = $exportTaskService->getTask($taskId);
 
         if (Request::isAjax()) {
@@ -387,7 +387,7 @@ trait TableManager
             $namespace = substr(strrchr($namespace, '\\'), 1);
         }
 
-        $exportTaskService = Be::getService('System', 'ExportTask');
+        $exportTaskService = Be::getService('System.ExportTask');
         $task = $exportTaskService->getTask($namespace, $taskId);
 
         if ($task['progress'] < 100) {
@@ -421,7 +421,7 @@ trait TableManager
         $taskId = Request::get('taskId');
 
         try {
-            $exportTaskService = Be::getService('System', 'ExportTask');
+            $exportTaskService = Be::getService('System.ExportTask');
             $exportTaskService->delete($taskId);
 
             Response::set('success', true);
@@ -512,7 +512,7 @@ trait TableManager
                 );
             }
 
-            $serviceSystem = Be::getService('System', 'Resource');
+            $serviceSystem = Be::getService('System.Resource');
             $serviceSystem->updateTableConfig($this->config['base']['table'], $formattedFields);
 
             Response::success('修改配置成功！');

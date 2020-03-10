@@ -63,7 +63,7 @@ class User extends AdminController
                     'name' => '角色',
                     'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
                     'uiType' => 'select',
-                    'keyValues' => Be::getService('System', 'User')->getRoles()
+                    'keyValues' => Be::getService('System.User')->getRoles()
                 ]
             ],
 
@@ -141,7 +141,7 @@ class User extends AdminController
      */
     public function create() {
         Curd::on('BeforeCreate', function($tuple) {
-            $tuple->password = Be::getService('System', 'User')->encryptPassword($tuple->password);
+            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
             $tuple->register_time = time();
             $tuple->last_login_time = 0;
         });
@@ -150,12 +150,12 @@ class User extends AdminController
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System', 'User')->uploadAvatar($tuple, $avatar);
+                Be::getService('System.User')->uploadAvatar($tuple, $avatar);
             }
 
             // 组户户发送一封邮件
-            $configSystem = Be::getConfig('System', 'System');
-            $configUser = Be::getConfig('System', 'User');
+            $configSystem = Be::getConfig('System.System');
+            $configUser = Be::getConfig('System.User');
 
             $data = array(
                 'siteName' => $configSystem->siteName,
@@ -192,7 +192,7 @@ class User extends AdminController
     public function edit() {
         Curd::on('BeforeEdit', function($tuple) {
             if ($tuple->password != '') {
-                $tuple->password = Be::getService('System', 'User')->encryptPassword($tuple->password);
+                $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
             } else {
                 unset($tuple->password);
                 unset($tuple->register_time);
@@ -204,7 +204,7 @@ class User extends AdminController
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System', 'User')->uploadAvatar($tuple, $avatar);
+                Be::getService('System.User')->uploadAvatar($tuple, $avatar);
             }
         });
 
@@ -268,9 +268,9 @@ class User extends AdminController
         try {
 
             $id = Request::get('id', 0, 'int');
-            Be::getService('System', 'User')->initAvatar($id);
+            Be::getService('System.User')->initAvatar($id);
 
-            Be::getService('System', 'AdminLog')->addLog('删除管理员账号：#' . $id . ' 头像');
+            Be::getService('System.AdminLog')->addLog('删除管理员账号：#' . $id . ' 头像');
 
             Be::getDb()->commit();
         } catch (\Exception $e) {

@@ -82,7 +82,7 @@ class FileManager extends AdminController
         $option['sort'] = $sort;
         $option['filterImage'] = $filterImage;
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         $files = $serviceSystemFileManager->getFiles($option);
 
         Response::set('path', $path);
@@ -98,9 +98,9 @@ class FileManager extends AdminController
     public function createDir()
     {
         $dirName = Request::post('dirName', '');
-        $return = adminUrl('System', 'FileManager', 'browser');
+        $return = adminUrl('System.FileManager.browser');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->createDir($dirName)) {
             Response::success('创建文件夹(' . $dirName . ')成功！', $return);
         } else {
@@ -112,9 +112,9 @@ class FileManager extends AdminController
     public function deleteDir()
     {
         $dirName = Request::get('dirName', '');
-        $return = adminUrl('System', 'FileManager', 'browser');
+        $return = adminUrl('System.FileManager.browser');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->deleteDir($dirName)) {
             Response::success('删除文件夹(' . $dirName . ')成功！', $return);
         } else {
@@ -127,9 +127,9 @@ class FileManager extends AdminController
     {
         $oldDirName = Request::post('oldDirName', '');
         $newDirName = Request::post('newDirName', '');
-        $return = adminUrl('System', 'FileManager', 'browser');
+        $return = adminUrl('System.FileManager.browser');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->editDirName($oldDirName, $newDirName)) {
             Response::success('重命名文件夹成功！', $return);
         } else {
@@ -140,9 +140,9 @@ class FileManager extends AdminController
 
     public function uploadFile()
     {
-        $configSystem = Be::getConfig('System', 'System');
+        $configSystem = Be::getConfig('System.System');
 
-        $return = adminUrl('System', 'FileManager', 'browser');
+        $return = adminUrl('System.FileManager.browser');
 
         $file = $_FILES['file'];
         if ($file['error'] == 0) {
@@ -157,7 +157,7 @@ class FileManager extends AdminController
                 Response::error('文件名称不合法！', $return);
             }
 
-            $serviceSystemFileManager = Be::getService('System', 'FileManager');
+            $serviceSystemFileManager = Be::getService('System.FileManager');
             $absPath = $serviceSystemFileManager->getAbsPath();
             if ($absPath == false) {
                 Response::error($serviceSystemFileManager->getError(), $return);
@@ -181,7 +181,7 @@ class FileManager extends AdminController
             if (move_uploaded_file($file['tmpName'], $dstPath)) {
                 $watermark = Request::post('watermark', 0, 'int');
                 if ($watermark == 1 && in_array($type, $configSystem->allowUploadImageTypes)) {
-                    $serviceSystem = Be::getService('System', 'Admin');
+                    $serviceSystem = Be::getService('System.Admin');
                     $serviceSystem->watermark($dstPath);
                 }
 
@@ -218,9 +218,9 @@ class FileManager extends AdminController
     public function deleteFile()
     {
         $fileName = Request::get('fileName', '');
-        $return = adminUrl('System', 'FileManager', 'browser');
+        $return = adminUrl('System.FileManager.browser');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->deleteFile($fileName)) {
             Response::success('删除文件(' . $fileName . ')成功！', $return);
         } else {
@@ -234,11 +234,11 @@ class FileManager extends AdminController
         $oldFileName = Request::post('oldFileName', '');
         $newFileName = Request::post('newFileName', '');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->editFileName($oldFileName, $newFileName)) {
-            Response::success('重命名文件成功！', adminUrl('System', 'FileManager', 'browser'));
+            Response::success('重命名文件成功！', adminUrl('System.FileManager.browser'));
         } else {
-            Response::error($serviceSystemFileManager->getError(), adminUrl('System', 'FileManager', 'browser'));
+            Response::error($serviceSystemFileManager->getError(), adminUrl('System.FileManager.browser'));
         }
 
     }
@@ -247,7 +247,7 @@ class FileManager extends AdminController
     {
         $fileName = Request::get('fileName', '');
 
-        $serviceSystemFileManager = Be::getService('System', 'FileManager');
+        $serviceSystemFileManager = Be::getService('System.FileManager');
         $absFilePath = $serviceSystemFileManager->getAbsFilePath($fileName);
         if ($absFilePath == false) {
             echo $serviceSystemFileManager->getError();

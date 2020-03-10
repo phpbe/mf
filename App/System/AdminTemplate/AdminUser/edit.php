@@ -8,7 +8,7 @@ $uiEditor = Be::getUi('editor');
 $uiEditor->head();
 
 $adminUser = $this->adminUser;
-echo '<script type="text/javascript" language="javascript" src="vendor/be/app-system/src/AdminTemplate/adminUser/js/edit.js"></script>';
+echo '<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty(\'App.System\')->path; ?>/AdminTemplate/adminUser/js/edit.js"></script>';
 if (($adminUser->id>0)) {
     echo '<script type="text/javascript" language="javascript">$(function(){hidePassword();});</script>';
 }
@@ -26,7 +26,7 @@ foreach ($roles as $role) {
 }
 
 $uiEditor = Be::getUi('editor');
-$uiEditor->setAction('save', adminUrl('System', 'AdminUser', 'editSave'));	// 显示提交按钮
+$uiEditor->setAction('save', adminUrl('System.AdminUser.editSave'));	// 显示提交按钮
 $uiEditor->setAction('reset');// 显示重设按钮
 $uiEditor->setAction('back');	// 显示返回按钮
 $fieldUsername = array(
@@ -79,10 +79,10 @@ $filedConfirmPassword = array(
     );
 
 if (($adminUser->id == 0)) {
-    $fieldUsername['validate']['remote'] = adminUrl('System', 'AdminUser', 'checkUsername');
+    $fieldUsername['validate']['remote'] = adminUrl('System.AdminUser.checkUsername');
     $fieldUsername['message']['remote'] = '用户名已被占用！';
 
-    $fieldEmail['validate']['remote'] = adminUrl('System', 'AdminUser', 'checkEmail');
+    $fieldEmail['validate']['remote'] = adminUrl('System.AdminUser.checkEmail');
     $fieldEmail['message']['remote'] = '邮箱已被占用！';
 
     $filedPassword['validate']['required'] = true;
@@ -92,7 +92,7 @@ if (($adminUser->id == 0)) {
     $filedPassword['label'] = '<input type="checkbox" id="changePassword" onclick="javascript:changePassword(this.checked);"> 重设密码';
 }
 
-$configAdminUser = Be::getConfig('System', 'AdminUser');
+$configAdminUser = Be::getConfig('System.AdminUser');
 $htmlAvatar = '<img src="../'.DATA.'/adminUser/avatar/'.($adminUser->avatarM == ''?('default/'.$configAdminUser->defaultAvatarM):$adminUser->avatarM).'" />';
 if ($adminUser->id>0 && $adminUser->avatarM !='') $htmlAvatar .= ' <a href="javascript:;" onclick="javascript:deleteAvatar(this, '.$adminUser->id.');" style="font-size:16px;">&times;</a>';
 $htmlAvatar .= '<br /><input type="file" name="avatar" />';

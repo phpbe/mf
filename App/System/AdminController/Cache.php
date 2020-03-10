@@ -32,10 +32,10 @@ class Cache extends \Be\System\AdminController
     {
         try {
             $type = Request::request('type');
-            $serviceSystemCache = Be::getService('System', 'Cache');
+            $serviceSystemCache = Be::getService('System.Cache');
             $serviceSystemCache->clear($type);
             adminLog('删除缓存（' . $type . '）');
-            Response::success('删除缓存成功！', adminUrl('System', 'System', 'cache'));
+            Response::success('删除缓存成功！', adminUrl('System.System.cache'));
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }

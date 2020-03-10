@@ -21,7 +21,7 @@ class Config extends \Be\System\AdminController
      */
     public function dashboard()
     {
-        $service = Be::getService('System', 'Config');
+        $service = Be::getService('System.Config');
         $configTree = $service->getConfigTree();
         if (count($configTree) == 0) {
             Response::error('暂无配置项');
@@ -51,7 +51,7 @@ class Config extends \Be\System\AdminController
     public function saveConfig()
     {
         try {
-            Be::getService('System', 'Config')->saveConfig(Request::get('appName'), Request::get('configName'), Request::json());
+            Be::getService('System.Config')->saveConfig(Request::get('appName'), Request::get('configName'), Request::json());
             Response::success('保存成功！');
         } catch (\Exception $e) {
             Response::error('保存失败：' . $e->getMessage());
@@ -64,7 +64,7 @@ class Config extends \Be\System\AdminController
     public function resetConfig()
     {
         try {
-            Be::getService('System', 'Config')->resetConfig(Request::get('appName'), Request::get('configName'));
+            Be::getService('System.Config')->resetConfig(Request::get('appName'), Request::get('configName'));
             Response::success('恢复默认值成功！');
         } catch (\Exception $e) {
             Response::error('恢复默认值失败：' . $e->getMessage());
@@ -84,7 +84,7 @@ class Config extends \Be\System\AdminController
             $config = Request::get('_config');
             $item = Request::get('_item');
 
-            $service = Be::getService('System', 'Config');
+            $service = Be::getService('System.Config');
             $configObj = $service->getConfig($app, $config);
             $configItemObj = null;
             foreach ($configObj['items'] as $x) {
@@ -156,7 +156,7 @@ class Config extends \Be\System\AdminController
             $config = Request::get('_config');
             $item = Request::get('_item');
 
-            $service = Be::getService('System', 'Config');
+            $service = Be::getService('System.Config');
             $configObj = $service->getConfig($app, $config);
             $configItemObj = null;
             foreach ($configObj['items'] as $x) {

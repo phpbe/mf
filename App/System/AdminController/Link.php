@@ -126,23 +126,23 @@ class Link extends AdminController
 
 
     protected function afterCreate($tuple) {
-        Be::getService('System', 'Link')->updateCache();
+        Be::getService('System.Link')->updateCache();
     }
 
     protected function afterEdit($tuple) {
-        Be::getService('System', 'Link')->updateCache();
+        Be::getService('System.Link')->updateCache();
     }
 
     protected function afterBlock($tuple) {
-        Be::getService('System', 'Link')->updateCache();
+        Be::getService('System.Link')->updateCache();
     }
 
     protected function afterUnblock($tuple) {
-        Be::getService('System', 'Link')->updateCache();
+        Be::getService('System.Link')->updateCache();
     }
 
     protected function afterDelete($tuple) {
-        Be::getService('System', 'Link')->updateCache();
+        Be::getService('System.Link')->updateCache();
     }
 
 }

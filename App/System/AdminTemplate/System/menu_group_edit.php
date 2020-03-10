@@ -16,9 +16,9 @@ $menuGroup = $this->get('menuGroup');
 $uiEditor = Be::getUi('editor');
 
 
-$uiEditor->setAction('save', adminUrl('System', 'System', 'menuGroupEditSave'));	// 显示提交按钮
+$uiEditor->setAction('save', adminUrl('System.System.menuGroupEditSave'));	// 显示提交按钮
 $uiEditor->setAction('reset');// 显示重设按钮
-$uiEditor->setAction('back', adminUrl('System', 'System', 'menuGroups'));	// 显示返回按钮
+$uiEditor->setAction('back', adminUrl('System.System.menuGroups'));	// 显示返回按钮
 
 if ($menuGroup->className == 'north' || $menuGroup->className == 'south' || $menuGroup->className == 'dashboard') {
     echo '<script type="text/javascript" language="javascript">$(function(){ $("#className").prop("disabled", true); });</script>';

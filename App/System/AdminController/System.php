@@ -23,9 +23,9 @@ class System extends \Be\System\AdminController
         $userCount = $tableAdminUser->count();
         Response::set('userCount', $userCount);
 
-        $serviceSystemAdminLog = Be::getService('System', 'AdminLog');
-        $adminServiceApp = Be::getService('System', 'App');
-        $adminServiceTheme = Be::getService('System', 'Theme');
+        $serviceSystemAdminLog = Be::getService('System.AdminLog');
+        $adminServiceApp = Be::getService('System.App');
+        $adminServiceTheme = Be::getService('System.Theme');
         Response::set('recentLogs', $serviceSystemAdminLog->getLogs(array('userId' => $my->id, 'offset' => 0, 'limit' => 10)));
         Response::set('appCount', $adminServiceApp->getAppCount());
         Response::set('themeCount', $adminServiceTheme->getThemeCount());

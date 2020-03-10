@@ -128,23 +128,23 @@ class Announcement extends AdminController
 
 
     protected function afterCreate(Tuple $tuple) {
-        Be::getService('System', 'Announcement')->updateCache();
+        Be::getService('System.Announcement')->updateCache();
     }
 
     protected function afterEdit(Tuple $tuple) {
-        Be::getService('System', 'Announcement')->updateCache();
+        Be::getService('System.Announcement')->updateCache();
     }
 
     protected function afterBlock(Tuple $tuple) {
-        Be::getService('System', 'Announcement')->updateCache();
+        Be::getService('System.Announcement')->updateCache();
     }
 
     protected function afterUnblock(Tuple $tuple) {
-        Be::getService('System', 'Announcement')->updateCache();
+        Be::getService('System.Announcement')->updateCache();
     }
 
     protected function afterDelete(Tuple $tuple) {
-        Be::getService('System', 'Announcement')->updateCache();
+        Be::getService('System.Announcement')->updateCache();
     }
 
 

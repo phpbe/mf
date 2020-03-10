@@ -2,10 +2,10 @@
 use Be\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/js/dashboard.js"></script>
 
-<script type="text/javascript" language="javascript" src="/app/System/Template/userProfile/js/editPassword.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/userProfile/js/editPassword.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -13,7 +13,7 @@ use Be\System\Be;
     <div class="wrapper">
         <!--{west}-->
         <?php
-        include Be::getRuntime()->getRootPath() . '/template/userProfile/west.php'
+        include Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->path . '/Template/userProfile/west.php'
         ?>
         <!--{/west}-->
     </div>

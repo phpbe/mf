@@ -3,13 +3,13 @@ use Be\System\Be;
 ?>
 
 <!--{head}-->
-<script type="text/javascript" language="javascript" src="template/system/js/base64.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/base64.js"></script>
 
-<link type="text/css" rel="stylesheet" href="template/system/css/menus.css">
-<script type="text/javascript" language="javascript" src="template/system/js/menus.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menus.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/menus.js"></script>
 
-<link type="text/css" rel="stylesheet" href="template/system/css/menuSetLink.css">
-<script type="text/javascript" language="javascript" src="template/system/js/menuSetLink.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menuSetLink.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/menuSetLink.js"></script>
 
 <!--{/head}-->
 
@@ -52,8 +52,8 @@ $targetDefault .= '</select>';
 
 $uiCategoryTree = Be::getUi('categoryTree');
 
-$uiCategoryTree->setAction('save', adminUrl('System', 'System', 'menusSave'));
-$uiCategoryTree->setAction('delete', adminUrl('System', 'System', 'ajaxMenuDelete'));
+$uiCategoryTree->setAction('save', adminUrl('System.System.menusSave'));
+$uiCategoryTree->setAction('delete', adminUrl('System.System.ajaxMenuDelete'));
 
 $uiCategoryTree->setData($menus);
 

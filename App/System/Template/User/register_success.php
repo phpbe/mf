@@ -2,13 +2,13 @@
 use Be\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/registerSuccess.css">
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/registerSuccess.css">
 <!--{/head}-->
 
 <!--{middle}-->
 <!--{center}-->
 <?php
-$configUser = Be::getConfig('System', 'User');
+$configUser = Be::getConfig('System.User');
 $username = $this->get('username');
 $email = $this->get('email');
 ?>
@@ -51,7 +51,7 @@ $email = $this->get('email');
 					echo '一封包含验证链接的邮件已发送到您的邮箱。';
 				} else {
 					?>
-					<a href="<?php echo url('controller=user&action=login'); ?>" class="btn btn-primary btn-large">登陆</a>
+					<a href="<?php echo url('System.User.login'); ?>" class="btn btn-primary btn-large">登陆</a>
 					<?php
 				}
 				?>

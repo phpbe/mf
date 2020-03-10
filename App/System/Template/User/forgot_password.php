@@ -2,8 +2,8 @@
 use Be\System\Be;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="/app/System/Template/User/css/forgotPassword.css">
-<script type="text/javascript" language="javascript" src="/app/System/Template/User/js/forgotPassword.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/forgotPassword.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/js/forgotPassword.js"></script>
 <!--{/head}-->
 
 <!--{middle}-->
@@ -33,7 +33,7 @@ use Be\System\Be;
 					</div>
 				</div>
 
-			</form>
+            </form>
 
 		</div>
 	</div>

@@ -43,7 +43,7 @@ class DataItemFile extends Driver
 
         // 允许上传的文件类型
         if (!isset($this->option['allowUploadFileTypes']) || !is_array($this->option['allowUploadFileTypes'])) {
-            $this->option['allowUploadFileTypes'] = Be::getConfig('System', 'System')->allowUploadFileTypes;
+            $this->option['allowUploadFileTypes'] = Be::getConfig('System.System')->allowUploadFileTypes;
         }
 
         if (!$this->description) {

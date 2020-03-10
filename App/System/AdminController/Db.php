@@ -10,7 +10,7 @@ class Db extends \Be\System\AdminController
 
     public function tables()
     {
-        $service = Be::getService('System', 'Db');
+        $service = Be::getService('System.Db');
         if (Request::isPost()) {
 
             $type = Request::get('type');
@@ -78,7 +78,7 @@ class Db extends \Be\System\AdminController
                 );
             }
 
-            $serviceSystem = Be::getService('System', 'Db');
+            $serviceSystem = Be::getService('System.Db');
             $serviceSystem->updateTableConfig($app, $table, $formattedFields);
 
             Response::success('修改配置成功！');

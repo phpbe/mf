@@ -1,16 +1,18 @@
 <?php
-namespace Be\System\App;
+namespace Be\System;
 
 /**
  * 应用基类， 所有应用都从本类继承
  */
-abstract class App
+abstract class Property
 {
-	protected $id = 0; // 应用在BE网站上的编号, 以便升级更新
+    protected $id = 0; // 应用在BE网站上的编号, 以便升级更新
     protected $name = null; // 应用名
     protected $label = ''; // 中文标识名， 如 '用户管理系统'
     protected $icon = ''; // 应用图标
     protected $version = '1.0'; // 当前版本号
+
+    public $path = null; // 路径，相对于根路径
 
     /**
      * 构造函数
@@ -21,13 +23,8 @@ abstract class App
         $name = substr($class, 0, strrpos($class, '\\'));
         $name = substr($name, strrpos($name, '\\')+1);
         $this->name = $name;
-    }
 
-    /**
-     * @return int
-     */
-    public function getId() {
-        return $this->id;
+        $this->path = str_replace(Be::getRuntime()->getRootPath(), '', getcwd());
     }
 
     /**
@@ -60,16 +57,6 @@ abstract class App
     public function getVersion()
     {
         return $this->version;
-    }
-
-    /**
-     * 查看应用是否已安装
-     *
-     * @return bool
-     */
-    public function isInstalled()
-    {
-        return true;
     }
 
     public function __get($name) {

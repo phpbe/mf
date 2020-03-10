@@ -20,11 +20,11 @@ class Html extends AdminController
         $limit = Request::post('limit', -1, 'int');
 
         if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System', 'Admin');
+            $adminConfigSystem = Be::getConfig('System.Admin');
             $limit = $adminConfigSystem->limit;
         }
 
-        $adminServiceSystemHtml = Be::getService('System', 'Html');
+        $adminServiceSystemHtml = Be::getService('System.Html');
         Response::setTitle('自定义模块');
 
         $option = array('key' => $key, 'status' => $status);
@@ -110,7 +110,7 @@ class Html extends AdminController
         $id = Request::get('id', 0, 'int');
         $class = Request::get('class', '');
 
-        $adminServiceSystemHtml = Be::getService('System', 'Html');
+        $adminServiceSystemHtml = Be::getService('System.Html');
         echo $adminServiceSystemHtml->isClassAvailable($class, $id) ? 'true' : 'false';
     }
 
@@ -118,7 +118,7 @@ class Html extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemHtml = Be::getService('System', 'Html');
+        $adminServiceSystemHtml = Be::getService('System.Html');
 
         if ($adminServiceSystemHtml->unblock($ids)) {
             Response::setMessage('公开自定义模块成功！');
@@ -133,7 +133,7 @@ class Html extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemHtml = Be::getService('System', 'Html');
+        $adminServiceSystemHtml = Be::getService('System.Html');
         if ($adminServiceSystemHtml->block($ids)) {
             Response::setMessage('屏蔽自定义模块成功！');
             adminLog('屏蔽自定义模块：#' . $ids);
@@ -147,7 +147,7 @@ class Html extends AdminController
     {
         $ids = Request::post('id', '');
 
-        $adminServiceSystemHtml = Be::getService('System', 'Html');
+        $adminServiceSystemHtml = Be::getService('System.Html');
         if ($adminServiceSystemHtml->delete($ids)) {
             Response::setMessage('删除自定义模块成功！');
             adminLog('删除自定义模块：#' . $ids);

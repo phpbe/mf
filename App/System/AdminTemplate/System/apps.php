@@ -7,7 +7,7 @@ use Be\System\Be;
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<script type="text/javascript" language="javascript" src="template/system/js/apps.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/apps.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -16,8 +16,8 @@ $apps = $this->get('apps');
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('listing', adminUrl('System', 'System', 'apps'));
-$uiGrid->setAction('create', adminUrl('System', 'System', 'remoteApps'), '安装新应用');
+$uiGrid->setAction('listing', adminUrl('System.System.apps'));
+$uiGrid->setAction('create', adminUrl('System.System.remoteApps'), '安装新应用');
 
 foreach ($apps as $app) {
     //$app->id = $app->name;

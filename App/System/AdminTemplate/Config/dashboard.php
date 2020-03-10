@@ -3,7 +3,7 @@ use Be\System\Be;
 ?>
 
 <!--{head}-->
-<script src="theme/admin/js/base64.min.js"></script>
+<script src="<?php echo Be::getProperty('Theme.Admin')->path; ?>/js/base64.min.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
@@ -89,7 +89,7 @@ $methods = [];
                 this.be_form.validateFields(function(err, values){
                     if (!err) {
                         _this.be_saving = true;
-                        _this.$http.post("<?php echo adminUrl('System', 'Config', 'saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>", values)
+                        _this.$http.post("<?php echo adminUrl('System.Config.saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>", values)
                             .then(function (response) {
                                 _this.be_saving = false;
                                 if (response.status == 200) {
@@ -109,7 +109,7 @@ $methods = [];
             },
             goto: function (key) {
                 var arr = key.split('-');
-                window.location.href = '<?php echo adminUrl('System', 'Config', 'dashboard'); ?>?appName=' + arr[0] + '&configName=' + arr[1];
+                window.location.href = '<?php echo adminUrl('System.Config.dashboard'); ?>?appName=' + arr[0] + '&configName=' + arr[1];
             },
 
             resetConfig: function () {
@@ -122,7 +122,7 @@ $methods = [];
                     cancelText: '取消',
                     onOk: function() {
 
-                        _this.$http.get("<?php echo adminUrl('System', 'Config', 'resetConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>")
+                        _this.$http.get("<?php echo adminUrl('System.Config.resetConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>")
                             .then(function (response) {
                                 if (response.status == 200) {
                                     if (response.data.success) {

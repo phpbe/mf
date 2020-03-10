@@ -41,7 +41,7 @@ class System
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
      * @be-config-item-label 主题
      * @be-config-item-keyValueType code
-     * @be-config-item-keyValues \Be\System\Be::getService('System', 'Theme')->getThemeKeyValues()
+     * @be-config-item-keyValues \Be\System\Be::getService('System.Theme')->getThemeKeyValues()
      */
     public $theme = 'huxiu';
 

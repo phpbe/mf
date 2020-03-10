@@ -14,7 +14,7 @@ class Menu extends \Be\System\AdminController
     {
         $groupId = Request::get('groupId', 0, 'int');
 
-        $adminServiceMenu = Be::getService('System', 'Menu');
+        $adminServiceMenu = Be::getService('System.Menu');
 
         $groups = $adminServiceMenu->getMenuGroups();
         if ($groupId == 0) $groupId = $groups[0]->id;
@@ -59,7 +59,7 @@ class Menu extends \Be\System\AdminController
         $tupleSystemMenuGroup = Be::newTuple('system_menu_group');
         $tupleSystemMenuGroup->load($groupId);
 
-        $serviceSystemCache = Be::getService('System', 'Cache');
+        $serviceSystemCache = Be::getService('System.Cache');
         $serviceSystemCache->updateMenu($tupleSystemMenuGroup->className);
 
         adminLog('修改菜单：' . $tupleSystemMenuGroup->name);
@@ -78,13 +78,13 @@ class Menu extends \Be\System\AdminController
             $tupleSystemMenu = Be::newTuple('system_menu');
             $tupleSystemMenu->load($id);
 
-            $adminServiceMenu = Be::getService('System', 'Menu');
+            $adminServiceMenu = Be::getService('System.Menu');
             if ($adminServiceMenu->deleteMenu($id)) {
 
                 $tupleSystemMenuGroup = Be::newTuple('system_menu_group');
                 $tupleSystemMenuGroup->load($tupleSystemMenu->groupId);
 
-                $serviceSystemCache = Be::getService('System', 'Cache');
+                $serviceSystemCache = Be::getService('System.Cache');
                 $serviceSystemCache->updateMenu($tupleSystemMenuGroup->className);
 
                 Response::set('error', 0);
@@ -109,7 +109,7 @@ class Menu extends \Be\System\AdminController
 
         Response::set('url', $url);
 
-        $adminServiceSystem = Be::getService('System', 'Admin');
+        $adminServiceSystem = Be::getService('System.Admin');
         $apps = $adminServiceSystem->getApps();
         Response::set('apps', $apps);
 
@@ -126,13 +126,13 @@ class Menu extends \Be\System\AdminController
             $tupleSystemMenu = Be::newTuple('system_menu');
             $tupleSystemMenu->load($id);
 
-            $adminServiceMenu = Be::getService('System', 'Menu');
+            $adminServiceMenu = Be::getService('System.Menu');
             if ($adminServiceMenu->setHomeMenu($id)) {
 
                 $tupleSystemMenuGroup = Be::newTuple('system_menu_group');
                 $tupleSystemMenuGroup->load($tupleSystemMenu->groupId);
 
-                $serviceSystemCache = Be::getService('System', 'cache');
+                $serviceSystemCache = Be::getService('System.cache');
                 $serviceSystemCache->updateMenu($tupleSystemMenuGroup->className);
 
                 Response::set('error', 0);
@@ -151,7 +151,7 @@ class Menu extends \Be\System\AdminController
     // 菜单分组管理
     public function menuGroups()
     {
-        $adminServiceMenu = Be::getService('System', 'Menu');
+        $adminServiceMenu = Be::getService('System.Menu');
 
         Response::setTitle('添加新菜单组');
         Response::set('groups', $adminServiceMenu->getMenuGroups());
@@ -192,7 +192,7 @@ class Menu extends \Be\System\AdminController
         $tupleMenuGroup->bind(Request::post());
         if ($tupleMenuGroup->save()) {
             adminLog($id == 0 ? ('添加新菜单组：' . $tupleMenuGroup->name) : ('修改菜单组：' . $tupleMenuGroup->name));
-            Response::success($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！', adminUrl('System', 'System', 'menuGroups'));
+            Response::success($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！', adminUrl('System.System.menuGroups'));
         } else {
             Response::error($tupleMenuGroup->getError(), 1, adminUrl('System', 'System', 'menuGroupEdit', ['id'=>$id]));
         }
@@ -213,7 +213,7 @@ class Menu extends \Be\System\AdminController
             if (in_array($tupleMenuGroup->className, array('north', 'south', 'dashboard'))) {
                 Response::setMessage('系统菜单不可删除！', 'error');
             } else {
-                $adminServiceMenu = Be::getService('System', 'menu');
+                $adminServiceMenu = Be::getService('System.menu');
                 if ($adminServiceMenu->deleteMenuGroup($tupleMenuGroup->id)) {
                     adminLog('成功删除菜单组！');
                     Response::setMessage('成功删除菜单组！');
@@ -224,7 +224,7 @@ class Menu extends \Be\System\AdminController
         }
 
 
-        Response::redirect(adminUrl('System', 'System', 'menuGroups'));
+        Response::redirect(adminUrl('System.System.menuGroups'));
 
     }
 
