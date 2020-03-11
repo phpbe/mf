@@ -3,13 +3,9 @@ vendor
 /composer.lock
 .DS_store
 
-/cache/*
-!/cache/index.html
+/Cache/*
+!/Cache/index.html
 
-/data/*
-!/data/index.html
-!/data/Tmp/index.html
-!/data/System/AdminUser/Avatar/Default
-!/data/System/User/Avatar/Default
-!/data/System/Watermark/0.png
-!/data/System/Watermark/test-0.jpg
+/Data/*
+!/Data/index.html
+

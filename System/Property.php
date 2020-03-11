@@ -2,15 +2,13 @@
 namespace Be\System;
 
 /**
- * 应用基类， 所有应用都从本类继承
+ * 属性基类
  */
 abstract class Property
 {
-    protected $id = 0; // 应用在BE网站上的编号, 以便升级更新
-    protected $name = null; // 应用名
-    protected $label = ''; // 中文标识名， 如 '用户管理系统'
-    protected $icon = ''; // 应用图标
-    protected $version = '1.0'; // 当前版本号
+    protected $name = null; // 名称
+    protected $label = ''; // 中文名
+    protected $icon = ''; // 图标
 
     public $path = null; // 路径，相对于根路径
 
@@ -51,13 +49,6 @@ abstract class Property
         return $this->icon;
     }
 
-    /**
-     * @return string
-     */
-    public function getVersion()
-    {
-        return $this->version;
-    }
 
     public function __get($name) {
         if( isset( $this->$name ) ) {

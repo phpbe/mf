@@ -2,31 +2,17 @@
 namespace Be\App\System\Service;
 
 use Be\System\Be;
+use Be\System\Service\ServiceException;
 
 class App extends \Be\System\Service
 {
 
-    private $beApi = 'http://api.phpbe.com/';
-
-    private $appTables = null;
 	private $apps = null;
 
     public function getApps()
     {
 		if ($this->apps == null) {
-			$apps = array();
-
-            $dir = Be::getRuntime()->getRootPath() . '/App';
-            if (file_exists($dir) && is_dir($dir)) {
-                $fileNames = scandir($dir);
-                foreach ($fileNames as $fileName) {
-                    if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
-                        $apps[] = Be::getApp($fileName);
-                    }
-                }
-            }
-
-			$this->apps = $apps;
+			$this->apps = Be::getDb()->withCache(600)->getKeyObjects('SELECT * FROM system_installed_app', null, 'name');
 		}
 
         return $this->apps;
@@ -34,93 +20,64 @@ class App extends \Be\System\Service
 
     public function getAppNames()
     {
-        $appNames = array();
-
-        $dir = Be::getRuntime()->getRootPath() . '/App';
-        if (file_exists($dir) && is_dir($dir)) {
-            $fileNames = scandir($dir);
-            foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
-                    $appNames[] = $fileName;
-                }
-            }
-        }
-
-        return $appNames;
+        return array_keys($this->getApps());
     }
 
 	public function getAppCount()
     {
 		return count($this->getApps());
     }
-    
-    public function getRemoteApps($option = array())
-    {
-        $libHttp = Be::getLib('Http');
-        $Response = $libHttp->post($this->beApi . 'apps/', $option);
-        
-        $apps = json_decode($Response);
 
-        return $apps;
-    }
-        
-    public function getRemoteApp($appId)
+    public function getAppNameLabelKeyValues()
     {
-        $libHttp = Be::getLib('Http');
-        $Response = $libHttp->get($this->beApi . 'app/' . $appId);
-        
-        $app = json_decode($Response);
-
-		return $app;
+        return array_column($this->getApps(), 'label', 'name');
     }
-    
     
     // 安装应用文件
     public function install($app)
     {
-        $libHttp = Be::getLib('Http');
-        $Response = $libHttp->get($this->beApi . 'appDownload/'.$app->version->id.'/');
 
-		$zip = Be::getRuntime()->getDataPath().'/system/tmp/app_'.$app->name.'.zip';
-        file_put_contents($zip, $Response);
-
-		$dir = Be::getRuntime()->getDataPath().'/system/tmp/app_'.$app->name;
-        $libZip = Be::getLib('zip');
-        $libZip->open($zip);
-        if (!$libZip->extractTo($dir)) {
-            $this->setError($libZip->getError());
-            return false;
+        $db = Be::getDb();
+        $exist = $db->getObject('SELECT * FROM system_installed_app WHERE `name`=\''.$app.'\'');
+        if ($exist) {
+            throw new ServiceException('应用已于'.$exist->install_time.'安装过！');
         }
 
-		include PATH_ADMIN.'/system/app.php';
-		include $dir.'/admin/apps/'.$app->name.'.php';
-		
-		$appClass = 'app_'.$app->name;
-		$appObj = new $appClass();
-		$appObj->setName($app->name);
-		$appObj->install();
+        $class = '\\Be\\App\\'.$app.'\\Installer';
+        if (class_exists($class)) {
+            $installer = new $class();
+            $installer->install();
+        }
 
-		$adminConfigSystem = Be::getConfig('System.admin');
-        $serviceSystem = Be::getService('system');
-		if (!in_array($app->name, $adminConfigSystem->apps)) {
-			$adminConfigSystem->apps[] = $app->name;
-            $serviceSystem->updateConfig($adminConfigSystem, Be::getRuntime()->getDataPath().'/adminConfig/system.php');
-		}
-
-		// 删除临时文件
-		unlink($zip);
-
-		$libFso = Be::getLib('fso');
-		$libFso->rmDir($dir);
+        $property = Be::getProperty('App.'.$app);
+        $db->insert('system_installed_app', [
+            'name' => $property->name,
+            'label' => $property->label,
+            'icon' => $property->icon,
+            'install_time' => date('Y-m-d H:i:s')
+        ]);
 
 		return true;
     }
     
 
     // 删除应用
-    public function uninstall($name)
+    public function uninstall($app)
     {
-		Be::getApp($name)->uninstall();
+        $db = Be::getDb();
+        $exist = $db->getObject('SELECT * FROM system_installed_app WHERE `name`=\''.$app.'\'');
+        if (!$exist) {
+            throw new ServiceException('该应用尚未安装！');
+        }
+
+        $class = '\\Be\\App\\'.$app.'\\UnInstaller';
+        if (class_exists($class)) {
+            $installer = new $class();
+            $installer->uninstall();
+        }
+
+        $db->query('DELETE FROM system_installed_app WHERE `name`=\''.$app.'\'')->closeCursor();
+        return true;
     }
 
 

@@ -23,30 +23,6 @@ class App extends \Be\System\AdminController
         Response::display();
     }
 
-    public function remoteApps()
-    {
-        $adminServiceApp = Be::getService('System.App');
-        $remoteApps = $adminServiceApp->getRemoteApps(Request::post());
-
-        Response::setTitle('安装新应用');
-        Response::set('remoteApps', $remoteApps);
-        Response::display();
-    }
-
-    public function remoteApp()
-    {
-        $appId = Request::get('appId', 0, 'int');
-        if ($appId == 0) Response::end('参数(appId)缺失！');
-
-        $adminServiceSystem = Be::getService('System.Admin');
-
-        $remoteApp = $adminServiceSystem->getRemoteApp($appId);
-
-        Response::setTitle('安装新应用：' . ($remoteApp->status == '0' ? $remoteApp->app->label : ''));
-        Response::set('remoteApp', $remoteApp);
-        Response::display();
-    }
-
     public function ajaxInstallApp()
     {
         $appId = Request::get('appId', 0, 'int');
@@ -72,7 +48,7 @@ class App extends \Be\System\AdminController
         }
 
         if ($adminServiceSystem->installApp($app)) {
-            adminLog('安装新应用：' . $app->name);
+            Be::getService('System.AdminLog')->addLog('安装新应用：' . $app->name);
 
             Response::set('error', 0);
             Response::set('message', '应用安装成功！');
@@ -95,7 +71,7 @@ class App extends \Be\System\AdminController
 
         $adminServiceSystem = Be::getService('System.Admin');
         if ($adminServiceSystem->uninstallApp($appName)) {
-            adminLog('卸载应用：' . $appName);
+            Be::getService('System.AdminLog')->addLog('卸载应用：' . $appName);
 
             Response::set('error', 0);
             Response::set('message', '应用卸载成功！');

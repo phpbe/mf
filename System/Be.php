@@ -253,11 +253,9 @@ abstract class Be
      */
     public static function newService($name)
     {
-        $names = explode('.', $name);
-        $app = $names[0];
-        $name = $names[1];
-
         $parts = explode('.', $name);
+        $app = array_shift($parts);
+
         $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
         if (!class_exists($class)) throw new RuntimeException('服务 ' . $name . ' 不存在！');
 
