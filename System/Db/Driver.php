@@ -94,10 +94,10 @@ abstract class Driver
      */
     public function execute($sql, array $bind = null, array $prepareOptions = null)
     {
-        $statement = $this->prepare($sql, $prepareOptions);
         if ($bind === null) {
-            $statement->execute();
+            $statement = $this->connection->query($sql);
         } else {
+            $statement = $this->prepare($sql, $prepareOptions);
             $statement->execute($bind);
         }
         return $statement;
@@ -107,14 +107,13 @@ abstract class Driver
      * 执行 sql 语句
      *
      * @param string $sql 查询语句
-     * @return \PDOStatement
+     * @return bool
      * @throws DbException | \PDOException | \Exception
      */
-    public function query($sql)
+    public function query($sql, array $bind = null, array $prepareOptions = null)
     {
-        if ($this->connection === null) $this->connect();
-        $statement = $this->connection->query($sql);
-        return $statement;
+        $this->execute($sql, $bind, $prepareOptions)->closeCursor();
+        return true;
     }
 
     /**
@@ -126,7 +125,7 @@ abstract class Driver
      */
     public function getValue($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $tuple = $statement->fetch(\PDO::FETCH_NUM);
         $statement->closeCursor();
         if ($tuple === false) return false;
@@ -142,7 +141,7 @@ abstract class Driver
      */
     public function getValues($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $values = $statement->fetchAll(\PDO::FETCH_COLUMN);
         $statement->closeCursor();
         return $values;
@@ -179,7 +178,7 @@ abstract class Driver
      */
     public function getKeyValues($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $keyValues = $statement->fetchAll(\PDO::FETCH_UNIQUE | \PDO::FETCH_COLUMN);
         $statement->closeCursor();
         return $keyValues;
@@ -209,7 +208,7 @@ abstract class Driver
      */
     public function getArrays($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $arrays = $statement->fetchAll(\PDO::FETCH_ASSOC);
         $statement->closeCursor();
         return $arrays;
@@ -246,7 +245,7 @@ abstract class Driver
      */
     public function getKeyArrays($sql, array $bind = null, $key)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $arrays = $statement->fetchAll(\PDO::FETCH_ASSOC);
         $statement->closeCursor();
 
@@ -267,7 +266,7 @@ abstract class Driver
      */
     public function getObject($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $object = $statement->fetchObject();
         $statement->closeCursor();
         return $object;
@@ -282,7 +281,7 @@ abstract class Driver
      */
     public function getObjects($sql, array $bind = null)
     {
-        $statement = $bind === null ? $this->query($sql) : $this->execute($sql, $bind);
+        $statement = $this->execute($sql, $bind);
         $objects = $statement->fetchAll(\PDO::FETCH_OBJ);
         $statement->closeCursor();
         return $objects;

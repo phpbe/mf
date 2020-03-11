@@ -326,7 +326,7 @@ class OracleImpl extends Driver
 
         $sql .= '(' . implode(',', $values) . ')';
 
-        $statement = $this->query($sql);
+        $statement = $this->execute($sql);
         $statement->closeCursor();
 
         return 1;
@@ -422,7 +422,7 @@ class OracleImpl extends Driver
         }
 
         $sql .= 'SELECT 1 FROM DUAL';
-        $statement = $this->query($sql);
+        $statement = $this->execute($sql);
         $effectLines = $statement->rowCount();
         $statement->closeCursor();
 
@@ -728,7 +728,7 @@ class OracleImpl extends Driver
         }
 
         $sql = 'UPDATE ' . $this->quoteKey($table) . ' SET ' . implode(',', $fields) . ' WHERE ' . implode(' AND ', $where);
-        $statement = $this->query($sql);
+        $statement = $this->execute($sql);
         $effectLines = $statement->rowCount();
         $statement->closeCursor();
 
