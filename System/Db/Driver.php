@@ -95,6 +95,7 @@ abstract class Driver
     public function execute($sql, array $bind = null, array $prepareOptions = null)
     {
         if ($bind === null) {
+            if ($this->connection === null) $this->connect();
             $statement = $this->connection->query($sql);
         } else {
             $statement = $this->prepare($sql, $prepareOptions);

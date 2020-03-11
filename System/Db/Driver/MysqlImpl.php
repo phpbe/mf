@@ -122,6 +122,7 @@ class MysqlImpl extends Driver
         try {
 
             if ($bind === null) {
+                if ($this->connection === null) $this->connect();
                 $statement = $this->connection->query($sql);
             } else {
                 $statement = $this->prepare($sql, $prepareOptions);
