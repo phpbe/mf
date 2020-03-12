@@ -527,8 +527,15 @@ abstract class Be
         $parts = explode('.', $template);
         $app = array_shift($parts);
 
-        $config = Be::getConfig('System.System');
-        if ($theme === null) $theme = $config->theme;
+        if ($theme === null) {
+            $appProperty = Be::getProperty('App.' . $app);
+            if (isset($appProperty->theme)) {
+                $theme = $appProperty->theme;
+            } else {
+                $config = Be::getConfig('System.System');
+                $theme = $config->theme;
+            }
+        }
 
         $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
@@ -558,8 +565,15 @@ abstract class Be
         $parts = explode('.', $template);
         $app = array_shift($parts);
 
-        $config = Be::getConfig('System.Admin');
-        if ($theme === null) $theme = $config->theme;
+        if ($theme === null) {
+            $appProperty = Be::getProperty('App.' . $app);
+            if (isset($appProperty->theme)) {
+                $theme = $appProperty->theme;
+            } else {
+                $config = Be::getConfig('System.Admin');
+                $theme = $config->theme;
+            }
+        }
 
         $class = 'Be\\Cache\\System\\AdminTemplate\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
