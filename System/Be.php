@@ -119,41 +119,6 @@ abstract class Be
     }
 
     /**
-     * 获取指定的UI（单例）
-     *
-     * @param string $ui UI名，可指定命名空间，调用第三方UI扩展
-     * @return Ui | mixed
-     * @throws RuntimeException
-     */
-    public static function getUi($ui)
-    {
-        $key = 'Ui:' . $ui;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-        self::$cache[$key] = self::newUi($ui);
-        return self::$cache[$key];
-    }
-
-    /**
-     * 新创建一个指定的UI
-     *
-     * @param string $ui UI名，可指定命名空间，调用第三方UI扩展
-     * @return Ui | mixed
-     * @throws RuntimeException
-     */
-    public static function newUi($ui)
-    {
-        $class = null;
-        if (strpos($ui, '\\') === false) {
-            $class = 'Ui\\' . $ui . '\\' . $ui;
-        } else {
-            $class = $ui;
-        }
-        if (!class_exists($class)) throw new RuntimeException('UI ' . $class . ' 不存在！');
-
-        return new $class();
-    }
-
-    /**
      * 获取指定的库（单例）
      *
      * @param string $lib 库名，可指定命名空间，调用第三方库
@@ -337,66 +302,25 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个数据库表配置（单例）
+     * 获取指定的一个数据库表属性（单例）
      *
      * @param string $app 应用名
      * @param string $name 表名
-     * @return \Be\System\Db\TableConfig
+     * @return \Be\System\Db\TableProperty
      * @throws RuntimeException
      */
-    public static function getTableConfig($name)
+    public static function getTableProperty($name)
     {
-        $key = 'TableConfig:' . $name;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-        self::$cache[$key] = self::newTableConfig($name);
-        return self::$cache[$key];
-    }
-
-    /**
-     * 新创建一个数据库表配置
-     *
-     * @param string $app 应用名
-     * @param string $name 表名
-     * @return \Be\System\Db\TableConfig
-     * @throws RuntimeException
-     */
-    public static function newTableConfig($name)
-    {
-        $key = 'TableConfig:' . $name;
+        $key = 'TableProperty:' . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Data\\System\\TableConfig\\' . $name;
+        $class = 'Be\\Data\\System\\TableProperty\\' . $name;
         if (class_exists($class)) {
-            self::$cache[$key] = new $class();;
-            return self::$cache[$key];
+            self::$cache[$key] = new $class();
+        } else {
+            self::$cache[$key] = new \Be\System\Db\TableProperty();
         }
 
-        return new \Be\System\Db\TableConfig();
-    }
-
-    /**
-     * 获取指定的一个自定义内容（单例）
-     *
-     * @param string $class 类名
-     * @return string
-     */
-    public static function getHtml($class)
-    {
-        $key = 'Html:' . $class;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $path = self::$runtime->getCachePath() . '/System/Html/' . $class . '.html';
-        if (!file_exists($path)) {
-            $service = self::getService('System.Html');
-            $service->update($class);
-        }
-
-        $html = '';
-        if (file_exists($path)) {
-            $html = file_get_contents($path);
-        }
-
-        self::$cache[$key] = $html;
         return self::$cache[$key];
     }
 
@@ -463,37 +387,6 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个角色信息（单例）
-     *
-     * @param int $roleId 角色ID
-     * @return Role
-     * @throws RuntimeException
-     */
-    public static function getAdminRole($roleId)
-    {
-        $key = 'AdminRole:' . $roleId;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $class = 'Be\\Cache\\System\\AdminRole\\AdminRole' . $roleId;
-        if (class_exists($class)) {
-            self::$cache[$key] = new $class();
-            return self::$cache[$key];
-        }
-
-        $path = self::$runtime->getCachePath() . '/System/AdminRole/AdminRole' . $roleId . '.php';
-        $service = self::getService('System.AdminRole');
-        $service->updateAdminRole($roleId);
-        include_once $path;
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('后台角色 #' . $roleId . ' 不存在！');
-        }
-
-        self::$cache[$key] = new $class();
-        return self::$cache[$key];
-    }
-
-    /**
      * 获取一个属性（单例）
      *
      * @param string $name 名称
@@ -528,13 +421,8 @@ abstract class Be
         $app = array_shift($parts);
 
         if ($theme === null) {
-            $appProperty = Be::getProperty('App.' . $app);
-            if (isset($appProperty->theme)) {
-                $theme = $appProperty->theme;
-            } else {
-                $config = Be::getConfig('System.System');
-                $theme = $config->theme;
-            }
+            $config = Be::getConfig('System.System');
+            $theme = $config->theme;
         }
 
         $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
@@ -547,46 +435,6 @@ abstract class Be
         }
 
         if (!class_exists($class)) throw new RuntimeException('模板（' . $app . '/' . $template . '）不存在！');
-
-        self::$cache[$class] = new $class();
-        return self::$cache[$class];
-    }
-
-    /**
-     * 获取指定的一个模板（单例）
-     *
-     * @param string $template 模板名
-     * @param string $theme 主题名
-     * @return Template
-     * @throws RuntimeException
-     */
-    public static function getAdminTemplate($template, $theme = null)
-    {
-        $parts = explode('.', $template);
-        $app = array_shift($parts);
-
-        if ($theme === null) {
-            $appProperty = Be::getProperty('App.' . $app);
-            if (isset($appProperty->theme)) {
-                $theme = $appProperty->theme;
-            } else {
-                $config = Be::getConfig('System.Admin');
-                $theme = $config->theme;
-            }
-        }
-
-        $class = 'Be\\Cache\\System\\AdminTemplate\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
-        if (isset(self::$cache[$class])) return self::$cache[$class];
-
-        $path = self::$runtime->getCachePath() . '/System/AdminTemplate/' . $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
-        if (!file_exists($path)) {
-            $serviceSystem = self::getService('System.Template');
-            $serviceSystem->update($app, $template, $theme, true);
-        }
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('后台模板（' . $app . '/' . $template . '）不存在！');
-        }
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];
@@ -617,33 +465,6 @@ abstract class Be
         }
 
         self::$cache[$key] = new User($user);
-        return self::$cache[$key];
-    }
-
-    /**
-     * 获取后台管理员用户 实例（单例）
-     *
-     * @param int $id 用户编号
-     * @return AdminUser | mixed
-     */
-    public static function getAdminUser($id = 0)
-    {
-        $key = 'AdminUser:' . $id;
-        if (isset(self::$cache[$key])) return self::$cache[$key];
-
-        $user = null;
-        if ($id == 0) {
-            $user = Session::get('_adminUser');
-        } else {
-            $user = self::getTuple('system_admin_user')->load($id)->toObject();
-            if ($user != null) {
-                unset($user->password);
-                unset($user->salt);
-                unset($user->remember_me_token);
-            }
-        }
-
-        self::$cache[$key] = new AdminUser($user);;
         return self::$cache[$key];
     }
 

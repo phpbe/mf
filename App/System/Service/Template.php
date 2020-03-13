@@ -13,10 +13,9 @@ class Template extends \Be\System\Service
      *
      * @param string $template 模析名
      * @param string $theme 主题名
-     * @param bool $admin 是否是后台模析
      * @throws \Exception
      */
-    public function update($app, $template, $theme, $admin = false)
+    public function update($app, $template, $theme)
     {
         $fileTheme = Be::getRuntime()->getRootPath() . '/theme/' . $theme . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
@@ -25,12 +24,12 @@ class Template extends \Be\System\Service
 
         $parts = explode('.', $template);
 
-        $fileTemplate = Be::getRuntime()->getRootPath() . '/app/' .$app . '/' . ($admin ? '/AdminTemplate/' : '/Template/') . implode('/', $parts) . '.php';
+        $fileTemplate = Be::getRuntime()->getRootPath() . '/app/' .$app . '/Template/' . implode('/', $parts) . '.php';
         if (!file_exists($fileTemplate)) {
             throw new ServiceException('模板 ' . $app . '/' . $template . ' 不存在！');
         }
 
-        $path = Be::getRuntime()->getCachePath() . '/System/' . ($admin ? 'AdminTemplate' : 'Template') . '/' . $theme. '/' . $app. '/' .   implode('/', $parts) . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/System/Template/' . $theme. '/' . $app. '/' .   implode('/', $parts) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -40,7 +39,10 @@ class Template extends \Be\System\Service
         $extends = '\\Be\\System\\Template';
         if (preg_match('/<!--\s*{\s*extends\s*:\s*(.*?)\s*}\s*-->/s', $contentTemplate, $matches)) {
             $extends = trim($matches[1]);
-            $this->update($extends, $theme, $admin);
+            $extendParts = explode('.', $extends);
+            $extendApp = array_shift($extendParts);
+            $extendTemplate = implode('.', $extendParts);
+            $this->update($extendApp, $extendTemplate, $theme);
             $contentTemplate = preg_replace($matches[0], '', $contentTemplate);
         }
 
@@ -51,7 +53,7 @@ class Template extends \Be\System\Service
                 if (count($includes) > 2) {
                     $tmpApp = array_shift($includes);
 
-                    $fileInclude = Be::getRuntime()->getRootPath() . '/app/' . $tmpApp . ($admin ? '/AdminTemplate/' : '/Template/') . implode('/', $includes) . '.php';
+                    $fileInclude = Be::getRuntime()->getRootPath() . '/app/' . $tmpApp . '/Template/' . implode('/', $includes) . '.php';
                     if (!file_exists($fileInclude)) {
                         throw new ServiceException('模板中包含的文件 ' . $m . ' 不存在！');
                     }
@@ -189,7 +191,7 @@ class Template extends \Be\System\Service
         $className = array_pop($parts);
 
         $codePhp = '<?php' . "\n";
-        $codePhp .= 'namespace Be\\Cache\\System\\'.($admin ? 'AdminTemplate' : 'Template').'\\' . $theme . '\\' .  $app . '\\' . implode('\\', $parts) . ';' . "\n";
+        $codePhp .= 'namespace Be\\Cache\\System\\Template\\' . $theme . '\\' .  $app . '\\' . implode('\\', $parts) . ';' . "\n";
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";

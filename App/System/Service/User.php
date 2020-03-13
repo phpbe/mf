@@ -16,19 +16,17 @@ class User extends \Be\System\Service
 
     /**
      * 登录
-     *
      * @param string $username 用户名
      * @param string $password 密码
      * @param string $ip IP 地址
-     * @param bool $rememberMe 记住我
-     * @return Tuple
+     * @return \stdClass
      * @throws \Exception
      */
-    public function login($username, $password, $ip, $rememberMe = false)
+    public function login($username, $password, $ip)
     {
         $username = trim($username);
         if (!$username) {
-            throw new ServiceException('参数用户名或邮箱（username）缺失！');
+            throw new ServiceException('参数用户名（username）缺失！');
         }
 
         $password = trim($password);
@@ -41,57 +39,76 @@ class User extends \Be\System\Service
             throw new ServiceException('参数IP（$ip）缺失！');
         }
 
-        $times = Session::get($ip);
+        $timesKey = '_user:login:ip:' . $ip;
+        $times = Session::get($timesKey);
         if (!$times) $times = 0;
         $times++;
         if ($times > 10) {
             throw new ServiceException('登陆失败次数过多，请稍后再试！');
         }
-        Session::set($ip, $times);
+        Session::set($timesKey, $times);
 
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->load(['username' => $username]);
+        $tupleUserAdminLog = Be::newTuple('system_user_log');
+        $tupleUserAdminLog->username = $username;
+        $tupleUserAdminLog->ip = $ip;
+        $tupleUserAdminLog->create_time = time();
 
-        if ($tupleUser->id == 0) {
-            $tupleUser->load(['email' => $username]);
-        }
+        $db = Be::getDb();
+        $db->beginTransaction();
+        try {
 
-        if ($tupleUser->id > 0) {
+            $tupleUser = Be::newTuple('system_user');
+
+            try {
+                $tupleUser->load('username', $username);
+            } catch (\Exception $e) {
+                throw new ServiceException('用户账号（'.$username.'）不存在！');
+            }
 
             $password = $this->encryptPassword($password, $tupleUser->salt);
 
-            if ($tupleUser->password == $password) {
+            if ($tupleUser->password === $password) {
                 if ($tupleUser->block == 1) {
-                    throw new ServiceException('用户账号已被停用！');
-                }
+                    throw new ServiceException('用户账号（'.$username.'）已被停用！');
+                } else {
+                    session::delete($timesKey);
 
-                session::delete($ip);
-                $this->makeLogin($tupleUser);
+                    $this->makeLogin($tupleUser);
 
-                if ($rememberMe) {
+                    $tupleUserAdminLog->success = 1;
+                    $tupleUserAdminLog->description = '登陆成功！';
 
                     $rememberMeToken = null;
                     do {
                         $rememberMeToken = Random::complex(32);
-                    } while (Be::newTuple('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
+                    } while (Be::newTable('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
+                    $tupleUser->last_login_time = time();
                     $tupleUser->remember_me_token = $rememberMeToken;
+                    $tupleUser->save();
 
                     cookie::setExpire(time() + 30 * 86400);
                     cookie::set('_rememberMe', $rememberMeToken);
+
                 }
-
-                $tupleUser->last_login_time = time();
-                $tupleUser->save();
-
-                return $tupleUser;
             } else {
                 throw new ServiceException('密码错误！');
             }
-        } else {
-            throw new ServiceException('用户名或邮箱为 ' . $username . ' 的用户不存在！');
+
+            $db->commit();
+            $tupleUserAdminLog->save();
+            return $tupleUser;
+
+        } catch (\Exception $e) {
+            $db->rollback();
+
+            $tupleUserAdminLog->description = $e->getMessage();
+            $tupleUserAdminLog->save();
+            throw $e;
         }
     }
+
+
 
     /**
      * 标记用户已成功登录
@@ -116,8 +133,7 @@ class User extends \Be\System\Service
         unset($user->password);
         unset($user->salt);
         unset($user->remember_me_token);
-        unset($user->token);
-        $user->roleIds = Be::newTable('system_user')
+        $user->roleIds = Be::newTable('system_user_role')
             ->where('user_id', $user->id)
             ->getArray('role_id');
         Session::set('_user', $user);
@@ -172,284 +188,6 @@ class User extends \Be\System\Service
     {
         session::delete('_user');
         cookie::delete('_rememberMe');
-    }
-
-    /**
-     * 注册
-     *
-     * @param array $data 用户数据
-     * @return Tuple
-     * @throws \Exception
-     *
-     */
-    public function register($data = [])
-    {
-        if (!isset($data['username']) || !$data['username']) {
-            throw new ServiceException('参数用户名（username）缺失！');
-        }
-        $username = trim($data['username']);
-
-        if (!isset($data['email']) || !$data['email']) {
-            throw new ServiceException('参数邮箱（email）缺失！');
-        }
-        $email = trim($data['email']);
-
-        if (!Validator::isEmail($email)) {
-            throw new ServiceException('邮箱（' . $email . '）不是合法的邮箱格式！');
-        }
-
-        if (!isset($data['password']) || !$data['password']) {
-            throw new ServiceException('参数密码（password）缺失！');
-        }
-        $password = trim($data['password']);
-
-        $name = null;
-        if (isset($data['name']) && $data['name']) {
-            $name = $data['name'];
-        } else {
-            $name = $username;
-        }
-
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->load(['username' => $username]);
-
-        if ($tupleUser->id > 0) {
-            throw new ServiceException('用户名(' . $username . ')已被占用！');
-        }
-
-        $tupleUser->load(['email' => $email]);
-        if ($tupleUser->id > 0) {
-            throw new ServiceException('邮箱(' . $email . ')已被占用！');
-        }
-
-        $t = time();
-
-        $configUser = Be::getConfig('System.User');
-
-        $salt = Random::complex(32);
-
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->username = $username;
-        $tupleUser->email = $email;
-        $tupleUser->name = $name;
-        $tupleUser->password = $this->encryptPassword($password, $salt);
-        $tupleUser->salt = $salt;
-        $tupleUser->token = Random::complex(32);
-        $tupleUser->register_time = $t;
-        $tupleUser->last_login_time = $t;
-        $tupleUser->block = ($configUser->emailValid == '1' ? 1 : 0);
-        $tupleUser->save();
-
-        $configSystem = Be::getConfig('System.System');
-
-        $configUser = Be::getConfig('System.User');
-        if ($configUser->emailValid == '1') {
-            $activationUrl = url('System', 'User', 'activate', ['userId' => $tupleUser->id, 'token' => $tupleUser->token]);
-
-            $data = array(
-                'siteName' => $configSystem->siteName,
-                'username' => $tupleUser->username,
-                'password' => $password,
-                'name' => $tupleUser->name,
-                'activationUrl' => $activationUrl
-            );
-
-            $libMail = Be::getLib('Mail');
-
-            $subject = $libMail->format($configUser->registerMailActivationSubject, $data);
-            $body = $libMail->format($configUser->registerMailActivationBody, $data);
-
-            $libMail->subject($subject);
-            $libMail->body($body);
-            $libMail->to($tupleUser->email, $tupleUser->name);
-            $libMail->send();
-        } else {
-            if ($configUser->emailRegister == '1') {
-                $data = [
-                    'siteName' => $configSystem->siteName,
-                    'username' => $tupleUser->username,
-                    'name' => $tupleUser->name
-                ];
-
-                $libMail = Be::getLib('Mail');
-
-                $subject = $libMail->format($configUser->registerMailSubject, $data);
-                $body = $libMail->format($configUser->registerMailBody, $data);
-
-                $libMail->subject($subject);
-                $libMail->body($body);
-                $libMail->to($tupleUser->email, $tupleUser->name);
-                $libMail->send();
-            }
-        }
-
-        if ($configUser->emailRegisterAdmin != '') {
-            if (Validator::isEmail($configUser->emailRegisterAdmin)) {
-                $data = [
-                    'siteName' => $configSystem->siteName,
-                    'username' => $tupleUser->username,
-                    'email' => $email,
-                    'name' => $tupleUser->name
-                ];
-
-                $libMail = Be::getLib('Mail');
-
-                $subject = $libMail->format($configUser->registerMailToAdminSubject, $data);
-                $body = $libMail->format($configUser->registerMailToAdminBody, $data);
-
-                $libMail->subject($subject);
-                $libMail->body($body);
-                $libMail->to($configUser->emailRegisterAdmin);
-                $libMail->send();
-            }
-        }
-
-        return $tupleUser;
-    }
-
-
-    /**
-     * 激活
-     *
-     * @param int $userId 用户ID
-     * @param string $token 邮件发送的 token
-     * @throws \Exception
-     */
-    public function activate($userId, $token)
-    {
-        if (!$userId) {
-            throw new ServiceException('参数用户ID（userId）缺失！');
-        }
-
-        $token = trim($token);
-        if (!$token) {
-            throw new ServiceException('参数Token（token）缺失！');
-        }
-
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->load($userId);
-
-        if ($tupleUser->id == 0) {
-            throw new ServiceException('账号（#' . $userId . '）不存在！');
-        }
-
-        if ($tupleUser->token != $token) {
-            if ($tupleUser->token == '')
-                throw new ServiceException('您的账号已激活！');
-            else
-                throw new ServiceException('您的账号激活链接已失效！');
-        }
-
-        $tupleUser->token = '';
-        $tupleUser->block = 0;
-        $tupleUser->save();
-    }
-
-    /**
-     * 忘记密码
-     * 向用户邮箱发送一封重置密码的邮件
-     *
-     * @param string $username 用户名
-     * @throws \Exception
-     */
-    public function forgotPassword($username)
-    {
-        if (!$username) {
-            throw new ServiceException('用户名不能为空！');
-        }
-
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->load('username', $username);
-
-        if ($tupleUser->id == 0) {
-            $tupleUser->load('email', $username);
-        }
-
-        if ($tupleUser->id == 0) {
-            throw new ServiceException('账号不存在！');
-        }
-
-        $tupleUser->token = Random::complex(32);
-        $tupleUser->save();
-
-        $configSystem = Be::getConfig('System.System');
-
-        $resetPasswordUrl = url('System', 'User', 'forgotPassword', ['reset&userId' => $tupleUser->id, 'token' => $tupleUser->token]);
-
-        $data = [
-            'siteName' => $configSystem->siteName,
-            'resetPasswordUrl' => $resetPasswordUrl
-        ];
-        $configUser = Be::getConfig('System.User');
-
-        $libMail = Be::getLib('Mail');
-
-        $subject = $libMail->format($configUser->forgotPasswordMailSubject, $data);
-        $body = $libMail->format($configUser->forgotPasswordMailBody, $data);
-
-        $libMail->subject($subject);
-        $libMail->body($body);
-        $libMail->to($tupleUser->email, $tupleUser->name);
-        $libMail->send();
-    }
-
-    /**
-     * 忘记密码重置
-     *
-     * @param int $userId 用户ID
-     * @param string $token 邮件发送的 token
-     * @param string $password 新密码
-     * @throws \Exception
-     */
-    public function forgotPasswordReset($userId, $token, $password)
-    {
-        if (!$userId) {
-            throw new ServiceException('参数用户ID（userId）缺失！');
-        }
-
-        $token = trim($token);
-        if (!$token) {
-            throw new ServiceException('参数Token（token）缺失！');
-        }
-
-        $password = trim($password);
-        if (!$password) {
-            throw new ServiceException('参数密码（password）缺失！');
-        }
-
-        $tupleUser = Be::newTuple('system_user');
-        $tupleUser->load($userId);
-
-        if ($tupleUser->token != $token) {
-            if ($tupleUser->token == '')
-                throw new ServiceException('您的密码已重设！');
-            else
-                throw new ServiceException('重设密码链接已失效！');
-        }
-        $salt = Random::complex(32);
-        $tupleUser->password = $this->encryptPassword($password, $salt);
-        $tupleUser->salt = $salt;
-        $tupleUser->token = '';
-        $tupleUser->save();
-
-        $configSystem = Be::getConfig('System.System');
-
-        $data = [
-            'siteName' => $configSystem->siteName,
-            'siteUrl' => url()
-        ];
-
-        $configUser = Be::getConfig('System.User');
-
-        $libMail = Be::getLib('Mail');
-
-        $subject = $libMail->format($configUser->forgotPasswordResetMailSubject, $data);
-        $body = $libMail->format($configUser->forgotPasswordResetMailBody, $data);
-
-        $libMail->subject($subject);
-        $libMail->body($body);
-        $libMail->to($tupleUser->email, $tupleUser->name);
-        $libMail->send();
     }
 
     /**
@@ -615,6 +353,9 @@ class User extends \Be\System\Service
     {
         $tupleUser = Be::newTuple('system_user');
         $tupleUser->load($userId);
+        if (!$tupleUser->id) {
+            throw new ServiceException('指定的用户不存在！');
+        }
 
         $this->deleteAvatarFile($tupleUser);
 

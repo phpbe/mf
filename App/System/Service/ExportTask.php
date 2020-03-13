@@ -35,7 +35,7 @@ class ExportTask extends Service
         $dir = dirname($pathData);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
-        $bootstrapUrl = adminUrl($app.'.'.$controller.'.exportTaskRun', ['taskId' => $taskId]);
+        $bootstrapUrl = url($app.'.'.$controller.'.exportTaskRun', ['taskId' => $taskId]);
         $data = [
             'taskId' => $taskId,
             'name' => $name,

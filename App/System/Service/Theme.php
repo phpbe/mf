@@ -54,24 +54,6 @@ class Theme extends \Be\System\Service
     }
 
 
-    public function getRemoteThemes($option = array())
-    {
-        $libHttp = Be::getLib('Http');
-        $Response = $libHttp->post($this->beApi . 'theme/', $option);
-
-        $theme = json_decode($Response);
-        return $theme;
-    }
-
-    public function getRemoteTheme($themeId)
-    {
-        $libHttp = Be::getLib('Http');
-        $Response = $libHttp->get($this->beApi . 'theme/' . $themeId);
-
-        $theme = json_decode($Response);
-        return $theme;
-    }
-
 
     // 安装应用文件
     public function installTheme($theme)

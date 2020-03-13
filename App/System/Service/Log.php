@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Request;
 
-class AdminLog extends \Be\System\Service
+class Log extends \Be\System\Service
 {
 
 
@@ -16,7 +16,7 @@ class AdminLog extends \Be\System\Service
      */
     public function getLogs($conditions = [])
     {
-        $tableAdminLog = Be::newTable('system_admin_log');
+        $tableAdminLog = Be::newTable('system_log');
 
         $where = $this->createWhere($conditions);
         $tableAdminLog->where($where);
@@ -45,7 +45,7 @@ class AdminLog extends \Be\System\Service
      */
     public function getLogCount($conditions = [])
     {
-        return Be::newTable('system_admin_log')
+        return Be::newTable('system_log')
             ->where($this->createWhere($conditions))
             ->count();
     }
@@ -71,8 +71,8 @@ class AdminLog extends \Be\System\Service
 
     public function addLog($content, $details = '')
     {
-        $my = Be::getAdminUser();
-        $tupleAdminLog = Be::newTuple('system_admin_log');
+        $my = Be::getUser();
+        $tupleAdminLog = Be::newTuple('system_log');
         $tupleAdminLog->user_id = $my->id;
         $tupleAdminLog->username = $my->username;
         $tupleAdminLog->name = $my->name;
@@ -88,7 +88,7 @@ class AdminLog extends \Be\System\Service
      */
     public function deleteLogs()
     {
-        Be::newTable('system_admin_log')->where('create_time', '<', (time() - 90 * 86400))->delete();
+        Be::newTable('system_log')->where('create_time', '<', (time() - 90 * 86400))->delete();
     }
 
 

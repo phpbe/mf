@@ -10,11 +10,6 @@ class Db extends \Be\System\Service
 {
 
 
-    public function getAppNames()
-    {
-        return ['Cms', 'System'];
-    }
-
     public function getTables($app)
     {
         $tables = [];
@@ -204,7 +199,7 @@ class Db extends \Be\System\Service
 
 
     protected function getAppNameByTableName($tableName) {
-        $appNames = $this->getAppNames();
+        $appNames = Be::getService('System.App')->getAppNames();
 
         $tableNames = explode('_', $tableName);
         $n = count($tableNames);
@@ -222,7 +217,7 @@ class Db extends \Be\System\Service
     public function formatTableFields($tableName, $fields)
     {
 
-        $tableConfig = Be::newTableConfig($tableName);
+        $tableProperty = Be::getTableProperty($tableName);
 
         $formattedFields = array();
 
@@ -271,7 +266,7 @@ class Db extends \Be\System\Service
             $format = '';
 
 
-            $configField = $tableConfig->getField($field->Field);
+            $configField = $tableProperty->getField($field->Field);
             if ($configField) {
                 $name = $configField['name'];
 

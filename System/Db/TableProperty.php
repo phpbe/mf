@@ -2,10 +2,10 @@
 namespace Be\System\Db;
 
 /**
- * Class TableConfig
+ * Class TableProperty
  * @package \Be\System\Db
  */
-class TableConfig
+class TableProperty
 {
 
     /**

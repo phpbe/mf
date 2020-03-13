@@ -14,29 +14,29 @@ abstract class Menu
 		
 	}
 
-	/**
-	 * 添加菜单项
-	 *
-	 * @param int $menuId 菜单编号
-	 * @param int $parentId 父级菜单编号， 等于0时为顶级菜单
-	 * @param string $name 名称
-	 * @param string $url 网址
-	 * @param string $target 打开方式
-	 * @param array $params 参数
-	 */
-	public function addMenu($menuId, $parentId, $name, $url, $target='Self', $params=array(), $home=0)
-	{
-		$menu = new \stdClass();
-		$menu->id = $menuId;
-		$menu->parentId = $parentId;
-		$menu->name = $name;
-		$menu->url = $url;
-		$menu->target = $target;
-		$menu->params = $params;
-		$menu->home = $home;
 
-		$this->menus[$menuId] = $menu;
-	}
+    /**
+     * 添加菜单项
+     *
+     * @param int $menuId 菜单编号
+     * @param int $parentId 父级菜单编号， 等于0时为顶级菜单
+     * @param string $icon 图标
+     * @param string $label 中文名称
+     * @param string $url 网址
+     * @param string $target 打开方式
+     */
+    public function addMenu($menuId, $parentId, $icon, $label, $url, $target='_self')
+    {
+        $menu = new \stdClass();
+        $menu->id = $menuId;
+        $menu->parentId = $parentId;
+        $menu->icon = $icon;
+        $menu->label = $label;
+        $menu->url = $url;
+        $menu->target = $target;
+
+        $this->menus[$menuId] = $menu;
+    }
 
 	/**
 	 * 获取一项菜单 或 整个菜单
