@@ -6,7 +6,7 @@ use Be\System\Be;
 use Be\System\Response;
 use Be\System\Controller;
 
-class AdminUserLog extends Controller
+class UserLoginLog extends Controller
 {
 
     use \App\System\AdminTrait\Curd;
@@ -83,8 +83,8 @@ class AdminUserLog extends Controller
     {
         Be::getDb()->startTransaction();
         try {
-            Be::getService('System.AdminUserLog')->deleteLogs();
-            Be::getService('System.AdminLog')->addLog($this->config['name'] . '：删除三个月前管理员登陆日志日志！');
+            Be::getService('System.UserLoginLog')->deleteLogs();
+            SystemLog($this->config['name'] . '：删除三个月前管理员登陆日志日志！');
 
             Be::getDb()->commit();
 

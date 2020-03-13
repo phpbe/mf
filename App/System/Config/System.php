@@ -9,33 +9,15 @@ class System
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
-     * @be-config-item-label 是否暂停网站
-     */
-    public $offline = false;
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemText
-     * @be-config-item-label 暂停网站时显示的信息
-     */
-    public $offlineMessage = '<p>系统升级，请稍候访问。</p>';
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 网站名称
-     */
-    public $siteName = 'BE';
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
      * @be-config-item-label 是否开启伪静态
      */
-    public $sef = true;
+    public $urlRewrite = true;
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
      * @be-config-item-label 伪静态页后辍
      */
-    public $sefSuffix = '.html';
+    public $urlSuffix = '.html';
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
@@ -43,32 +25,7 @@ class System
      * @be-config-item-keyValueType code
      * @be-config-item-keyValues \Be\System\Be::getService('System.Theme')->getThemeKeyValues()
      */
-    public $theme = 'huxiu';
-
-    /**
-     * 默认首页
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label 默认首页参数
-     */
-    public $homeParams = ['app'=>'Cms', 'controller'=>'Article', 'action'=>'home'];
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 首页的标题
-     */
-    public $homeTitle = '首页';
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 首页的 meta keywords
-     */
-    public $homeMetaKeywords = 'Be easy';
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 首页的 meta description
-     */
-    public $homeMetaDescription = 'Be easy';
+    public $theme = 'Admin';
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemArrayString
@@ -87,4 +44,19 @@ class System
      * @be-config-item-label 时区
      */
     public $timezone = 'Asia/Shanghai';
+
+    /**
+     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
+     * @be-config-item-label 默认分页显示条数
+     * @be-config-item-ui {":min":1}
+     */
+    public $pageSize = 12;
+
+    /**
+     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
+     * @be-config-item-label 系统日志级别
+     * @be-config-item-keyValues ["debug":"debug","info":"info","notice":"notice","warning":"warning","error":"error","critical":"critical","alert":"alert","emergency":"emergency"]
+     */
+    public $runtimeLogLevel = 'debug';
+
 }

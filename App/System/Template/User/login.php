@@ -3,7 +3,7 @@ use Be\System\Be;
 use Be\System\Request;
 ?>
 <!--{head}-->
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/AdminUser/css/login.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/login.css" />
 <!--{/head}-->
 
 <!--{body}-->
@@ -73,7 +73,7 @@ if ($return=='') {
             login: function() {
                 var _this = this;
                 _this.loginLoading = true;
-                this.$http.post("<?php echo url('System.AdminUser.login'); ?>", _this.formData)
+                this.$http.post("<?php echo url('System.User.login'); ?>", _this.formData)
                     .then(function (response) {
                         _this.loginLoading = false;
                         if (response.status == 200) {

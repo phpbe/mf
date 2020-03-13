@@ -22,79 +22,48 @@ class UserRole extends Controller
      */
     public function roles()
     {
-        $adminServiceUser = Be::getService('System.User');
-        $roles = $adminServiceUser->getRoles();
+        if (Request::isPost()) {
 
-        foreach ($roles as $role) {
-            if ($role->id > 1) $role->userCount = $adminServiceUser->getUserCount(array('roleId' => $role->id));
-        }
+            $ids = Request::post('id', array(), 'int');
+            $names = Request::post('name', array());
+            $notes = Request::post('note', array());
 
-        Response::setTitle('用户组');
-        Response::set('roles', $roles);
-        Response::display();
-    }
+            if (count($ids) > 0) {
+                for ($i = 0, $n = count($ids); $i < $n; $i++) {
+                    $id = $ids[$i];
 
-    /**
-     * @be-permission 修改角色
-     */
-    public function rolesSave()
-    {
-        $ids = Request::post('id', array(), 'int');
-        $names = Request::post('name', array());
-        $notes = Request::post('note', array());
+                    if ($id == 1) continue;
 
-        if (count($ids) > 0) {
-            for ($i = 0, $n = count($ids); $i < $n; $i++) {
-                $id = $ids[$i];
+                    if ($id == 0 && $names[$i] == '') continue;
 
-                if ($id == 1) continue;
-
-                if ($id == 0 && $names[$i] == '') continue;
-
-                $tupleUserRole = Be::newTuple('system_user_role');
-                if ($id != 0) $tupleUserRole->load($id);
-                $tupleUserRole->name = $names[$i];
-                $tupleUserRole->note = $notes[$i];
-                $tupleUserRole->ordering = $i;
-                $tupleUserRole->save();
+                    $tupleUserRole = Be::newTuple('system_user_role');
+                    if ($id != 0) $tupleUserRole->load($id);
+                    $tupleUserRole->name = $names[$i];
+                    $tupleUserRole->note = $notes[$i];
+                    $tupleUserRole->ordering = $i;
+                    $tupleUserRole->save();
+                }
             }
+
+            $serviceUser = Be::getService('System.User');
+            $serviceUser->updateUserRoles();
+
+            systemLog('修改用户角色');
+
+            Response::success('修改后台用户组成功！', url('System.User.roles'));
+
+        } else {
+            $serviceUser = Be::getService('System.User');
+            $roles = $serviceUser->getRoles();
+
+            foreach ($roles as $role) {
+                $role->userCount = $serviceUser->getUserCount(array('roleId' => $role->id));
+            }
+
+            Response::setTitle('用户角色');
+            Response::set('roles', $roles);
+            Response::display();
         }
-
-        $adminServiceUser = Be::getService('System.User');
-        $adminServiceUser->updateUserRoles();
-
-        adminLog('修改用户角色');
-
-        Response::success('修改用户角色成功！', url('System.User.roles'));
-    }
-
-    /**
-     * @be-permission 修改角色
-     */
-    public function ajaxSetDefaultRole()
-    {
-        $roleId = Request::get('roleId', 0, 'int');
-        if ($roleId == 0) {
-            Response::set('error', 1);
-            Response::set('message', '参数(roleId)缺失！');
-            Response::ajax();
-        }
-
-        $tupleUserRole = Be::newTuple('system_user_role');
-        $tupleUserRole->load($roleId);
-        if ($tupleUserRole->id == 0) {
-            Response::set('error', 2);
-            Response::set('message', '不存在的角色！');
-            Response::ajax();
-        }
-
-        $tupleUserRole->setDefault();
-
-        adminLog('设置用户角色 ' . $tupleUserRole->name . ' 为默认用户角色');
-
-        Response::set('error', 0);
-        Response::set('message', '设置前台默认用户角色成功！');
-        Response::ajax();
     }
 
     /**
@@ -109,36 +78,31 @@ class UserRole extends Controller
             Response::ajax();
         }
 
-        $tupleUserRole = Be::newTuple('System', 'user_role');
+        $tupleUserRole = Be::newTuple('system_user_role');
         $tupleUserRole->load($roleId);
         if ($tupleUserRole->id == 0) {
             Response::set('error', 2);
-            Response::set('message', '不存在的角色！');
+            Response::set('message', '不存在的用户角色');
             Response::ajax();
         }
 
-        if ($tupleUserRole->default == 1) {
-            Response::set('error', 3);
-            Response::set('message', '默认角色不能删除！');
-            Response::ajax();
-        }
-
-        $adminServiceUser = Be::getService('System.User');
-        $userCount = $adminServiceUser->getUserCount(array('roleId' => $roleId));
+        $serviceUser = Be::getService('System.User');
+        $userCount = $serviceUser->getUserCount(array('roleId' => $roleId));
         if ($userCount > 0) {
-            Response::set('error', 4);
-            Response::set('message', '当前有' . $userCount . '个用户属于这个角色，禁止删除！');
+            Response::set('error', 3);
+            Response::set('message', '当前有' . $userCount . '个用户属于这个分组，禁止删除！');
             Response::ajax();
         }
 
         $tupleUserRole->delete();
 
-        adminLog('删除用户角色：' . $tupleUserRole->name);
+        systemLog('删除用户角色：' . $tupleUserRole->name);
 
         Response::set('error', 0);
-        Response::set('message', '删除用户组成功！');
+        Response::set('message', '删除用户角色成功！');
         Response::ajax();
     }
+
 
     /**
      * @be-permission 角色权限配置
@@ -150,10 +114,10 @@ class UserRole extends Controller
 
         $tupleUserRole = Be::newTuple('system_user_role');
         $tupleUserRole->load($roleId);
-        if ($tupleUserRole->id == 0) Response::end('不存在的角色！');
+        if ($tupleUserRole->id == 0) Response::end('不存在的分组！');
 
-        $adminServiceApp = Be::getService('System.App');
-        $apps = $adminServiceApp->getApps();
+        $serviceApp = Be::getService('System.app');
+        $apps = $serviceApp->getApps();
 
         Response::setTitle('用户角色(' . $tupleUserRole->name . ')权限设置');
         Response::set('role', $tupleUserRole);
@@ -171,12 +135,12 @@ class UserRole extends Controller
 
         $tupleUserRole = Be::newTuple('system_user_role');
         $tupleUserRole->load($roleId);
-        if ($tupleUserRole->id == 0) Response::end('不存在的角色！');
+        if ($tupleUserRole->id == 0) Response::end('不存在的分组！');
         $tupleUserRole->permission = Request::post('permission', 0, 'int');
 
         if ($tupleUserRole->permission == -1) {
             $publicPermissions = [];
-            $adminServiceApp = Be::getService('System.App');
+            $adminServiceApp = Be::getService('System.app');
             $apps = $adminServiceApp->getApps();
             foreach ($apps as $app) {
                 $appPermissions = $app->getPermissions();
@@ -191,17 +155,18 @@ class UserRole extends Controller
 
             $permissions = Request::post('permissions', array());
             $permissions = array_merge($publicPermissions, $permissions);
-            $tupleUserRole->permissions = implode(',', $permissions);
+            $permissions = implode(',', $permissions);
+            $tupleUserRole->permissions = $permissions;
         } else {
             $tupleUserRole->permissions = '';
         }
 
         $tupleUserRole->save();
 
-        $serviceRole = Be::getService('System.Role');
-        $serviceRole->update($roleId);
+        $serviceUserRole = Be::getService('System.UserRole');
+        $serviceUserRole->updateUserRole($roleId);
 
-        adminLog('修改用户角色 ' . $tupleUserRole->name . ' 权限');
+        systemLog('修改用户角色(' . $tupleUserRole->name . ')权限');
 
         Response::success('修改用户角色权限成功！', url('System.User.roles'));
     }

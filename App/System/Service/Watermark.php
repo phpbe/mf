@@ -7,7 +7,7 @@ use Be\System\RuntimeException;
 class Watermark extends \Be\System\Service
 {
 
-    public function save($image)
+    public function mark($image)
     {
         $libImage = Be::getLib('Image');
         $libImage->open($image);
@@ -73,8 +73,14 @@ class Watermark extends \Be\System\Service
             // 添加文字水印
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
+
+            $watermarkImage = Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image;
+            if (!file_exists($watermarkImage)) {
+                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->path . 'Template/System/Watermark/images/watermark.png';
+            }
+
             // 添加图像水印
-            $libImage->watermark(Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image, $x, $y);
+            $libImage->watermark($watermarkImage, $x, $y);
         }
 
         $libImage->save($image);

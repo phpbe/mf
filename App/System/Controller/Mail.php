@@ -33,10 +33,10 @@ class Mail extends \Be\System\Controller
                 $serviceMail->to($toEmail);
                 $serviceMail->send();
 
-                adminLog('发送测试邮件到 ' . $toEmail . ' -成功');
+                systemLog('发送测试邮件到 ' . $toEmail . ' -成功');
                 Response::success('发送邮件成功！', url('System', 'Mail', 'test', ['toEmail' => $toEmail]));
             } catch (\Exception $e) {
-                adminLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
+                systemLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
                 Response::error('发送邮件失败：' . $e->getMessage(), url('System', 'Mail', 'test', ['toEmail' => $toEmail]));
             }
 

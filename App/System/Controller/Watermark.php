@@ -22,18 +22,19 @@ class Watermark extends \Be\System\Controller
      */
     public function test()
     {
-        $src = Be::getRuntime()->getDataPath() . '/System/Watermark/test-0.jpg';
-        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/test-1.jpg';
 
-        if (!file_exists($src)) Response::end(Be::getRuntime()->getDataDir() . '/System/Watermark/test-0.jpg 文件不存在');
+        $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->path . 'Template/System/Watermark/images/material.jpg';
+        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
+
+        if (!file_exists($src)) Response::end(Be::getRuntime()->getDataDir() . '/System/Watermark/test.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);
 
         copy($src, $dst);
 
         sleep(1);
 
-        $adminServiceSystem = Be::getService('System.Admin');
-        $adminServiceSystem->watermark($dst);
+        $serviceWatermark = Be::getService('System.Watermark');
+        $serviceWatermark->mark($dst);
 
         Response::setTitle('水印预览');
         Response::display();

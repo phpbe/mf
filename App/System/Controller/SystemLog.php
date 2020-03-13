@@ -1,101 +1,97 @@
 <?php
+
 namespace Be\App\System\Controller;
 
 use Be\System\Be;
-use Be\System\Request;
 use Be\System\Response;
 
+/**
+ * @be-controller 系统日志
+ */
 class SystemLog extends \Be\System\Controller
 {
 
+    use \App\System\AdminTrait\Curd;
 
-    // 系统日志
-    public function logs()
+    public function __construct()
     {
-        $year = Request::request('year', date('Y'));
-        $month = Request::request('month', date('m'));
-        $day = Request::request('day', date('d'));
+        $this->config = [
 
-        $limit = Request::post('limit', -1, 'int');
-        if ($limit == -1) {
-            $adminConfigSystem = Be::getConfig('System.Admin');
-            $limit = $adminConfigSystem->limit;
-        }
+            'name' => '后台日志',
 
-        Response::setTitle('系统日志列表');
+            'table' => ['System', 'AdminLog'],
 
-        $serviceSystemLog = Be::getService('System.SystemLog');
-        $years = $serviceSystemLog->getYears();
-        Response::set('years', $years);
+            'action' => [
 
-        if (!$year && count($years)) $year = $years[0];
+                'lists' => [
 
-        if ($year && in_array($year, $years)) {
-            Response::set('year', $year);
+                    'search' => [
 
-            $months = $serviceSystemLog->getMonths($year);
-            Response::set('months', $months);
+                        'content' => [
+                            'name' => '内容',
+                            'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                            'uiType' => 'text',
+                            'operation' => '%like%',
+                        ],
 
-            if (!$month && count($months)) $month = $months[0];
+                        'user_id' => [
+                            'name' => '用户',
+                            'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
+                            'uiType' => 'select',
+                            'keyValues' => Be::newTable('system_admin_user')->withCache(600)->getKeyValues('user_id', 'user_name')
+                        ]
+                    ],
 
-            if ($month && in_array($month, $months)) {
-                Response::set('month', $month);
+                    'toolbar' => [
+                        [
+                            'name' => '删除三个月前系统日志',
+                            'url' => url('System.AdminLog.deleteLogs'),
+                            'icon' => 'fa fa-times-circle',
+                            'class' => 'text-danger',
+                        ],
+                        [
+                            'name' => '导出',
+                            'action' => 'export',
+                            'icon' => 'fa fa-array-circle-down',
+                        ],
+                    ],
 
-                $days = $serviceSystemLog->getDays($year, $month);
-                Response::set('days', $days);
+                    'operation' => [
+                        [
+                            'name' => '查看',
+                            'action' => 'detail',
+                            'icon' => 'fa fa-search',
+                        ],
+                    ],
+                ],
 
-                if (!$day && count($days)) $day = $days[0];
+                'detail' => [],
+            ],
 
-                if ($day && in_array($day, $days)) {
-                    Response::set('day', $day);
+            'export' => [],
 
-                    $errorCount = $serviceSystemLog->getlogCount($year, $month, $day);
-                    Response::set('logCount', $errorCount);
-
-                    $pagination = Be::getUi('Pagination');
-                    $pagination->setLimit($limit);
-                    $pagination->setTotal($errorCount);
-                    $pagination->setPage(Request::request('page', 1, 'int'));
-                    Response::set('pagination', $pagination);
-
-                    $logs = $serviceSystemLog->getlogs($year, $month, $day, $pagination->getOffset(), $limit);
-                    Response::set('logs', $logs);
-                }
-            }
-        }
-
-        Response::display();
+        ];
     }
 
-    public function log()
+    /**
+     * 删除后台日志
+     *
+     * @be-action 删除后台日志
+     * @be-permission
+     */
+    public function deleteLogs()
     {
-        $year = Request::request('year');
-        $month = Request::request('month');
-        $day = Request::request('day');
-        $hash = Request::request('hash');
-
+        Be::getDb()->startTransaction();
         try {
-            $serviceSystemLog = Be::getService('System.SystemLog');
-            $log = $serviceSystemLog->getlog($year, $month, $day, $hash);
-            Response::setTitle('系统日志详情');
-            Response::set('log', $log);
-            Response::display();
+            Be::getService('System.SystemLog')->deleteLogs();
+            Be::getService('System.SystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
+
+            Be::getDb()->commit();
+
+            Response::success('删除系统日志成功！');
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
-        }
-    }
 
-
-    public function deleteLogs() {
-        $year = Request::request('year', 0, 'int');
-        $month = Request::request('month', 0, 'int');
-        $day = Request::request('day', 0, 'int');
-
-        try {
-            $serviceSystemLog = Be::getService('System.SystemLog');
-            $serviceSystemLog->deleteLogs($year, $month, $day);
-            Response::success('删除日志成功！');
-        } catch (\Exception $e) {
+            Be::getDb()->rollback();
             Response::error($e->getMessage());
         }
     }

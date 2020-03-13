@@ -2,208 +2,94 @@
 namespace Be\App\System\Service;
 
 use Be\System\Be;
-use Be\System\Service\ServiceException;
+use Be\System\Request;
 
 class SystemLog extends \Be\System\Service
 {
 
+
     /**
-     * 获取日志年份列表
+     * 获取符合条件的后台日志列表
      *
+     * @param array $conditions 查询条件
      * @return array
      */
-    public function getYears()
+    public function getLogs($conditions = [])
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log';
-        $years = array();
-        if (file_exists($dir) && is_dir($dir)) {
-            $fileNames = scandir($dir);
-            foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
-                    $years[] = $fileName;
-                }
-            }
+        $tableAdminLog = Be::newTable('system_log');
+
+        $where = $this->createWhere($conditions);
+        $tableAdminLog->where($where);
+
+        if (isset($conditions['orderByString']) && $conditions['orderByString']) {
+            $tableAdminLog->orderBy($conditions['orderByString']);
+        } else {
+            $orderBy = 'id';
+            $orderByDir = 'DESC';
+            if (isset($conditions['orderBy']) && $conditions['orderBy']) $orderBy = $conditions['orderBy'];
+            if (isset($conditions['orderByDir']) && $conditions['orderByDir']) $orderByDir = $conditions['orderByDir'];
+            $tableAdminLog->orderBy($orderBy, $orderByDir);
         }
-        return $years;
+
+        if (isset($conditions['offset']) && $conditions['offset']) $tableAdminLog->offset($conditions['offset']);
+        if (isset($conditions['limit']) && $conditions['limit']) $tableAdminLog->limit($conditions['limit']);
+
+        return $tableAdminLog->getObjects();
     }
 
     /**
-     * 获取日志月份列表
+     * 获取符合条件的后台日志总数
      *
-     * @param int $year 年
-     * @return array
-     */
-    public function getMonths($year)
-    {
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year;
-        $months = array();
-        if (file_exists($dir) && is_dir($dir)) {
-            $fileNames = scandir($dir);
-            foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
-                    $months[] = $fileName;
-                }
-            }
-        }
-        return $months;
-    }
-
-    /**
-     * 获取日志日期列表
-     *
-     * @param int $year 年
-     * @param int $month 月
-     * @return array
-     */
-    public function getDays($year, $month)
-    {
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month;
-        $days = array();
-        if (file_exists($dir) && is_dir($dir)) {
-            $fileNames = scandir($dir);
-            foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_dir($dir . '/' . $fileName)) {
-                    $days[] = $fileName;
-                }
-            }
-        }
-        return $days;
-    }
-
-    /**
-     * 获取指定日期的日志列表
-     * @param int $year 年
-     * @param int $month 月
-     * @param int $day 日
-     * @param int $offset 分面偏移量
-     * @param int $limit 分页大小
-     * @return array
-     */
-    public function getLogs($year, $month, $day, $offset = 0, $limit = 100)
-    {
-        $dataDir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/';
-        $indexPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
-        if (!is_file($indexPath)) return array();
-
-        if ($offset < 0) $offset = 0;
-        if ($limit <= 0) $limit = 20;
-        if ($limit > 500) $limit = 500;
-
-        $max = intval(filesize($indexPath) / 36) - 1;
-        if ($max < 0) return array();
-
-        $from = $offset;
-        $to = $offset + $limit - 1;
-
-        if ($from > $max) $from = $max;
-        if ($to > $max) $to = $max;
-
-        $fIndex = fopen($indexPath, 'rb');
-        if (!$fIndex) return array();
-
-        $logs = array();
-        for ($i = $from; $i <= $to; $i++) {
-            fseek($fIndex, $i * 20);
-
-            $dataHashName = implode('', unpack('H*', fread($fIndex, 32)));
-            $createTime = intval(implode('', unpack('L', fread($fIndex, 4))));
-
-            $data = file_get_contents($dataDir . $dataHashName);
-
-            $data = json_decode($data);
-            $data['create_time'] = date('Y-m-d H:i:s', $createTime);
-            $this->formatLog($data);
-            $logs[] = $data;
-        }
-        fclose($fIndex);
-        return $logs;
-    }
-
-    /**
-     * 获取指定日期的日志总数
-     *
-     * @param int $year 年
-     * @param int $month 月
-     * @param int $day 日
+     * @param array $conditions 查询条件
      * @return int
      */
-    public function getLogCount($year, $month, $day)
+    public function getLogCount($conditions = [])
     {
-        $path = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
-        if (!is_file($path)) return 0;
-        return intval(filesize($path) / 36);
+        return Be::newTable('system_log')
+            ->where($this->createWhere($conditions))
+            ->count();
     }
 
     /**
-     * 获取指定日期和索引的日志明细
-     * @param int $year 年
-     * @param int $month 月
-     * @param int $day 日
-     * @param string $hashName 日志的 hash 文件名
+     * 生成查询条件 where 数组
+     *
+     * @param array $conditions 查询条件
      * @return array
-     * @throws ServiceException
      */
-    public function getLog($year, $month, $day, $hashName)
+    private function createWhere($conditions = [])
     {
-        $dataPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/'.$hashName;
-        if (!is_file($dataPath)) {
-            throw new ServiceException('打开日志数据文件不存在！');
+        $where = [];
+
+        if (isset($conditions['userId']) && is_numeric($conditions['userId'])) {
+            $where[] = ['user_id', $conditions['userId']];
         }
 
-        $data = file_get_contents($dataPath);
-        $data = json_decode($data);
-        $this->formatLog($data);
-        return $data;
+        return $where;
+    }
+
+
+
+    public function addLog($content, $details = '')
+    {
+        $my = Be::getUser();
+        $tupleAdminLog = Be::newTuple('system_log');
+        $tupleAdminLog->user_id = $my->id;
+        $tupleAdminLog->username = $my->username;
+        $tupleAdminLog->name = $my->name;
+        $tupleAdminLog->content = $content;
+        $tupleAdminLog->details = json_encode($details);
+        $tupleAdminLog->ip = Request::ip();
+        $tupleAdminLog->create_time = time();
+        $tupleAdminLog->save();
     }
 
     /**
-     * 格式化日志
-     *
-     * @param array $log 日志
+     * 删除三个月(90天)前的后台用户登陆日志
      */
-    public function formatLog(&$log) {
-
-        if (!isset($log['file'])) {
-            $file = '';
-            if (isset($log['extra']['file'])) {
-                $file = $log['extra']['file'];
-            }
-            $log['file'] = $file;
-        }
-
-        if (!isset($log['line'])) {
-            $line = '';
-            if (isset($log['extra']['line'])) {
-                $line = $log['extra']['line'];
-            }
-            $log['line'] = $line;
-        }
-
-        if (!isset($log['message'])) {
-            $log['message'] = '';
-        }
-
-        $log['record_time'] = date('Y-m-d H:i:s', $log['record_time']);
+    public function deleteLogs()
+    {
+        Be::newTable('system_log')->where('create_time', '<', (time() - 90 * 86400))->delete();
     }
 
-    /**
-     * 删除日志
-     *
-     * @param int $year 年
-     * @param int $month 月
-     * @param int $day 日
-     */
-    public function deleteLogs($year, $month = 0, $day = 0) {
 
-        $dir = null;
-        if ($month == 0) {
-            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year;
-        } elseif ($day == 0) {
-            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month;
-        } else {
-            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day;
-        }
-
-        Be::getLib('Fso')->rmDir($dir);
-    }
 }

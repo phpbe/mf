@@ -196,7 +196,6 @@ class Runtime
 
         // 检查网站配置， 是否暂停服务
         $configSystem = Be::getConfig('System.System');
-        if ($configSystem->offline) Response::end($configSystem->offlineMessage);
 
         // 默认时区
         date_default_timezone_set($configSystem->timezone);
@@ -208,13 +207,13 @@ class Runtime
 
             // 从网址中提取出 action
             $action = null;
-            if ($configSystem->sef) {
+            if ($configSystem->urlRewrite) {
 
                 //print_r($_SERVER);
 
                 /*
-                 * REQUEST_URI 可能值为：[/path][/admin]/{action}[/{k-v}].html?[k=v]
-                 * 需要解析的有效部分为： {app}.{controller}.{action}[/{k-v}]
+                 * REQUEST_URI 可能值为：[/path]/{action}[/{k-v}].html?[k=v]
+                 * 需要解析的有效部分为： {action}[/{k-v}]
                  */
                 $uri = $_SERVER['REQUEST_URI'];    // 返回值为:
 
@@ -231,21 +230,15 @@ class Runtime
                     }
                 }
 
-                // 是否为后台功能 移除[/admin]
-                if (substr($uri, 0, strlen($this->adminDir) + 1) == '/' . $this->adminDir) {
-                    $this->backend = true; // 后台功能
-                    $uri = substr($uri, strlen($this->adminDir) + 1);
-                }
-
                 // 移除 ?[k=v]
                 if ($_SERVER['QUERY_STRING'] != ''){
                     $uri = substr($uri, 0, strrpos($uri, '?'));
                 }
 
                 // 移除 .html
-                $lenSefSuffix = strlen($configSystem->sefSuffix);
-                if (substr($uri, -$lenSefSuffix, $lenSefSuffix) == $configSystem->sefSuffix) {
-                    $uri = substr($uri, 0, strrpos($uri, $configSystem->sefSuffix));
+                $lenSefSuffix = strlen($configSystem->urlSuffix);
+                if (substr($uri, -$lenSefSuffix, $lenSefSuffix) == $configSystem->urlSuffix) {
+                    $uri = substr($uri, 0, strrpos($uri, $configSystem->urlSuffix));
                 }
 
                 // 移除结尾的 /
@@ -272,13 +265,6 @@ class Runtime
                 }
 
             } else {
-                $phpSelf = $_SERVER['PHP_SELF'];
-
-                // 是否为后台功能
-                if (substr($phpSelf, strrpos($phpSelf, '/') == $this->adminDir)) {
-                    $this->backend = true; // 后台功能
-                }
-
                 $action = Request::request('action', '');
             }
 
@@ -294,90 +280,38 @@ class Runtime
                 }
             }
 
-            // 后台默认访问控制台页面
+            // 默认访问控制台页面
             if (!$appName) {
-                if ($this->backend) {
-                    $appName = 'System';
-                    $controllerName = 'System';
-                    $actionName = 'dashboard';
-                } else {
-                    // 默认首页时
-                    if (!$appName) {
-                        $homeParams = $configSystem->homeParams;
-                        foreach ($homeParams as $key => $val) {
-                            $_GET[$key] = $_REQUEST[$key] = $val;
-                            if ($key == 'app') {
-                                $appName = $val;
-                            }  elseif ($key == 'controller') {
-                                $controllerName = $val;
-                            } elseif ($key == 'action') {
-                                $actionName = $val;
-                            }
-                        }
-                    }
-                }
+                $appName = 'System';
+                $controllerName = 'System';
+                $actionName = 'dashboard';
             }
 
             $this->appName = $appName;
             $this->controllerName = $controllerName;
             $this->actionName = $actionName;
 
-            if ($this->backend) {
+            $my = Be::getUser();
+            if ($my->id == 0) {
+                Be::getService('System.User')->rememberMe();
+                $my = Be::getUser();
+            }
 
-                $my = Be::getAdminUser();
-                if ($my->isGuest()) {
-                    Be::getService('System.AdminUser')->rememberMe();
-                    $my = Be::getAdminUser();
+            $class = 'App\\' . $appName . '\\Controller\\' . $controllerName;
+            if (!class_exists($class)) throw new RuntimeException('控制器 ' . $appName . '/' . $controllerName . ' 不存在！', -404);
+            $instance = new $class();
+            if (method_exists($instance, $actionName)) {
 
-                    if ($my->isGuest()) {
-                        if ($appName != 'System' || $controllerName != 'AdminUser' || $actionName != 'login') {
-                            $return = Request::get('return', base64_encode(Request::url()));
-                            Response::redirect(adminUrl('System.AdminUser.login', ['return' => $return]));
-                        }
-                    }
+                if (!$my->hasPermission($appName, $controllerName, $actionName)) {
+                    Response::error('您没有权限操作该功能！',  -1024);
                 }
 
-
-                $class = 'App\\' . $appName . '\\AdminController\\' . $controllerName;
-                if (!class_exists($class)) throw new RuntimeException('控制器 ' . $appName . '/' . $controllerName . ' 不存在！', -404);
-                $instance = new $class();
-                if (method_exists($instance, $actionName)) {
-
-                    if ($appName != 'System' || $controllerName != 'AdminUser' || $actionName != 'login') {
-                        if (!$my->hasPermission($appName, $controllerName, $actionName)) {
-                            Response::error('您没有权限操作该后台功能！', -1024);
-                        }
-                    }
-
-                    $instance->$actionName();
-
-                } else {
-                    throw new RuntimeException('未定义的后台任务：' . $actionName, -404);
-                }
+                $instance->$actionName();
 
             } else {
-
-                $my = Be::getUser();
-                if ($my->id == 0) {
-                    Be::getService('System.User')->rememberMe();
-                    $my = Be::getUser();
-                }
-
-                $class = 'App\\' . $appName . '\\Controller\\' . $controllerName;
-                if (!class_exists($class)) throw new RuntimeException('控制器 ' . $appName . '/' . $controllerName . ' 不存在！', -404);
-                $instance = new $class();
-                if (method_exists($instance, $actionName)) {
-
-                    if (!$my->hasPermission($appName, $controllerName, $actionName)) {
-                        Response::error('您没有权限操作该功能！',  -1024);
-                    }
-
-                    $instance->$actionName();
-
-                } else {
-                    throw new RuntimeException('未定义的任务：' . $actionName,  -404);
-                }
+                throw new RuntimeException('未定义的任务：' . $actionName,  -404);
             }
+
 
         } catch (\Throwable $e) {
 

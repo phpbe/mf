@@ -30,47 +30,6 @@ class Session
      */
     public $driver = 'Default';
 
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label MySql设置项
-     */
-    public $mysql = array(
-        'host' => '127.0.0.1', // 主机名
-        'port' => 3306, // 端口号
-        'user' => 'root', // 用户名
-        'pass' => '', // 密码
-        'name' => 'be_v2', // 数据库名
-        'table' => 'session' // 存放session的表名
-    );
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label Memcache设置项
-     */
-    public $memcache = [
-        [
-            'host' => '127.0.0.1', // 主机名
-            'port' => 11211, // 端口号
-            'timeout' => 0, // 超时时间
-            'persistent' => false, // 是否使用长连接
-            'weight' => 1 // 权重
-        ]
-    ];
-
-    /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label Memcached设置项
-     */
-    public $memcached = [
-        [
-            'host' => '127.0.0.1', // 主机名
-            'port' => 11211, // 端口号
-            'weight' => 1 // 权重
-        ]
-    ];
-
-
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
      * @be-config-item-label REDIS设置项

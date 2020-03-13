@@ -21,6 +21,44 @@ use Be\System\Controller;
 class User extends Controller
 {
 
+    // 登陆页面
+    public function login()
+    {
+        if (Request::isPost()) {
+            $username = Request::json('username', '');
+            $password = Request::json('password', '');
+            $ip = Request::ip();
+            try {
+                $serviceAdminUser = Be::getService('System.User');
+                $serviceAdminUser->login($username, $password, $ip);
+                Response::success('登录成功！');
+            } catch (\Exception $e) {
+                Response::error($e->getMessage());
+            }
+        } else {
+
+            $my = Be::getUser();
+            if ($my->id > 0) {
+                Response::redirect(url('System.System.dashboard'));
+            }
+
+            Response::setTitle('登录');
+            Response::display();
+        }
+    }
+
+
+    // 退出登陆
+    public function logout()
+    {
+        try {
+            Be::getService('System.User')->logout();
+            Response::success('成功退出！', url('System.User.login'));
+        } catch (\Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
     /**
      * 用户列表
      *
@@ -31,158 +69,187 @@ class User extends Controller
      */
     public function users() {
         Curd::lists([
-            'name' => '用户',
-            'table' => 'System.User',
+            'title' => '用户列表',
+            'table' => 'system_user',
+
             'search' => [
-                'username' => [
-                    'name' => '用户名',
-                    'driver' => \Be\System\App\SearchItem\SearchItemString::class,
-                    'uiType' => 'text'
-                ],
 
-                'name' => [
-                    'name' => '名称',
-                    'driver' => \Be\System\App\SearchItem\SearchItemString::class,
-                    'uiType' => 'text'
-                ],
+                'items' => [
+                    [
+                        'name' => 'username',
+                        'label' => '用户名',
+                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                    ],
+                    [
+                        'name' => 'name',
+                        'label' => '名称',
+                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                    ],
+                    [
+                        'name' => 'email',
+                        'label' => '邮箱',
+                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                    ],
+                    [
+                        'name' => 'block',
+                        'label' => '状态',
+                        'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
+                        'keyValues' => [
+                            '' => '不限',
+                            '0' => '启用',
+                            '1' => '禁用',
+                        ],
+                        'callback' => function() {
 
-                'email' => [
-                    'name' => '邮箱',
-                    'driver' => \Be\System\App\SearchItem\SearchItemString::class,
-                    'uiType' => 'text'
-                ],
-
-                'block' => [
-                    'name' => '状态',
-                    'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
-                    'uiType' => 'select',
-                    'keyValues' => ':不限|0:启用|1:禁用'
-                ],
-
-                'role_id' => [
-                    'name' => '角色',
-                    'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
-                    'uiType' => 'select',
-                    'keyValues' => Be::getService('System.User')->getRoles()
+                        }
+                    ],
+                    [
+                        'name' => 'role_id',
+                        'label' => '角色',
+                        'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
+                        'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
+                    ]
                 ]
+
+            ],
+
+            'fields' => [
+
+
+                // 未指定时取表的所有字段
+                'items' => [
+
+                ]
+
             ],
 
             'toolbar' => [
-                [
-                    'name' => '新建',
-                    'action' => 'create',
-                    'icon' => 'fa fa-plus-circle',
-                ],
-                [
-                    'name' => '批量启用',
-                    'action' => 'unblock',
-                    'icon' => 'fa fa-check-circle',
-                    'class' => 'text-success',
-                ],
-                [
-                    'name' => '批量禁用',
-                    'action' => 'block',
-                    'icon' => 'fa fa-close-circle',
-                    'class' => 'text-warning',
-                ],
-                [
-                    'name' => '批量删除',
-                    'action' => 'delete',
-                    'icon' => 'fa fa-times-circle',
-                    'class' => 'text-danger'
-                ],
-                [
-                    'name' => '导出',
-                    'action' => 'export',
-                    'icon' => 'fa fa-array-circle-down',
-                ],
+
+                'items' => [
+                    [
+                        'name' => 'create',
+                        'label' => '新建',
+                        'ui' => [
+                            'icon' => 'plus',
+                        ]
+                    ],
+                    [
+                        'name' => 'unblock',
+                        'label' => '批量启用',
+                        'ui' => [
+                            'icon' => 'check',
+                            'type' => 'primary',
+                        ]
+                    ],
+                    [
+                        'name' => 'block',
+                        'label' => '批量禁用',
+                        'ui' => [
+                            'icon' => 'stop',
+                            'type' => 'danger',
+                        ]
+                    ],
+                    [
+                        'name' => 'delete',
+                        'label' => '批量删除',
+                        'ui' => [
+                            'icon' => 'delete',
+                            'type' => 'danger'
+                        ]
+                    ],
+                    [
+                        'name' => 'export',
+                        'label' => '导出',
+                        'ui' => [
+                            'icon' => 'download',
+                        ]
+                    ],
+                ]
             ],
 
             'operation' => [
-                [
-                    'name' => '查看',
-                    'action' => 'detail',
-                    'icon' => 'fa fa-search',
-                ],
-                [
-                    'name' => '编辑',
-                    'action' => 'edit',
-                    'icon' => 'fa fa-edit',
-                ],
-                [
-                    'name' => '启用',
-                    'action' => 'unblock',
-                    'icon' => 'fa fa-close',
-                    'class' => 'text-warning',
-                ],
-                [
-                    'name' => '禁用',
-                    'action' => 'block',
-                    'icon' => 'fa fa-check',
-                    'class' => 'text-success',
-                ],
-                [
-                    'name' => '删除',
-                    'action' => 'delete',
-                    'icon' => 'fa fa-remove',
-                    'class' => 'text-danger'
-                ],
+
+                'label' => '操作',
+                'position' => 'right', // left / right
+                'align' => 'center',
+
+                'items' => [
+                    [
+                        'name' => 'detail',
+                        'label' => '查看',
+                        'ui' => [
+                            'icon' => 'search',
+                        ]
+                    ],
+                    [
+                        'name' => 'edit',
+                        'label' => '编辑',
+                        'ui' => [
+                            'icon' => 'edit',
+                        ]
+                    ],
+                    [
+                        'name' => 'unblock',
+                        'label' => '启用',
+                        'ui' => [
+                            'icon' => 'check',
+                            'type' => 'primary',
+                        ]
+                    ],
+                    [
+                        'name' => 'block',
+                        'label' => '禁用',
+                        'ui' => [
+                            'icon' => 'stop',
+                            'type' => 'danger',
+                        ]
+                    ],
+                    [
+                        'name' => 'delete',
+                        'label' => '删除',
+                        'ui' => [
+                            'icon' => 'delete',
+                            'type' => 'danger'
+                        ]
+                    ],
+                ]
+
             ],
+
         ]);
     }
+
 
     /**
      * 创建
      *
-     * @be-menu 新建用户
+     * @be-menu 新增管理员
      * @be-menu-icon user-add
      *
-     * @be-permission 新建
+     * @be-permission 创建
      */
     public function create() {
-        Curd::on('BeforeCreate', function($tuple) {
-            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+        Curd::on('BeforeCreate', function(Tuple $tuple) {
+            $salt = Random::complex(32);
+            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
             $tuple->register_time = time();
             $tuple->last_login_time = 0;
         });
 
-        Curd::on('AfterCreate', function($tuple) {
+        Curd::on('AfterCreate', function(Tuple $tuple) {
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
                 Be::getService('System.User')->uploadAvatar($tuple, $avatar);
             }
-
-            // 组户户发送一封邮件
-            $configSystem = Be::getConfig('System.System');
-            $configUser = Be::getConfig('System.User');
-
-            $data = array(
-                'siteName' => $configSystem->siteName,
-                'username' => $tuple->username,
-                'email' => $tuple->email,
-                'password' => Request::post('password', ''),
-                'name' => $tuple->name,
-                'siteUrl' => url()
-            );
-
-            $libMail = Be::getLib('mail');
-
-            $subject = $libMail->format($configUser->adminCreateAccountMailSubject, $data);
-            $body = $libMail->format($configUser->adminCreateAccountMailBody, $data);
-
-            $libMail = Be::getLib('mail');
-            $libMail->subject($subject);
-            $libMail->body($body);
-            $libMail->to($tuple->email);
-            $libMail->send();
         });
 
         Curd::create([
-            'name' => '用户',
+            'title' => '新增用户',
             'table' => 'System.User'
         ]);
     }
+
 
     /**
      * 编辑
@@ -209,8 +276,8 @@ class User extends Controller
         });
 
         Curd::edit([
-            'name' => '用户',
-            'table' => 'System.User'
+            'name' => '编辑用户',
+            'table' => 'system_user'
         ]);
     }
 
@@ -220,13 +287,25 @@ class User extends Controller
      * @be-permission 屏蔽
      */
     public function block() {
+        Curd::on('BeforeBlock', function($tuple) {
+            if ($tuple->id == 1) {
+                throw new \Exception('默认用户不能禁用');
+            }
+
+            $my = Be::getUser();
+            if ($tuple->id == $my->id) {
+                throw new \Exception('不能禁用自已的账号');
+            }
+        });
+
         Curd::block([
-            'name' => '用户',
-            'table' => 'System.User',
+            'title' => '禁用用户',
+            'table' => 'system_user',
             'field' => 'block',
             'value' => 1,
         ]);
     }
+
 
     /**
      * 公开
@@ -236,7 +315,7 @@ class User extends Controller
     public function unblock() {
         Curd::unblock([
             'name' => '用户',
-            'table' => 'System.User',
+            'table' => 'system_user',
             'field' => 'block',
             'value' => 0,
         ]);
@@ -249,11 +328,40 @@ class User extends Controller
      * @be-permission 删除
      */
     public function delete() {
+        Curd::on('BeforeDelete', function($tuple) {
+            if ($tuple->id == 1) {
+                throw new \Exception('默认用户不能删除');
+            }
+
+            $my = Be::getUser();
+            if ($tuple->id == $my->id) {
+                throw new \Exception('不能删除自已');
+            }
+        });
+
         Curd::delete([
-            'name' => '用户',
-            'table' => 'System.User',
+            'title' => '用户',
+            'table' => 'system_user',
             'field' => 'is_delete',
             'value' => 1,
+        ]);
+    }
+
+    /**
+     * 导出
+     *
+     * @be-permission 导出
+     */
+    public function export() {
+        Curd::export([
+            'title' => '用户',
+            'table' => 'system_user',
+            'fields' => [
+                // 未指定时取表的所有字段
+                'items' => [
+
+                ]
+            ],
         ]);
     }
 

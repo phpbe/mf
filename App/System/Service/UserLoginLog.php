@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Service;
 
-class UserLog extends Service
+class UserLoginLog extends Service
 {
 
     /**
@@ -14,7 +14,7 @@ class UserLog extends Service
      */
     public function deleteLogs()
     {
-        Be::newTable('system__user_log')->where('create_time', '<', (time() - 90 * 86400))->delete();
+        Be::newTable('system_user_login_log')->where('create_time', '<', (time() - 90 * 86400))->delete();
     }
 
 }
