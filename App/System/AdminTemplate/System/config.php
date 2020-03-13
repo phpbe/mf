@@ -16,7 +16,7 @@ $config = $this->get('config');
 
 $uiEditor = Be::getUi('editor');
 
-$uiEditor->setAction('save', adminUrl('System.System.configSave'));
+$uiEditor->setAction('save', url('System.System.configSave'));
 
 $uiEditor->setFields(
     array(

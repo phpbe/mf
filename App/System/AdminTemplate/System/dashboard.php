@@ -84,7 +84,7 @@ $configUser = Be::getConfig('System.User');
     <el-card class="box-card">
         <div slot="header" class="clearfix">
             <span>最近操作日志</span>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo adminUrl('System.AdminLogs.logs')?>'">更多..</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo url('System.AdminLogs.logs')?>'">更多..</el-button>
         </div>
 
         <el-table :data="recentLogs" stripe style="width: 100%;">

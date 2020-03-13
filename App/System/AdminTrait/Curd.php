@@ -151,7 +151,7 @@ trait Curd
         if (isset($this->config['action']['lists']['toolbar'])) {
             foreach($this->config['action']['lists']['toolbar'] as &$toolbar) {
                 if (isset($toolbar['action']) && $toolbar['action']) {
-                    $toolbar['url'] = adminUrl($app . '.' . $controller . '.' . $toolbar['action']);
+                    $toolbar['url'] = url($app . '.' . $controller . '.' . $toolbar['action']);
                 }
             }
         }

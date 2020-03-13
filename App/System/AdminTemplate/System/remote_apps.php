@@ -35,7 +35,7 @@ foreach ($apps as $app) {
 }
 
 $uiGrid = Be::getUi('grid');
-$uiGrid->setAction('listing', adminUrl('System.System.remoteApps'));
+$uiGrid->setAction('listing', url('System.System.remoteApps'));
 
 $uiGrid->setData($apps);
 
@@ -92,7 +92,7 @@ $uiGrid->setFields(
     array(
         'align'=>'center',
         'width'=>'120',
-        'template'=>'<a class="btn btn-success" onclick="window.location.href='.adminUrl('System.System.remoteApp', ['appId'=>'{id}']).'"><i class="icon-white icon-search"></i> 查看</a>'
+        'template'=>'<a class="btn btn-success" onclick="window.location.href='.url('System.System.remoteApp', ['appId'=>'{id}']).'"><i class="icon-white icon-search"></i> 查看</a>'
     )
 
 );

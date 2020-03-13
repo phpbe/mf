@@ -8,10 +8,10 @@ $groups = $this->get('groups');
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('listing', adminUrl('System.System.menuGroups'));
-$uiGrid->setAction('create', adminUrl('System.System.menuGroupEdit'));
-$uiGrid->setAction('edit', adminUrl('System.System.menuGroupEdit'));
-$uiGrid->setAction('delete', adminUrl('System.System.menuGroupDelete'));
+$uiGrid->setAction('listing', url('System.System.menuGroups'));
+$uiGrid->setAction('create', url('System.System.menuGroupEdit'));
+$uiGrid->setAction('edit', url('System.System.menuGroupEdit'));
+$uiGrid->setAction('delete', url('System.System.menuGroupDelete'));
 
 $uiGrid->setData($groups);
 

@@ -49,7 +49,7 @@ class Curd
         if (isset($config['toolbar']['items'])) {
             foreach($config['toolbar']['items'] as &$toolbar) {
                 if (isset($toolbar['action']) && $toolbar['action']) {
-                    $toolbar['url'] = adminUrl($app . '.' . $controller . '.' . $toolbar['action']);
+                    $toolbar['url'] = url($app . '.' . $controller . '.' . $toolbar['action']);
                 }
             }
         }

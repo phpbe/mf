@@ -269,7 +269,7 @@ class Menu extends Service
                     $app->key = $appName;
                     $menuGroup['key'] = $appName . '.' . $controller;
                     $menu['key'] = $appName . '.' . $controller . '.' . $methodName;
-                    $menu['url'] = 'adminUrl(\''.$appName.'\', \''.$controller.'\', \''.$methodName.'\')';
+                    $menu['url'] = 'url(\''.$appName.'\', \''.$controller.'\', \''.$methodName.'\')';
 
                     if (!isset($adminMenu[$appName])) {
                         $adminMenu[$appName] = [

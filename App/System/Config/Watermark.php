@@ -3,7 +3,7 @@ namespace Be\App\System\Config;
 
 /**
  * @be-config-label 图片水印
- * @be-config-test adminUrl('System.Watermark.test')
+ * @be-config-test url('System.Watermark.test')
  */
 class Watermark
 {
