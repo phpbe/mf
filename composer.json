@@ -1,8 +1,8 @@
 {
-    "name": "be/framework",
+    "name": "be/mf",
     "type": "library",
-    "description": "Be 企业管理框架",
-    "keywords": ["PHP", "Be", "企业管理框架"],
+    "description": "Be 管理框架",
+    "keywords": ["PHP", "Be", "Management", "Framework", "管理框架"],
     "license": "MIT",
     "authors": [
         {

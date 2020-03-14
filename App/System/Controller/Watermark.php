@@ -26,7 +26,7 @@ class Watermark extends \Be\System\Controller
         $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->path . 'Template/System/Watermark/images/material.jpg';
         $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
 
-        if (!file_exists($src)) Response::end(Be::getRuntime()->getDataDir() . '/System/Watermark/test.jpg 文件不存在');
+        if (!file_exists($src)) Response::end(Be::getProperty('App.System')->path . '/Template/System/Watermark/images/material.jpg 文件不存在');
         if (file_exists($dst)) @unlink($dst);
 
         copy($src, $dst);

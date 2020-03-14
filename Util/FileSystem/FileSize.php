@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\Util\Fso;
+namespace Be\Util\FileSystem;
 
-class File
+class FileSize
 {
 
     /**
@@ -11,7 +11,7 @@ class File
      * @param int $fileSizeInt 文件大小整型
      * @return string
      */
-    public static function fileSizeInt2String($fileSizeInt)
+    public static function int2String($fileSizeInt)
     {
         $fileSizeString = null;
         if ($fileSizeInt > 1099511627776) {
@@ -47,7 +47,7 @@ class File
      * @return int
      * @throws \Exception
      */
-    public static function fileSizeString2Int($fileSizeString)
+    public static function string2Int($fileSizeString)
     {
         $fileSizeInt = 0;
         $fileSizeString = strtoupper(trim($fileSizeString));

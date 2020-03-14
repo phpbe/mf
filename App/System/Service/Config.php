@@ -14,19 +14,19 @@ class Config extends Service
      */
     public function getConfigTree()
     {
-        $apps = Be::getService('System.App')->getApps();
+        $appNames = Be::getService('System.App')->getAppNames();
 
         $configTree = [];
-        foreach ($apps as $app) {
+        foreach ($appNames as $appName) {
 
-            $dir = Be::getRuntime()->getRootPath() . '/app/' . $app->name . '/Config';
+            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.'.$appName)->path . '/Config';
             $configs = array();
             if (file_exists($dir) && is_dir($dir)) {
                 $fileNames = scandir($dir);
                 foreach ($fileNames as $fileName) {
                     if ($fileName != '.' && $fileName != '..' && is_file($dir . '/' . $fileName)) {
                         $configName = substr($fileName, 0, -4);
-                        $configSummary = $this->getConfigSummary($app->name, $configName);
+                        $configSummary = $this->getConfigSummary($appName, $configName);
                         if (isset($configSummary['name'])) {
                             $configs[] = $configSummary;
                         }
@@ -36,7 +36,7 @@ class Config extends Service
 
             if (count($configs)) {
                 $configTree[] = [
-                    'app' => $app,
+                    'app' => $appName,
                     'configs' => $configs
                 ];
             }
