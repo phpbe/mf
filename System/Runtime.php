@@ -17,10 +17,6 @@ class Runtime
 
     private $cacheDir = 'cache';
 
-    private $adminDir = 'admin';
-
-    private $backend = false;
-
     private $appName = null;
     private $controllerName = null;
     private $actionName = null;
@@ -91,15 +87,6 @@ class Runtime
     }
 
     /**
-     * @return string
-     */
-    public function getAdminUrl()
-    {
-        return $this->getRootUrl() . '/' . $this->adminDir;
-    }
-
-
-    /**
      * @param string $dataDir
      */
     public function setDataDir($dataDir)
@@ -129,36 +116,6 @@ class Runtime
     public function setCacheDir($cacheDir)
     {
         $this->cacheDir = $cacheDir;
-    }
-
-    /**
-     * 设置后台功能目录
-     * 该目录仅在网址中出现，不需要创建
-     *
-     * @param string $adminDir
-     */
-    public function setAdminDir($adminDir)
-    {
-        $this->adminDir = $adminDir;
-    }
-
-    /**
-     * 获取后台路径
-     *
-     * @return string
-     */
-    public function getAdminDir()
-    {
-        return $this->adminDir;
-    }
-
-    /**
-     * 当前访问的功能是否为后台功能
-     * @return bool
-     */
-    public function isBackend()
-    {
-        return $this->backend;
     }
 
     /**
@@ -315,13 +272,12 @@ class Runtime
 
         } catch (\Throwable $e) {
 
-            Log::emergency($e->getMessage(), [
+            RuntimeLog::emergency($e->getMessage(), [
                 'code' => $e->getCode(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTrace()
             ]);
-
 
             $db = Be::getDb();
             if ($db->inTransaction()) $db->rollback();

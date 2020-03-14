@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\System\Log\Processor;
+namespace Be\System\RuntimeLog\Processor;
 
 use Monolog\Logger;
 
@@ -18,7 +18,7 @@ class SystemProcessor
 
     // 忽略的类调用
     private $skipClasses = array(
-        'Be\\System\\Log'
+        'Be\\System\\RuntimeLog'
     );
 
 

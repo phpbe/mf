@@ -177,21 +177,21 @@ abstract class Be
      */
     public static function newConfig($name)
     {
-        $names = explode('.', $name);
-        $app = $names[0];
-        $name = $names[1];
+        $parts = explode('.', $name);
+        $appName = $parts[0];
+        $configName = $parts[1];
 
-        $class = 'Be\\Data\\System\\Config\\' . $app . '\\' . $name;
+        $class = 'Be\\Data\\System\\Config\\' . $appName . '\\' . $configName;
         if (class_exists($class)) {
             return new $class();
         }
 
-        $class = 'Be\\App\\' . $app . '\\Config\\' . $name;
+        $class = 'Be\\App\\' . $appName . '\\Config\\' . $configName;
         if (class_exists($class)) {
             return new $class();
         }
 
-        throw new RuntimeException('配置文件 ' . $app . '\\' . $name . ' 不存在！');
+        throw new RuntimeException('配置文件 ' . $name . ' 不存在！');
     }
 
     /**
@@ -218,14 +218,9 @@ abstract class Be
      */
     public static function newService($name)
     {
-        $class = null;
-        if (strpos($name, '.') === false) {
-            $class = 'Be\\ystem\\Service\\' . $name;
-        } else {
-            $parts = explode('.', $name);
-            $app = array_shift($parts);
-            $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
-        }
+        $parts = explode('.', $name);
+        $app = array_shift($parts);
+        $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
 
         if (!class_exists($class)) throw new RuntimeException('服务 ' . $name . ' 不存在！');
 

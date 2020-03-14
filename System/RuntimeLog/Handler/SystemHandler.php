@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\System\Log\Handler;
+namespace Be\System\RuntimeLog\Handler;
 
 use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
@@ -25,7 +25,7 @@ class SystemHandler extends AbstractProcessingHandler
         $month = date('m', $t);
         $day = date('d', $t);
 
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/';
+        $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month . '/' . $day . '/';
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
         $logFileName = null;
