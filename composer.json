@@ -1,7 +1,7 @@
 {
     "name": "be/mf",
     "type": "library",
-    "description": "Be 管理框架",
+    "description": "PHP BE 管理框架（Management Framework）",
     "keywords": ["PHP", "Be", "Management", "Framework", "管理框架"],
     "license": "MIT",
     "authors": [

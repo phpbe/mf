@@ -218,10 +218,15 @@ abstract class Be
      */
     public static function newService($name)
     {
-        $parts = explode('.', $name);
-        $app = array_shift($parts);
+        $class = null;
+        if (strpos($name, '.') === false) {
+            $class = 'Be\\ystem\\Service\\' . $name;
+        } else {
+            $parts = explode('.', $name);
+            $app = array_shift($parts);
+            $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
+        }
 
-        $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
         if (!class_exists($class)) throw new RuntimeException('服务 ' . $name . ' 不存在！');
 
         return new $class();

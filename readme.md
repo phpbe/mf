@@ -1,1 +1,1 @@
-BE 框架
+PHP BE 管理框架（Management Framework）
