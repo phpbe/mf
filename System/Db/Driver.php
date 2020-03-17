@@ -2,6 +2,7 @@
 namespace Be\System\db;
 
 use Be\System\CacheProxy;
+use Be\System\Exception\DbException;
 
 /**
  * 数据库类

@@ -3,7 +3,7 @@
 namespace Be\App\System\Service;
 
 use Be\System\Db\Tuple;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 use Be\Util\Random;
 use Be\Util\Validator;
 use Be\System\Be;

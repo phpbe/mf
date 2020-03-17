@@ -277,18 +277,9 @@ class Response
             $action = $runtime->getActionName();
             $template = $app . '.' . $controller . '.' . $action;
 
-            if (Be::getRuntime()->isBackend()) {
-                $templateInstance = Be::getAdminTemplate($template, $theme);
-            } else {
-                $templateInstance = Be::getTemplate($template, $theme);
-            }
-
+            $templateInstance = Be::getTemplate($template, $theme);
         } else {
-            if (Be::getRuntime()->isBackend()) {
-                $templateInstance = Be::getAdminTemplate($template, $theme);
-            } else {
-                $templateInstance = Be::getTemplate($template, $theme);
-            }
+            $templateInstance = Be::getTemplate($template, $theme);
         }
 
         foreach (self::$data as $key => $val) {

@@ -1,5 +1,5 @@
 <?php
-namespace Be\System\Service;
+namespace Be\System\Exception;
 
 /**
  * 服务层异常

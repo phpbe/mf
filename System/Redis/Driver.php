@@ -1,6 +1,8 @@
 <?php
 namespace Be\System\Redis;
 
+use Be\System\Exception\RedisException;
+
 /**
  * Redis 类
  */

@@ -3,6 +3,7 @@ namespace Be\System\Db;
 
 use Be\System\Be;
 use Be\System\CacheProxy;
+use Be\System\Exception\DbException;
 
 /**
  * 数据库表 查询器

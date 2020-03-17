@@ -2,6 +2,7 @@
 
 namespace Be\System;
 
+use Be\System\Exception\RuntimeException;
 
 /**
  *  BE系统资源工厂

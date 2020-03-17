@@ -1,5 +1,5 @@
 <?php
-namespace Be\System\Redis;
+namespace Be\System\Exception;
 
 /**
  * Redis 异常类

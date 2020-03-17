@@ -2,7 +2,7 @@
 namespace Be\System\Cache\Driver;
 
 use Be\System\Cache\Driver;
-use Be\System\Cache\CacheException;
+use Be\System\Exception\CacheException;
 
 /**
  * memcache 缓存类

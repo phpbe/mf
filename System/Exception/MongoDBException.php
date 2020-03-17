@@ -1,5 +1,5 @@
 <?php
-namespace Be\System\MongoDB;
+namespace Be\System\Exception;
 
 /**
  * MongoDB 异常类

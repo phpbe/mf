@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 
 
 use Be\System\Db\Tuple;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 use Be\System\Be;
 
 class UserRole extends \Be\System\Service

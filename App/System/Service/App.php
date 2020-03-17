@@ -2,7 +2,7 @@
 namespace Be\App\System\Service;
 
 use Be\System\Be;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 
 class App extends \Be\System\Service
 {

@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use App\System\Helper\DocComment;
 use Be\System\Be;
 use Be\System\Service;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 
 class Config extends Service
 {

@@ -1,6 +1,8 @@
 <?php
 namespace Be\System\MongoDB;
 
+use Be\System\Exception\MongoDBException;
+
 /**
  * MongoDB
  */

@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Session;
 use Be\System\Service;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 
 /**
  */
