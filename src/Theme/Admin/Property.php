@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\System;
+namespace Be\Theme\Admin;
 
 
 class Property extends \Be\System\Property

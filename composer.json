@@ -24,7 +24,8 @@
             "Be\\Lib\\": "src/Lib",
             "Be\\Util\\": "src/Util",
             "Be\\App\\System\\": "src/App/System",
-            "Be\\App\\Dev\\": "src/App/Dev"
+            "Be\\App\\Dev\\": "src/App/Dev",
+            "Be\\Theme\\Admin\\": "src/Theme/Admin"
         },
         "files": [
             "src/System/functions.php"

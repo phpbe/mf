@@ -26,7 +26,7 @@ $my = Be::getUser();
     <link rel="stylesheet" href="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.css">
     <script src="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.js"></script>
 
-    <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Default')->path; ?>/css/theme.css" />
+    <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Admin')->path; ?>/css/theme.css" />
     <!--{head}-->
     <!--{/head}-->
 </head>
@@ -195,7 +195,7 @@ a
 
     </div>
 
-    <script src="<?php echo Be::getProperty('Theme.Default')->path; ?>/js/theme.js"></script>
+    <script src="<?php echo Be::getProperty('Theme.Admin')->path; ?>/js/theme.js"></script>
 
     <!--{/body}-->
 </body>
