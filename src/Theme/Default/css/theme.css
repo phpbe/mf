@@ -1,0 +1,112 @@
+body {
+    background-color: #f2f2f2;
+}
+
+::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #555;
+}
+
+[v-cloak] {
+    display: none;
+}
+
+.be-body {
+}
+
+.be-west {
+    width: 200px;
+    position: fixed;
+    height: 100%;
+    top: 0;
+    bottom: 0;
+    background-color: #001529;
+    z-index: 99;
+}
+
+.be-west .logo {
+    height: 48px;
+    background-color: #fff;
+}
+
+.be-west .west-menu {
+    overflow-x: hidden;
+    overflow-y: auto;
+    height: 100%;
+    padding-bottom: 30px;
+}
+
+.be-west-collapsed {
+    width: 60px !important;
+}
+
+.be-west-collapsed .west-menu {
+    margin-left: -20px;
+}
+
+.be-west-collapsed .west-menu .ant-menu-submenu-title {
+    padding-left: 40px !important;
+}
+
+.be-west .toggle {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+    cursor: pointer;
+    background-color: #202635;
+    text-align: center;
+    color: #505665;
+    line-height: 30px;
+}
+
+.be-west .toggle:hover {
+    background-color: #2F374C;
+    color: #c2c6cf;
+}
+
+.be-middle {
+    position: absolute;
+    left: 200px;
+    right: 0;
+    height: 100%;
+}
+
+.be-north {
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 0 5px #ddd;
+    height: 48px;
+    z-index: 999;
+}
+
+.be-north .menu {
+    display: inline-block
+}
+
+.be-north .user {
+    float: right;
+}
+
+.be-center {
+    overflow-y: scroll;
+    height: calc(100% - 48px);
+}
+
+.be-center .center-title {
+    line-height: 40px;
+    height: 40px;
+    padding-left: 15px;
+}
+
+.be-center .center-title .ant-breadcrumb {
+    line-height: 40px;
+}
+
+.be-center .center-body {
+    padding: 0 10px;
+}
+
