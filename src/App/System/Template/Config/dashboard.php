@@ -3,7 +3,7 @@ use Be\System\Be;
 ?>
 
 <!--{head}-->
-<script src="<?php echo Be::getProperty('Theme.Admin')->path; ?>/js/base64.min.js"></script>
+<script src="<?php echo Be::getProperty('App.System')->path; ?>/Tempalte/Config/js/base64.min.js"></script>
 <!--{/head}-->
 
 <!--{center}-->
