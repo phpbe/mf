@@ -25,7 +25,7 @@ class System
      * @be-config-item-keyValueType code
      * @be-config-item-keyValues \Be\System\Be::getService('System.Theme')->getThemeKeyValues()
      */
-    public $theme = 'Admin';
+    public $theme = 'Default';
 
     /**
      * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemArrayString
