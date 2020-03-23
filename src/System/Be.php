@@ -155,6 +155,38 @@ abstract class Be
     }
 
     /**
+     * 获取指定的一个扩展（单例）
+     *
+     * @param string $plugin 扩展名
+     * @return mixed
+     * @throws RuntimeException
+     */
+    public static function getPlugin($plugin)
+    {
+        $key = 'plugin:' . $plugin;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
+        self::$cache[$key] = self::newPlugin($plugin);
+        return self::$cache[$key];
+    }
+
+    /**
+     * 新创建一个指定的扩展
+     *
+     * @param string $plugin 扩展名
+     * @return mixed
+     * @throws RuntimeException
+     */
+    public static function newPlugin($plugin)
+    {
+        $class = 'Be\\Plugin\\' . $plugin . '\\' . $plugin;
+        if (!class_exists($class)) {
+            throw new RuntimeException('扩展 ' . $plugin . ' 不存在！');
+        }
+
+        return new $class();
+    }
+
+    /**
      * 获取指定的配置文件（单例）
      *
      * @param string $name 配置文件名
@@ -419,23 +451,29 @@ abstract class Be
     public static function getTemplate($template, $theme = null)
     {
         $parts = explode('.', $template);
-        $app = array_shift($parts);
+        $type = array_shift($parts);
+        $name = array_shift($parts);
 
         if ($theme === null) {
-            $config = Be::getConfig('System.System');
-            $theme = $config->theme;
+            $property = Be::getProperty($type. '.' . $name);
+            if (isset($property->theme)) {
+                $theme = $property->theme;
+            } else {
+                $config = Be::getConfig('System.System');
+                $theme = $config->theme;
+            }
         }
 
-        $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $app . '\\' . implode('\\', $parts);
+        $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts);
         if (isset(self::$cache[$class])) return self::$cache[$class];
 
-        $path = self::$runtime->getCachePath() . '/System/Template/' . $theme . '/' . $app . '/' . implode('/', $parts) . '.php';
+        $path = self::$runtime->getCachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
         if (!file_exists($path)) {
             $service = self::getService('System.Template');
-            $service->update($app, $template, $theme);
+            $service->update($template, $theme);
         }
 
-        if (!class_exists($class)) throw new RuntimeException('模板（' . $app . '/' . $template . '）不存在！');
+        if (!class_exists($class)) throw new RuntimeException('模板（'. $template . '）不存在！');
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];

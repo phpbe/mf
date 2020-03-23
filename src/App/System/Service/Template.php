@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\App\System\Service;
 
 use Be\System\Be;
@@ -15,21 +16,27 @@ class Template extends \Be\System\Service
      * @param string $theme 主题名
      * @throws \Exception
      */
-    public function update($app, $template, $theme)
+    public function update($template, $theme)
     {
-        $fileTheme = Be::getRuntime()->getRootPath() . '/theme/' . $theme . '/' . $theme . '.php';
+        $themeProperty = Be::getProperty('Theme.' . $theme);
+
+        $fileTheme = Be::getRuntime()->getRootPath() . $themeProperty->path . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             throw new ServiceException('主题 ' . $theme . ' 不存在！');
         }
 
         $parts = explode('.', $template);
+        $type = array_shift($parts);
+        $name = array_shift($parts);
 
-        $fileTemplate = Be::getRuntime()->getRootPath() . '/app/' .$app . '/Template/' . implode('/', $parts) . '.php';
+        $property = Be::getProperty($type . '.' . $name);
+        $fileTemplate = Be::getRuntime()->getRootPath() . $property->path . '/Template/' . implode('/', $parts) . '.php';
+
         if (!file_exists($fileTemplate)) {
-            throw new ServiceException('模板 ' . $app . '/' . $template . ' 不存在！');
+            throw new ServiceException('模板 ' . $template . ' 不存在！');
         }
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Template/' . $theme. '/' . $app. '/' .   implode('/', $parts) . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -39,10 +46,7 @@ class Template extends \Be\System\Service
         $extends = '\\Be\\System\\Template';
         if (preg_match('/<!--\s*{\s*extends\s*:\s*(.*?)\s*}\s*-->/s', $contentTemplate, $matches)) {
             $extends = trim($matches[1]);
-            $extendParts = explode('.', $extends);
-            $extendApp = array_shift($extendParts);
-            $extendTemplate = implode('.', $extendParts);
-            $this->update($extendApp, $extendTemplate, $theme);
+            $this->update($extends, $theme);
             $contentTemplate = preg_replace($matches[0], '', $contentTemplate);
         }
 
@@ -51,9 +55,11 @@ class Template extends \Be\System\Service
             foreach ($matches[1] as $m) {
                 $includes = explode('.', $m);
                 if (count($includes) > 2) {
-                    $tmpApp = array_shift($includes);
+                    $tmpType = array_shift($includes);
+                    $tmpName = array_shift($includes);
 
-                    $fileInclude = Be::getRuntime()->getRootPath() . '/app/' . $tmpApp . '/Template/' . implode('/', $includes) . '.php';
+                    $tmpProperty = Be::getProperty($tmpType . '.' . $tmpName);
+                    $fileInclude = Be::getRuntime()->getRootPath() . $property->path . '/Template/' . implode('/', $includes) . '.php';
                     if (!file_exists($fileInclude)) {
                         throw new ServiceException('模板中包含的文件 ' . $m . ' 不存在！');
                     }
@@ -176,22 +182,15 @@ class Template extends \Be\System\Service
         }
 
         $codeVars = '';
-        $configPath = Be::getRuntime()->getRootPath() . '/theme/' . $theme . '/config.php';
-        if (file_exists($configPath)) {
-            include $configPath;
-            $themeConfigClassName = 'Theme\\' . $theme . '\\Config';
-            if (class_exists($themeConfigClassName)) {
-                $themeConfig = new $themeConfigClassName();
-                if (isset($themeConfig->colors) && is_array($themeConfig->colors)) {
-                    $codeVars .= '  public $colors = [\'' . implode('\',\'', $themeConfig->colors) . '\'];' . "\n";
-                }
-            }
+
+        if (isset($themeProperty->colors) && is_array($themeProperty->colors)) {
+            $codeVars .= '  public $colors = [\'' . implode('\',\'', $themeProperty->colors) . '\'];' . "\n";
         }
 
         $className = array_pop($parts);
 
         $codePhp = '<?php' . "\n";
-        $codePhp .= 'namespace Be\\Cache\\System\\Template\\' . $theme . '\\' .  $app . '\\' . implode('\\', $parts) . ';' . "\n";
+        $codePhp .= 'namespace Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts) . ';' . "\n";
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";

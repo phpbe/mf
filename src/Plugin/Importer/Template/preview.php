@@ -1,12 +1,3 @@
-<!--{head}-->
-<script>
-
-
-
-</script>
-<!--{/head}-->
-
-
 <!--{center}-->
 <?php
 $primaryKey = $this->table->getPrimaryKey();
@@ -45,7 +36,7 @@ $runtime = \Be\System\Be::getRuntime();
                 this.be_form.validateFields(function(err, values){
                     if (!err) {
                         _this.be_saving = true;
-                        _this.$http.post("<?php echo adminUrl($runtime->getAppName(), $runtime->getControllerName(), $runtime->getActionName(), ['appName' => $this->appName]); ?>", values)
+                        _this.$http.post("<?php echo url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['appName' => $this->appName]); ?>", values)
                             .then(function (response) {
                                 _this.be_saving = false;
                                 if (response.status == 200) {

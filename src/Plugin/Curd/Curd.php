@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin;
+namespace Be\Plugin\Curd;
 
 use Be\System\Be;
 use Be\System\Db\Tuple;
@@ -18,20 +18,28 @@ use Be\System\Cookie;
 class Curd
 {
 
+
+    public function execute( $config ) {
+
+    }
+
     // 注册事件
-    public static function on($event, $callback) {
+    public function on($event, $callback) {
         Event::on('Plugin.Curd.'.$event, $callback);
     }
 
     /**
      * 列表展示
      */
-    public static function lists($config = [])
+    public function lists($config = [])
     {
+        $listor = Be::getPlugin('Listor');
+
+
         $app = Be::getRuntime()->getAppName();
         $controller = Be::getRuntime()->getControllerName();
 
-        $table = Be::newTable($config['table'][0], $config['table'][1]);
+        $table = Be::newTable($config['table']);
 
         $primaryKey = $table->getPrimaryKey();
 
@@ -49,7 +57,7 @@ class Curd
         if (isset($config['toolbar']['items'])) {
             foreach($config['toolbar']['items'] as &$toolbar) {
                 if (isset($toolbar['action']) && $toolbar['action']) {
-                    $toolbar['url'] = adminUrl($app . '.' . $controller . '.' . $toolbar['action']);
+                    $toolbar['url'] = url($app . '.' . $controller . '.' . $toolbar['action']);
                 }
             }
         }
@@ -91,7 +99,7 @@ class Curd
         if (isset($config['field']['items'])) {
             $fields = $config['field']['items'];
         } else {
-            $tableConfig = Be::newTableConfig($config['table'][0], $config['table'][1]);
+            $tableConfig = Be::getTableProperty($config['table']);
             $fields = $tableConfig->getFields();
         }
 
@@ -117,9 +125,9 @@ class Curd
     /**
      * 明细
      */
-    public static function detail($config = [])
+    public function detail($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -138,15 +146,15 @@ class Curd
 
         Response::setTitle($config['name'] . '：明细');
         Response::set('row', $tuple);
-        Response::display('Plugin', 'Curd.detail');
+        Response::display('Plugin.Curd.detail');
     }
 
     /**
      * 创建
      */
-    public static function create($config = [])
+    public function create($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         if (Request::isPost()) {
 
@@ -159,7 +167,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterCreate', $tuple);
 
-                Be::getService('System.AdminLog')->addLog($config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
+                SystemLog($config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -180,9 +188,9 @@ class Curd
     /**
      * 编辑
      */
-    public static function edit($config = [])
+    public function edit($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -206,7 +214,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterEdit', $tuple);
 
-                Be::getService('System.AdminLog')->addLog($config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -221,13 +229,13 @@ class Curd
 
             Response::setTitle($config['name'] . '：编辑');
             Response::set('tuple', $tuple);
-            Response::display('Plugin', 'Curd.edit');
+            Response::display('Plugin.Curd.edit');
         }
     }
 
-    public static function block($config = [])
+    public function block($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -259,7 +267,7 @@ class Curd
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterBlock', $tuple);
 
-                    Be::getService('System.AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -279,7 +287,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterBlock', $tuple);
 
-                Be::getService('System.AdminLog')->addLog($config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -293,9 +301,9 @@ class Curd
     }
 
 
-    public static function unblock($config = [])
+    public function unblock($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -327,7 +335,7 @@ class Curd
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
 
-                    Be::getService('System.AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -347,7 +355,7 @@ class Curd
                 $tuple->save();
                 Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
 
-                Be::getService('System.AdminLog')->addLog($config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -364,9 +372,9 @@ class Curd
     /**
      * 删除
      */
-    public static function delete($config = [])
+    public function delete($config = [])
     {
-        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+        $tuple = Be::newTuple($config['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -392,21 +400,21 @@ class Curd
                             $value = $config['value'];
                         }
 
-                        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+                        $tuple = Be::newTuple($config['table']);
                         $tuple->load($x);
                         $tuple->$field = $value;
                         Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
                         $tuple->save();
                         Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                     } else {
-                        $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+                        $tuple = Be::newTuple($config['table']);
                         $tuple->load($x);
                         Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
                         $tuple->save();
                         Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                     }
 
-                    Be::getService('System.AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -428,14 +436,14 @@ class Curd
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                 } else {
-                    $tuple = Be::newTuple($config['table'][0], $config['table'][1]);
+                    $tuple = Be::newTuple($config['table']);
                     $tuple->load($primaryKeyValue);
                     Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
                     $tuple->save();
                     Event::trigger('Plugin.Curd.AfterDelete', $tuple);
                 }
 
-                Be::getService('System.AdminLog')->addLog($config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -453,9 +461,9 @@ class Curd
     /*
      * 导出
      */
-    public static function export($config = [])
+    public function export($config = [])
     {
-        $table = Be::newTable($config['table'][0], $config['table'][1]);
+        $table = Be::newTable($config['table']);
 
         foreach($config['search'] as $key => $search) {
             $driver = $search['driver'];
@@ -487,7 +495,7 @@ class Curd
         }
         $exporter->end();
 
-        Be::getService('System.AdminLog')->addLog($config['name'] . '：导出记录！');
+        systemLog($config['name'] . '：导出记录！');
     }
 
 

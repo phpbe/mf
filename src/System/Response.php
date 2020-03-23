@@ -275,7 +275,7 @@ class Response
             $app = $runtime->getAppName();
             $controller = $runtime->getControllerName();
             $action = $runtime->getActionName();
-            $template = $app . '.' . $controller . '.' . $action;
+            $template = 'App.' . $app . '.' . $controller . '.' . $action;
 
             $templateInstance = Be::getTemplate($template, $theme);
         } else {
