@@ -3,7 +3,7 @@
 namespace Be\Plugin\Importer;
 
 
-use Be\System\RuntimeException;
+use Be\System\Exception\RuntimeException;
 
 class Csv extends Driver
 {

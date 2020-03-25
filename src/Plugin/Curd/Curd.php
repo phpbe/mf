@@ -4,7 +4,7 @@ namespace Be\Plugin\Curd;
 
 use Be\System\Be;
 use Be\System\Db\Tuple;
-use Be\System\Event;
+use Be\System\Plugin;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Cookie;
@@ -15,37 +15,55 @@ use Be\System\Cookie;
  * Class Curd
  * @package Be\Plugin
  */
-class Curd
+class Curd extends Plugin
 {
 
 
-    public function execute( $config ) {
+    protected $setting = null;
 
-    }
+    public function execute($setting = [])
+    {
+        $this->setting = $setting;
 
-    // 注册事件
-    public function on($event, $callback) {
-        Event::on('Plugin.Curd.'.$event, $callback);
+        $taskName = Request::get('task');
+        if (isset($this->setting[$taskName])) {
+            $this->$taskName();
+        }
     }
 
     /**
      * 列表展示
      */
-    public function lists($config = [])
+    public function lists()
     {
-        $listor = Be::getPlugin('Listor');
+
+        $table = $this->setting['table'];
+
+        $setting = $this->setting['lists'];
+
+        $fields = [];
 
 
-        $app = Be::getRuntime()->getAppName();
-        $controller = Be::getRuntime()->getControllerName();
+        $setting['total'] = 100;
+        $setting['pageSize'] = 20;
+        $setting['page'] = 1;
 
-        $table = Be::newTable($config['table']);
+        $pluginLists = Be::getPlugin('Lists');
+        $pluginLists->execute($setting);
+
+
+        $runtime = Be::getRuntime();
+        $appName = $runtime->getAppName();
+        $controllerName = $runtime->getControllerName();
+        $actionName = $runtime->getActionName();
+
+        $table = Be::newTable($setting['table']);
 
         $primaryKey = $table->getPrimaryKey();
 
         $searchDrivers = [];
-        if (isset($config['search']['items'])) {
-            foreach($config['search']['items'] as $key => $search) {
+        if (isset($setting['search']['items'])) {
+            foreach ($setting['search']['items'] as $key => $search) {
                 $driver = $search['driver'];
                 $searchDriver = new $driver($key, $search);
                 $searchDriver->buildWhere(Request::post());
@@ -54,10 +72,10 @@ class Curd
             }
         }
 
-        if (isset($config['toolbar']['items'])) {
-            foreach($config['toolbar']['items'] as &$toolbar) {
-                if (isset($toolbar['action']) && $toolbar['action']) {
-                    $toolbar['url'] = url($app . '.' . $controller . '.' . $toolbar['action']);
+        if (isset($setting['toolbar']['items'])) {
+            foreach ($setting['toolbar']['items'] as &$toolbar) {
+                if (isset($toolbar['task']) && $toolbar['task']) {
+                    $toolbar['url'] = url($appName . '.' . $controllerName . '.' . $actionName, ['task' => $toolbar['task']]);
                 }
             }
         }
@@ -66,7 +84,7 @@ class Curd
         $pageSize = Request::post('pageSize', 0, 'int');
         $defaultPageSize = Be::getConfig('System.Admin')->pageSize;
 
-        $cookiePageSizeKey = '_' . $app . '_' . $controller . '_pageSize';
+        $cookiePageSizeKey = $appName . '.' . $controllerName . '.' . $actionName . '.pageSize';
         if (!$pageSize) {
             $cookiePageSize = Cookie::get($cookiePageSizeKey, 0, 'int');
             if ($cookiePageSize > 0) {
@@ -80,14 +98,14 @@ class Curd
 
 
         if ($pageSize <= 0) $pageSize = $defaultPageSize;
-        if ($pageSize >1000) $pageSize = 1000;
+        if ($pageSize > 1000) $pageSize = 1000;
 
         $total = $table->count();
 
         $pages = ceil($total / $pageSize);
         if ($pages == 0) $pages = 1;
 
-        $table->offset(($page-1)*$pageSize)->limit($pageSize);
+        $table->offset(($page - 1) * $pageSize)->limit($pageSize);
 
         $orderBy = Request::post('orderBy', $primaryKey);
         $orderByDir = Request::post('orderByDir', 'DESC');
@@ -118,7 +136,7 @@ class Curd
         Response::set('total', $total);
         Response::set('orderBy', $orderBy);
         Response::set('orderByDir', $orderByDir);
-        Response::display('Plugin', 'Curd.lists');
+        Response::display('Plugin.Curd.lists');
         Response::createHistory();
     }
 
@@ -163,9 +181,9 @@ class Curd
                 $tuple->bind(Request::post());
                 $primaryKey = $tuple->getPrimaryKey();
                 unset($tuple->$primaryKey);
-                Event::trigger('Plugin.Curd.BeforeCreate', $tuple);
+                $this->trigger('BeforeCreate', $tuple);
                 $tuple->save();
-                Event::trigger('Plugin.Curd.AfterCreate', $tuple);
+                $this->trigger('AfterCreate', $tuple);
 
                 SystemLog($config['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
@@ -181,7 +199,7 @@ class Curd
         } else {
             Response::setTitle($config['name'] . '：创建');
             Response::set('row', $tuple);
-            Response::display('Plugin', 'Curd.create');
+            Response::display('Plugin.Curd.create');
         }
     }
 
@@ -210,9 +228,9 @@ class Curd
             try {
 
                 $tuple->bind(Request::post());
-                Event::trigger('Plugin.Curd.BeforeEdit', $tuple);
+                $this->trigger('BeforeEdit', $tuple);
                 $tuple->save();
-                Event::trigger('Plugin.Curd.AfterEdit', $tuple);
+                $this->trigger('AfterEdit', $tuple);
 
                 SystemLog($config['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
@@ -263,9 +281,9 @@ class Curd
 
                     $tuple->load($primaryKeyValue);
                     $tuple->$field = $value;
-                    Event::trigger('Plugin.Curd.BeforeBlock', $tuple);
+                    $this->trigger('BeforeBlock', $tuple);
                     $tuple->save();
-                    Event::trigger('Plugin.Curd.AfterBlock', $tuple);
+                    $this->trigger('AfterBlock', $tuple);
 
                     SystemLog($config['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
@@ -283,9 +301,9 @@ class Curd
 
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
-                Event::trigger('Plugin.Curd.BeforeBlock', $tuple);
+                $this->trigger('BeforeBlock', $tuple);
                 $tuple->save();
-                Event::trigger('Plugin.Curd.AfterBlock', $tuple);
+                $this->trigger('AfterBlock', $tuple);
 
                 SystemLog($config['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
@@ -331,9 +349,9 @@ class Curd
 
                     $tuple->load($primaryKeyValue);
                     $tuple->$field = $value;
-                    Event::trigger('Plugin.Curd.BeforeUnblock', $tuple);
+                    $this->trigger('BeforeUnblock', $tuple);
                     $tuple->save();
-                    Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
+                    $this->trigger('AfterUnblock', $tuple);
 
                     SystemLog($config['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
@@ -351,9 +369,9 @@ class Curd
 
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
-                Event::trigger('Plugin.Curd.BeforeUnblock', $tuple);
+                $this->trigger('BeforeUnblock', $tuple);
                 $tuple->save();
-                Event::trigger('Plugin.Curd.AfterUnblock', $tuple);
+                $this->trigger('AfterUnblock', $tuple);
 
                 SystemLog($config['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
@@ -403,15 +421,15 @@ class Curd
                         $tuple = Be::newTuple($config['table']);
                         $tuple->load($x);
                         $tuple->$field = $value;
-                        Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
+                        $this->trigger('BeforeDelete', $tuple);
                         $tuple->save();
-                        Event::trigger('Plugin.Curd.AfterDelete', $tuple);
+                        $this->trigger('AfterDelete', $tuple);
                     } else {
                         $tuple = Be::newTuple($config['table']);
                         $tuple->load($x);
-                        Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
+                        $this->trigger('BeforeDelete', $tuple);
                         $tuple->save();
-                        Event::trigger('Plugin.Curd.AfterDelete', $tuple);
+                        $this->trigger('AfterDelete', $tuple);
                     }
 
                     SystemLog($config['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
@@ -432,15 +450,15 @@ class Curd
 
                     $tuple->load($primaryKeyValue);
                     $tuple->$field = $value;
-                    Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
+                    $this->trigger('BeforeDelete', $tuple);
                     $tuple->save();
-                    Event::trigger('Plugin.Curd.AfterDelete', $tuple);
+                    $this->trigger('AfterDelete', $tuple);
                 } else {
                     $tuple = Be::newTuple($config['table']);
                     $tuple->load($primaryKeyValue);
-                    Event::trigger('Plugin.Curd.BeforeDelete', $tuple);
+                    $this->trigger('BeforeDelete', $tuple);
                     $tuple->save();
-                    Event::trigger('Plugin.Curd.AfterDelete', $tuple);
+                    $this->trigger('AfterDelete', $tuple);
                 }
 
                 SystemLog($config['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
@@ -457,7 +475,6 @@ class Curd
     }
 
 
-
     /*
      * 导出
      */
@@ -465,7 +482,7 @@ class Curd
     {
         $table = Be::newTable($config['table']);
 
-        foreach($config['search'] as $key => $search) {
+        foreach ($config['search'] as $key => $search) {
             $driver = $search['driver'];
             $searchDriver = new $driver($key, $search);
             $searchDriver->buildWhere($table, Request::post());
@@ -499,7 +516,8 @@ class Curd
     }
 
 
-    protected static function formatField(&$row, $fields) {
+    protected static function formatField(&$row, $fields)
+    {
 
         foreach ($fields as $field) {
 
@@ -528,7 +546,6 @@ class Curd
             }
         }
     }
-
 
 
 }

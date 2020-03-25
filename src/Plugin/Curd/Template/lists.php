@@ -122,7 +122,7 @@ $primaryKey = $this->table->getPrimaryKey();
                 this.be_form.validateFields(function(err, values){
                     if (!err) {
                         _this.be_saving = true;
-                        _this.$http.post("<?php echo adminUrl('System.Config.saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>", values)
+                        _this.$http.post("<?php echo url('System.Config.saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>", values)
                             .then(function (response) {
                                 _this.be_saving = false;
                                 if (response.status == 200) {

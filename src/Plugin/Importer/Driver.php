@@ -4,7 +4,7 @@ namespace Be\Plugin\Importer;
 
 
 use Be\System\Be;
-use Be\System\RuntimeException;
+use Be\System\Exception\RuntimeException;
 
 abstract class Driver
 {

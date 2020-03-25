@@ -22,7 +22,7 @@ class ConfigItemFile extends DataItemFile
      */
     public function getEditHtml()
     {
-        $this->ui['upload']['action'] = adminUrl('System', 'Config', 'uploadImage', [
+        $this->ui['upload']['action'] = url('System.Config.uploadImage', [
             '_app' => $this->config['app'],
             '_config' => $this->config['name'],
             '_item' => $this->name

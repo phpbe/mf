@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\System\AdminTrait;
+namespace Be\Plugin\CurdTree;
 
 use Be\System\Be;
 use Be\System\Db\Tuple;

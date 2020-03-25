@@ -2,6 +2,8 @@
 
 namespace Be\System;
 
+use Be\System\Exception\RuntimeException;
+
 /**
  *  运行时
  * @package System

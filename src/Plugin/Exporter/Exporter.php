@@ -6,7 +6,7 @@ namespace Be\Plugin;
 use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
-use Be\System\RuntimeException;
+use Be\System\Exception\RuntimeException;
 
 /**
  * 导出器
