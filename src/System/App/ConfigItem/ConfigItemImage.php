@@ -5,7 +5,7 @@ namespace Be\System\App\ConfigItem;
 
 use Be\System\App\DataItem\DataItemImage;
 use Be\System\Request;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 use Be\System\Be;
 use Be\Util\Fso\File;
 

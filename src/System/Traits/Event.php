@@ -13,6 +13,7 @@ Trait Event
      * 监听事件
      * @param string $event 事件名
      * @param callable $callback 回调
+     * @return self
      */
     public function on($event, $callback) {
         if (isset($this->events[$event])) {
@@ -24,12 +25,15 @@ Trait Event
         } else {
             $this->events[$event] = $callback;
         }
+
+        return $this;
     }
 
     /**
      * 触发事件
      * @param string $event 事件名
      * @param array ...$args 事件参数
+     * @return self
      */
     public function trigger($event, ...$args) {
         if (isset($this->events[$event])) {
@@ -46,6 +50,8 @@ Trait Event
                 }
             }
         }
+
+        return $this;
     }
 
 }

@@ -3,7 +3,7 @@
 namespace Be\System\App\ConfigItem;
 
 use Be\System\Be;
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 use Be\Util\Str;
 
 /**

@@ -3,7 +3,7 @@
 namespace Be\System\App\DataItem;
 
 
-use Be\System\Service\ServiceException;
+use Be\System\Exception\ServiceException;
 use Be\System\Be;
 use Be\Util\Fso\File;
 

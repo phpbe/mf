@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\System\App\DataItem;
+namespace Be\Plugin\Lists\Search;
 
 use Be\System\Be;
 use Be\System\Exception\ServiceException;
@@ -33,23 +33,51 @@ abstract class Driver
     {
 
         $this->name = $name;
-        $this->value = $value;
+
+        if (is_callable($value)) {
+            $this->value = $value();
+        } else {
+            $this->value = $value;
+        }
 
         if (isset($params['label'])) {
-            $this->label = $params['label'];
+            $label = $params['label'];
+
+            if (is_callable($label)) {
+                $this->label = $label();
+            } else {
+                $this->label = $label;
+            }
         }
 
         if (isset($params['description'])) {
-            $this->description = $params['description'];
+            $description = $params['description'];
+
+            if (is_callable($description)) {
+                $this->description = $description();
+            } else {
+                $this->description = $description;
+            }
         }
 
         if (isset($params['keyValues'])) {
-            $this->keyValues = $params['keyValues'];
+            $keyValues = $params['keyValues'];
+
+            if (is_callable($keyValues)) {
+                $this->keyValues = $keyValues();
+            } else {
+                $this->keyValues = $keyValues;
+            }
         }
 
-        if (isset($params['values'])) {
+        if (isset($params['values']) && $this->keyValues === null) {
             $values = $params['values'];
-            if ($this->keyValues === null && $values !== null && is_array($values) && count($values) > 0) {
+
+            if (is_callable($values)) {
+                $values = $values();
+            }
+
+            if ($values !== null && is_array($values) && count($values) > 0) {
                 $keyValues = [];
                 foreach ($values as $value) {
                     $keyValues[$value] = $value;
@@ -59,15 +87,21 @@ abstract class Driver
         }
 
         if (isset($params['option'])) {
-            $this->option = $params['option'];
-        }
-
-        if (isset($params['fn'])) {
-            $this->fn = $params['fn'];
+            $option = $params['option'];
+            if (is_callable($option)) {
+                $this->option = $option();
+            } else {
+                $this->option = $option;
+            }
         }
 
         if (isset($params['ui'])) {
-            $this->ui = $params['ui'];
+            $ui = $params['ui'];
+            if (is_callable($ui)) {
+                $this->ui = $ui();
+            } else {
+                $this->ui = $ui;
+            }
         }
 
         if (!isset($this->ui['form-item']['label'])) {
@@ -94,43 +128,9 @@ abstract class Driver
      *
      * @return string | array
      */
-    public function getEditHtml()
+    public function getHtml()
     {
         return '';
-    }
-
-    /**
-     * 编辑
-     *
-     * @return false | array
-     */
-    public function getEditData()
-    {
-        return false;
-    }
-
-    /**
-     * 编辑
-     *
-     * @return false | array
-     */
-    public function getEditMethods()
-    {
-        return false;
-    }
-
-    /**
-     * 明细
-     *
-     * @return string
-     */
-    public function getDetailHtml()
-    {
-        if ($this->keyValues !== null && is_array($this->keyValues) && isset($this->keyValues[$this->value])) {
-            return $this->keyValues[$this->value];
-        }
-
-        return $this->value;
     }
 
     /**
@@ -142,41 +142,13 @@ abstract class Driver
     public function submit($data)
     {
         if (isset($data[$this->name])) {
-            $newValue =  $data[$this->name];
+            $newValue = $data[$this->name];
             if (!is_array($newValue) && !is_object($newValue)) {
                 $newValue =  htmlspecialchars_decode($newValue);
             }
             $this->newValue = $newValue;
         }
     }
-
-
-    /**
-     * 获取值的字符形式
-     *
-     * @return string
-     */
-    public function getValueString()
-    {
-        if (is_array($this->value) || is_object($this->value)) {
-            return json_encode($this->value);
-        }
-        return $this->value;
-    }
-
-    /**
-     * 获取新值的字符形式
-     *
-     * @return string
-     */
-    public function getNewValueString()
-    {
-        if (is_array($this->newValue) || is_object($this->newValue)) {
-            return json_encode($this->newValue);
-        }
-        return $this->newValue;
-    }
-
 
     public function __get($property)
     {
@@ -185,6 +157,34 @@ abstract class Driver
         } else {
             return null;
         }
-
     }
+
+    /**
+     * 查询SQL
+     *
+     * @return string
+     */
+    public function buildSql()
+    {
+        $where = [];
+        if ($this->newValue) {
+
+            if (isset($this->option['db'])) {
+                $db = Be::getDb($this->option['db']);
+            } else {
+                $db = Be::getDb();
+            }
+
+            if (isset($this->option['table'])) {
+                $where = $db->quoteKey($this->option['table']) . '.';
+            }
+
+            $field = isset($this->option['field']) ? $this->option['field'] : $this->name;
+
+            $where[] =  $db->quoteKey($field) . '=' . $db->quoteValue($this->newValue);
+        }
+
+        return $where;
+    }
+
 }

@@ -8,6 +8,7 @@ use Be\System\Event;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Controller;
+use Be\Util\Random;
 
 /**
  * Class User
@@ -60,40 +61,39 @@ class User extends Controller
     }
 
     /**
-     * 用户列表
+     * 用户管理
      *
-     * @be-menu 用户列表
+     * @be-menu 用户管理
      * @be-menu-icon user
      *
-     * @be-permission 用户列表
+     * @be-permission 用户管理
      */
     public function users() {
-        Curd::lists([
+        Be::getPlugin('Curd')->lists([
             'title' => '用户列表',
             'table' => 'system_user',
-
             'search' => [
 
                 'items' => [
                     [
                         'name' => 'username',
                         'label' => '用户名',
-                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                        'driver' => \Be\Plugin\Lists\Search\Input::class,
                     ],
                     [
                         'name' => 'name',
                         'label' => '名称',
-                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                        'driver' => \Be\Plugin\Lists\Search\Input::class,
                     ],
                     [
                         'name' => 'email',
                         'label' => '邮箱',
-                        'driver' => \Be\System\App\SearchItem\SearchItemString::class,
+                        'driver' => \Be\Plugin\Lists\Search\Input::class,
                     ],
                     [
                         'name' => 'block',
                         'label' => '状态',
-                        'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
+                        'driver' => \Be\Plugin\Lists\Search\Select::class,
                         'keyValues' => [
                             '' => '不限',
                             '0' => '启用',
@@ -106,7 +106,7 @@ class User extends Controller
                     [
                         'name' => 'role_id',
                         'label' => '角色',
-                        'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
+                        'driver' => \Be\Plugin\Lists\Search\Select::class,
                         'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
                     ]
                 ]
@@ -129,6 +129,7 @@ class User extends Controller
                     [
                         'name' => 'create',
                         'label' => '新建',
+                        'driver' => \Be\Plugin\Lists\ToolbarItem\ToolbarItemButton::class,
                         'ui' => [
                             'icon' => 'plus',
                         ]
@@ -229,22 +230,19 @@ class User extends Controller
      * @be-permission 创建
      */
     public function create() {
-        Curd::on('BeforeCreate', function(Tuple $tuple) {
+
+        Be::getPlugin('Curd')->on('BeforeCreate', function(Tuple $tuple) {
             $salt = Random::complex(32);
             $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
             $tuple->register_time = time();
             $tuple->last_login_time = 0;
-        });
-
-        Curd::on('AfterCreate', function(Tuple $tuple) {
+        })->on('AfterCreate', function(Tuple $tuple) {
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
                 Be::getService('System.User')->uploadAvatar($tuple, $avatar);
             }
-        });
-
-        Curd::create([
+        })->create([
             'title' => '新增用户',
             'table' => 'System.User'
         ]);
@@ -257,7 +255,8 @@ class User extends Controller
      * @be-permission 编辑
      */
     public function edit() {
-        Curd::on('BeforeEdit', function($tuple) {
+
+        Be::getPlugin('Curd')->on('BeforeEdit', function($tuple) {
             if ($tuple->password != '') {
                 $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
             } else {
@@ -265,17 +264,13 @@ class User extends Controller
                 unset($tuple->register_time);
                 unset($tuple->last_login_time);
             }
-        });
-
-        Curd::on('AfterEdit', function($tuple) {
+        })->on('AfterEdit', function($tuple) {
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
                 Be::getService('System.User')->uploadAvatar($tuple, $avatar);
             }
-        });
-
-        Curd::edit([
+        })->edit([
             'name' => '编辑用户',
             'table' => 'system_user'
         ]);
@@ -287,7 +282,8 @@ class User extends Controller
      * @be-permission 屏蔽
      */
     public function block() {
-        Curd::on('BeforeBlock', function($tuple) {
+
+        Be::getPlugin('Curd')->on('BeforeBlock', function($tuple) {
             if ($tuple->id == 1) {
                 throw new \Exception('默认用户不能禁用');
             }
@@ -296,9 +292,7 @@ class User extends Controller
             if ($tuple->id == $my->id) {
                 throw new \Exception('不能禁用自已的账号');
             }
-        });
-
-        Curd::block([
+        })->block([
             'title' => '禁用用户',
             'table' => 'system_user',
             'field' => 'block',
@@ -308,13 +302,14 @@ class User extends Controller
 
 
     /**
-     * 公开
+     * 启用
      *
-     * @be-permission 公开
+     * @be-permission 启用
      */
     public function unblock() {
-        Curd::unblock([
-            'name' => '用户',
+
+        Be::getPlugin('Curd')->unblock([
+            'title' => '启用用户',
             'table' => 'system_user',
             'field' => 'block',
             'value' => 0,
@@ -328,7 +323,8 @@ class User extends Controller
      * @be-permission 删除
      */
     public function delete() {
-        Curd::on('BeforeDelete', function($tuple) {
+
+        Be::getPlugin('Curd')->on('BeforeDelete', function($tuple) {
             if ($tuple->id == 1) {
                 throw new \Exception('默认用户不能删除');
             }
@@ -337,10 +333,8 @@ class User extends Controller
             if ($tuple->id == $my->id) {
                 throw new \Exception('不能删除自已');
             }
-        });
-
-        Curd::delete([
-            'title' => '用户',
+        })->delete([
+            'title' => '删除用户',
             'table' => 'system_user',
             'field' => 'is_delete',
             'value' => 1,
@@ -353,8 +347,8 @@ class User extends Controller
      * @be-permission 导出
      */
     public function export() {
-        Curd::export([
-            'title' => '用户',
+        Be::getPlugin('Curd')->export([
+            'title' => '导出用户',
             'table' => 'system_user',
             'fields' => [
                 // 未指定时取表的所有字段
@@ -377,10 +371,10 @@ class User extends Controller
 
             $id = Request::get('id', 0, 'int');
             Be::getService('System.User')->initAvatar($id);
-
-            Be::getService('System.AdminLog')->addLog('删除管理员账号：#' . $id . ' 头像');
-
             Be::getDb()->commit();
+
+            SystemLog('删除管理员账号：#' . $id . ' 头像');
+
         } catch (\Exception $e) {
 
             Be::getDb()->rollback();
