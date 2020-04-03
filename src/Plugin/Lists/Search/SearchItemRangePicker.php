@@ -8,23 +8,21 @@ use Be\System\Exception\ServiceException;
 /**
  * 搜索项 布尔值
  */
-class RangePicker extends Driver
+class SearchItemRangePicker extends SearchItem
 {
 
 
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
      * @param array $params 参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($params = array())
     {
-        parent::__construct($name, $value, $params);
+        parent::__construct($params);
 
         if (!isset($this->ui['range-picker']['v-decorator'])) {
-            $this->ui['range-picker']['v-decorator'] = '[\''.$name.'\']';
+            $this->ui['range-picker']['v-decorator'] = '[\''.$this->name.'\']';
         }
     }
 
@@ -33,7 +31,7 @@ class RangePicker extends Driver
      *
      * @return string | array
      */
-    public function getEditHtml()
+    public function getHtml()
     {
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {

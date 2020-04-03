@@ -20,6 +20,8 @@ class Curd extends Plugin
 
     /**
      * 列表展示
+     *
+     * @param array $setting 配置项
      */
     public function lists($setting = [])
     {
@@ -42,22 +44,32 @@ class Curd extends Plugin
 
         $searchDrivers = [];
         if (isset($setting['search']['items'])) {
-            foreach ($setting['search']['items'] as $key => $search) {
-                $driver = $search['driver'];
-                $searchDriver = new $driver($key, $search);
+            foreach ($setting['search']['items'] as $item) {
+                $driver = $item['driver'];
+                $searchDriver = new $driver($item);
                 $searchDriver->buildWhere(Request::post());
 
                 $searchDrivers[] = $searchDriver;
             }
         }
 
+
+        $toobarDrivers = [];
         if (isset($setting['toolbar']['items'])) {
-            foreach ($setting['toolbar']['items'] as &$toolbar) {
-                if (isset($toolbar['action']) && $toolbar['action']) {
-                    $toolbar['url'] = url($appName . '.' . $controllerName . '.' . $toolbar['action']);
+            foreach ($setting['toolbar']['items'] as $item) {
+                $driver = $item['driver'];
+                $toobarDriver = new $driver($item);
+
+                if (!isset($item['url'])) {
+                    $item['url'] = url($appName . '.' . $controllerName . '.' . $item['name']);
                 }
+
+                $toobarDrivers[] = $toobarDriver;
             }
         }
+
+
+
 
         $page = Request::post('page', 1, 'int');
 
@@ -98,11 +110,7 @@ class Curd extends Plugin
             $fields = $tableConfig->getFields();
         }
 
-        foreach ($data as &$x) {
-            self::formatField($x, $fields);
-        }
-
-        Response::setTitle($config['name'] . '：列表');
+        Response::setTitle($config['title']);
         Response::set('config', $config);
         Response::set('table', $table);
         Response::set('searchDrivers', $searchDrivers);
@@ -119,6 +127,8 @@ class Curd extends Plugin
 
     /**
      * 明细
+     *
+     * @param array $setting 配置项
      */
     public function detail($setting = [])
     {
@@ -137,15 +147,16 @@ class Curd extends Plugin
         }
 
         $fields = $tuple->getFields();
-        self::formatField($tuple, $fields);
 
-        Response::setTitle($setting['name'] . '：明细');
+        Response::setTitle($setting['title']);
         Response::set('row', $tuple);
         Response::display('Plugin.Curd.detail');
     }
 
     /**
      * 创建
+     *
+     * @param array $setting 配置项
      */
     public function create($setting = [])
     {
@@ -162,7 +173,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterCreate', $tuple);
 
-                SystemLog($setting['name'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
+                SystemLog($setting['title'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -174,7 +185,7 @@ class Curd extends Plugin
             Response::success('创建成功！');
 
         } else {
-            Response::setTitle($setting['name'] . '：创建');
+            Response::setTitle($setting['title']);
             Response::set('row', $tuple);
             Response::display('Plugin.Curd.create');
         }
@@ -182,6 +193,8 @@ class Curd extends Plugin
 
     /**
      * 编辑
+     *
+     * @param array $setting 配置项
      */
     public function edit($setting = [])
     {
@@ -209,7 +222,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterEdit', $tuple);
 
-                SystemLog($setting['name'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($setting['title'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -222,12 +235,17 @@ class Curd extends Plugin
 
         } else {
 
-            Response::setTitle($setting['name'] . '：编辑');
+            Response::setTitle($setting['title']);
             Response::set('tuple', $tuple);
             Response::display('Plugin.Curd.edit');
         }
     }
 
+    /**
+     * 禁用
+     *
+     * @param array $setting 配置项
+     */
     public function block($setting = [])
     {
         $tuple = Be::newTuple($setting['table']);
@@ -262,7 +280,7 @@ class Curd extends Plugin
                     $tuple->save();
                     $this->trigger('AfterBlock', $tuple);
 
-                    SystemLog($setting['name'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($setting['title'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -282,7 +300,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterBlock', $tuple);
 
-                SystemLog($setting['name'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($setting['title'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -295,7 +313,11 @@ class Curd extends Plugin
         Response::success('禁用成功！');
     }
 
-
+    /**
+     * 启用
+     *
+     * @param array $setting 配置项
+     */
     public function unblock($setting = [])
     {
         $tuple = Be::newTuple($setting['table']);
@@ -330,7 +352,7 @@ class Curd extends Plugin
                     $tuple->save();
                     $this->trigger('AfterUnblock', $tuple);
 
-                    SystemLog($setting['name'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($setting['title'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -350,7 +372,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterUnblock', $tuple);
 
-                SystemLog($setting['name'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($setting['title'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -366,6 +388,8 @@ class Curd extends Plugin
 
     /**
      * 删除
+     *
+     * @param array $setting 配置项
      */
     public function delete($setting = [])
     {
@@ -409,7 +433,7 @@ class Curd extends Plugin
                         $this->trigger('AfterDelete', $tuple);
                     }
 
-                    SystemLog($setting['name'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
 
@@ -438,7 +462,7 @@ class Curd extends Plugin
                     $this->trigger('AfterDelete', $tuple);
                 }
 
-                SystemLog($setting['name'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -454,6 +478,8 @@ class Curd extends Plugin
 
     /*
      * 导出
+     *
+     * @param array $setting 配置项
      */
     public function export($setting = [])
     {
@@ -489,40 +515,9 @@ class Curd extends Plugin
         }
         $exporter->end();
 
-        systemLog($config['name'] . '：导出记录！');
+        systemLog($setting['title']);
     }
 
-
-    protected static function formatField(&$row, $fields)
-    {
-
-        foreach ($fields as $field) {
-
-            $name = $field['name'];
-
-            if (isset($field['value'])) {
-                if (is_callable($field['value'])) {
-
-                    $fn = $field['value'];
-                    $row->$name = $fn($row);
-
-                } else {
-                    $row->$name = $field['value'];
-                }
-
-            } else {
-
-                if (isset($field['keyValues'])) {
-                    if (isset($field['keyValues'][$row->$name])) {
-                        $row->$name = $field['keyValues'][$row->$name];
-                    } else {
-                        $row->$name = '-';
-                    }
-                }
-
-            }
-        }
-    }
 
 
 }

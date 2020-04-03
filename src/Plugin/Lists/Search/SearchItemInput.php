@@ -2,29 +2,26 @@
 
 namespace Be\Plugin\Lists\Search;
 
-use Be\System\Exception\ServiceException;
 
 /**
  * 搜索项 布尔值
  */
-class DatePicker extends Driver
+class SearchItemInput extends SearchItem
 {
+
 
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
      * @param array $params 参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($params = array())
     {
-        parent::__construct($name, $value, $params);
+        parent::__construct($params);
 
-        if (!isset($this->ui['date-picker']['v-decorator'])) {
-            $this->ui['date-picker']['v-decorator'] = '[\''.$name.'\']';
+        if (!isset($this->ui['input']['v-decorator'])) {
+            $this->ui['input']['v-decorator'] = '[\''.$this->name.'\']';
         }
-
     }
 
     /**
@@ -44,9 +41,9 @@ class DatePicker extends Driver
         }
         $html .= '>';
 
-        $html .= '<a-date-picker';
-        if (isset($this->ui['date-picker'])) {
-            foreach ($this->ui['date-picker'] as $k => $v) {
+        $html .= '<a-input';
+        if (isset($this->ui['input'])) {
+            foreach ($this->ui['input'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -55,11 +52,9 @@ class DatePicker extends Driver
             }
         }
         $html .= '>';
-        $html .= '</a-date-picker>';
+        $html .= '</a-input>';
 
         $html .= '</a-form-item>';
         return $html;
     }
-
-
 }

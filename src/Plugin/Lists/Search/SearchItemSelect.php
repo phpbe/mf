@@ -6,22 +6,21 @@ namespace Be\Plugin\Lists\Search;
 /**
  * 搜索项 布尔值
  */
-class Select extends Driver
+class SearchItemSelect extends SearchItem
 {
+
 
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
      * @param array $params 参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($params = array())
     {
-        parent::__construct($name, $value, $params);
+        parent::__construct($params);
 
         if (!isset($this->ui['select']['v-decorator'])) {
-            $this->ui['select']['v-decorator'] = '[\''.$name.'\']';
+            $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';
         }
     }
 

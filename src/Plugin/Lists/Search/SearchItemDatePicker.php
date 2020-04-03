@@ -2,27 +2,25 @@
 
 namespace Be\Plugin\Lists\Search;
 
-use Be\System\Exception\ServiceException;
 
 /**
  * 搜索项 布尔值
  */
-class MonthPicker extends Driver
+class SearchItemDatePicker extends SearchItem
 {
+
 
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
      * @param array $params 参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($params = array())
     {
-        parent::__construct($name, $value, $params);
+        parent::__construct($params);
 
-        if (!isset($this->ui['month-picker']['v-decorator'])) {
-            $this->ui['month-picker']['v-decorator'] = '[\''.$name.'\']';
+        if (!isset($this->ui['date-picker']['v-decorator'])) {
+            $this->ui['date-picker']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
     }
@@ -44,9 +42,9 @@ class MonthPicker extends Driver
         }
         $html .= '>';
 
-        $html .= '<a-month-picker';
-        if (isset($this->ui['month-picker'])) {
-            foreach ($this->ui['month-picker'] as $k => $v) {
+        $html .= '<a-date-picker';
+        if (isset($this->ui['date-picker'])) {
+            foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {

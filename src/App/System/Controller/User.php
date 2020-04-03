@@ -1,10 +1,14 @@
 <?php
+
 namespace Be\App\System\Controller;
 
-use App\System\Plugin\Curd;
+
+use Be\Plugin\Lists\Field\FieldItemAvatar;
+use Be\Plugin\Lists\Search\SearchItemInput;
+use Be\Plugin\Lists\Search\SearchItemSelect;
+use Be\Plugin\Lists\Toolbar\ToolbarItemButton;
 use Be\System\Be;
 use Be\System\Db\Tuple;
-use Be\System\Event;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Controller;
@@ -68,49 +72,51 @@ class User extends Controller
      *
      * @be-permission 用户管理
      */
-    public function users() {
+    public function users()
+    {
         Be::getPlugin('Curd')->lists([
             'title' => '用户列表',
             'table' => 'system_user',
             'search' => [
-
                 'items' => [
                     [
                         'name' => 'username',
                         'label' => '用户名',
-                        'driver' => \Be\Plugin\Lists\Search\Input::class,
+                        'driver' => SearchItemInput::class,
                     ],
                     [
                         'name' => 'name',
                         'label' => '名称',
-                        'driver' => \Be\Plugin\Lists\Search\Input::class,
+                        'driver' => SearchItemInput::class,
                     ],
                     [
                         'name' => 'email',
                         'label' => '邮箱',
-                        'driver' => \Be\Plugin\Lists\Search\Input::class,
+                        'driver' => SearchItemInput::class,
                     ],
                     [
                         'name' => 'block',
                         'label' => '状态',
-                        'driver' => \Be\Plugin\Lists\Search\Select::class,
+                        'driver' => SearchItemSelect::class,
                         'keyValues' => [
                             '' => '不限',
                             '0' => '启用',
                             '1' => '禁用',
-                        ],
-                        'callback' => function() {
-
-                        }
+                        ]
                     ],
                     [
                         'name' => 'role_id',
                         'label' => '角色',
-                        'driver' => \Be\Plugin\Lists\Search\Select::class,
+                        'driver' => SearchItemSelect::class,
                         'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
                     ]
-                ]
+                ],
 
+                'ui' => [
+                    'form' => [
+                        'size' => 'small'
+                    ],
+                ],
             ],
 
             'fields' => [
@@ -118,7 +124,34 @@ class User extends Controller
 
                 // 未指定时取表的所有字段
                 'items' => [
-
+                    [
+                        'name' => 'avatar_s',
+                        'label' => '头像',
+                        'driver' => FieldItemAvatar::class,
+                        'value' => function ($row) {
+                            if ($row->avatar_s == '') {
+                                return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
+                            } else {
+                                return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
+                            }
+                        }
+                    ],
+                    [
+                        'name' => 'username',
+                        'label' => '用户名',
+                    ],
+                    [
+                        'name' => 'email',
+                        'label' => '邮箱',
+                    ],
+                    [
+                        'name' => 'name',
+                        'label' => '名称',
+                    ],
+                    [
+                        'name' => 'name',
+                        'label' => '名称',
+                    ],
                 ]
 
             ],
@@ -129,7 +162,9 @@ class User extends Controller
                     [
                         'name' => 'create',
                         'label' => '新建',
-                        'driver' => \Be\Plugin\Lists\ToolbarItem\ToolbarItemButton::class,
+                        'driver' => ToolbarItemButton::class,
+                        'target' => 'pop', // 'ajax - ajax请求 / pop - 弹出新窗口 / self - 当前页面 / blank - 新页面'
+                        'url' => '',    // 拽定网址
                         'ui' => [
                             'icon' => 'plus',
                         ]
@@ -229,14 +264,15 @@ class User extends Controller
      *
      * @be-permission 创建
      */
-    public function create() {
+    public function create()
+    {
 
-        Be::getPlugin('Curd')->on('BeforeCreate', function(Tuple $tuple) {
+        Be::getPlugin('Curd')->on('BeforeCreate', function (Tuple $tuple) {
             $salt = Random::complex(32);
             $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
             $tuple->register_time = time();
             $tuple->last_login_time = 0;
-        })->on('AfterCreate', function(Tuple $tuple) {
+        })->on('AfterCreate', function (Tuple $tuple) {
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
@@ -254,9 +290,10 @@ class User extends Controller
      *
      * @be-permission 编辑
      */
-    public function edit() {
+    public function edit()
+    {
 
-        Be::getPlugin('Curd')->on('BeforeEdit', function($tuple) {
+        Be::getPlugin('Curd')->on('BeforeEdit', function ($tuple) {
             if ($tuple->password != '') {
                 $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
             } else {
@@ -264,7 +301,7 @@ class User extends Controller
                 unset($tuple->register_time);
                 unset($tuple->last_login_time);
             }
-        })->on('AfterEdit', function($tuple) {
+        })->on('AfterEdit', function ($tuple) {
             // 上传头像
             $avatar = Request::files('avatar');
             if ($avatar && $avatar['error'] == 0) {
@@ -281,9 +318,10 @@ class User extends Controller
      *
      * @be-permission 屏蔽
      */
-    public function block() {
+    public function block()
+    {
 
-        Be::getPlugin('Curd')->on('BeforeBlock', function($tuple) {
+        Be::getPlugin('Curd')->on('BeforeBlock', function ($tuple) {
             if ($tuple->id == 1) {
                 throw new \Exception('默认用户不能禁用');
             }
@@ -306,7 +344,8 @@ class User extends Controller
      *
      * @be-permission 启用
      */
-    public function unblock() {
+    public function unblock()
+    {
 
         Be::getPlugin('Curd')->unblock([
             'title' => '启用用户',
@@ -322,9 +361,10 @@ class User extends Controller
      *
      * @be-permission 删除
      */
-    public function delete() {
+    public function delete()
+    {
 
-        Be::getPlugin('Curd')->on('BeforeDelete', function($tuple) {
+        Be::getPlugin('Curd')->on('BeforeDelete', function ($tuple) {
             if ($tuple->id == 1) {
                 throw new \Exception('默认用户不能删除');
             }
@@ -346,7 +386,8 @@ class User extends Controller
      *
      * @be-permission 导出
      */
-    public function export() {
+    public function export()
+    {
         Be::getPlugin('Curd')->export([
             'title' => '导出用户',
             'table' => 'system_user',

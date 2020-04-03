@@ -7,19 +7,17 @@ use Be\System\Exception\ServiceException;
 /**
  * 搜索项 布尔值
  */
-class InputNumberInt extends Driver
+class SearchItemInputNumberInt extends SearchItem
 {
 
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
      * @param array $params 参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($params = array())
     {
-        parent::__construct($name, $value, $params);
+        parent::__construct($params);
 
         if (!isset($this->ui['input-number'][':step'])) {
             $this->ui['input-number'][':step'] = '1';
@@ -30,7 +28,7 @@ class InputNumberInt extends Driver
         }
 
         if (!isset($this->ui['input-number']['v-decorator'])) {
-            $this->ui['input-number']['v-decorator'] = '[\''.$name.'\']';
+            $this->ui['input-number']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
     }
