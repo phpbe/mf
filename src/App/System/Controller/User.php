@@ -4,6 +4,7 @@ namespace Be\App\System\Controller;
 
 
 use Be\Plugin\Lists\Field\FieldItemAvatar;
+use Be\Plugin\Lists\Field\FieldItemSwitch;
 use Be\Plugin\Lists\Search\SearchItemInput;
 use Be\Plugin\Lists\Search\SearchItemSelect;
 use Be\Plugin\Lists\Toolbar\ToolbarItemButton;
@@ -149,8 +150,18 @@ class User extends Controller
                         'label' => '名称',
                     ],
                     [
+                        'name' => 'block',
+                        'label' => '启用/禁用',
+                        'driver' => FieldItemSwitch::class,
+                        'action' => 'toggleBlock'
+                    ],
+                    [
                         'name' => 'name',
-                        'label' => '名称',
+                        'label' => '操作',
+                        'items' => [
+
+
+                        ]
                     ],
                 ]
 
@@ -170,16 +181,20 @@ class User extends Controller
                         ]
                     ],
                     [
-                        'name' => 'unblock',
+                        'name' => 'toggle',
                         'label' => '批量启用',
+                        'action' => 'toggleBlock',
+                        'value' => 0,
                         'ui' => [
                             'icon' => 'check',
                             'type' => 'primary',
                         ]
                     ],
                     [
-                        'name' => 'block',
+                        'name' => 'toggle',
                         'label' => '批量禁用',
+                        'action' => 'toggleBlock',
+                        'value' => 1,
                         'ui' => [
                             'icon' => 'stop',
                             'type' => 'danger',
@@ -201,55 +216,6 @@ class User extends Controller
                         ]
                     ],
                 ]
-            ],
-
-            'operation' => [
-
-                'label' => '操作',
-                'position' => 'right', // left / right
-                'align' => 'center',
-
-                'items' => [
-                    [
-                        'name' => 'detail',
-                        'label' => '查看',
-                        'ui' => [
-                            'icon' => 'search',
-                        ]
-                    ],
-                    [
-                        'name' => 'edit',
-                        'label' => '编辑',
-                        'ui' => [
-                            'icon' => 'edit',
-                        ]
-                    ],
-                    [
-                        'name' => 'unblock',
-                        'label' => '启用',
-                        'ui' => [
-                            'icon' => 'check',
-                            'type' => 'primary',
-                        ]
-                    ],
-                    [
-                        'name' => 'block',
-                        'label' => '禁用',
-                        'ui' => [
-                            'icon' => 'stop',
-                            'type' => 'danger',
-                        ]
-                    ],
-                    [
-                        'name' => 'delete',
-                        'label' => '删除',
-                        'ui' => [
-                            'icon' => 'delete',
-                            'type' => 'danger'
-                        ]
-                    ],
-                ]
-
             ],
 
         ]);
@@ -318,40 +284,29 @@ class User extends Controller
      *
      * @be-permission 屏蔽
      */
-    public function block()
+    public function toggleBlock()
     {
+        $plugin = Be::getPlugin('Curd');
 
-        Be::getPlugin('Curd')->on('BeforeBlock', function ($tuple) {
-            if ($tuple->id == 1) {
-                throw new \Exception('默认用户不能禁用');
-            }
+        $value = Request::request('value', 1);
+        if ($value) {
+            $plugin->on('BeforeToggle', function ($tuple) {
+                if ($tuple->id == 1) {
+                    throw new \Exception('默认用户不能禁用');
+                }
 
-            $my = Be::getUser();
-            if ($tuple->id == $my->id) {
-                throw new \Exception('不能禁用自已的账号');
-            }
-        })->block([
-            'title' => '禁用用户',
+                $my = Be::getUser();
+                if ($tuple->id == $my->id) {
+                    throw new \Exception('不能禁用自已的账号');
+                }
+            });
+        }
+
+        $plugin->toggle([
+            'title' => $value ? '禁用用户' : '启用用户',
             'table' => 'system_user',
             'field' => 'block',
-            'value' => 1,
-        ]);
-    }
-
-
-    /**
-     * 启用
-     *
-     * @be-permission 启用
-     */
-    public function unblock()
-    {
-
-        Be::getPlugin('Curd')->unblock([
-            'title' => '启用用户',
-            'table' => 'system_user',
-            'field' => 'block',
-            'value' => 0,
+            'value' => $value,
         ]);
     }
 
@@ -363,7 +318,6 @@ class User extends Controller
      */
     public function delete()
     {
-
         Be::getPlugin('Curd')->on('BeforeDelete', function ($tuple) {
             if ($tuple->id == 1) {
                 throw new \Exception('默认用户不能删除');
@@ -375,9 +329,7 @@ class User extends Controller
             }
         })->delete([
             'title' => '删除用户',
-            'table' => 'system_user',
-            'field' => 'is_delete',
-            'value' => 1,
+            'table' => 'system_user'
         ]);
     }
 
@@ -390,13 +342,7 @@ class User extends Controller
     {
         Be::getPlugin('Curd')->export([
             'title' => '导出用户',
-            'table' => 'system_user',
-            'fields' => [
-                // 未指定时取表的所有字段
-                'items' => [
-
-                ]
-            ],
+            'table' => 'system_user'
         ]);
     }
 

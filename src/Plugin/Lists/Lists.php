@@ -22,6 +22,9 @@ class Lists extends Plugin
     protected $setting = null;
 
 
+    /**
+     * @param array $setting
+     */
     public function execute($setting = [])
     {
         $this->setting = $setting;
@@ -81,6 +84,36 @@ class Lists extends Plugin
                 $searchDrivers[] = $searchDriver;
             }
         }
+
+
+
+
+        $fieldDrivers = [];
+        foreach ($rows as $row) {
+
+            $tmpFieldDrivers = [];
+            foreach ($fields as $item) {
+
+                if (!isset($item['value']) && isset($item['name'])) {
+                    $name = $item['name'];
+                    if (isset($row->$name)) {
+                        $item['value'] = $row->$name;
+                    }
+                }
+
+                $driver = null;
+                if (!isset($item['driver'])) {
+                    $driver = FieldItemText::class;
+                } else {
+                    $driver = $item['driver'];
+                }
+                $fieldDriver = new $driver($item);
+                $tmpFieldDrivers[] = $fieldDriver;
+            }
+
+            $fieldDrivers[] = $tmpFieldDrivers;
+        }
+
 
 
         $toolbarDrivers = [];

@@ -2,6 +2,7 @@
 
 namespace Be\Plugin\Curd;
 
+use Be\Plugin\Lists\Field\FieldItemText;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Plugin;
@@ -17,6 +18,7 @@ use Be\System\Cookie;
  */
 class Curd extends Plugin
 {
+
 
     /**
      * 列表展示
@@ -47,29 +49,18 @@ class Curd extends Plugin
             foreach ($setting['search']['items'] as $item) {
                 $driver = $item['driver'];
                 $searchDriver = new $driver($item);
-                $searchDriver->buildWhere(Request::post());
-
                 $searchDrivers[] = $searchDriver;
             }
         }
 
-
-        $toobarDrivers = [];
+        $toolbarDrivers = [];
         if (isset($setting['toolbar']['items'])) {
             foreach ($setting['toolbar']['items'] as $item) {
                 $driver = $item['driver'];
-                $toobarDriver = new $driver($item);
-
-                if (!isset($item['url'])) {
-                    $item['url'] = url($appName . '.' . $controllerName . '.' . $item['name']);
-                }
-
-                $toobarDrivers[] = $toobarDriver;
+                $toolbarDriver = new $driver($item);
+                $toolbarDrivers[] = $toolbarDriver;
             }
         }
-
-
-
 
         $page = Request::post('page', 1, 'int');
 
@@ -100,7 +91,7 @@ class Curd extends Plugin
         $orderByDir = Request::post('orderByDir', 'DESC');
         $table->orderBy($orderBy, $orderByDir);
 
-        $data = $table->getObjects();
+        $rows = $table->getObjects();
 
         $fields = null;
         if (isset($config['field']['items'])) {
@@ -110,11 +101,42 @@ class Curd extends Plugin
             $fields = $tableConfig->getFields();
         }
 
+        $fieldDrivers = [];
+        foreach ($rows as $row) {
+
+            $tmpFieldDrivers = [];
+            foreach ($fields as $item) {
+
+                if (!isset($item['value']) && isset($item['name'])) {
+                    $name = $item['name'];
+                    if (isset($row->$name)) {
+                        $item['value'] = $row->$name;
+                    }
+                }
+
+                $driver = null;
+                if (!isset($item['driver'])) {
+                    $driver = FieldItemText::class;
+                } else {
+                    $driver = $item['driver'];
+                }
+                $fieldDriver = new $driver($item);
+                $tmpFieldDrivers[] = $fieldDriver;
+            }
+
+            $fieldDrivers[] = $tmpFieldDrivers;
+        }
+
+
+
         Response::setTitle($config['title']);
         Response::set('config', $config);
         Response::set('table', $table);
+
         Response::set('searchDrivers', $searchDrivers);
-        Response::set('data', $data);
+        Response::set('toolbarDrivers', $toolbarDrivers);
+        Response::set('fieldDrivers', $fieldDrivers);
+
         Response::set('page', $page);
         Response::set('pageSize', $pageSize);
         Response::set('pages', $pages);
@@ -242,12 +264,14 @@ class Curd extends Plugin
     }
 
     /**
-     * 禁用
+     * 切换某个字段的值，示例功能：启用/禁用
      *
      * @param array $setting 配置项
      */
-    public function block($setting = [])
+    public function toggle($setting = [])
     {
+        $value = Request::request('value', 1);
+
         $tuple = Be::newTuple($setting['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
@@ -269,18 +293,17 @@ class Curd extends Plugin
                         $field = $setting['field'];
                     }
 
-                    $value = 1;
                     if (isset($setting['value'])) {
                         $value = $setting['value'];
                     }
 
-                    $tuple->load($primaryKeyValue);
+                    $tuple->load($x);
                     $tuple->$field = $value;
-                    $this->trigger('BeforeBlock', $tuple);
+                    $this->trigger('BeforeToggle', $tuple);
                     $tuple->save();
-                    $this->trigger('AfterBlock', $tuple);
+                    $this->trigger('AfterToggle', $tuple);
 
-                    SystemLog($setting['title'] . '：禁用' . $primaryKey . '为' . $x . '的记录！');
+                    SystemLog($setting['title'] . '（记录编号 ' . $primaryKey . '为' . $x . '）');
                 }
             } else {
 
@@ -289,18 +312,17 @@ class Curd extends Plugin
                     $field = $setting['field'];
                 }
 
-                $value = 1;
                 if (isset($setting['value'])) {
                     $value = $setting['value'];
                 }
 
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
-                $this->trigger('BeforeBlock', $tuple);
+                $this->trigger('BeforeToggle', $tuple);
                 $tuple->save();
-                $this->trigger('AfterBlock', $tuple);
+                $this->trigger('AfterToggle', $tuple);
 
-                SystemLog($setting['title'] . '：禁用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                SystemLog($setting['title'] . '（记录编号 ' . $primaryKey . '为' . $x . '）');
             }
 
             Be::getDb()->commit();
@@ -310,81 +332,8 @@ class Curd extends Plugin
             Response::error($e->getMessage());
         }
 
-        Response::success('禁用成功！');
+        Response::success($setting['title'] . '，执行成功！');
     }
-
-    /**
-     * 启用
-     *
-     * @param array $setting 配置项
-     */
-    public function unblock($setting = [])
-    {
-        $tuple = Be::newTuple($setting['table']);
-
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
-
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
-        }
-
-        Be::getDb()->startTransaction();
-        try {
-
-            if (is_array($primaryKeyValue)) {
-
-                foreach ($primaryKeyValue as $x) {
-
-                    $field = 'block';
-                    if (isset($setting['field'])) {
-                        $field = $setting['field'];
-                    }
-
-                    $value = 0;
-                    if (isset($setting['value'])) {
-                        $value = $setting['value'];
-                    }
-
-                    $tuple->load($primaryKeyValue);
-                    $tuple->$field = $value;
-                    $this->trigger('BeforeUnblock', $tuple);
-                    $tuple->save();
-                    $this->trigger('AfterUnblock', $tuple);
-
-                    SystemLog($setting['title'] . '：启用' . $primaryKey . '为' . $x . '的记录！');
-                }
-            } else {
-
-                $field = 'block';
-                if (isset($setting['field'])) {
-                    $field = $setting['field'];
-                }
-
-                $value = 0;
-                if (isset($setting['value'])) {
-                    $value = $setting['value'];
-                }
-
-                $tuple->load($primaryKeyValue);
-                $tuple->$field = $value;
-                $this->trigger('BeforeUnblock', $tuple);
-                $tuple->save();
-                $this->trigger('AfterUnblock', $tuple);
-
-                SystemLog($setting['title'] . '：启用' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
-            }
-
-            Be::getDb()->commit();
-        } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
-            Response::error($e->getMessage());
-        }
-
-        Response::success('启用成功！');
-    }
-
 
     /**
      * 删除
@@ -407,60 +356,20 @@ class Curd extends Plugin
 
             if (is_array($primaryKeyValue)) {
                 foreach ($primaryKeyValue as $x) {
-                    if (isset($setting['field'])) {
-
-                        $field = 'delete';
-                        if (isset($setting['field'])) {
-                            $field = $setting['field'];
-                        }
-
-                        $value = 1;
-                        if (isset($setting['value'])) {
-                            $value = $setting['value'];
-                        }
-
-                        $tuple = Be::newTuple($setting['table']);
-                        $tuple->load($x);
-                        $tuple->$field = $value;
-                        $this->trigger('BeforeDelete', $tuple);
-                        $tuple->save();
-                        $this->trigger('AfterDelete', $tuple);
-                    } else {
-                        $tuple = Be::newTuple($setting['table']);
-                        $tuple->load($x);
-                        $this->trigger('BeforeDelete', $tuple);
-                        $tuple->save();
-                        $this->trigger('AfterDelete', $tuple);
-                    }
+                    $tuple = Be::newTuple($setting['table']);
+                    $tuple->load($x);
+                    $this->trigger('BeforeDelete', $tuple);
+                    $tuple->delete();
+                    $this->trigger('AfterDelete', $tuple);
 
                     SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
-
-                if (isset($setting['field'])) {
-
-                    $field = 'delete';
-                    if (isset($setting['field'])) {
-                        $field = $setting['field'];
-                    }
-
-                    $value = 1;
-                    if (isset($setting['value'])) {
-                        $value = $setting['value'];
-                    }
-
-                    $tuple->load($primaryKeyValue);
-                    $tuple->$field = $value;
-                    $this->trigger('BeforeDelete', $tuple);
-                    $tuple->save();
-                    $this->trigger('AfterDelete', $tuple);
-                } else {
-                    $tuple = Be::newTuple($setting['table']);
-                    $tuple->load($primaryKeyValue);
-                    $this->trigger('BeforeDelete', $tuple);
-                    $tuple->save();
-                    $this->trigger('AfterDelete', $tuple);
-                }
+                $tuple = Be::newTuple($setting['table']);
+                $tuple->load($primaryKeyValue);
+                $this->trigger('BeforeDelete', $tuple);
+                $tuple->delete();
+                $this->trigger('AfterDelete', $tuple);
 
                 SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
@@ -517,7 +426,6 @@ class Curd extends Plugin
 
         systemLog($setting['title']);
     }
-
 
 
 }

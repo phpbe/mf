@@ -2,6 +2,8 @@
 
 namespace Be\Plugin\Lists;
 
+use Be\System\Be;
+
 
 /**
  * 按钮
@@ -13,8 +15,9 @@ abstract class Item
     protected $label = ''; // 配置项中文名称
     protected $value = ''; // 值
     protected $newValue = ''; // 新值
-    protected $description = ''; // 描述
+
     protected $keyValues = null; // 可选值键值对
+    protected $url = null; // 描述
 
     protected $ui = []; // UI界面参数
 
@@ -25,10 +28,8 @@ abstract class Item
      */
     public function __construct($params = [])
     {
-
         if (isset($params['name'])) {
             $name = $params['name'];
-
             if (is_callable($name)) {
                 $this->name = $name();
             } else {
@@ -38,7 +39,6 @@ abstract class Item
 
         if (isset($params['label'])) {
             $label = $params['label'];
-
             if (is_callable($label)) {
                 $this->label = $label();
             } else {
@@ -48,7 +48,6 @@ abstract class Item
 
         if (isset($params['value'])) {
             $value = $params['value'];
-
             if (is_callable($value)) {
                 $this->value = $value();
             } else {
@@ -56,13 +55,48 @@ abstract class Item
             }
         }
 
-        if (isset($params['description'])) {
-            $description = $params['description'];
-
-            if (is_callable($description)) {
-                $this->description = $description();
+        if (isset($params['keyValues'])) {
+            $keyValues = $params['keyValues'];
+            if (is_callable($keyValues)) {
+                $this->keyValues = $keyValues();
             } else {
-                $this->description = $description;
+                $this->keyValues = $keyValues;
+            }
+        } else {
+            if (isset($params['values'])) {
+                $values = $params['values'];
+                if (is_callable($values)) {
+                    $values = $values();
+                }
+
+                $keyValues = [];
+                foreach ($values as $value) {
+                    $keyValues[$value] = $value;
+                }
+                $this->keyValues = $keyValues;
+            }
+        }
+
+        if (isset($params['url'])) {
+            $url = $params['url'];
+            if (is_callable($url)) {
+                $this->url = $url();
+            } else {
+                $this->url = $url;
+            }
+        } else {
+            if (isset($params['action'])) {
+                $action = $params['action'];
+                if (is_callable($action)) {
+                    $action = $action();
+                }
+
+                if (strpos($action, '.') === false) {
+                    $runtime = Be::getRuntime();
+                    $this->url = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $action);
+                } else {
+                    $this->url = url($action);
+                }
             }
         }
 
@@ -78,7 +112,6 @@ abstract class Item
         if (!isset($this->ui['form-item']['label'])) {
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
         }
-
     }
 
     /**
