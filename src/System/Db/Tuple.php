@@ -158,9 +158,7 @@ abstract class Tuple
         }
 
         $db = Be::getDb($this->_dbName);
-        $statement = $db->execute('DELETE FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?', array($id));
-        $statement->closeCursor();
-
+        $db->query('DELETE FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?', [$id]);
         return $this;
     }
 
@@ -177,10 +175,7 @@ abstract class Tuple
         $primaryKey = $this->_primaryKey;
         $id = $this->$primaryKey;
         $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '+' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
-
-        $statement = $db->execute($sql, array($id));
-        $statement->closeCursor();
-
+        $db->query($sql, [$id]);
         return $this;
     }
 
@@ -194,14 +189,10 @@ abstract class Tuple
     public function decrement($field, $step = 1)
     {
         $db = Be::getDb($this->_dbName);
-
         $primaryKey = $this->_primaryKey;
         $id = $this->$primaryKey;
         $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '-' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
-
-        $statement = $db->execute($sql, array($id));
-        $statement->closeCursor();
-
+        $db->query($sql, [$id]);
         return $this;
     }
 
@@ -245,4 +236,7 @@ abstract class Tuple
     public function toObject() {
         return (Object) $this->toArray();
     }
+
 }
+
+
