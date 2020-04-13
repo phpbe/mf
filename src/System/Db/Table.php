@@ -492,7 +492,7 @@ class Table
 
         $sql .= $sqlData[0];
 
-        $this->_lastSql = array($sql, $sqlData[1]);
+        $this->_lastSql = [$sql, $sqlData[1]];
 
         $result = $keyField === null ? $db->$fn($sql, $sqlData[1]) : $db->$fn($sql, $sqlData[1], $keyField);
 
@@ -598,8 +598,7 @@ class Table
         $sql .= $sqlData[0];
         $this->_lastSql = array($sql, $sqlData[1]);
 
-        $statement = $db->execute($sql, $sqlData[1]);
-        $statement->closeCursor();
+        $db->query($sql, $sqlData[1]);
 
         return $this;
     }
@@ -648,8 +647,7 @@ class Table
         $sql .= $sqlData[0];
         $this->_lastSql = array($sql, $sqlData[1]);
 
-        $statement = $db->execute($sql, $sqlData[1]);
-        $statement->closeCursor();
+        $db->query($sql, $sqlData[1]);
 
         return $this;
     }
@@ -700,8 +698,7 @@ class Table
         $sql .= $sqlData[0];
         $this->_lastSql = array($sql, $sqlData[1]);
 
-        $statement = $db->execute($sql, array_merge(array_values($keyValues), $sqlData[1]));
-        $statement->closeCursor();
+        $db->query($sql, array_merge(array_values($keyValues), $sqlData[1]));
 
         return $this;
     }
@@ -739,8 +736,7 @@ class Table
         $sql .= $sqlData[0];
         $this->_lastSql = array($sql, $sqlData[1]);
 
-        $statement = $db->execute($sql, $sqlData[1]);
-        $statement->closeCursor();
+        $db->query($sql, $sqlData[1]);
 
         return $this;
     }
@@ -756,8 +752,7 @@ class Table
         $sql = 'TRUNCATE TABLE ' . $db->quoteKey($this->_tableName);
         $this->_lastSql = array($sql, []);
 
-        $statement = $db->execute($sql);
-        $statement->closeCursor();
+        $db->query($sql);
 
         return $this;
     }
@@ -773,8 +768,7 @@ class Table
         $sql = 'DROP TABLE ' . $db->quoteKey($this->_tableName);
         $this->_lastSql = array($sql, []);
 
-        $statement = $db->execute($sql);
-        $statement->closeCursor();
+        $db->query($sql);
 
         return $this;
     }
@@ -869,7 +863,7 @@ class Table
             }
         }
 
-        return array($sql, $values);
+        return [$sql, $values];
     }
 
     /**
