@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\System\Db;
 
 use Be\System\Be;
@@ -147,7 +148,8 @@ class Table
         return $this->_join('CROSS JOIN', $table, $on);
     }
 
-    protected function _join($type, $table, $on) {
+    protected function _join($type, $table, $on)
+    {
 
         $alias = null;
         if (strpos($table, ' ') !== false) {
@@ -228,7 +230,7 @@ class Table
 
             if ($op === null) {
                 if (substr($field, 0, 1) == '(') {
-                    if ( $n > 0 && (is_array($this->_where[$n - 1]) || substr($this->_where[$n - 1], -1) == ')')) {
+                    if ($n > 0 && (is_array($this->_where[$n - 1]) || substr($this->_where[$n - 1], -1) == ')')) {
                         $this->_where[] = 'AND';
                     }
                 }
@@ -365,7 +367,7 @@ class Table
      */
     public function getKeyValues($keyField, $valueField)
     {
-        return $this->query('getKeyValues', $keyField.','.$valueField);
+        return $this->query('getKeyValues', $keyField . ',' . $valueField);
     }
 
     /**
@@ -713,7 +715,7 @@ class Table
         $db = Be::getDb($this->_dbName);
 
         $sqlData = $this->prepareSql();
-        $sql = 'DELETE' ;
+        $sql = 'DELETE';
         if ($tableName) {
             $sql .= ' ' . $tableName;
         }
@@ -820,7 +822,7 @@ class Table
                         switch ($op) {
                             case 'IN':
                             case 'NOT IN':
-                                if (is_array($where[2]) && count($where[2])>0) {
+                                if (is_array($where[2]) && count($where[2]) > 0) {
                                     $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
                                     $values = array_merge($values, $where[2]);
                                 } else {
@@ -871,7 +873,8 @@ class Table
      *
      * @return string
      */
-    public function getDbName() {
+    public function getDbName()
+    {
         return $this->_dbName;
     }
 
@@ -880,7 +883,8 @@ class Table
      *
      * @return string
      */
-    public function getAppName() {
+    public function getAppName()
+    {
         return $this->_appName;
     }
 
@@ -934,7 +938,6 @@ class Table
         }
         return $lastSql;
     }
-
 
 
 }

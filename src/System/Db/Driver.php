@@ -569,6 +569,19 @@ abstract class Driver
         return $this->connection->getAttribute(\PDO::ATTR_SERVER_VERSION);
     }
 
+    /**
+     * 获取驱动名称 Mysql/Oracle/...
+     *
+     * @return string
+     */
+    public function getDriverName()
+    {
+        $class = get_called_class();
+        $driverName = substr($class, strrpos($class, '\\')+1);
+        $driverName = str_replace('Impl', '', $driverName);
+
+        return $driverName;
+    }
 
     /**
      * 处理插入数据库的字段名或表名
