@@ -1,18 +1,16 @@
 <?php
 
-namespace Be\Plugin\Lists\Field;
+namespace Be\Plugin\Lists\Toolbar;
 
 
 /**
- * 搜索项 布尔值
+ * 工具栏 自定义
  */
-class FieldItemHtml extends FieldItem
+class ToolbarItemCustom extends ToolbarItem
 {
 
-
-
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
@@ -20,4 +18,5 @@ class FieldItemHtml extends FieldItem
     {
         return $this->value;
     }
+
 }

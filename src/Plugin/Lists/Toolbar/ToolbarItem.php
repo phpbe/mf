@@ -10,15 +10,4 @@ use Be\Plugin\Lists\Item;
 abstract class ToolbarItem extends Item
 {
 
-    /**
-     * 构造函数
-     *
-     * @param array $params 注解参数
-     */
-    public function __construct($params = array())
-    {
-        parent::__construct($params);
-    }
-
-
 }

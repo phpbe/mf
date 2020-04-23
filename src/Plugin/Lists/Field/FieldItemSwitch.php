@@ -4,21 +4,18 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 搜索项 布尔值
+ * 字段 开关
  */
 class FieldItemSwitch extends FieldItem
 {
 
-
     /**
-     * 构造函数
+     * 获取html内容
      *
-     * @param array $params 参数
+     * @return string | array
      */
-    public function __construct($params = [])
+    public function getHtml()
     {
-        parent::__construct($params);
-
         if (!isset($this->ui['switch']['defaultChecked'])) {
             if ($this->value) {
                 $this->ui['switch']['defaultChecked'] = null;
@@ -26,18 +23,24 @@ class FieldItemSwitch extends FieldItem
         }
 
         // 可点击操作
-        if (!isset($this->url)) {
-            $this->ui['switch']['@change'] = 'fieldAction';
-        }
-    }
+        if (isset($this->url)) {
+            $option = null;
+            if (isset($this->option)) {
+                $option = json_encode($this->option);
+            } else {
+                $option = '{}';
+            }
 
-    /**
-     * 编辑
-     *
-     * @return string | array
-     */
-    public function getHtml()
-    {
+            $data = null;
+            if (isset($this->data)) {
+                $data = json_encode($this->data);
+            } else {
+                $data = '{}';
+            }
+
+            $this->ui['switch']['@change'] = 'fieldAction(\''.htmlspecialchars($this->label).'\', \''.$this->url.'\', '.$option.', '.$data.')';
+        }
+
         $html = '<a-switch';
         if (isset($this->ui['switch'])) {
             foreach ($this->ui['switch'] as $k => $v) {

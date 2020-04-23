@@ -4,7 +4,7 @@ namespace Be\Plugin\Lists\Toolbar;
 
 
 /**
- * 链接工具栏
+ * 工具栏 链接
  */
 class ToolbarItemLink extends ToolbarItem
 {
@@ -12,7 +12,7 @@ class ToolbarItemLink extends ToolbarItem
 
 
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
@@ -29,6 +29,7 @@ class ToolbarItemLink extends ToolbarItem
             }
         }
         $html .= '>';
+        $html .= $this->value;
         $html .= '</a>';
 
         return $html;

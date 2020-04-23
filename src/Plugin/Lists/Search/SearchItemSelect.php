@@ -9,28 +9,17 @@ namespace Be\Plugin\Lists\Search;
 class SearchItemSelect extends SearchItem
 {
 
-
     /**
-     * 构造函数
-     *
-     * @param array $params 参数
-     */
-    public function __construct($params = array())
-    {
-        parent::__construct($params);
-
-        if (!isset($this->ui['select']['v-decorator'])) {
-            $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-    }
-
-    /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
     public function getEditHtml()
     {
+        if (!isset($this->ui['select']['v-decorator'])) {
+            $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';
+        }
+
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {

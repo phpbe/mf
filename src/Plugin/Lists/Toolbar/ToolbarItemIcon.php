@@ -4,7 +4,7 @@ namespace Be\Plugin\Lists\Toolbar;
 
 
 /**
- * 图票 工具栏
+ * 工具栏 图标
  */
 class ToolbarItemIcon extends ToolbarItem
 {
@@ -12,7 +12,7 @@ class ToolbarItemIcon extends ToolbarItem
 
 
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */

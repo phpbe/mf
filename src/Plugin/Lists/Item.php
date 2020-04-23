@@ -17,8 +17,11 @@ abstract class Item
     protected $newValue = ''; // 新值
 
     protected $keyValues = null; // 可选值键值对
-    protected $url = null; // 描述
 
+    protected $url = null; // 网址
+
+    protected $option = null; // 控制项
+    protected $data = null; // POST 到后端的数据
     protected $ui = []; // UI界面参数
 
     /**
@@ -85,18 +88,14 @@ abstract class Item
                 $this->url = $url;
             }
         } else {
-            if (isset($params['action'])) {
-                $action = $params['action'];
-                if (is_callable($action)) {
-                    $action = $action();
+            if (isset($params['task'])) {
+                $task = $params['task'];
+                if (is_callable($task)) {
+                    $task = $task();
                 }
 
-                if (strpos($action, '.') === false) {
-                    $runtime = Be::getRuntime();
-                    $this->url = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $action);
-                } else {
-                    $this->url = url($action);
-                }
+                $runtime = Be::getRuntime();
+                $this->url = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
             }
         }
 
@@ -112,10 +111,28 @@ abstract class Item
         if (!isset($this->ui['form-item']['label'])) {
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
         }
+
+        if (isset($params['option'])) {
+            $option = $params['option'];
+            if (is_callable($option)) {
+                $this->option = $option();
+            } else {
+                $this->option = $option;
+            }
+        }
+
+        if (isset($params['data'])) {
+            $data = $params['data'];
+            if (is_callable($data)) {
+                $this->data = $data();
+            } else {
+                $this->data = $data;
+            }
+        }
     }
 
     /**
-     * 编辑
+     * 获取HTML内容
      *
      * @return string | array
      */

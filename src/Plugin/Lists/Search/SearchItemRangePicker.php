@@ -11,28 +11,17 @@ use Be\System\Exception\ServiceException;
 class SearchItemRangePicker extends SearchItem
 {
 
-
     /**
-     * 构造函数
-     *
-     * @param array $params 参数
-     */
-    public function __construct($params = array())
-    {
-        parent::__construct($params);
-
-        if (!isset($this->ui['range-picker']['v-decorator'])) {
-            $this->ui['range-picker']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-    }
-
-    /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
     public function getHtml()
     {
+        if (!isset($this->ui['range-picker']['v-decorator'])) {
+            $this->ui['range-picker']['v-decorator'] = '[\''.$this->name.'\']';
+        }
+
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {

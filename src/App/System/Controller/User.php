@@ -5,6 +5,8 @@ namespace Be\App\System\Controller;
 
 use Be\Plugin\Lists\Field\FieldItemAvatar;
 use Be\Plugin\Lists\Field\FieldItemSwitch;
+use Be\Plugin\Lists\Field\FieldItemText;
+use Be\Plugin\Lists\Operation\OperationItemButton;
 use Be\Plugin\Lists\Search\SearchItemInput;
 use Be\Plugin\Lists\Search\SearchItemSelect;
 use Be\Plugin\Lists\Toolbar\ToolbarItemButton;
@@ -71,278 +73,256 @@ class User extends Controller
      * @be-menu 用户管理
      * @be-menu-icon user
      *
-     * @be-permission 用户管理
+     * @be-permissions {
+     *      "用户列表": {"GET"=>{"task":"lists"}},
+     *      "新增用户": {"GET"=>{"task":"create"}},
+     *      "编辑用户": {"GET"=>{"task":"edit"}},
+     *      "新增用户": {"GET"=>{"task":"toggleBlock"}}
+     *      }
      */
     public function users()
     {
-        Be::getPlugin('Curd')->lists([
-            'title' => '用户列表',
+        Be::getPlugin('Curd')->execute([
+
+            'label' => '用户管理',
             'table' => 'system_user',
-            'search' => [
-                'items' => [
-                    [
-                        'name' => 'username',
-                        'label' => '用户名',
-                        'driver' => SearchItemInput::class,
-                    ],
-                    [
-                        'name' => 'name',
-                        'label' => '名称',
-                        'driver' => SearchItemInput::class,
-                    ],
-                    [
-                        'name' => 'email',
-                        'label' => '邮箱',
-                        'driver' => SearchItemInput::class,
-                    ],
-                    [
-                        'name' => 'block',
-                        'label' => '状态',
-                        'driver' => SearchItemSelect::class,
-                        'keyValues' => [
-                            '' => '不限',
-                            '0' => '启用',
-                            '1' => '禁用',
+
+            'lists' => [
+                'title' => '用户列表',
+                'search' => [
+                    'items' => [
+                        [
+                            'field' => 'username',
+                            'label' => '用户名',
+                            'driver' => SearchItemInput::class,
+                        ],
+                        [
+                            'field' => 'name',
+                            'label' => '名称',
+                            'driver' => SearchItemInput::class,
+                        ],
+                        [
+                            'field' => 'email',
+                            'label' => '邮箱',
+                            'driver' => SearchItemInput::class,
+                        ],
+                        [
+                            'field' => 'block',
+                            'label' => '状态',
+                            'driver' => SearchItemSelect::class,
+                            'keyValues' => [
+                                '' => '不限',
+                                '0' => '启用',
+                                '1' => '禁用',
+                            ]
+                        ],
+                        [
+                            'field' => 'role_id',
+                            'label' => '角色',
+                            'driver' => SearchItemSelect::class,
+                            'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
                         ]
                     ],
-                    [
-                        'name' => 'role_id',
-                        'label' => '角色',
-                        'driver' => SearchItemSelect::class,
-                        'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
+
+                    'ui' => [
+                        'form' => [
+                            'size' => 'small'
+                        ],
+                    ],
+                ],
+
+                'list' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'label' => '头像',
+                            'driver' => FieldItemAvatar::class,
+                            'value' => function ($row) {
+                                if ($row->avatar_s == '') {
+                                    return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
+                                } else {
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
+                                }
+                            }
+                        ],
+                        [
+                            'field' => 'username',
+                            'label' => '用户名',
+                            'driver' => FieldItemText::class,
+                        ],
+                        [
+                            'field' => 'email',
+                            'label' => '邮箱',
+                            'driver' => FieldItemText::class,
+                        ],
+                        [
+                            'field' => 'name',
+                            'label' => '名称',
+                            'driver' => FieldItemText::class,
+                        ],
+                        [
+                            'field' => 'block',
+                            'label' => '启用/禁用',
+                            'driver' => FieldItemSwitch::class
+                        ],
+                    ],
+                ],
+
+
+                'operation' => [
+                    'label' => '操作',
+                    'position' => 'left',
+                    'items' => [
+                        [
+                            'label' => '查看',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'detail',
+                        ],
+                        [
+                            'label' => '编辑',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'edit',
+                        ],
+                        [
+                            'label' => '删除',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'delete',
+                        ],
                     ]
                 ],
 
-                'ui' => [
-                    'form' => [
-                        'size' => 'small'
-                    ],
+                'toolbar' => [
+
+                    'items' => [
+                        [
+                            'label' => '新增用户',
+                            'task' => 'create',
+                            'driver' => ToolbarItemButton::class,
+                            'target' => 'pop', // 'ajax - ajax请求 / pop - 弹出新窗口 / self - 当前页面 / blank - 新页面'
+                            'url' => '',    // 拽定网址
+                            'ui' => [
+                                'icon' => 'plus',
+                            ]
+                        ],
+                        [
+                            'label' => '批量启用',
+                            'task' => 'toggle',
+                            'driver' => ToolbarItemButton::class,
+                            'data' => [
+                                'field' => 'block',
+                                'value' => 0,
+                            ],
+                            'ui' => [
+                                'icon' => 'check',
+                                'type' => 'primary',
+                            ]
+                        ],
+                        [
+                            'label' => '批量禁用',
+                            'task' => 'toggle',
+                            'driver' => ToolbarItemButton::class,
+                            'data' => [
+                                'field' => 'block',
+                                'value' => 1,
+                            ],
+                            'ui' => [
+                                'icon' => 'stop',
+                                'type' => 'danger',
+                            ]
+                        ],
+                        [
+                            'label' => '批量删除',
+                            'task' => 'delete',
+                            'driver' => ToolbarItemButton::class,
+                            'ui' => [
+                                'icon' => 'delete',
+                                'type' => 'danger'
+                            ]
+                        ],
+                        [
+                            'label' => '导出',
+                            'task' => 'export',
+                            'driver' => ToolbarItemButton::class,
+                            'ui' => [
+                                'icon' => 'download',
+                            ]
+                        ],
+                    ]
                 ],
+
             ],
 
-            'fields' => [
+            'create' => [
+                'BeforeCreate' => function (Tuple $tuple) {
+                    $salt = Random::complex(32);
+                    $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
+                    $tuple->register_time = time();
+                    $tuple->last_login_time = 0;
+                },
 
+                'AfterCreate' => function (Tuple $tuple) {
+                    // 上传头像
+                    $avatar = Request::files('avatar');
+                    if ($avatar && $avatar['error'] == 0) {
+                        Be::getService('System.User')->uploadAvatar($tuple, $avatar);
+                    }
+                },
 
-                // 未指定时取表的所有字段
-                'items' => [
-                    [
-                        'name' => 'avatar_s',
-                        'label' => '头像',
-                        'driver' => FieldItemAvatar::class,
-                        'value' => function ($row) {
-                            if ($row->avatar_s == '') {
-                                return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
-                            } else {
-                                return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
-                            }
+                'title' => '新增用户'
+            ],
+
+            'edit' => [
+                'BeforeEdit' => function ($tuple) {
+                    if ($tuple->password != '') {
+                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+                    } else {
+                        unset($tuple->password);
+                        unset($tuple->register_time);
+                        unset($tuple->last_login_time);
+                    }
+                },
+                'AfterEdit' => function ($tuple) {
+                    // 上传头像
+                    $avatar = Request::files('avatar');
+                    if ($avatar && $avatar['error'] == 0) {
+                        Be::getService('System.User')->uploadAvatar($tuple, $avatar);
+                    }
+                },
+
+                'title' => '编辑用户'
+            ],
+
+            'toggle' => [
+                'BeforeToggle' => function ($tuple) {
+                    if ($tuple->block == 1) {
+                        if ($tuple->id == 1) {
+                            throw new \Exception('默认用户不能禁用');
                         }
-                    ],
-                    [
-                        'name' => 'username',
-                        'label' => '用户名',
-                    ],
-                    [
-                        'name' => 'email',
-                        'label' => '邮箱',
-                    ],
-                    [
-                        'name' => 'name',
-                        'label' => '名称',
-                    ],
-                    [
-                        'name' => 'block',
-                        'label' => '启用/禁用',
-                        'driver' => FieldItemSwitch::class,
-                        'action' => 'toggleBlock'
-                    ],
-                    [
-                        'name' => 'name',
-                        'label' => '操作',
-                        'items' => [
 
-
-                        ]
-                    ],
-                ]
-
+                        $my = Be::getUser();
+                        if ($tuple->id == $my->id) {
+                            throw new \Exception('不能禁用自已的账号');
+                        }
+                    }
+                },
             ],
 
-            'toolbar' => [
+            'delete' => [
+                'BeforeDelete' => function ($tuple) {
+                    if ($tuple->id == 1) {
+                        throw new \Exception('默认用户不能删除');
+                    }
 
-                'items' => [
-                    [
-                        'name' => 'create',
-                        'label' => '新建',
-                        'driver' => ToolbarItemButton::class,
-                        'target' => 'pop', // 'ajax - ajax请求 / pop - 弹出新窗口 / self - 当前页面 / blank - 新页面'
-                        'url' => '',    // 拽定网址
-                        'ui' => [
-                            'icon' => 'plus',
-                        ]
-                    ],
-                    [
-                        'name' => 'toggle',
-                        'label' => '批量启用',
-                        'action' => 'toggleBlock',
-                        'value' => 0,
-                        'ui' => [
-                            'icon' => 'check',
-                            'type' => 'primary',
-                        ]
-                    ],
-                    [
-                        'name' => 'toggle',
-                        'label' => '批量禁用',
-                        'action' => 'toggleBlock',
-                        'value' => 1,
-                        'ui' => [
-                            'icon' => 'stop',
-                            'type' => 'danger',
-                        ]
-                    ],
-                    [
-                        'name' => 'delete',
-                        'label' => '批量删除',
-                        'ui' => [
-                            'icon' => 'delete',
-                            'type' => 'danger'
-                        ]
-                    ],
-                    [
-                        'name' => 'export',
-                        'label' => '导出',
-                        'ui' => [
-                            'icon' => 'download',
-                        ]
-                    ],
-                ]
+                    $my = Be::getUser();
+                    if ($tuple->id == $my->id) {
+                        throw new \Exception('不能删除自已');
+                    }
+                }
             ],
 
-        ]);
-    }
+            'export' => [],
 
-
-    /**
-     * 创建
-     *
-     * @be-menu 新增管理员
-     * @be-menu-icon user-add
-     *
-     * @be-permission 创建
-     */
-    public function create()
-    {
-
-        Be::getPlugin('Curd')->on('BeforeCreate', function (Tuple $tuple) {
-            $salt = Random::complex(32);
-            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
-            $tuple->register_time = time();
-            $tuple->last_login_time = 0;
-        })->on('AfterCreate', function (Tuple $tuple) {
-            // 上传头像
-            $avatar = Request::files('avatar');
-            if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System.User')->uploadAvatar($tuple, $avatar);
-            }
-        })->create([
-            'title' => '新增用户',
-            'table' => 'System.User'
-        ]);
-    }
-
-
-    /**
-     * 编辑
-     *
-     * @be-permission 编辑
-     */
-    public function edit()
-    {
-
-        Be::getPlugin('Curd')->on('BeforeEdit', function ($tuple) {
-            if ($tuple->password != '') {
-                $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
-            } else {
-                unset($tuple->password);
-                unset($tuple->register_time);
-                unset($tuple->last_login_time);
-            }
-        })->on('AfterEdit', function ($tuple) {
-            // 上传头像
-            $avatar = Request::files('avatar');
-            if ($avatar && $avatar['error'] == 0) {
-                Be::getService('System.User')->uploadAvatar($tuple, $avatar);
-            }
-        })->edit([
-            'name' => '编辑用户',
-            'table' => 'system_user'
-        ]);
-    }
-
-    /**
-     * 屏蔽
-     *
-     * @be-permission 屏蔽
-     */
-    public function toggleBlock()
-    {
-        $plugin = Be::getPlugin('Curd');
-
-        $value = Request::request('value', 1);
-        if ($value) {
-            $plugin->on('BeforeToggle', function ($tuple) {
-                if ($tuple->id == 1) {
-                    throw new \Exception('默认用户不能禁用');
-                }
-
-                $my = Be::getUser();
-                if ($tuple->id == $my->id) {
-                    throw new \Exception('不能禁用自已的账号');
-                }
-            });
-        }
-
-        $plugin->toggle([
-            'title' => $value ? '禁用用户' : '启用用户',
-            'table' => 'system_user',
-            'field' => 'block',
-            'value' => $value,
-        ]);
-    }
-
-
-    /**
-     * 删除
-     *
-     * @be-permission 删除
-     */
-    public function delete()
-    {
-        Be::getPlugin('Curd')->on('BeforeDelete', function ($tuple) {
-            if ($tuple->id == 1) {
-                throw new \Exception('默认用户不能删除');
-            }
-
-            $my = Be::getUser();
-            if ($tuple->id == $my->id) {
-                throw new \Exception('不能删除自已');
-            }
-        })->delete([
-            'title' => '删除用户',
-            'table' => 'system_user'
-        ]);
-    }
-
-    /**
-     * 导出
-     *
-     * @be-permission 导出
-     */
-    public function export()
-    {
-        Be::getPlugin('Curd')->export([
-            'title' => '导出用户',
-            'table' => 'system_user'
         ]);
     }
 

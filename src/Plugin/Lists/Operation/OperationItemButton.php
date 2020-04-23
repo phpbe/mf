@@ -1,27 +1,26 @@
 <?php
 
-namespace Be\Plugin\Lists\Field;
+namespace Be\Plugin\Lists\Operation;
 
 
 /**
- * 字段 进度条
+ * 搜索项 布尔值
  */
-class FieldItemProgress extends FieldItem
+class OperationItemButton extends OperationItem
 {
 
 
+
     /**
-     * 获取html内容
+     * 编辑
      *
      * @return string | array
      */
     public function getHtml()
     {
-        $html = '<a-progress';
-        $html .= ' :percent="' . intval($this->value) . '"';
-
-        if (isset($this->ui['progress'])) {
-            foreach ($this->ui['progress'] as $k => $v) {
+        $html = '<a-button';
+        if (isset($this->ui['button'])) {
+            foreach ($this->ui['button'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -30,7 +29,8 @@ class FieldItemProgress extends FieldItem
             }
         }
         $html .= '>';
-        $html .= '</a-progress>';
+        $html .= $this->value;
+        $html .= '</a-button>';
 
         return $html;
     }

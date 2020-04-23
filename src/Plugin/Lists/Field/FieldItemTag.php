@@ -4,13 +4,13 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 标签
+ * 字段 标签
  */
 class FieldItemTag extends FieldItem
 {
 
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string
      */

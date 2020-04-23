@@ -19,14 +19,25 @@ use Be\System\Cookie;
 class Curd extends Plugin
 {
 
+    protected $setting = null;
+
+    public function execute($setting = [])
+    {
+        $this->setting = $setting;
+
+        $task = Request::request('task', 'lists');
+        if (isset($this->setting[$task]) && function_exists([$this, $task])) {
+            $this->$task();
+        }
+    }
 
     /**
      * 列表展示
      *
-     * @param array $setting 配置项
      */
-    public function lists($setting = [])
+    public function lists()
     {
+        $setting = $this->setting['lists'];
 
         $setting['total'] = 100;
         $setting['pageSize'] = 20;
@@ -128,7 +139,6 @@ class Curd extends Plugin
         }
 
 
-
         Response::setTitle($config['title']);
         Response::set('config', $config);
         Response::set('table', $table);
@@ -152,8 +162,10 @@ class Curd extends Plugin
      *
      * @param array $setting 配置项
      */
-    public function detail($setting = [])
+    public function detail()
     {
+        $setting = $this->setting['detail'];
+
         $tuple = Be::newTuple($setting['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
@@ -178,10 +190,11 @@ class Curd extends Plugin
     /**
      * 创建
      *
-     * @param array $setting 配置项
      */
-    public function create($setting = [])
+    public function create()
     {
+        $setting = $this->setting['create'];
+
         $tuple = Be::newTuple($setting['table']);
 
         if (Request::isPost()) {
@@ -216,10 +229,11 @@ class Curd extends Plugin
     /**
      * 编辑
      *
-     * @param array $setting 配置项
      */
-    public function edit($setting = [])
+    public function edit()
     {
+        $setting = $this->setting['edit'];
+
         $tuple = Be::newTuple($setting['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
@@ -266,10 +280,12 @@ class Curd extends Plugin
     /**
      * 切换某个字段的值，示例功能：启用/禁用
      *
-     * @param array $setting 配置项
      */
-    public function toggle($setting = [])
+    public function toggle()
     {
+        $setting = $this->setting['toggle'];
+
+        $field = Request::request('field', 'block');
         $value = Request::request('value', 1);
 
         $tuple = Be::newTuple($setting['table']);
@@ -288,7 +304,6 @@ class Curd extends Plugin
 
                 foreach ($primaryKeyValue as $x) {
 
-                    $field = 'block';
                     if (isset($setting['field'])) {
                         $field = $setting['field'];
                     }
@@ -303,11 +318,10 @@ class Curd extends Plugin
                     $tuple->save();
                     $this->trigger('AfterToggle', $tuple);
 
-                    SystemLog($setting['title'] . '（记录编号 ' . $primaryKey . '为' . $x . '）');
+                    SystemLog($setting['title'] . '（#' . $primaryKey . '：' . $x . '）');
                 }
             } else {
 
-                $field = 'block';
                 if (isset($setting['field'])) {
                     $field = $setting['field'];
                 }
@@ -322,7 +336,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterToggle', $tuple);
 
-                SystemLog($setting['title'] . '（记录编号 ' . $primaryKey . '为' . $x . '）');
+                SystemLog($setting['title'] . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
             }
 
             Be::getDb()->commit();
@@ -338,10 +352,11 @@ class Curd extends Plugin
     /**
      * 删除
      *
-     * @param array $setting 配置项
      */
-    public function delete($setting = [])
+    public function delete()
     {
+        $setting = $this->setting['delete'];
+
         $tuple = Be::newTuple($setting['table']);
 
         $primaryKey = $tuple->getPrimaryKey();
@@ -388,10 +403,11 @@ class Curd extends Plugin
     /*
      * 导出
      *
-     * @param array $setting 配置项
      */
-    public function export($setting = [])
+    public function export()
     {
+        $setting = $this->setting['export'];
+
         $table = Be::newTable($setting['table']);
 
         foreach ($setting['search'] as $key => $search) {

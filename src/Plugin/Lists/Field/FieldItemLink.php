@@ -4,7 +4,7 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 搜索项 布尔值
+ * 字段 链接
  */
 class FieldItemLink extends FieldItem
 {
@@ -12,7 +12,7 @@ class FieldItemLink extends FieldItem
 
 
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */

@@ -5,21 +5,18 @@ namespace Be\Plugin\Lists\Search;
 use Be\System\Exception\ServiceException;
 
 /**
- * 搜索项 布尔值
+ * 搜索项 浮点数
  */
 class SearchItemInputNumberFloat extends SearchItem
 {
 
-
     /**
-     * 构造函数
+     * 获取html内容
      *
-     * @param array $params 参数
+     * @return string | array
      */
-    public function __construct($params = array())
+    public function getEditHtml()
     {
-        parent::__construct($params);
-
         if (!isset($this->ui['input-number'][':precision'])) {
             $this->ui['input-number'][':precision'] = '2';
         }
@@ -36,15 +33,6 @@ class SearchItemInputNumberFloat extends SearchItem
             $this->ui['input-number']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
-    }
-
-    /**
-     * 编辑
-     *
-     * @return string | array
-     */
-    public function getEditHtml()
-    {
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {

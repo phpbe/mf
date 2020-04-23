@@ -1,15 +1,13 @@
 <?php
 
-namespace Be\Plugin\Lists\Field;
+namespace Be\Plugin\Lists\Search;
 
 
 /**
- * 字段 文本
+ * 搜索项 自定义
  */
-class FieldItemText extends FieldItem
+class SearchItemCustom extends SearchItem
 {
-
-
 
     /**
      * 获取html内容
@@ -18,7 +16,7 @@ class FieldItemText extends FieldItem
      */
     public function getHtml()
     {
-        return htmlspecialchars($this->value);
+        return $this->value;
     }
 
 }

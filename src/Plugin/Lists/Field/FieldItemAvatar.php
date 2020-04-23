@@ -4,32 +4,22 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 头像履性
+ * 字段 头像
  */
 class FieldItemAvatar extends FieldItem
 {
 
     /**
-     * 构造函数
-     *
-     * @param array $params 参数
-     */
-    public function __construct($params = [])
-    {
-        parent::__construct($params);
-
-        if (!isset($this->ui['avatar']['shape'])) {
-            $this->ui['avatar']['shape'] = 'square';
-        }
-    }
-
-    /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
     public function getHtml()
     {
+        if (!isset($this->ui['avatar']['shape'])) {
+            $this->ui['avatar']['shape'] = 'square';
+        }
+
         $html = '<a-avatar';
         $html .= ' src="' . $this->value . '"';
 

@@ -6,7 +6,7 @@ use Be\Plugin\Lists\Item;
 use Be\System\Be;
 
 /**
- * 缓存驱动
+ * 搜索项驱动
  */
 abstract class SearchItem extends Item
 {
@@ -44,8 +44,8 @@ abstract class SearchItem extends Item
      */
     public function submit($data)
     {
-        if (isset($data[$this->name])) {
-            $newValue = $data[$this->name];
+        if (isset($data[$this->field])) {
+            $newValue = $data[$this->field];
             if (!is_array($newValue) && !is_object($newValue)) {
                 $newValue =  htmlspecialchars_decode($newValue);
             }

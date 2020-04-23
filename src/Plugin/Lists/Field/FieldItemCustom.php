@@ -4,9 +4,9 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 字段 文本
+ * 字段 自定义
  */
-class FieldItemText extends FieldItem
+class FieldItemCustom extends FieldItem
 {
 
 
@@ -18,7 +18,7 @@ class FieldItemText extends FieldItem
      */
     public function getHtml()
     {
-        return htmlspecialchars($this->value);
+        return $this->value;
     }
 
 }

@@ -4,7 +4,7 @@ namespace Be\Plugin\Lists\Field;
 
 
 /**
- * 搜索项 布尔值
+ * 字段 图标
  */
 class FieldItemIcon extends FieldItem
 {
@@ -12,7 +12,7 @@ class FieldItemIcon extends FieldItem
 
 
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */

@@ -4,34 +4,22 @@ namespace Be\Plugin\Lists\Search;
 
 
 /**
- * 搜索项 布尔值
+ * 搜索项 日期选择器
  */
 class SearchItemDatePicker extends SearchItem
 {
 
-
     /**
-     * 构造函数
-     *
-     * @param array $params 参数
-     */
-    public function __construct($params = array())
-    {
-        parent::__construct($params);
-
-        if (!isset($this->ui['date-picker']['v-decorator'])) {
-            $this->ui['date-picker']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-
-    }
-
-    /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
     public function getHtml()
     {
+        if (!isset($this->ui['date-picker']['v-decorator'])) {
+            $this->ui['date-picker']['v-decorator'] = '[\''.$this->name.'\']';
+        }
+
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
