@@ -18,7 +18,10 @@ class FieldItemIcon extends FieldItem
      */
     public function getHtml()
     {
-        $html = '<a-icon';
+
+        $this->ui['icon']['type'] = $this->value;
+
+        $html = '<a-icon ';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {

@@ -72,13 +72,7 @@ class User extends Controller
      *
      * @be-menu 用户管理
      * @be-menu-icon user
-     *
-     * @be-permissions {
-     *      "用户列表": {"GET"=>{"task":"lists"}},
-     *      "新增用户": {"GET"=>{"task":"create"}},
-     *      "编辑用户": {"GET"=>{"task":"edit"}},
-     *      "新增用户": {"GET"=>{"task":"toggleBlock"}}
-     *      }
+     * @be-permission 用户管理
      */
     public function users()
     {
@@ -202,7 +196,9 @@ class User extends Controller
                             'target' => 'pop', // 'ajax - ajax请求 / pop - 弹出新窗口 / self - 当前页面 / blank - 新页面'
                             'url' => '',    // 拽定网址
                             'ui' => [
-                                'icon' => 'plus',
+                                'button' => [
+                                    'icon' => 'plus',
+                                ]
                             ]
                         ],
                         [
@@ -214,8 +210,10 @@ class User extends Controller
                                 'value' => 0,
                             ],
                             'ui' => [
-                                'icon' => 'check',
-                                'type' => 'primary',
+                                'button' => [
+                                    'icon' => 'check',
+                                    'type' => 'primary',
+                                ]
                             ]
                         ],
                         [
@@ -227,8 +225,10 @@ class User extends Controller
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'icon' => 'stop',
-                                'type' => 'danger',
+                                'button' => [
+                                    'icon' => 'stop',
+                                    'type' => 'danger',
+                                ]
                             ]
                         ],
                         [
@@ -236,8 +236,10 @@ class User extends Controller
                             'task' => 'delete',
                             'driver' => ToolbarItemButton::class,
                             'ui' => [
-                                'icon' => 'delete',
-                                'type' => 'danger'
+                                'button' => [
+                                    'icon' => 'delete',
+                                    'type' => 'danger'
+                                ]
                             ]
                         ],
                         [
@@ -245,7 +247,9 @@ class User extends Controller
                             'task' => 'export',
                             'driver' => ToolbarItemButton::class,
                             'ui' => [
-                                'icon' => 'download',
+                                'button' => [
+                                    'icon' => 'download',
+                                ]
                             ]
                         ],
                     ]

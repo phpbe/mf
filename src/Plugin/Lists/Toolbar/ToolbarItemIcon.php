@@ -18,6 +18,9 @@ class ToolbarItemIcon extends ToolbarItem
      */
     public function getHtml()
     {
+
+        $this->ui['icon']['type'] = $this->value;
+
         $html = '<a-icon';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {

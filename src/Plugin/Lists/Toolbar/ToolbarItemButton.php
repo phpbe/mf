@@ -29,6 +29,7 @@ class ToolbarItemButton extends ToolbarItem
             }
         }
         $html .= '>';
+        $html .= $this->value;
         $html .= '</a-button>';
 
         return $html;
