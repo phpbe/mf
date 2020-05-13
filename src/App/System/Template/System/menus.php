@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/base64.js"></script>
 
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menus.css">
@@ -11,9 +11,9 @@ use Be\System\Be;
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menuSetLink.css">
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/menuSetLink.js"></script>
 
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $groups = $this->get('groups');
 $groupId = $this->get('groupId');
@@ -114,4 +114,4 @@ $uiCategoryTree->display();
         <input type="button" class="btn" data-dismiss="modal" value="取消" />
     </div>
 </div>
-<!--{/center}-->
+</be-center>

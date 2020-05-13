@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $log = $this->log;
 if (strlen(serialize($log)) < 100 * 1024) {
@@ -23,9 +23,9 @@ if (strlen(serialize($log)) < 100 * 1024) {
         background-color: #fff;color:#000;white-space: pre-wrap;word-wrap: break-word;
     }
 </style>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $log = $this->log;
 
@@ -88,4 +88,4 @@ $items = [
     }
     ?>
 </div>
-<!--{/center}-->
+</be-center>

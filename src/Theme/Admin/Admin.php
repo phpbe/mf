@@ -3,7 +3,7 @@ use Be\System\Be;
 use Be\System\Session;
 ?>
 
-<!--{html}-->
+<be-html>
 <?php
 $config = Be::getConfig('System.System');
 $my = Be::getUser();
@@ -27,20 +27,20 @@ $my = Be::getUser();
     <script src="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.js"></script>
 
     <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Admin')->path; ?>/css/theme.css" />
-    <!--{head}-->
-    <!--{/head}-->
+    <be-head>
+    </be-head>
 </head>
 <body>
-    <!--{body}-->
+    <be-body>
     <div class="be-body">
 
         <div id="app-west" :class="{'be-west': true, 'be-west-collapsed': collapsed}" v-cloak>
-            <!--{west}-->
+            <be-west>
 
             <div class="logo">
                 LOGO
             </div>
-a
+
             <div class="west-menu">
                 <?php
                 $menu = Be::getMenu('Admin');
@@ -82,15 +82,15 @@ a
                 <a-icon :type="collapsed ?'caret-right': 'caret-left'"></a-icon>
             </div>
 
-            <!--{/west}-->
+            </be-west>
         </div>
 
 
         <div class="be-middle" id="be-middle">
-            <!--{middle}-->
+            <be-middle>
 
             <div class="be-north">
-                <!--{north}-->
+                <be-north>
 
 
                 <div class="menu">
@@ -161,7 +161,7 @@ a
                     <a href="<?php echo url('System.User.logout')?>" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
                 </div>
 
-                <!--{/north}-->
+                </be-north>
             </div>
 
             <div class="be-center">
@@ -186,18 +186,18 @@ a
                     </a-breadcrumb>
                 </div>
                 <div class="center-body">
-                    <!--{center}-->
-                    <!--{/center}-->
+                    <be-center>
+                    </be-center>
                 </div>
             </div>
-            <!--{/middle}-->
+            </be-middle>
         </div>
 
     </div>
 
     <script src="<?php echo Be::getProperty('Theme.Admin')->path; ?>/js/theme.js"></script>
 
-    <!--{/body}-->
+    </be-body>
 </body>
 </html>
-<!--{/html}-->
+</be-html>

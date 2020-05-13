@@ -2,15 +2,15 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <link rel="stylesheet" href="bootstrap/2.3.2/css/bootstrap-lightbox.min.css" type="text/css" />
 <script src="bootstrap/2.3.2/js/bootstrap-lightbox.min.js"></script>
 
 <script type="text/javascript" language="javascript" src="template/system/js/remoteApp.js"></script>
 <link type="text/css" rel="stylesheet" href="template/system/css/remoteApp.css" />
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $serviceSystem = Be::getService('System.Admin');
 $installedApps = $serviceSystem->getApps();
@@ -126,4 +126,4 @@ foreach ($installedApps as $installedApp) {
     </div>
 
 </div>
-<!--{/center}-->
+</be-center>

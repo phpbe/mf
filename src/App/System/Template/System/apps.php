@@ -2,15 +2,15 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/apps.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $apps = $this->get('apps');
 
@@ -73,4 +73,4 @@ $uiGrid->setFields(
 );
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

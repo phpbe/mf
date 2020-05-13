@@ -2,16 +2,16 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 
 $adminUiEditor = Be::getUi('editor');
 $adminUiEditor->head();
 ?>
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/User/js/rolePermissions.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $role = $this->get('role');
 $apps = $this->get('apps');
@@ -97,4 +97,4 @@ foreach ($apps as $app) {
 $adminUiEditor->addHidden('roleId', $role->id);
 $adminUiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>

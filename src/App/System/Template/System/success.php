@@ -1,4 +1,4 @@
-<!--{head}-->
+<be-head>
 <?php
 if (isset($this->redirectUrl)) {
 
@@ -30,9 +30,9 @@ if (isset($this->redirectUrl)) {
 
 }
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{body}-->
+<be-body>
 <div class="theme-box-container">
     <div class="theme-box">
         <div class="theme-box-title">操作成功</div>
@@ -54,4 +54,4 @@ if (isset($this->redirectUrl)) {
         </div>
     </div>
 </div>
-<!--{/body}-->
+</be-body>

@@ -1,5 +1,5 @@
-<!--{middle}-->
-<!--{center}-->
+<be-middle>
+<be-center>
 <div class="theme-box-container">
     <div class="theme-box">
         <div class="theme-box-title"><?php echo $this->title; ?></div>
@@ -10,5 +10,5 @@
         </div>
     </div>
 </div>
-<!--{/center}-->
-<!--{/middle}-->
+</be-center>
+</be-middle>

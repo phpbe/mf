@@ -1,4 +1,4 @@
-<!--{head}-->
+<be-head>
 <script>
     function save(e) {
         var $e = $(e);
@@ -49,9 +49,9 @@
         updateToggle();
     })
 </script>
-<!--{/head}-->
+</be-head>
 
-<!--{body}-->
+<be-body>
 
 <div class="panel panel-default">
 
@@ -180,4 +180,4 @@
         </form>
     </div>
 </div>
-<!--{/body}-->
+</be-body>

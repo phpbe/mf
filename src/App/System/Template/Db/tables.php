@@ -2,15 +2,15 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 
 <script type="text/javascript" language="javascript">
 
 </script>
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/Db/js/tables.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <div id="apps">
     <ul>
         <?php
@@ -24,4 +24,4 @@ use Be\System\Be;
 </div>
 <div id="tables"></div>
 <div id="table-config"></div>
-<!--{/center}-->
+</be-center>

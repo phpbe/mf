@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
@@ -11,9 +11,9 @@ $uiGrid->head();
 <script type="text/javascript" language="javascript" src="bootstrap/2.3.2/js/bootstrap-lightbox.js"></script>
 
 <script type="text/javascript" language="javascript" src="template/system/js/remoteThemes.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $remoteThemes = $this->get('remoteThemes');
 $localThemes = $this->get('localThemes');
@@ -142,4 +142,4 @@ $pagination->setPage($remoteThemes->page);
 $uiGrid->setPagination($pagination);
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

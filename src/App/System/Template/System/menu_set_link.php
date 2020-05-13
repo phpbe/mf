@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{html}-->
+<be-html>
 <?php
 $config = Be::getConfig('System.System');
 $apps = $this->get('apps');
@@ -79,4 +79,4 @@ foreach ($apps as $app) {
 </tr>
 </table>
 </div>
-<!--{/html}-->
+</be-html>

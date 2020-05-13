@@ -1,5 +1,5 @@
-<!--{middle}-->
-<!--{center}-->
+<be-middle>
+<be-center>
 
-<!--{/center}-->
-<!--{/middle}-->
+</be-center>
+</be-middle>

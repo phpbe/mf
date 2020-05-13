@@ -2,14 +2,14 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $serviceApp = Be::getService('System.app');
 $installedApps = $serviceApp->getApps();
@@ -105,4 +105,4 @@ $pagination->setPage($remoteApps->page);
 $uiGrid->setPagination($pagination);
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

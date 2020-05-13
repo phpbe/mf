@@ -2,14 +2,14 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiEditor = Be::getUi('editor');
 $uiEditor->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $systemHtml = $this->get('systemHtml');
 
@@ -64,4 +64,4 @@ $uiEditor->setFields(
 $uiEditor->addHidden('id', $systemHtml->id);
 $uiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>

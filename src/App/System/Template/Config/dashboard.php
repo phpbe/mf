@@ -2,11 +2,11 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <script src="<?php echo Be::getProperty('App.System')->path; ?>/Tempalte/Config/js/base64.min.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 
 <?php
 $formData = [];
@@ -155,4 +155,4 @@ $methods = [];
 
     //console.log(app);
 </script>
-<!--{/center}-->
+</be-center>

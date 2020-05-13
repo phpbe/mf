@@ -1,13 +1,13 @@
-<!--{head}-->
+<be-head>
 <script>
 
 
 
 </script>
-<!--{/head}-->
+</be-head>
 
 
-<!--{center}-->
+<be-center>
 <?php
 $primaryKey = $this->table->getPrimaryKey();
 ?>
@@ -149,4 +149,4 @@ $primaryKey = $this->table->getPrimaryKey();
 
     //console.log(app);
 </script>
-<!--{/center}-->
+</be-center>

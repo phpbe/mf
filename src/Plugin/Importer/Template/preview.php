@@ -1,4 +1,4 @@
-<!--{center}-->
+<be-center>
 <?php
 $primaryKey = $this->table->getPrimaryKey();
 $runtime = \Be\System\Be::getRuntime();
@@ -63,4 +63,4 @@ $runtime = \Be\System\Be::getRuntime();
 
     //console.log(app);
 </script>
-<!--{/center}-->
+</be-center>

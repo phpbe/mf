@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiEditor = Be::getUi('editor');
 $uiEditor->head();
@@ -13,9 +13,9 @@ if (($adminUser->id>0)) {
     echo '<script type="text/javascript" language="javascript">$(function(){hidePassword();});</script>';
 }
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $adminUser = $this->adminUser;
 
@@ -167,4 +167,4 @@ $uiEditor->setFields(
 $uiEditor->addHidden('id', $adminUser->id);
 $uiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>

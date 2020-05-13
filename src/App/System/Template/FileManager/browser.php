@@ -2,12 +2,12 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/FileManager/css/browser.css">
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/FileManager/r/js/browser.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{body}-->
+<be-body>
 <?php
 $path = $this->get('path');
 $view = $this->get('view');
@@ -330,4 +330,4 @@ foreach ($files as $file) {
 <?php
 }
 ?>
-<!--{/body}-->
+</be-body>

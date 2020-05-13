@@ -1,4 +1,4 @@
-<!--{head}-->
+<be-head>
 <script>
     function save(e) {
         var $e = $(e);
@@ -25,10 +25,10 @@
         });
     }
 </script>
-<!--{/head}-->
+</be-head>
 
 
-<!--{body}-->
+<be-body>
 
 <div class="panel panel-default">
 
@@ -103,4 +103,4 @@
     </div>
 
 </div>
-<!--{/body}-->
+</be-body>

@@ -1,14 +1,14 @@
 <?php
 use Be\System\Be;
 ?>
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 
 $data = [];
@@ -84,4 +84,4 @@ $uiGrid->setFields(
 );
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

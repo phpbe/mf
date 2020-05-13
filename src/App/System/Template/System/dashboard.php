@@ -2,12 +2,12 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/dashboard.css">
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/dashboard.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $my = Be::getAdminUser();
 $user = $this->user;
@@ -139,4 +139,4 @@ foreach ($recentLogs as $log) {
         }
     });
 </script>
-<!--{/center}-->
+</be-center>

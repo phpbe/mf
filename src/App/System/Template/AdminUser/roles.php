@@ -2,11 +2,11 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/adminUser/js/roles.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $roles = $this->get('roles');
 
@@ -45,4 +45,4 @@ $adminUiCategory->setFields(
 
 $adminUiCategory->display();
 ?>
-<!--{/center}-->
+</be-center>

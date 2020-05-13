@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{center}-->
+<be-center>
 <?php
 $groups = $this->get('groups');
 
@@ -37,4 +37,4 @@ $uiGrid->display();
         <li>* north, south, dashboard 为系统默认顶部菜单,底部和用户中心菜单类名， 禁止改动和删除。</li>
     </ul>
 </div>
-<!--{/center}-->
+</be-center>

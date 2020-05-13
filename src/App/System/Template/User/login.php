@@ -2,11 +2,11 @@
 use Be\System\Be;
 use Be\System\Request;
 ?>
-<!--{head}-->
+<be-head>
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/Template/User/css/login.css" />
-<!--{/head}-->
+</be-head>
 
-<!--{body}-->
+<be-body>
 <?php
 $config = Be::getConfig('System.System');
 ?>
@@ -94,4 +94,4 @@ if ($return=='') {
     });
 </script>
 
-<!--{/body}-->
+</be-body>

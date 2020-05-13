@@ -2,7 +2,7 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
@@ -12,9 +12,9 @@ $uiGrid->head();
 
 <link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/themes.css">
 <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/themes.js"></script>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $themes = $this->get('themes');
 
@@ -101,4 +101,4 @@ $uiGrid->setFields(
 );
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

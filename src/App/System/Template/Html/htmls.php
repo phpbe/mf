@@ -2,14 +2,14 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $systemHtmls = $this->get('systemHtmls');
 
@@ -61,4 +61,4 @@ $uiGrid->setPagination($this->get('pagination'));
 $uiGrid->orderBy($this->get('orderBy'), $this->get('orderByDir'));
 $uiGrid->display();
 ?>
-<!--{/center}-->
+</be-center>

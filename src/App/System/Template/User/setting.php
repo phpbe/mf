@@ -2,15 +2,15 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiEditor = Be::getUi('editor');
 $uiEditor->setLeftWidth(300);
 $uiEditor->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $configUser = $this->get('configUser');
 
@@ -195,4 +195,4 @@ $uiEditor->setFields(
 );
 $uiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>

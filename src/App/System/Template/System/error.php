@@ -1,4 +1,4 @@
-<!--{head}-->
+<be-head>
 <?php
 if (isset($this->redirectUrl)) {
 
@@ -30,10 +30,10 @@ if (isset($this->redirectUrl)) {
 
 }
 ?>
-<!--{/head}-->
+</be-head>
 
 
-<!--{body}-->
+<be-body>
 <div id="vue">
     <a-alert
             message="错误"
@@ -54,4 +54,4 @@ if (isset($this->redirectUrl)) {
 </div>
 
 
-<!--{/body}-->
+</be-body>

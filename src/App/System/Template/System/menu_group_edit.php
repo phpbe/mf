@@ -2,14 +2,14 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiEditor = Be::getUi('editor');
 $uiEditor->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $menuGroup = $this->get('menuGroup');
 
@@ -52,4 +52,4 @@ $uiEditor->setFields(
 $uiEditor->addHidden('id', $menuGroup->id);
 $uiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>

@@ -2,14 +2,14 @@
 use Be\System\Be;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $users = $this->users;
 $roles = $this->roles;
@@ -133,4 +133,4 @@ $uiGrid->orderBy($this->orderBy, $this->orderByDir);
 $uiGrid->display();
 
 ?>
-<!--{/center}-->
+</be-center>

@@ -1,4 +1,4 @@
-<!--{html}-->
+<be-html>
 <ul>
     <?php
     foreach($this->tables as $table) {
@@ -8,4 +8,4 @@
     }
     ?>
 </ul>
-<!--{/html}-->
+</be-html>

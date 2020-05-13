@@ -3,14 +3,14 @@ use Be\System\Be;
 use Be\Util\Str;
 
 ?>
-<!--{head}-->
+<be-head>
 <?php
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 $years = $this->years;
 $year = $this->year;
@@ -149,4 +149,4 @@ if (count($logs)) {
     $uiGrid->display();
 }
 ?>
-<!--{/center}-->
+</be-center>

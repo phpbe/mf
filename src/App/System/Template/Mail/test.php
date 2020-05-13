@@ -3,14 +3,14 @@ use Be\System\Be;
 use Be\System\Request;
 ?>
 
-<!--{head}-->
+<be-head>
 <?php
 $uiEditor = Be::getUi('editor');
 $uiEditor->head();
 ?>
-<!--{/head}-->
+</be-head>
 
-<!--{center}-->
+<be-center>
 <?php
 
 $uiEditor = Be::getUi('editor');
@@ -49,4 +49,4 @@ $uiEditor->setFields(
 
 $uiEditor->display();
 ?>
-<!--{/center}-->
+</be-center>
