@@ -2,7 +2,7 @@
 
 namespace Be\Plugin\Curd;
 
-use Be\Plugin\Lists\Field\FieldItemText;
+use Be\Plugin\Lists\ListItem\ListItemText;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Plugin;
@@ -55,21 +55,21 @@ class Curd extends Plugin
 
         $primaryKey = $table->getPrimaryKey();
 
-        $searchDrivers = [];
+        $searchItemDrivers = [];
         if (isset($setting['search']['items'])) {
             foreach ($setting['search']['items'] as $item) {
                 $driver = $item['driver'];
-                $searchDriver = new $driver($item);
-                $searchDrivers[] = $searchDriver;
+                $searchItemDriver = new $driver($item);
+                $searchItemDrivers[] = $searchItemDriver;
             }
         }
 
-        $toolbarDrivers = [];
+        $toolbarItemDrivers = [];
         if (isset($setting['toolbar']['items'])) {
             foreach ($setting['toolbar']['items'] as $item) {
                 $driver = $item['driver'];
-                $toolbarDriver = new $driver($item);
-                $toolbarDrivers[] = $toolbarDriver;
+                $toolbarItemDriver = new $driver($item);
+                $toolbarItemDrivers[] = $toolbarItemDriver;
             }
         }
 
@@ -105,37 +105,37 @@ class Curd extends Plugin
         $rows = $table->getObjects();
 
         $fields = null;
-        if (isset($config['field']['items'])) {
-            $fields = $config['field']['items'];
+        if (isset($config['list']['items'])) {
+            $fields = $config['list']['items'];
         } else {
             $tableConfig = Be::getTableProperty($config['table']);
             $fields = $tableConfig->getFields();
         }
 
-        $fieldDrivers = [];
+        $listItemDrivers = [];
         foreach ($rows as $row) {
 
-            $tmpFieldDrivers = [];
+            $tmpListItemDrivers = [];
             foreach ($fields as $item) {
 
-                if (!isset($item['value']) && isset($item['name'])) {
-                    $name = $item['name'];
-                    if (isset($row->$name)) {
-                        $item['value'] = $row->$name;
+                if (!isset($item['value']) && isset($item['field'])) {
+                    $field = $item['field'];
+                    if (isset($row->$field)) {
+                        $item['value'] = $row->$field;
                     }
                 }
 
                 $driver = null;
                 if (!isset($item['driver'])) {
-                    $driver = FieldItemText::class;
+                    $driver = ListItemText::class;
                 } else {
                     $driver = $item['driver'];
                 }
-                $fieldDriver = new $driver($item);
-                $tmpFieldDrivers[] = $fieldDriver;
+                $listItemDriver = new $driver($item);
+                $tmpListItemDrivers[] = $listItemDriver;
             }
 
-            $fieldDrivers[] = $tmpFieldDrivers;
+            $listItemDrivers[] = $tmpListItemDrivers;
         }
 
 
@@ -143,9 +143,9 @@ class Curd extends Plugin
         Response::set('config', $config);
         Response::set('table', $table);
 
-        Response::set('searchDrivers', $searchDrivers);
-        Response::set('toolbarDrivers', $toolbarDrivers);
-        Response::set('fieldDrivers', $fieldDrivers);
+        Response::set('searchItemDrivers', $searchItemDrivers);
+        Response::set('toolbarItemDrivers', $toolbarItemDrivers);
+        Response::set('listItemDrivers', $listItemDrivers);
 
         Response::set('page', $page);
         Response::set('pageSize', $pageSize);

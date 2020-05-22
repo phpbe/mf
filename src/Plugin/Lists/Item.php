@@ -141,6 +141,25 @@ abstract class Item
         return '';
     }
 
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        return false;
+    }
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return false;
+    }
 
     public function __get($property)
     {

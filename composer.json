@@ -2,7 +2,7 @@
     "name": "be/mf",
     "type": "library",
     "description": "PHP BE 管理框架（Management Framework）",
-    "keywords": ["PHP", "Be", "Management", "Framework", "管理框架"],
+    "keywords": ["PHP", "Be", "Beyond Exception", "Management", "Framework", "管理框架"],
     "license": "MIT",
     "authors": [
         {

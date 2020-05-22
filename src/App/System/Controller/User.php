@@ -3,13 +3,13 @@
 namespace Be\App\System\Controller;
 
 
-use Be\Plugin\Lists\Field\FieldItemAvatar;
-use Be\Plugin\Lists\Field\FieldItemSwitch;
-use Be\Plugin\Lists\Field\FieldItemText;
-use Be\Plugin\Lists\Operation\OperationItemButton;
-use Be\Plugin\Lists\Search\SearchItemInput;
-use Be\Plugin\Lists\Search\SearchItemSelect;
-use Be\Plugin\Lists\Toolbar\ToolbarItemButton;
+use Be\Plugin\Lists\ListItem\ListItemAvatar;
+use Be\Plugin\Lists\ListItem\ListItemSwitch;
+use Be\Plugin\Lists\ListItem\ListItemText;
+use Be\Plugin\Lists\OperationItem\OperationItemButton;
+use Be\Plugin\Lists\SearchItem\SearchItemInput;
+use Be\Plugin\Lists\SearchItem\SearchItemSelect;
+use Be\Plugin\Lists\ToolbarItem\ToolbarItemButton;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Request;
@@ -125,66 +125,6 @@ class User extends Controller
                     ],
                 ],
 
-                'list' => [
-
-                    // 未指定时取表的所有字段
-                    'items' => [
-                        [
-                            'label' => '头像',
-                            'driver' => FieldItemAvatar::class,
-                            'value' => function ($row) {
-                                if ($row->avatar_s == '') {
-                                    return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
-                                } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
-                                }
-                            }
-                        ],
-                        [
-                            'field' => 'username',
-                            'label' => '用户名',
-                            'driver' => FieldItemText::class,
-                        ],
-                        [
-                            'field' => 'email',
-                            'label' => '邮箱',
-                            'driver' => FieldItemText::class,
-                        ],
-                        [
-                            'field' => 'name',
-                            'label' => '名称',
-                            'driver' => FieldItemText::class,
-                        ],
-                        [
-                            'field' => 'block',
-                            'label' => '启用/禁用',
-                            'driver' => FieldItemSwitch::class
-                        ],
-                    ],
-                ],
-
-
-                'operation' => [
-                    'label' => '操作',
-                    'position' => 'left',
-                    'items' => [
-                        [
-                            'label' => '查看',
-                            'driver' => OperationItemButton::class,
-                            'task' => 'detail',
-                        ],
-                        [
-                            'label' => '编辑',
-                            'driver' => OperationItemButton::class,
-                            'task' => 'edit',
-                        ],
-                        [
-                            'label' => '删除',
-                            'driver' => OperationItemButton::class,
-                            'task' => 'delete',
-                        ],
-                    ]
-                ],
 
                 'toolbar' => [
 
@@ -251,6 +191,67 @@ class User extends Controller
                                     'icon' => 'download',
                                 ]
                             ]
+                        ],
+                    ]
+                ],
+
+                'list' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'label' => '头像',
+                            'driver' => ListItemAvatar::class,
+                            'value' => function ($row) {
+                                if ($row->avatar_s == '') {
+                                    return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
+                                } else {
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
+                                }
+                            }
+                        ],
+                        [
+                            'field' => 'username',
+                            'label' => '用户名',
+                            'driver' => ListItemText::class,
+                        ],
+                        [
+                            'field' => 'email',
+                            'label' => '邮箱',
+                            'driver' => ListItemText::class,
+                        ],
+                        [
+                            'field' => 'name',
+                            'label' => '名称',
+                            'driver' => ListItemText::class,
+                        ],
+                        [
+                            'field' => 'block',
+                            'label' => '启用/禁用',
+                            'driver' => ListItemSwitch::class
+                        ],
+                    ],
+                ],
+
+
+                'operation' => [
+                    'label' => '操作',
+                    'position' => 'left',
+                    'items' => [
+                        [
+                            'label' => '查看',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'detail',
+                        ],
+                        [
+                            'label' => '编辑',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'edit',
+                        ],
+                        [
+                            'label' => '删除',
+                            'driver' => OperationItemButton::class,
+                            'task' => 'delete',
                         ],
                     ]
                 ],
