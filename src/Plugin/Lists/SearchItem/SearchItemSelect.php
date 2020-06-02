@@ -14,7 +14,7 @@ class SearchItemSelect extends SearchItem
      *
      * @return string | array
      */
-    public function getEditHtml()
+    public function getHtml()
     {
         if (!isset($this->ui['select']['v-decorator'])) {
             $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';

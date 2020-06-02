@@ -1,14 +1,13 @@
 <?php
 
-namespace Be\Plugin\Lists\ToolbarItem;
+namespace Be\Plugin\Lists\OperationItem;
 
 use Be\System\Be;
 
-
 /**
- * 工具栏 按钮
+ * 搜索项 布尔值
  */
-class ToolbarItemButtonDropDown extends ToolbarItem
+class OperationItemButtonDropDown extends OperationItem
 {
 
     protected $menus = []; // 下拉菜单
@@ -118,7 +117,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         $html .= '>';
 
         if (count($this->menus)) {
-            $html .= '<a-menu slot="overlay" @click="toolbarButtonDropDownClick(e, \'' . $this->name . '\')">';
+            $html .= '<a-menu slot="overlay" @click="operationButtonDropDownClick(e, \'' . $this->name . '\')">';
             $i = 0;
             foreach ($this->menus as $menu) {
                 $html .= '<a-menu-item key="' . $i . '">';
@@ -139,11 +138,6 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         $html .= '<a-button> ' . $this->value . ' <a-icon type="down"></a-icon></a-button>';
 
         $html .= '</a-dropdown>';
-
-        $html .= '<a-drawer title="" :width="720" :visible="visible" :body-style="{paddingBottom:\'80px\'}" >';
-        $html .= '<iframe src="#" id="drawer-iframe"></iframe>';
-        $html .= '</a-drawer>';
-
         return $html;
     }
 
@@ -156,7 +150,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     public function getVueData()
     {
         return [
-            'toolbar' => [
+            'operation' => [
                 $this->name => [
                     'menus' => $this->menus,
                 ]
@@ -173,12 +167,15 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     public function getVueMethods()
     {
         return [
-            'toolbarButtonDropDownClick' => 'function (e, name) {
-                var oMenu = this.toolbar[name].menus[e.key];
-                this.toolbarAction(oMenu);
+            'operationButtonDropDownClick' => 'function (e, name) {
+                var oMenu = this.operation[name].menus[e.key];
+                this.operationAction(oMenu);
             }',
         ];
     }
 
 
+
 }
+
+

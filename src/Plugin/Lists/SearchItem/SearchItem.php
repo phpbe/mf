@@ -11,15 +11,18 @@ use Be\System\Be;
 abstract class SearchItem extends Item
 {
 
+    protected $newValue = null; // 新值
+
+
     /**
      * 构造函数
      *
      * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $tuple = null)
     {
-
-        parent::__construct($params);
+        parent::__construct($params, $tuple);
 
         if (!isset($this->ui['form-item'][':label-col'])) {
             $this->ui['form-item'][':label-col'] = '{span:6}';
@@ -61,7 +64,7 @@ abstract class SearchItem extends Item
     public function buildSql()
     {
         $where = [];
-        if ($this->newValue) {
+        if ($this->newValue !== null) {
 
             if (isset($this->option['db'])) {
                 $db = Be::getDb($this->option['db']);
@@ -73,9 +76,14 @@ abstract class SearchItem extends Item
                 $where = $db->quoteKey($this->option['table']) . '.';
             }
 
-            $field = isset($this->option['field']) ? $this->option['field'] : $this->name;
+            $field = null;
+            if (isset($this->option['table'])) {
+                $field = $db->quoteKey($this->option['table']) . '.' . $db->quoteKey($this->field);
+            } else {
+                $field = $db->quoteKey($this->field);
+            }
 
-            $where[] =  $db->quoteKey($field) . '=' . $db->quoteValue($this->newValue);
+            $where[] =  $field . '=' . $db->quoteValue($this->newValue);
         }
 
         return $where;

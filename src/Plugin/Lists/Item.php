@@ -14,7 +14,6 @@ abstract class Item
     protected $name = ''; // 键名
     protected $label = ''; // 配置项中文名称
     protected $value = ''; // 值
-    protected $newValue = ''; // 新值
 
     protected $keyValues = null; // 可选值键值对
 
@@ -24,26 +23,39 @@ abstract class Item
     protected $data = null; // POST 到后端的数据
     protected $ui = []; // UI界面参数
 
+    protected static $nameIndex = 0;
+
     /**
      * 构造函数
      *
      * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $tuple = null)
     {
         if (isset($params['name'])) {
             $name = $params['name'];
             if (is_callable($name)) {
-                $this->name = $name();
+                if ($tuple !== null) {
+                    $this->name = $name($tuple);
+                } else {
+                    $this->name = $name();
+                }
             } else {
                 $this->name = $name;
             }
+        } else {
+            $this->name = 'n'.(self::$nameIndex++);
         }
 
         if (isset($params['label'])) {
             $label = $params['label'];
             if (is_callable($label)) {
-                $this->label = $label();
+                if ($tuple !== null) {
+                    $this->label = $label($tuple);
+                } else {
+                    $this->label = $label();
+                }
             } else {
                 $this->label = $label;
             }
@@ -52,7 +64,11 @@ abstract class Item
         if (isset($params['value'])) {
             $value = $params['value'];
             if (is_callable($value)) {
-                $this->value = $value();
+                if ($tuple !== null) {
+                    $this->value = $value($tuple);
+                } else {
+                    $this->value = $value();
+                }
             } else {
                 $this->value = $value;
             }
@@ -61,7 +77,11 @@ abstract class Item
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
             if (is_callable($keyValues)) {
-                $this->keyValues = $keyValues();
+                if ($tuple !== null) {
+                    $this->keyValues = $keyValues($tuple);
+                } else {
+                    $this->keyValues = $keyValues();
+                }
             } else {
                 $this->keyValues = $keyValues;
             }
@@ -69,7 +89,11 @@ abstract class Item
             if (isset($params['values'])) {
                 $values = $params['values'];
                 if (is_callable($values)) {
-                    $values = $values();
+                    if ($tuple !== null) {
+                        $values = $values($tuple);
+                    } else {
+                        $values = $values();
+                    }
                 }
 
                 $keyValues = [];
@@ -83,7 +107,11 @@ abstract class Item
         if (isset($params['url'])) {
             $url = $params['url'];
             if (is_callable($url)) {
-                $this->url = $url();
+                if ($tuple !== null) {
+                    $this->url = $url($tuple);
+                } else {
+                    $this->url = $url();
+                }
             } else {
                 $this->url = $url;
             }
@@ -91,7 +119,11 @@ abstract class Item
             if (isset($params['task'])) {
                 $task = $params['task'];
                 if (is_callable($task)) {
-                    $task = $task();
+                    if ($tuple !== null) {
+                        $task = $task($tuple);
+                    } else {
+                        $task = $task();
+                    }
                 }
 
                 $runtime = Be::getRuntime();
@@ -102,7 +134,11 @@ abstract class Item
         if (isset($params['ui'])) {
             $ui = $params['ui'];
             if (is_callable($ui)) {
-                $this->ui = $ui();
+                if ($tuple !== null) {
+                    $this->ui = $ui($tuple);
+                } else {
+                    $this->ui = $ui();
+                }
             } else {
                 $this->ui = $ui;
             }
@@ -115,7 +151,11 @@ abstract class Item
         if (isset($params['option'])) {
             $option = $params['option'];
             if (is_callable($option)) {
-                $this->option = $option();
+                if ($tuple !== null) {
+                    $this->option = $option($tuple);
+                } else {
+                    $this->option = $option();
+                }
             } else {
                 $this->option = $option;
             }
@@ -124,7 +164,11 @@ abstract class Item
         if (isset($params['data'])) {
             $data = $params['data'];
             if (is_callable($data)) {
-                $this->data = $data();
+                if ($tuple !== null) {
+                    $this->data = $data($tuple);
+                } else {
+                    $this->data = $data();
+                }
             } else {
                 $this->data = $data;
             }

@@ -10,7 +10,6 @@ class ListItemText extends ListItem
 {
 
 
-
     /**
      * 获取html内容
      *
@@ -20,5 +19,6 @@ class ListItemText extends ListItem
     {
         return htmlspecialchars($this->value);
     }
+
 
 }

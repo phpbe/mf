@@ -19,15 +19,15 @@ class SearchItemRangePicker extends SearchItem
     public function getHtml()
     {
         if (!isset($this->ui['range-picker']['v-decorator'])) {
-            $this->ui['range-picker']['v-decorator'] = '[\''.$this->name.'\']';
+            $this->ui['range-picker']['v-decorator'] = '[\'' . $this->name . '\']';
         }
 
         $html = '<a-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
-                $html .= ' '.$k;
+                $html .= ' ' . $k;
             } else {
-                $html .= ' '.$k.'="' . $v . '"';
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';
@@ -57,8 +57,8 @@ class SearchItemRangePicker extends SearchItem
      */
     public function submit($data)
     {
-        if (isset($data[$this->name]) && $data[$this->name]) {
-            $newValue = explode(',', $data[$this->name]);
+        if (isset($data[$this->field]) && $data[$this->field]) {
+            $newValue = explode(',', $data[$this->field]);
             if (count($newValue) == 2) {
                 $this->newValue = $newValue;
             }
@@ -73,22 +73,22 @@ class SearchItemRangePicker extends SearchItem
     public function buildSql()
     {
         $where = [];
-        if ($this->newValue) {
-
+        if ($this->newValue !== null) {
             if (isset($this->option['db'])) {
                 $db = Be::getDb($this->option['db']);
             } else {
                 $db = Be::getDb();
             }
 
+            $field = null;
             if (isset($this->option['table'])) {
-                $where = $db->quoteKey($this->option['table']) . '.';
+                $field = $db->quoteKey($this->option['table']) . '.' . $db->quoteKey($this->field);
+            } else {
+                $field = $db->quoteKey($this->field);
             }
 
-            $field = isset($this->option['field']) ? $this->option['field'] : $this->name;
-
-            $where[] =  $db->quoteKey($field) . '>=' . $db->quoteValue($this->newValue[0]);
-            $where[] =  $db->quoteKey($field) . '<=' . $db->quoteValue($this->newValue[1]);
+            $where[] = $field . '>=' . $db->quoteValue($this->newValue[0]);
+            $where[] = $field . '<=' . $db->quoteValue($this->newValue[1]);
         }
 
         return $where;

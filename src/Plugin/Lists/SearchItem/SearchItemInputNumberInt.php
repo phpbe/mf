@@ -65,11 +65,11 @@ class SearchItemInputNumberInt extends SearchItem
      */
     public function submit($data)
     {
-        if (isset($data[$this->name])) {
-            $newValue =  $data[$this->name];
+        if (isset($data[$this->field])) {
+            $newValue =  $data[$this->field];
 
             if (!is_numeric($newValue)) {
-                throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
+                throw new ServiceException('参数 ' . $this->label . ' (' . $this->field . ') 不是合法的数字');
             }
 
             $this->newValue = (int) $newValue;
