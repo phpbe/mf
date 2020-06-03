@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plubin\Detail;
+namespace Be\Plugin\Detail;
 
 
 class Property extends \Be\System\Property

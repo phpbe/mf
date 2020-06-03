@@ -13,44 +13,14 @@ class Db extends \Be\System\Service
     public function getTables($app)
     {
         $tables = [];
-
         $prefix = Str::camel2Underline($app).'_';
-        $len = strlen($prefix);
-
-        $path = Be::getRuntime()->getCachePath() . '/System/Table/';
-        if (file_exists($path)) {
-            if (is_dir($path)) {
-                $handle = opendir($path);
-                while (($file = readdir($handle)) !== false) {
-                    if ($file != '.' && $file != '..' && !is_dir($path . '/' . $file)) {
-
-                        if (substr($file, 0, $len) == $prefix) {
-                            $table = Be::newTable($file);
-                            if ($table->getAppName() == $app) {
-                                $tables[$file] = $table;
-                            }
-                        }
-                    }
-                }
-                closedir($handle);
+        $db = Be::getDb();
+        $tableNames = $db->getValues('SHOW TABLES LIKE \'' . $prefix . '%\'');
+        if ($tableNames) {
+            foreach ($tableNames as $tableName) {
+                $tables[] = Be::newTable($tableName);
             }
         }
-
-        $path = Be::getRuntime()->getRootPath() . '/App/' . $app . '/Table/';
-        if (file_exists($path)) {
-            if (is_dir($path)) {
-                $handle = opendir($path);
-                while (($file = readdir($handle)) !== false) {
-                    if ($file != '.' && $file != '..' && !is_dir($path . '/' . $file) && !isset($tables[$file])) {
-                        $tables[$file] = Be::newTable($file);
-                    }
-                }
-                closedir($handle);
-            }
-        }
-
-        ksort($handle);
-
         return $tables;
     }
 
@@ -77,7 +47,6 @@ class Db extends \Be\System\Service
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\TableConfig' . "\n";
         $code .= '{' . "\n";
-        $code .= '    protected $_app = \'' . $this->getAppNameByTableName($tableName) . '\'; // 应用名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $_primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
         $code .= '    protected $_fields = ' . var_export($fields, true) . '; // 字段列表' . "\n";
@@ -114,10 +83,10 @@ class Db extends \Be\System\Service
 
         $fields = $db->getObjects('SHOW FULL FIELDS FROM ' . $tableName);
         $formattedFields = [];
-        $primaryKey = 'id';
+        $primaryKey = [];
         foreach ($fields as $field) {
             if ($field->Key == 'PRI') {
-                $primaryKey = $field->Field;
+                $primaryKey[] = $field->Field;
             }
 
             $formattedFields[] = $field->Field;
@@ -130,17 +99,25 @@ class Db extends \Be\System\Service
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\Table' . "\n";
         $code .= '{' . "\n";
-        $code .= '    protected $_app = \'' . $this->getAppNameByTableName($tableName) . '\'; // 应用名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
-        $code .= '    protected $_primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
+
+        if ($primaryKey) {
+            if (count($primaryKey) > 1) {
+                $code .= '    protected $_primaryKey = [\'' . implode('\',\'', $primaryKey) . '\']; // 主键' . "\n";
+            } else {
+                $code .= '    protected $_primaryKey = \'' . $primaryKey[0] . '\'; // 主键' . "\n";
+            }
+        } else {
+            $code .= '    protected $_primaryKey = null; // 主键' . "\n";
+        }
+
         $code .= '    protected $_fields = [\'' . implode('\',\'', $formattedFields) . '\']; // 字段列表' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
 
         $path = Be::getRuntime()->getCachePath() . '/System/Table/' . $tableName . '.php';
         $dir = dirname($path);
-        if (!is_dir($dir)) mkdir($dir, 0777, true);
-
+        if (!is_dir($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
     }
@@ -176,7 +153,6 @@ class Db extends \Be\System\Service
         $code .= "\n";
         $code .= 'class ' . $tableName . ' extends \\Be\\System\\Db\\Tuple' . "\n";
         $code .= '{' . "\n";
-        $code .= '    protected $_app = \'' . $this->getAppNameByTableName($tableName) . '\'; // 应用名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
         $code .= '    protected $_primaryKey = \'' . $primaryKey . '\'; // 主键' . "\n";
 
@@ -197,22 +173,6 @@ class Db extends \Be\System\Service
         chmod($path, 0755);
     }
 
-
-    protected function getAppNameByTableName($tableName) {
-        $appNames = Be::getService('System.App')->getAppNames();
-
-        $tableNames = explode('_', $tableName);
-        $n = count($tableNames);
-        $appName = '';
-        for ($i = 0; $i < $n; $i++) {
-            $appName .= ucfirst($tableNames[$i]);
-            if (in_array($appName, $appNames)) {
-                return $appName;
-            }
-        }
-
-        return ucfirst($tableNames[0]);
-    }
 
     public function formatTableFields($tableName, $fields)
     {

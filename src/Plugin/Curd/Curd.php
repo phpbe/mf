@@ -26,7 +26,7 @@ class Curd extends Plugin
         $this->setting = $setting;
 
         $task = Request::request('task', 'lists');
-        if (isset($this->setting[$task]) && function_exists([$this, $task])) {
+        if (isset($this->setting[$task]) && method_exists($this, $task)) {
             $this->$task();
         }
     }
@@ -43,15 +43,12 @@ class Curd extends Plugin
         $setting['pageSize'] = 20;
         $setting['page'] = 1;
 
-        $pluginLists = Be::getPlugin('Lists');
-        $pluginLists->execute($setting);
-
         $runtime = Be::getRuntime();
         $appName = $runtime->getAppName();
         $controllerName = $runtime->getControllerName();
         $actionName = $runtime->getActionName();
 
-        $table = Be::newTable($setting['table']);
+        $table = Be::newTable($this->setting['table']);
 
         $primaryKey = $table->getPrimaryKey();
 
@@ -105,10 +102,10 @@ class Curd extends Plugin
         $rows = $table->getObjects();
 
         $fields = null;
-        if (isset($config['list']['items'])) {
-            $fields = $config['list']['items'];
+        if (isset($setting['list']['items'])) {
+            $fields = $setting['list']['items'];
         } else {
-            $tableConfig = Be::getTableProperty($config['table']);
+            $tableConfig = Be::getTableProperty($this->setting['table']);
             $fields = $tableConfig->getFields();
         }
 
@@ -139,8 +136,8 @@ class Curd extends Plugin
         }
 
 
-        Response::setTitle($config['title']);
-        Response::set('config', $config);
+        Response::setTitle($setting['title']);
+        Response::set('setting', $this->setting);
         Response::set('table', $table);
 
         Response::set('searchItemDrivers', $searchItemDrivers);

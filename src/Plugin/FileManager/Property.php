@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plubin\FileManager;
+namespace Be\Plugin\FileManager;
 
 
 class Property extends \Be\System\Plugin\Property

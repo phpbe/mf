@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plubin\Lists;
+namespace Be\Plugin\Lists;
 
 
 class Property extends \Be\System\Property

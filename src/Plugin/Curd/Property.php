@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plubin\Curd;
+namespace Be\Plugin\Curd;
 
 
 class Property extends \Be\System\Plugin\Property
