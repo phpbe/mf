@@ -8,7 +8,7 @@ use Be\System\Response;
 /**
  * @be-controller 系统日志
  */
-class SystemLog extends \Be\System\Controller
+class beSystemLog extends \Be\System\Controller
 {
 
     use \App\System\AdminTrait\Curd;
@@ -45,7 +45,7 @@ class SystemLog extends \Be\System\Controller
                     'toolbar' => [
                         [
                             'name' => '删除三个月前系统日志',
-                            'url' => url('System.AdminLog.deleteLogs'),
+                            'url' => beUrl('System.AdminLog.deleteLogs'),
                             'icon' => 'fa fa-times-circle',
                             'class' => 'text-danger',
                         ],
@@ -83,8 +83,8 @@ class SystemLog extends \Be\System\Controller
     {
         Be::getDb()->startTransaction();
         try {
-            Be::getService('System.SystemLog')->deleteLogs();
-            Be::getService('System.SystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
+            Be::getService('System.beSystemLog')->deleteLogs();
+            Be::getService('System.beSystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
 
             Be::getDb()->commit();
 

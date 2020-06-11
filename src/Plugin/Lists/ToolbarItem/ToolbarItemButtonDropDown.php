@@ -66,7 +66,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
                         }
 
                         $runtime = Be::getRuntime();
-                        $m['url'] = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
+                        $m['url'] = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
                     }
                 }
 

@@ -38,7 +38,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo url('System', 'SystemLog', 'logs', ['year' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -59,7 +59,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo url('System', 'SystemLog', 'logs', ['year' => $year, 'month' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $year, 'month' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -80,7 +80,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo url('System', 'SystemLog', 'logs', ['year' => $year, 'month' => $month, 'day' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $year, 'month' => $month, 'day' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -95,11 +95,11 @@ $logCount = $this->logCount;
 if (count($logs)) {
     $uiGrid = Be::getUi('grid');
 
-    $uiGrid->setAction('listing', url('System.System.logs'));
+    $uiGrid->setAction('listing', beUrl('System.System.logs'));
 
     $formattedLogs = [];
     foreach ($logs as $i => $log) {
-        $log['operation'] = '<a href="'.url('System', 'SystemLog', 'log', ['year' => $year, 'month' => $month, 'day' => $day, 'hash' => $i]) . '" target="Blank">查看</a>';
+        $log['operation'] = '<a href="'.beUrl('System.beSystemLog.log', ['year' => $year, 'month' => $month, 'day' => $day, 'hash' => $i]) . '" target="Blank">查看</a>';
         $log['message'] = Str::limit($log['message'], 50);
 
         $formattedLogs[] = (object)$log;

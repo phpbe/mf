@@ -20,8 +20,8 @@ $themes = $this->get('themes');
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('listing', url('System.System.themes'));
-$uiGrid->setAction('create', url('System.System.remoteThemes'), '安装新主题');
+$uiGrid->setAction('listing', beUrl('System.System.themes'));
+$uiGrid->setAction('create', beUrl('System.System.remoteThemes'), '安装新主题');
 
 
 $configSystem = Be::getConfig('System.System');
@@ -45,12 +45,12 @@ $uiGrid->setFooter('共安装了 <strong>'.count($themes).'</strong> 个主题')
 
 
 $thumbnailTemplate = '';
-$thumbnailTemplate .= '<a href="javascript:" onclick="javascript:jQuery(\'#themeThumbnail_{id}\').lightbox();" data-title="" data-content="<div style=\'width:400px;height:400px;line-height:400px;text-align:center;\'><img src=\''.url().'/themes/{key}/{thumbnailM}\' style=\'max-width:400px;\' /></div>" data-toggle="popover" data-html="true" data-trigger="hover">';
-$thumbnailTemplate .= '	<img src="'.url().'/themes/{key}/{thumbnailS}" style="max-width:120px;" border="0" />';
+$thumbnailTemplate .= '<a href="javascript:" onclick="javascript:jQuery(\'#themeThumbnail_{id}\').lightbox();" data-title="" data-content="<div style=\'width:400px;height:400px;line-height:400px;text-align:center;\'><img src=\''.beUrl().'/themes/{key}/{thumbnailM}\' style=\'max-width:400px;\' /></div>" data-toggle="popover" data-html="true" data-trigger="hover">';
+$thumbnailTemplate .= '	<img src="'.beUrl().'/themes/{key}/{thumbnailS}" style="max-width:120px;" border="0" />';
 $thumbnailTemplate .= '</a>';
 $thumbnailTemplate .= '<div class="lightbox fade hide" id="themeThumbnail_{id}">';
 $thumbnailTemplate .= '	<div class="lightbox-content">';
-$thumbnailTemplate .= '		<img src="'.url().'/themes/{key}/{thumbnailL}" />';
+$thumbnailTemplate .= '		<img src="'.beUrl().'/themes/{key}/{thumbnailL}" />';
 $thumbnailTemplate .= '		<div class="lightbox-caption"><p>{name}</p></div>';
 $thumbnailTemplate .= '	</div>';
 $thumbnailTemplate .= '</div>';

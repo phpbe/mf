@@ -11,8 +11,8 @@ use Be\System\Be;
 $roles = $this->get('roles');
 
 $adminUiCategory = Be::getUi('category');
-$adminUiCategory->setAction('save', url('System.AdminUser.rolesSave'));
-$adminUiCategory->setAction('delete', url('System.AdminUser.ajaxRoleDelete'));
+$adminUiCategory->setAction('save', beUrl('System.AdminUser.rolesSave'));
+$adminUiCategory->setAction('delete', beUrl('System.AdminUser.ajaxRoleDelete'));
 
 foreach ($roles as $role) {
     $role->htmlUserCount = '<span class="badge'.($role->userCount>0?' badge-success userCount':'').'">'.$role->userCount.'</span>';

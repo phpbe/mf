@@ -127,7 +127,7 @@ abstract class EditorItem
                 }
 
                 $runtime = Be::getRuntime();
-                $this->url = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
+                $this->url = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
             }
         }
 

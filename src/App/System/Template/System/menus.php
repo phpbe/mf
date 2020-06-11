@@ -52,8 +52,8 @@ $targetDefault .= '</select>';
 
 $uiCategoryTree = Be::getUi('categoryTree');
 
-$uiCategoryTree->setAction('save', url('System.System.menusSave'));
-$uiCategoryTree->setAction('delete', url('System.System.ajaxMenuDelete'));
+$uiCategoryTree->setAction('save', beUrl('System.System.menusSave'));
+$uiCategoryTree->setAction('delete', beUrl('System.System.ajaxMenuDelete'));
 
 $uiCategoryTree->setData($menus);
 

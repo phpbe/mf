@@ -205,7 +205,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterCreate', $tuple);
 
-                SystemLog($setting['title'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
+                beSystemLog($setting['title'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -255,7 +255,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterEdit', $tuple);
 
-                SystemLog($setting['title'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                beSystemLog($setting['title'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
                 Be::getDb()->commit();
             } catch (\Exception $e) {
@@ -315,7 +315,7 @@ class Curd extends Plugin
                     $tuple->save();
                     $this->trigger('AfterToggle', $tuple);
 
-                    SystemLog($setting['title'] . '（#' . $primaryKey . '：' . $x . '）');
+                    beSystemLog($setting['title'] . '（#' . $primaryKey . '：' . $x . '）');
                 }
             } else {
 
@@ -333,7 +333,7 @@ class Curd extends Plugin
                 $tuple->save();
                 $this->trigger('AfterToggle', $tuple);
 
-                SystemLog($setting['title'] . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
+                beSystemLog($setting['title'] . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
             }
 
             Be::getDb()->commit();
@@ -374,7 +374,7 @@ class Curd extends Plugin
                     $tuple->delete();
                     $this->trigger('AfterDelete', $tuple);
 
-                    SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
+                    beSystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
                 }
             } else {
                 $tuple = Be::newTuple($setting['table']);
@@ -383,7 +383,7 @@ class Curd extends Plugin
                 $tuple->delete();
                 $this->trigger('AfterDelete', $tuple);
 
-                SystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                beSystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
             }
 
             Be::getDb()->commit();
@@ -437,7 +437,7 @@ class Curd extends Plugin
         }
         $exporter->end();
 
-        systemLog($setting['title']);
+        beSystemLog($setting['title']);
     }
 
 

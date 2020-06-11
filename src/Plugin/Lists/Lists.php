@@ -120,7 +120,7 @@ class Lists extends Plugin
         if (isset($setting['toolbar']['items'])) {
             foreach ($setting['toolbar']['items'] as &$toolbar) {
                 if (isset($toolbar['task']) && $toolbar['task']) {
-                    $toolbar['url'] = url($appName . '.' . $controllerName . '.' . $actionName, ['task' => $toolbar['task']]);
+                    $toolbar['url'] = beUrl($appName . '.' . $controllerName . '.' . $actionName, ['task' => $toolbar['task']]);
                 }
             }
         }

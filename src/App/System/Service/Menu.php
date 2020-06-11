@@ -170,7 +170,7 @@ class Menu extends Service
             } else {
                 $parts = explode('.', $url);
                 if (count($parts) == 3) {
-                    $url = 'url(\'' . $parts[0] . '\', \'' . $parts[1] . '\', \'' . $parts[2] . '\', ' . $param . ')';
+                    $url = 'beUrl(\'' . $parts[0] . '\', \'' . $parts[1] . '\', \'' . $parts[2] . '\', ' . $param . ')';
                 }
             }
 
@@ -269,7 +269,7 @@ class Menu extends Service
                     $app->key = $appName;
                     $menuGroup['key'] = $appName . '.' . $controller;
                     $menu['key'] = $appName . '.' . $controller . '.' . $methodName;
-                    $menu['url'] = 'url(\''.$appName.'\', \''.$controller.'\', \''.$methodName.'\')';
+                    $menu['url'] = 'beUrl(\''.$appName.'\', \''.$controller.'\', \''.$methodName.'\')';
 
                     if (!isset($adminMenu[$appName])) {
                         $adminMenu[$appName] = [

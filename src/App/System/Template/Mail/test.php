@@ -14,7 +14,7 @@ $uiEditor->head();
 <?php
 
 $uiEditor = Be::getUi('editor');
-$uiEditor->setAction('save', url('System.Mail.test'), '发送');
+$uiEditor->setAction('save', beUrl('System.Mail.test'), '发送');
 $uiEditor->setFields(
     array(
         'type'=>'text',

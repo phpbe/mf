@@ -16,7 +16,7 @@ use Be\System\Be;
         <?php
         foreach($this->apps as $app => $name) {
             ?>
-            <li data-url="<?php echo url('System.Db.tables', ['type' => 'lists', 'app' => $app]); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
+            <li data-url="<?php echo beUrl('System.Db.tables', ['type' => 'lists', 'app' => $app]); ?>">><?php echo $name; ?>（<?php echo $app; ?>）</li>
             <?php
         }
         ?>

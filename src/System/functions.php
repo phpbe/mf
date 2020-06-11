@@ -7,8 +7,8 @@ use Be\System\Be;
  *
  * @param string $content 日志内容
  */
-function systemLog($content) {
-    Be::getService('System.SystemLog')->addLog($content);
+function beSystemLog($content) {
+    Be::getService('System.beSystemLog')->addLog($content);
 }
 
 /**
@@ -20,7 +20,7 @@ function systemLog($content) {
  * @return string 生成的网址
  * @throws \Exception
  */
-function url($action = null, $params = [])
+function beUrl($action = null, $params = [])
 {
     if ($action === null) {
         return Be::getRuntime()->getRootUrl();

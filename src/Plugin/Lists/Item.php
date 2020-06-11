@@ -20,8 +20,8 @@ abstract class Item
     protected $url = null; // 网址
 
     protected $option = null; // 控制项
-    protected $data = null; // POST 到后端的数据
     protected $ui = []; // UI界面参数
+    protected $actionData = null; // 有后端请求时的附加上的数据
 
     protected static $nameIndex = 0;
 
@@ -127,7 +127,7 @@ abstract class Item
                 }
 
                 $runtime = Be::getRuntime();
-                $this->url = url($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
+                $this->url = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
             }
         }
 
@@ -161,16 +161,16 @@ abstract class Item
             }
         }
 
-        if (isset($params['data'])) {
-            $data = $params['data'];
-            if (is_callable($data)) {
+        if (isset($params['actionData'])) {
+            $actionData = $params['actionData'];
+            if (is_callable($actionData)) {
                 if ($tuple !== null) {
-                    $this->data = $data($tuple);
+                    $this->actionData = $actionData($tuple);
                 } else {
-                    $this->data = $data();
+                    $this->actionData = $actionData();
                 }
             } else {
-                $this->data = $data;
+                $this->actionData = $actionData;
             }
         }
     }

@@ -48,9 +48,9 @@ class UserRole extends Controller
             $serviceUser = Be::getService('System.User');
             $serviceUser->updateUserRoles();
 
-            systemLog('修改用户角色');
+            beSystemLog('修改用户角色');
 
-            Response::success('修改后台用户组成功！', url('System.User.roles'));
+            Response::success('修改后台用户组成功！', beUrl('System.User.roles'));
 
         } else {
             $serviceUser = Be::getService('System.User');
@@ -96,7 +96,7 @@ class UserRole extends Controller
 
         $tupleUserRole->delete();
 
-        systemLog('删除用户角色：' . $tupleUserRole->name);
+        beSystemLog('删除用户角色：' . $tupleUserRole->name);
 
         Response::set('error', 0);
         Response::set('message', '删除用户角色成功！');
@@ -166,9 +166,9 @@ class UserRole extends Controller
         $serviceUserRole = Be::getService('System.UserRole');
         $serviceUserRole->updateUserRole($roleId);
 
-        systemLog('修改用户角色(' . $tupleUserRole->name . ')权限');
+        beSystemLog('修改用户角色(' . $tupleUserRole->name . ')权限');
 
-        Response::success('修改用户角色权限成功！', url('System.User.roles'));
+        Response::success('修改用户角色权限成功！', beUrl('System.User.roles'));
     }
 
 }

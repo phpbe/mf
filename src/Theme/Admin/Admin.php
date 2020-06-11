@@ -14,7 +14,7 @@ $my = Be::getUser();
     <meta charset="utf-8" />
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <base href="<?php echo url(); ?>/" />
+    <base href="<?php echo beUrl(); ?>/" />
 
     <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
 
@@ -158,7 +158,7 @@ $my = Be::getUser();
                     您好：
                     <img src="<?php echo Be::getRuntime()->getDataUrl().'/adminUser/avatar/'.($my->avatarS == ''?('default/'.$configUser->defaultAvatarS):$my->avatarS); ?>" style="max-width:24px;max-height:24px;" />
                     <?php echo $my->name; ?> &nbsp; &nbsp;
-                    <a href="<?php echo url('System.User.logout')?>" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
+                    <a href="<?php echo beUrl('System.User.logout')?>" class="btn btn-warning btn-small"><i class="icon-white icon-off"></i> 退出</a>
                 </div>
 
                 </be-north>

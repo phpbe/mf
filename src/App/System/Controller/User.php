@@ -47,7 +47,7 @@ class User extends Controller
 
             $my = Be::getUser();
             if ($my->id > 0) {
-                Response::redirect(url('System.System.dashboard'));
+                Response::redirect(beUrl('System.System.dashboard'));
             }
 
             Response::setTitle('登录');
@@ -61,7 +61,7 @@ class User extends Controller
     {
         try {
             Be::getService('System.User')->logout();
-            Response::success('成功退出！', url('System.User.login'));
+            Response::success('成功退出！', beUrl('System.User.login'));
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -345,7 +345,7 @@ class User extends Controller
             Be::getService('System.User')->initAvatar($id);
             Be::getDb()->commit();
 
-            SystemLog('删除管理员账号：#' . $id . ' 头像');
+            beSystemLog('删除管理员账号：#' . $id . ' 头像');
 
         } catch (\Exception $e) {
 

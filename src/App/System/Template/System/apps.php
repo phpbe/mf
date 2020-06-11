@@ -16,8 +16,8 @@ $apps = $this->get('apps');
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('listing', url('System.System.apps'));
-$uiGrid->setAction('create', url('System.System.remoteApps'), '安装新应用');
+$uiGrid->setAction('listing', beUrl('System.System.apps'));
+$uiGrid->setAction('create', beUrl('System.System.remoteApps'), '安装新应用');
 
 foreach ($apps as $app) {
     //$app->id = $app->name;

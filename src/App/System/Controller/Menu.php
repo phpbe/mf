@@ -62,9 +62,9 @@ class Menu extends \Be\System\Controller
         $serviceSystemCache = Be::getService('System.Cache');
         $serviceSystemCache->updateMenu($tupleSystemMenuGroup->className);
 
-        systemLog('修改菜单：' . $tupleSystemMenuGroup->name);
+        beSystemLog('修改菜单：' . $tupleSystemMenuGroup->name);
 
-        Response::success('保存菜单成功！', url('System', 'System', 'menus', ['groupId' => $groupId]));
+        Response::success('保存菜单成功！', beUrl('System.System.menus', ['groupId' => $groupId]));
     }
 
 
@@ -90,7 +90,7 @@ class Menu extends \Be\System\Controller
                 Response::set('error', 0);
                 Response::set('message', '删除菜单成功！');
 
-                systemLog('删除菜单: #' . $id . ' ' . $tupleSystemMenu->name);
+                beSystemLog('删除菜单: #' . $id . ' ' . $tupleSystemMenu->name);
             } else {
                 Response::set('error', 3);
                 Response::set('message', $adminServiceMenu->getError());
@@ -138,7 +138,7 @@ class Menu extends \Be\System\Controller
                 Response::set('error', 0);
                 Response::set('message', '设置首页菜单成功！');
 
-                systemLog('设置新首页菜单：#' . $id . ' ' . $tupleSystemMenu->name);
+                beSystemLog('设置新首页菜单：#' . $id . ' ' . $tupleSystemMenu->name);
             } else {
                 Response::set('error', 2);
                 Response::set('message', $adminServiceMenu->getError());
@@ -185,16 +185,16 @@ class Menu extends \Be\System\Controller
         $tupleMenuGroup = Be::newTuple('system_menu_group');
         $tupleMenuGroup->load(array('className' => $className));
         if ($tupleMenuGroup->id > 0) {
-            Response::error('已存在(' . $className . ')类名！', 0, url('System', 'System', 'menuGroupEdit', ['id'=>$id]));
+            Response::error('已存在(' . $className . ')类名！', 0, beUrl('System.System.menuGroupEdit', ['id'=>$id]));
         }
 
         if ($id != 0) $tupleMenuGroup->load($id);
         $tupleMenuGroup->bind(Request::post());
         if ($tupleMenuGroup->save()) {
-            systemLog($id == 0 ? ('添加新菜单组：' . $tupleMenuGroup->name) : ('修改菜单组：' . $tupleMenuGroup->name));
-            Response::success($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！', url('System.System.menuGroups'));
+            beSystemLog($id == 0 ? ('添加新菜单组：' . $tupleMenuGroup->name) : ('修改菜单组：' . $tupleMenuGroup->name));
+            Response::success($id == 0 ? '添加菜单组成功！' : '修改菜单组成功！', beUrl('System.System.menuGroups'));
         } else {
-            Response::error($tupleMenuGroup->getError(), 1, url('System', 'System', 'menuGroupEdit', ['id'=>$id]));
+            Response::error($tupleMenuGroup->getError(), 1, beUrl('System.ystem.menuGroupEdit', ['id'=>$id]));
         }
     }
 
@@ -215,7 +215,7 @@ class Menu extends \Be\System\Controller
             } else {
                 $adminServiceMenu = Be::getService('System.menu');
                 if ($adminServiceMenu->deleteMenuGroup($tupleMenuGroup->id)) {
-                    systemLog('成功删除菜单组！');
+                    beSystemLog('成功删除菜单组！');
                     Response::setMessage('成功删除菜单组！');
                 } else {
                     Response::setMessage($adminServiceMenu->getError(), 'error');
@@ -224,7 +224,7 @@ class Menu extends \Be\System\Controller
         }
 
 
-        Response::redirect(url('System.System.menuGroups'));
+        Response::redirect(beUrl('System.System.menuGroups'));
 
     }
 

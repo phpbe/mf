@@ -24,7 +24,7 @@ class ConfigItemImage extends DataItemImage
      */
     public function getEditHtml()
     {
-        $this->ui['upload']['action'] = url('System.Config.uploadImage', [
+        $this->ui['upload']['action'] = beUrl('System.Config.uploadImage', [
             '_app' => $this->config['app'],
             '_config' => $this->config['name'],
             '_item' => $this->name

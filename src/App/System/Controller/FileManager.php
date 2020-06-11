@@ -98,7 +98,7 @@ class FileManager extends Controller
     public function createDir()
     {
         $dirName = Request::post('dirName', '');
-        $return = url('System.FileManager.browser');
+        $return = beUrl('System.FileManager.browser');
 
         $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->createDir($dirName)) {
@@ -112,7 +112,7 @@ class FileManager extends Controller
     public function deleteDir()
     {
         $dirName = Request::get('dirName', '');
-        $return = url('System.FileManager.browser');
+        $return = beUrl('System.FileManager.browser');
 
         $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->deleteDir($dirName)) {
@@ -127,7 +127,7 @@ class FileManager extends Controller
     {
         $oldDirName = Request::post('oldDirName', '');
         $newDirName = Request::post('newDirName', '');
-        $return = url('System.FileManager.browser');
+        $return = beUrl('System.FileManager.browser');
 
         $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->editDirName($oldDirName, $newDirName)) {
@@ -142,7 +142,7 @@ class FileManager extends Controller
     {
         $configSystem = Be::getConfig('System.System');
 
-        $return = url('System.FileManager.browser');
+        $return = beUrl('System.FileManager.browser');
 
         $file = $_FILES['file'];
         if ($file['error'] == 0) {
@@ -218,7 +218,7 @@ class FileManager extends Controller
     public function deleteFile()
     {
         $fileName = Request::get('fileName', '');
-        $return = url('System.FileManager.browser');
+        $return = beUrl('System.FileManager.browser');
 
         $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->deleteFile($fileName)) {
@@ -236,9 +236,9 @@ class FileManager extends Controller
 
         $serviceSystemFileManager = Be::getService('System.FileManager');
         if ($serviceSystemFileManager->editFileName($oldFileName, $newFileName)) {
-            Response::success('重命名文件成功！', url('System.FileManager.browser'));
+            Response::success('重命名文件成功！', beUrl('System.FileManager.browser'));
         } else {
-            Response::error($serviceSystemFileManager->getError(), url('System.FileManager.browser'));
+            Response::error($serviceSystemFileManager->getError(), beUrl('System.FileManager.browser'));
         }
 
     }

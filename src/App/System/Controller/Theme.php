@@ -33,7 +33,7 @@ class Theme extends \Be\System\Controller
         } else {
             $adminServiceTheme = Be::getService('System.Theme');
             if ($adminServiceTheme->setDefaultTheme($theme)) {
-                systemLog('设置主题（' . $theme . ') 为默认主题！');
+                beSystemLog('设置主题（' . $theme . ') 为默认主题！');
 
                 Response::set('error', 0);
                 Response::set('message', '设置默认主题成功！');
@@ -80,7 +80,7 @@ class Theme extends \Be\System\Controller
         }
 
         if ($adminServiceSystem->installTheme($remoteTheme->theme)) {
-            systemLog('安装新主题：' . $remoteTheme->theme->name);
+            beSystemLog('安装新主题：' . $remoteTheme->theme->name);
 
             Response::set('error', 0);
             Response::set('message', '主题新安装成功！');
@@ -105,7 +105,7 @@ class Theme extends \Be\System\Controller
 
         $adminServiceSystem = Be::getService('System.Admin');
         if ($adminServiceSystem->uninstallTheme($theme)) {
-            systemLog('卸载主题：' . $theme);
+            beSystemLog('卸载主题：' . $theme);
 
             Response::set('error', 0);
             Response::set('message', '主题卸载成功！');

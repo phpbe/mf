@@ -44,7 +44,7 @@ class UserLoginLog extends Controller
                     'toolbar' => [
                         [
                             'name' => '删除三个月前后台日志',
-                            'url' => url('System.AdminUserLog.deleteLogs'),
+                            'url' => beUrl('System.AdminUserLog.deleteLogs'),
                             'icon' => 'fa fa-times-circle',
                             'class' => 'text-danger',
                         ],
@@ -84,7 +84,7 @@ class UserLoginLog extends Controller
         Be::getDb()->startTransaction();
         try {
             Be::getService('System.UserLoginLog')->deleteLogs();
-            SystemLog($this->config['name'] . '：删除三个月前管理员登陆日志日志！');
+            beSystemLog($this->config['name'] . '：删除三个月前管理员登陆日志日志！');
 
             Be::getDb()->commit();
 

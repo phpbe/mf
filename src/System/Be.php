@@ -36,6 +36,29 @@ abstract class Be
     }
 
     /**
+     * 获取有效期的数据库对象（单例）
+     * 如果实例已创建时间超过了有效期，则创建新实例
+     *
+     * @param string $db 数据库名
+     * @param int $expire 有效时间(单位：秒)
+     * @return \Be\System\Db\Driver
+     * @throws RuntimeException
+     */
+    public static function getExpireDb($db = 'master', $expire = 600)
+    {
+        $key = 'ExpireDb:' . $db;
+        if (isset(self::$cache[$key]['expire']) && self::$cache[$key]['expire'] > time()) {
+            return self::$cache[$key]['instance'];
+        }
+
+        self::$cache[$key] = [
+            'expire' => time() + $expire,
+            'instance' => self::newDb($db)
+        ];
+        return self::$cache[$key]['instance'];
+    }
+
+    /**
      * 新创建一个数据库对象
      *
      * @param string $db 数据库名

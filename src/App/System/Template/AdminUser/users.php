@@ -21,12 +21,12 @@ foreach ($roles as $role) {
 
 $uiGrid = Be::getUi('grid');
 
-$uiGrid->setAction('list', url('System.AdminUser.users'));
-$uiGrid->setAction('create', url('System.AdminUser.edit'));
-$uiGrid->setAction('edit', url('System.AdminUser.edit'));
-$uiGrid->setAction('unblock', url('System.AdminUser.unblock'), '启用');
-$uiGrid->setAction('block', url('System.AdminUser.block'));
-$uiGrid->setAction('delete', url('System.AdminUser.delete'));
+$uiGrid->setAction('list', beUrl('System.AdminUser.users'));
+$uiGrid->setAction('create', beUrl('System.AdminUser.edit'));
+$uiGrid->setAction('edit', beUrl('System.AdminUser.edit'));
+$uiGrid->setAction('unblock', beUrl('System.AdminUser.unblock'), '启用');
+$uiGrid->setAction('block', beUrl('System.AdminUser.block'));
+$uiGrid->setAction('delete', beUrl('System.AdminUser.delete'));
 
 $uiGrid->setFilters(
     array(

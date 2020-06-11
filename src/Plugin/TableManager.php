@@ -284,8 +284,8 @@ trait TableManager
 
         $app = Be::getRuntime()->getAppName();
         $controller = Be::getRuntime()->getControllerName();
-        $taskUrl = url(''.$app.'', ''.$controller.'', 'exportTaskRun', ['taskId' => $taskId]);
-        $returnUrl = url(''.$app.'', ''.$controller.'', 'exportTaskRun', ['return' => $_SERVER['HTTP_REFERER']]);
+        $taskUrl = beUrl(''.$app.'', ''.$controller.'', 'exportTaskRun', ['taskId' => $taskId]);
+        $returnUrl = beUrl(''.$app.'', ''.$controller.'', 'exportTaskRun', ['return' => $_SERVER['HTTP_REFERER']]);
 
         echo '<iframe src="' . $taskUrl . '" style="width: 0; height: 0"></iframe>';
         echo '<script>setTimeout(function(){window.location.href="' . $returnUrl . '";}, 1000)</script>';

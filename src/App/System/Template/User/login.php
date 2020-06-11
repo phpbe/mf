@@ -42,7 +42,7 @@ $config = Be::getConfig('System.System');
 <?php
 $return = Request::get('return', '');
 if ($return=='') {
-    $return = url('System.System.dashboard');
+    $return = beUrl('System.System.dashboard');
 } else {
     $return = base64_decode($return);
 }
@@ -73,7 +73,7 @@ if ($return=='') {
             login: function() {
                 var _this = this;
                 _this.loginLoading = true;
-                this.$http.post("<?php echo url('System.User.login'); ?>", _this.formData)
+                this.$http.post("<?php echo beUrl('System.User.login'); ?>", _this.formData)
                     .then(function (response) {
                         _this.loginLoading = false;
                         if (response.status == 200) {
