@@ -14,15 +14,16 @@ abstract class Property
 
     /**
      * 构造函数
+     * @param string $path 文件咱径
      */
-    public function __construct()
+    public function __construct($path = '')
     {
         $class = get_called_class();
         $name = substr($class, 0, strrpos($class, '\\'));
         $name = substr($name, strrpos($name, '\\')+1);
         $this->name = $name;
 
-        $this->path = str_replace(Be::getRuntime()->getRootPath(), '', getcwd());
+        $this->path = str_replace(Be::getRuntime()->getRootPath(), '', substr($path, 0, strrpos($path, DIRECTORY_SEPARATOR)));
     }
 
     /**

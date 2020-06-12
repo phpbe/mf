@@ -12,7 +12,7 @@ use Be\System\Exception\RuntimeException;
 abstract class Be
 {
 
-    private static $cache = []; // 缓存资源实例
+    public static $cache = []; // 缓存资源实例
 
     /**
      * @var Runtime
@@ -528,31 +528,6 @@ abstract class Be
 
         self::$cache[$key] = new User($user);
         return self::$cache[$key];
-    }
-
-    /**
-     * 设置工厂缓存数据
-     *
-     * @param string $key 缓存key
-     * @param mixed $value 缓存内容
-     */
-    public static function setCache($key, $value)
-    {
-        self::$cache[$key] = $value;
-    }
-
-    /**
-     * 清除工厂缓存数据
-     *
-     * @param string $key 指定缓存key，未指定时清除所有缓存数据
-     */
-    public static function cleanCache($key = null)
-    {
-        if ($key === null) {
-            self::$cache = [];
-        } else {
-            unset(self::$cache[$key]);
-        }
     }
 
     public static function getRuntime()

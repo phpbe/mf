@@ -138,7 +138,7 @@ class User extends \Be\System\Service
             ->getArray('role_id');
         Session::set('_user', $user);
 
-        Be::cleanCache('User:0');
+        unset(Be::$cache['User:0']);
     }
 
     /**
