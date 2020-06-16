@@ -74,7 +74,7 @@ class Template extends \Be\System\Service
         $codePre = '';
         $codeUse = '';
         $codeHtml = '';
-        $pattern = '/<be-html>(.*?)</be-html>/s';
+        $pattern = '/<be-html>(.*?)<\/be-html>/s';
         if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 html
             $codeHtml = trim($matches[1]);
 
@@ -97,48 +97,48 @@ class Template extends \Be\System\Service
                 $codeHtml = trim($matches[1]);
 
                 $templateNoTags = true;
-                $pattern = '/<be-head>(.*?)</be-head>/s';
+                $pattern = '/<be-head>(.*?)<\/be-head>/s';
                 if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 head
                     $codeHead = $matches[1];
                     $codeHtml = preg_replace($pattern, $codeHead, $codeHtml);
                     $templateNoTags = false;
                 }
 
-                $pattern = '/<be-body>(.*?)</be-body>/s';
+                $pattern = '/<be-body>(.*?)<\/be-body>/s';
                 if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 body
                     $codeBody = $matches[1];
                     $codeHtml = preg_replace($pattern, $codeBody, $codeHtml);
                     $templateNoTags = false;
                 } else {
 
-                    $pattern = '/<be-north>(.*?)</be-north>/s';
+                    $pattern = '/<be-north>(.*?)<\/be-north>/s';
                     if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
                         $codeNorth = $matches[1];
                         $codeHtml = preg_replace($pattern, $codeNorth, $codeHtml);
                         $templateNoTags = false;
                     }
 
-                    $pattern = '/<be-middle>(.*?)</be-middle>/s';
+                    $pattern = '/<be-middle>(.*?)<\/be-middle>/s';
                     if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
                         $codeMiddle = $matches[1];
                         $codeHtml = preg_replace($pattern, $codeMiddle, $codeHtml);
                         $templateNoTags = false;
                     } else {
-                        $pattern = '/<be-west>(.*?)</be-west>/s';
+                        $pattern = '/<be-west>(.*?)<\/be-west>/s';
                         if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 west
                             $codeWest = $matches[1];
                             $codeHtml = preg_replace($pattern, $codeWest, $codeHtml);
                             $templateNoTags = false;
                         }
 
-                        $pattern = '/<be-center>(.*?)</be-center>/s';
+                        $pattern = '/<be-center>(.*?)<\/be-center>/s';
                         if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 center
                             $codeCenter = $matches[1];
                             $codeHtml = preg_replace($pattern, $codeCenter, $codeHtml);
                             $templateNoTags = false;
                         }
 
-                        $pattern = '/<be-east>(.*?)</be-east>/s';
+                        $pattern = '/<be-east>(.*?)<\/be-east>/s';
                         if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 east
                             $codeEast = $matches[1];
                             $codeHtml = preg_replace($pattern, $codeEast, $codeHtml);
@@ -146,7 +146,7 @@ class Template extends \Be\System\Service
                         }
                     }
 
-                    $pattern = '/<be-south>(.*?)</be-south>/s';
+                    $pattern = '/<be-south>(.*?)<\/be-south>/s';
                     if (preg_match($pattern, $contentTemplate, $matches)) { // 查找替换 north
                         $codeSouth = $matches[1];
                         $codeHtml = preg_replace($pattern, $codeSouth, $codeHtml);
@@ -156,7 +156,7 @@ class Template extends \Be\System\Service
 
                 // 没有指定标签，所有内容放放 center
                 if ($templateNoTags) {
-                    $pattern = '/<be-center>(.*?)</be-center>/s';
+                    $pattern = '/<be-center>(.*?)<\/be-center>/s';
                     $codeHtml = preg_replace($pattern, $contentTemplate, $codeHtml);
                 }
             }
@@ -205,7 +205,11 @@ class Template extends \Be\System\Service
         $className = array_pop($parts);
 
         $codePhp = '<?php' . "\n";
-        $codePhp .= 'namespace Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts) . ';' . "\n";
+        $codePhp .= 'namespace Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name;
+        if (count($parts) > 0) {
+            $codePhp .=  '\\' . implode('\\', $parts);
+        }
+        $codePhp .=  ';' . "\n";
         $codePhp .= "\n";
         $codePhp .= $codeUse;
         $codePhp .= "\n";

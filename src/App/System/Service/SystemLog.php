@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Request;
 
-class beSystemLog extends \Be\System\Service
+class SystemLog extends \Be\System\Service
 {
 
 
