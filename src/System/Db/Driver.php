@@ -168,6 +168,7 @@ abstract class Driver
             yield $tuple[0];
         }
         $statement->closeCursor();
+        $connection = null;
     }
 
     /**
@@ -235,6 +236,7 @@ abstract class Driver
             yield $result;
         }
         $statement->closeCursor();
+        $connection = null;
     }
 
     /**
@@ -308,6 +310,7 @@ abstract class Driver
             yield $result;
         }
         $statement->closeCursor();
+        $connection = null;
     }
 
     /**
