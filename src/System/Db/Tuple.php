@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\System\Db;
 
 use Be\System\Be;
@@ -18,13 +19,6 @@ abstract class Tuple
     protected $_dbName = 'master';
 
     /**
-     * 应用名
-     *
-     * @var string
-     */
-    protected $_appName = '';
-
-    /**
      * 表全名
      *
      * @var string
@@ -34,9 +28,9 @@ abstract class Tuple
     /**
      * 主键
      *
-     * @var string | array
+     * @var null | string | array
      */
-    protected $_primaryKey = '';
+    protected $_primaryKey = null;
 
     /**
      * 启动缓存代理
@@ -77,42 +71,91 @@ abstract class Tuple
     }
 
     /**
-     * 加载记录
+     * 按主锓加载记录
+     *
+     * @param string | array $primaryKeyValue 主锓的值，当为数组时格式为键值对
+     * @return \Be\System\Db\Tuple
+     * @throws DbException
+     */
+    public function load($primaryKeyValue)
+    {
+        if ($this->_primaryKey === null) {
+            throw new DbException('表' . $this->_tableName . '无主键，不支持按主键载入数据！');
+        }
+
+        $db = Be::getDb($this->_dbName);
+
+        $tuple = null;
+        if (is_array($primaryKeyValue)) {
+            if (!is_array($this->_primaryKey)) {
+                throw new DbException('表' . $this->_tableName . '非复合主键，不支持按复合主键载入数据！');
+            }
+
+            $keys = [];
+            $values = [];
+            foreach ($this->_primaryKey as $primaryKey) {
+                $keys[] = $db->quoteKey($primaryKey) . '=?';
+
+                if (!isset($primaryKeyValue[$primaryKey])) {
+                    throw new DbException('表' . $this->_tableName . '按复合主键载入数据时未指定主键' . $primaryKey . '的值！');
+                }
+
+                $values[] = $primaryKeyValue[$primaryKey];
+            }
+
+            $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . implode(' AND ', $keys);
+            $tuple = $db->getObject($sql, $values);
+
+        } else {
+            if (is_array($this->_primaryKey)) {
+                throw new DbException('表' . $this->_tableName . '是复合主键，不支持章个主键载入数据！');
+            }
+
+            $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . ' = ?';
+            $tuple = $db->getObject($sql, $primaryKeyValue);
+        }
+
+        if (!$tuple) {
+            throw new DbException('未找到指定数据记录！');
+        }
+
+        return $this->bind($tuple);
+    }
+
+    /**
+     * 按条件加载记录
      *
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
      * @return \Be\System\Db\Tuple | false
      * @throws DbException
      */
-    public function load($field, $value = null)
+    public function loadBy($field, $value = null)
     {
         $db = Be::getDb($this->_dbName);
 
-        $sql = null;
-        $values = [];
-
+        $tuple = null;
         if ($value === null) {
             if (is_array($field)) {
-                $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE';
+                $keys = [];
+                $values = [];
                 foreach ($field as $key => $val) {
-                    $sql .= ' ' . $db->quoteKey($key) . '=? AND';
+                    $keys[] = $db->quoteKey($key) . '=?';
                     $values[] = $val;
                 }
-                $sql = substr($sql, 0, -4);
-            } elseif (is_numeric($field)) {
-                $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey( $this->_primaryKey) . ' = \'' . intval($field) . '\'';
-            } elseif (is_string($field)) {
+                $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . implode(' AND ', $keys);
+                $tuple = $db->getObject($sql, $values);
+            } else {
                 $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $field;
+                $tuple = $db->getObject($sql);
             }
         } else {
             if (is_array($field)) {
                 throw new DbException('Tuple->load() 方法参数错误！');
             }
             $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($field) . '=?';
-            $values[] = $value;
+            $tuple = $db->getObject($sql, [$value]);
         }
-
-        $tuple = $db->getObject($sql, $values);
 
         if (!$tuple) {
             throw new DbException('未找到指定数据记录！');
@@ -129,36 +172,84 @@ abstract class Tuple
     public function save()
     {
         $db = Be::getDb($this->_dbName);
-
-        $primaryKey = $this->_primaryKey;
-        if ($this->$primaryKey) {
-            $db->update($this->_tableName, $this, $this->_primaryKey);
-        } else {
+        if ($this->_primaryKey === null) {
             $db->insert($this->_tableName, $this);
-            $this->$primaryKey = $db->getLastInsertId();
+        } elseif (is_array($this->_primaryKey)) {
+            $update = true;
+            foreach ($this->_primaryKey as $primaryKey) {
+                if (!$this->$primaryKey) {
+                    $update = false;
+                    break;
+                }
+            }
+            if ($update) {
+                $db->update($this->_tableName, $this, $this->_primaryKey);
+            } else {
+                $db->insert($this->_tableName, $this);
+                $tableProperty = Be::getTableProperty($this->_tableName);
+                foreach ($this->_primaryKey as $primaryKey) {
+                    $field = $tableProperty->getField($primaryKey);
+                    if (isset($field['autoIncrement']) && $field['autoIncrement']) {
+                        $this->$primaryKey = $db->getLastInsertId();
+                        break;
+                    }
+                }
+            }
+        } else {
+            $primaryKey = $this->_primaryKey;
+            if ($this->$primaryKey) {
+                $db->update($this->_tableName, $this, $this->_primaryKey);
+            } else {
+                $db->insert($this->_tableName, $this);
+                $tableProperty = Be::getTableProperty($this->_tableName);
+                $field = $tableProperty->getField($primaryKey);
+                if (isset($field['autoIncrement']) && $field['autoIncrement']) {
+                    $this->$primaryKey = $db->getLastInsertId();
+                }
+            }
         }
-
         return $this;
     }
 
     /**
      * 删除指定主键值的记录
      *
-     * @param int $id 主键值
+     * @param int $primaryKeyValue 主键值
      * @return Tuple
      * @throws DbException
      */
-    public function delete($id = null)
+    public function delete($primaryKeyValue = null)
     {
-        $primaryKey = $this->_primaryKey;
-        if ($id === null) $id = $this->$primaryKey;
+        if ($this->_primaryKey === null) {
+            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持按主键删除！');
+        }
 
-        if ($id === null) {
-            throw new DbException('参数缺失, 请指定要删除记录的编号！');
+
+        if ($primaryKeyValue === null) {
+            if ($this->_primaryKey === null) {
+                throw new DbException('参数缺失, 请指定要删除记录的编号！');
+            } elseif (is_array($this->_primaryKey)) {
+                $primaryKeyValue = [];
+                foreach ($this->_primaryKey as $primaryKey) {
+                    $primaryKeyValue[$primaryKey] = $this->$primaryKey;
+                }
+            } else {
+                $primaryKeyValue = $this->_primaryKey;
+            }
         }
 
         $db = Be::getDb($this->_dbName);
-        $db->query('DELETE FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?', [$id]);
+        if (is_array($primaryKeyValue)) {
+            $keys = [];
+            $values = [];
+            foreach ($primaryKeyValue as $key => $value) {
+                $keys[] = $db->quoteKey($key) . '=?';
+                $values[] = $value;
+            }
+            $db->query('DELETE FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . implode(' AND ', $keys), [$values]);
+        } else {
+            $db->query('DELETE FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?', [$primaryKeyValue]);
+        }
         return $this;
     }
 
@@ -168,14 +259,31 @@ abstract class Tuple
      * @param string $field 字段名
      * @param int $step 自增量
      * @return Tuple
+     * @throws DbException
      */
     public function increment($field, $step = 1)
     {
+        if ($this->_primaryKey === null) {
+            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持字段自增！');
+        }
+
         $db = Be::getDb($this->_dbName);
-        $primaryKey = $this->_primaryKey;
-        $id = $this->$primaryKey;
-        $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '+' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
-        $db->query($sql, [$id]);
+        if (is_array($this->_primaryKey)) {
+            $keys = [];
+            $values = [];
+            foreach ($this->_primaryKey as $primaryKey) {
+                $keys[] = $db->quoteKey($primaryKey) . '=?';
+                $values[] = $this->$primaryKey;
+            }
+            $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '+' . $step . ' WHERE ' . implode(' AND ', $keys);
+            $db->query($sql, [$values]);
+
+        } else {
+            $primaryKey = $this->_primaryKey;
+            $primaryKeyValue = $this->$primaryKey;
+            $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '+' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
+            $db->query($sql, [$primaryKeyValue]);
+        }
         return $this;
     }
 
@@ -185,15 +293,42 @@ abstract class Tuple
      * @param string $field 字段名
      * @param int $step 自减量
      * @return Tuple
+     * @throws DbException
      */
     public function decrement($field, $step = 1)
     {
+        if ($this->_primaryKey === null) {
+            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持字段自减！');
+        }
+
         $db = Be::getDb($this->_dbName);
-        $primaryKey = $this->_primaryKey;
-        $id = $this->$primaryKey;
-        $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '-' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
-        $db->query($sql, [$id]);
+        if (is_array($this->_primaryKey)) {
+            $keys = [];
+            $values = [];
+            foreach ($this->_primaryKey as $primaryKey) {
+                $keys[] = $db->quoteKey($primaryKey) . '=?';
+                $values[] = $this->$primaryKey;
+            }
+            $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '-' . $step . ' WHERE ' . implode(' AND ', $keys);
+            $db->query($sql, [$values]);
+
+        } else {
+            $primaryKey = $this->_primaryKey;
+            $primaryKeyValue = $this->$primaryKey;
+            $sql = 'UPDATE ' . $db->quoteKey($this->_tableName) . ' SET ' . $db->quoteKey($field) . '=' . $db->quoteKey($field) . '-' . $step . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
+            $db->query($sql, [$primaryKeyValue]);
+        }
         return $this;
+    }
+
+    /**
+     * 获取数据库名
+     *
+     * @return string
+     */
+    public function getDbName()
+    {
+        return $this->_dbName;
     }
 
     /**
@@ -209,7 +344,7 @@ abstract class Tuple
     /**
      * 获取主键名
      *
-     * @return string
+     * @return null | string | array
      */
     public function getPrimaryKey()
     {
@@ -221,9 +356,10 @@ abstract class Tuple
      *
      * @return array
      */
-    public function toArray() {
+    public function toArray()
+    {
         $array = get_object_vars($this);
-        unset($array['_dbName'], $array['_appName'], $array['_tableName'], $array['_primaryKey']);
+        unset($array['_dbName'], $array['_tableName'], $array['_primaryKey']);
 
         return $array;
     }
@@ -233,8 +369,9 @@ abstract class Tuple
      *
      * @return Object
      */
-    public function toObject() {
-        return (Object) $this->toArray();
+    public function toObject()
+    {
+        return (Object)$this->toArray();
     }
 
 }

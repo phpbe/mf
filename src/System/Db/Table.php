@@ -19,13 +19,6 @@ class Table
     protected $_dbName = 'master';
 
     /**
-     * 应用名
-     *
-     * @var string
-     */
-    protected $_appName = '';
-
-    /**
      * 表全名
      *
      * @var string
@@ -35,9 +28,9 @@ class Table
     /**
      * 主键
      *
-     * @var string | array
+     * @var null | string | array
      */
-    protected $_primaryKey = 'id';
+    protected $_primaryKey = null;
 
     protected $_fields = []; // 字段列表
 
@@ -876,16 +869,6 @@ class Table
     public function getDbName()
     {
         return $this->_dbName;
-    }
-
-    /**
-     * 获取应用名
-     *
-     * @return string
-     */
-    public function getAppName()
-    {
-        return $this->_appName;
     }
 
     /**

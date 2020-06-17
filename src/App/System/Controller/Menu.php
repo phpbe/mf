@@ -183,7 +183,7 @@ class Menu extends \Be\System\Controller
 
         $className = Request::post('className', '');
         $tupleMenuGroup = Be::newTuple('system_menu_group');
-        $tupleMenuGroup->load(array('className' => $className));
+        $tupleMenuGroup->loadBy(array('className' => $className));
         if ($tupleMenuGroup->id > 0) {
             Response::error('已存在(' . $className . ')类名！', 0, beUrl('System.System.menuGroupEdit', ['id'=>$id]));
         }

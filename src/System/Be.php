@@ -287,12 +287,13 @@ abstract class Be
      * 获取指定的一个数据库行记灵对象（单例）
      *
      * @param string $name 数据库行记灵对象名
+     * @param string $db 库名
      * @return \Be\System\Db\Tuple | mixed
      * @throws RuntimeException
      */
-    public static function getTuple($name)
+    public static function getTuple($name, $db = 'master')
     {
-        $key = 'Tuple:' . $name;
+        $key = 'Tuple:' . $db . ':' . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
         self::$cache[$key] = self::newTuple($name);
         return self::$cache[$key];
@@ -302,12 +303,13 @@ abstract class Be
      * 新创建一个数据库行记灵对象
      *
      * @param string $name 数据库行记灵对象名
+     * @param string $db 库名
      * @return \Be\System\Db\Tuple | mixed
      * @throws RuntimeException
      */
-    public static function newTuple($name)
+    public static function newTuple($name, $db = 'master')
     {
-        $class = 'Be\\Cache\\System\\Tuple\\' . $name;
+        $class = 'Be\\Cache\\System\\Tuple\\' . $db . '\\' . $name;
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
@@ -324,14 +326,15 @@ abstract class Be
      * 获取指定的一个数据库表对象（单例）
      *
      * @param string $name 表名
+     * @param string $db 库名
      * @return \Be\System\Db\Table
      * @throws RuntimeException
      */
-    public static function getTable($name)
+    public static function getTable($name, $db = 'master')
     {
-        $key = 'Table::' . $name;
+        $key = 'Table:' . $db . ':'  . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
-        self::$cache[$key] = self::newTable($name);
+        self::$cache[$key] = self::newTable($name, $db);
         return self::$cache[$key];
     }
 
@@ -339,12 +342,13 @@ abstract class Be
      * 新创建一个数据库表对象
      *
      * @param string $name 表名
+     * @param string $db 库名
      * @return \Be\System\Db\Table
      * @throws RuntimeException
      */
-    public static function newTable($name)
+    public static function newTable($name, $db = 'master')
     {
-        $class = 'Be\\Cache\\System\\Table\\' . $name;
+        $class = 'Be\\Cache\\System\\Table\\' . $db . '\\' . $name;
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
@@ -360,23 +364,27 @@ abstract class Be
     /**
      * 获取指定的一个数据库表属性（单例）
      *
-     * @param string $app 应用名
      * @param string $name 表名
+     * @param string $db 库名
      * @return \Be\System\Db\TableProperty
      * @throws RuntimeException
      */
-    public static function getTableProperty($name)
+    public static function getTableProperty($name, $db = 'master')
     {
-        $key = 'TableProperty:' . $name;
+        $key = 'TableProperty:' . $db . ':'  . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Data\\System\\TableProperty\\' . $name;
-        if (class_exists($class)) {
-            self::$cache[$key] = new $class();
-        } else {
-            self::$cache[$key] = new \Be\System\Db\TableProperty();
+        $class = 'Be\\Cache\\System\\TableProperty\\' . $db . '\\' . $name;
+        if (!class_exists($class)) {
+            $service = self::getService('System.Db');
+            $service->updateTableProperty($name, $db);
         }
 
+        if (!class_exists($class)) {
+            throw new RuntimeException('表属性 ' . $name . ' 不存在！');
+        }
+
+        self::$cache[$key] = new $class();
         return self::$cache[$key];
     }
 
@@ -478,7 +486,7 @@ abstract class Be
         $name = array_shift($parts);
 
         if ($theme === null) {
-            $property = Be::getProperty($type. '.' . $name);
+            $property = Be::getProperty($type . '.' . $name);
             if (isset($property->theme)) {
                 $theme = $property->theme;
             } else {
@@ -496,7 +504,7 @@ abstract class Be
             $service->update($template, $theme);
         }
 
-        if (!class_exists($class)) throw new RuntimeException('模板（'. $template . '）不存在！');
+        if (!class_exists($class)) throw new RuntimeException('模板（' . $template . '）不存在！');
 
         self::$cache[$class] = new $class();
         return self::$cache[$class];

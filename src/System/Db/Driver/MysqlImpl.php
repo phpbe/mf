@@ -818,7 +818,7 @@ class MysqlImpl extends Driver
 
             $unsigned = false;
             if (in_array($type, [
-                'int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double'
+                'int', 'tinyint', 'smallint', 'mediumint', 'bigint', 'float', 'double', 'decimal'
             ])) {
                 if (strpos($field->Type, 'unsigned') !== false) {
                     $unsigned = true;

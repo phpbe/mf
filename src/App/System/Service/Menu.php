@@ -119,7 +119,7 @@ class Menu extends Service
         }
 
         $group = Be::newTuple('system_menu_group');
-        $group->load(array('class_name' => $menuName));
+        $group->loadBy(array('class_name' => $menuName));
         if (!$group->id) {
             throw new ServiceException('未找到调用类名为 ' . $menuName . ' 的菜单！');
         }
