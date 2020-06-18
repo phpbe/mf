@@ -131,9 +131,9 @@ class Db extends \Be\System\Service
 
         foreach ($fields as $field) {
             if ($field['isNumber']) {
-                $code .= '    public $' . $field->name . ' = ' . $field['default'] . ';';
+                $code .= '    public $' . $field->name . ' = ' . ($field['default'] === null ? 0 : $field['default']). ';';
             } else {
-                $code .= '    public $' . $field->name . ' = \'' . $field['default'] . '\';';
+                $code .= '    public $' . $field->name . ' = \'' . ($field['default'] === null ? '' : $field['default']) . '\';';
             }
 
             if ($field->comment) $code .= ' // ' . $field->comment;
