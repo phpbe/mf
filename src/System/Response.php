@@ -115,7 +115,7 @@ class Response
         if (Request::isAjax()) {
             self::ajax();
         } else {
-            self::display('System.System.success');
+            self::display('App.System.System.success');
             exit;
         }
     }
@@ -142,7 +142,7 @@ class Response
         if (Request::isAjax()) {
             self::ajax();
         } else {
-            self::display('System.System.error');
+            self::display('App.System.System.error');
             exit;
         }
     }
@@ -161,7 +161,7 @@ class Response
             self::set('code', $e->getCode());
             self::ajax();
         } else {
-            self::display('System.System.exception');
+            self::display('App.System.System.exception');
             exit;
         }
     }
@@ -217,7 +217,7 @@ class Response
         self::set('historyUrl', $historyUrl);
         self::set('historyPost', $historyPost);
         self::set('redirectTimeout', $redirectTimeout);
-        self::display('System.System.successAndBack');
+        self::display('App.System.System.successAndBack');
         exit;
     }
 
@@ -257,7 +257,7 @@ class Response
         self::set('historyUrl', $historyUrl);
         self::set('historyPost', $historyPost);
         self::set('redirectTimeout', $redirectTimeout);
-        self::display('System.System.errorAndBack');
+        self::display('App.System.System.errorAndBack');
         exit;
     }
 

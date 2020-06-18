@@ -19,13 +19,13 @@ class Db extends \Be\System\Controller
                 $tables = $service->getTables($app);
                 Response::set('app', $app);
                 Response::set('tables', $tables);
-                Response::display('System.Db.tableLists');
+                Response::display('App.System.Db.tableLists');
             } else if ($type == 'config') {
                 $app = Request::get('app');
                 $table = Request::get('table');
                 $tables = $service->getTables($app);
                 Response::set('tables', $tables);
-                Response::display('System.Db.tableConfig');
+                Response::display('App.System.Db.tableConfig');
             } else if ($type == 'save') {
                 $app = Request::get('app');
                 $table = Request::get('table');
