@@ -44,7 +44,7 @@ class Db extends \Be\System\Service
         $primaryKey = $db->getTablePrimaryKey($tableName);
 
         foreach ($fields as &$field) {
-            if (strpos($field['extra'], 'auto_increment')) {
+            if (strpos($field['extra'], 'auto_increment') !== false) {
                 $field['autoIncrement'] = 1;
             } else {
                 $field['autoIncrement'] = 0;
