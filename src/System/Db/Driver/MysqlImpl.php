@@ -860,7 +860,7 @@ class MysqlImpl extends Driver
         $primaryKeys = [];
         foreach ($tableFields as $tableField) {
             if ($tableField['key'] == 'PRI') {
-                $primaryKeys[] = $tableField->name;
+                $primaryKeys[] = $tableField['name'];
             }
         }
 
