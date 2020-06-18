@@ -111,8 +111,8 @@ abstract class Tuple
                 throw new DbException('表' . $this->_tableName . '是复合主键，不支持章个主键载入数据！');
             }
 
-            $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . ' = ?';
-            $tuple = $db->getObject($sql, $primaryKeyValue);
+            $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
+            $tuple = $db->getObject($sql, [$primaryKeyValue]);
         }
 
         if (!$tuple) {
@@ -224,7 +224,6 @@ abstract class Tuple
             throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持按主键删除！');
         }
 
-
         if ($primaryKeyValue === null) {
             if ($this->_primaryKey === null) {
                 throw new DbException('参数缺失, 请指定要删除记录的编号！');
@@ -235,6 +234,14 @@ abstract class Tuple
                 }
             } else {
                 $primaryKeyValue = $this->_primaryKey;
+            }
+        } else {
+            if (is_array($this->_primaryKey)) {
+                foreach ($this->_primaryKey as $primaryKey) {
+                    if (!isset($primaryKeyValue[$primaryKey])) {
+                        throw new DbException('表' . $this->_tableName . '按复合主键删除时未指定主键' . $primaryKey . '的值！');
+                    }
+                }
             }
         }
 

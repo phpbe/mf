@@ -420,7 +420,7 @@ class MysqlImpl extends Driver
 
         if ($primaryKey === null) {
             $primaryKey = $this->getTablePrimaryKey($table);
-            if ($primaryKey === false) {
+            if ($primaryKey === null) {
                 throw new DbException('新数据表' . $table . '无主键，不支持按主键更新！');
             }
         }
@@ -491,7 +491,7 @@ class MysqlImpl extends Driver
 
         if ($primaryKey === null) {
             $primaryKey = $this->getTablePrimaryKey($table);
-            if ($primaryKey === false) {
+            if ($primaryKey === null) {
                 throw new DbException('新数据表' . $table . '无主键，不支持按主键更新！');
             }
         }
@@ -825,7 +825,7 @@ class MysqlImpl extends Driver
                 }
             }
 
-            $data[$field->Field] = (object)[
+            $data[$field->Field] = [
                 'name' => $field->Field,
                 'type' => $type,
                 'length' => $length,
@@ -851,7 +851,7 @@ class MysqlImpl extends Driver
      * 获取指定表的主银
      *
      * @param string $table 表名
-     * @return string | array | false
+     * @return string | array | null
      */
     public function getTablePrimaryKey($table)
     {
@@ -859,7 +859,7 @@ class MysqlImpl extends Driver
 
         $primaryKeys = [];
         foreach ($tableFields as $tableField) {
-            if ($tableField->key == 'PRI') {
+            if ($tableField['key'] == 'PRI') {
                 $primaryKeys[] = $tableField->name;
             }
         }
@@ -871,7 +871,7 @@ class MysqlImpl extends Driver
             return $primaryKeys[0];
         }
 
-        return false;
+        return null;
     }
 
     /**

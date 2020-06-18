@@ -57,7 +57,7 @@ class Db extends \Be\System\Service
         $code .= '{' . "\n";
         $code .= '    protected $_dbName = \'' . $db . '\'; // 数据库名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
-        $code .= '    protected $_primaryKey = \'' . var_export($primaryKey, true) . '\'; // 主键' . "\n";
+        $code .= '    protected $_primaryKey = ' . var_export($primaryKey, true) . '; // 主键' . "\n";
         $code .= '    protected $_fields = ' . var_export($fields, true) . '; // 字段列表' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
@@ -90,7 +90,7 @@ class Db extends \Be\System\Service
         $code .= '{' . "\n";
         $code .= '    protected $_dbName = \'' . $db . '\'; // 数据库名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
-        $code .= '    protected $_primaryKey = \'' . var_export($tableProperty->getPrimaryKey(), true) . '\'; // 主键' . "\n";
+        $code .= '    protected $_primaryKey = ' . var_export($tableProperty->getPrimaryKey(), true) . '; // 主键' . "\n";
         $code .= '    protected $_fields = [\'' . implode('\',\'', array_column($tableProperty->getFields(), 'name')) . '\']; // 字段列表' . "\n";
         $code .= '}' . "\n";
         $code .= "\n";
@@ -121,7 +121,7 @@ class Db extends \Be\System\Service
         $code .= '{' . "\n";
         $code .= '    protected $_dbName = \'' . $db . '\'; // 数据库名' . "\n";
         $code .= '    protected $_tableName = \'' . $tableName . '\'; // 表名' . "\n";
-        $code .= '    protected $_primaryKey = \'' . var_export($tableProperty->getPrimaryKey(), true) . '\'; // 主键' . "\n";
+        $code .= '    protected $_primaryKey = ' . var_export($tableProperty->getPrimaryKey(), true) . '; // 主键' . "\n";
 
         foreach ($fields as $field) {
             if ($field['isNumber']) {

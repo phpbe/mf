@@ -60,7 +60,7 @@ class User extends \Be\System\Service
             $tupleUser = Be::newTuple('system_user');
 
             try {
-                $tupleUser->load('username', $username);
+                $tupleUser->loadBy('username', $username);
             } catch (\Exception $e) {
                 throw new ServiceException('用户账号（'.$username.'）不存在！');
             }
@@ -153,7 +153,7 @@ class User extends \Be\System\Service
             $rememberMe = cookie::get('_rememberMe', '');
             if ($rememberMe) {
                 $tupleUser = Be::newTuple('system_user');
-                $tupleUser->load('remember_me_token', $rememberMe);
+                $tupleUser->loadBy('remember_me_token', $rememberMe);
 
                 if ($tupleUser->id > 0 && $tupleUser->block == 0) {
 

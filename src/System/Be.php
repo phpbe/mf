@@ -313,7 +313,7 @@ abstract class Be
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
-        $service->updateTuple($name);
+        $service->updateTuple($name, $db);
 
         if (!class_exists($class)) {
             throw new RuntimeException('行记灵对象 ' . $name . ' 不存在！');
@@ -352,7 +352,7 @@ abstract class Be
         if (class_exists($class)) return (new $class());
 
         $service = self::getService('System.Db');
-        $service->updateTable($name);
+        $service->updateTable($name, $db);
 
         if (!class_exists($class)) {
             throw new RuntimeException('表对象 ' . $name . ' 不存在！');
