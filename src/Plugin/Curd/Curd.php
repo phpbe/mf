@@ -37,12 +37,6 @@ class Curd extends Plugin
      */
     public function lists()
     {
-        $setting = $this->setting['lists'];
-
-        $setting['total'] = 100;
-        $setting['pageSize'] = 20;
-        $setting['page'] = 1;
-
         $runtime = Be::getRuntime();
         $appName = $runtime->getAppName();
         $controllerName = $runtime->getControllerName();
@@ -51,24 +45,6 @@ class Curd extends Plugin
         $table = Be::newTable($this->setting['table']);
 
         $primaryKey = $table->getPrimaryKey();
-
-        $searchItemDrivers = [];
-        if (isset($setting['search']['items'])) {
-            foreach ($setting['search']['items'] as $item) {
-                $driver = $item['driver'];
-                $searchItemDriver = new $driver($item);
-                $searchItemDrivers[] = $searchItemDriver;
-            }
-        }
-
-        $toolbarItemDrivers = [];
-        if (isset($setting['toolbar']['items'])) {
-            foreach ($setting['toolbar']['items'] as $item) {
-                $driver = $item['driver'];
-                $toolbarItemDriver = new $driver($item);
-                $toolbarItemDrivers[] = $toolbarItemDriver;
-            }
-        }
 
         $page = Request::post('page', 1, 'int');
 
@@ -101,49 +77,12 @@ class Curd extends Plugin
 
         $rows = $table->getObjects();
 
-        $fields = null;
-        if (isset($setting['list']['items'])) {
-            $fields = $setting['list']['items'];
-        } else {
-            $tableConfig = Be::getTableProperty($this->setting['table']);
-            $fields = $tableConfig->getFields();
-        }
+        Response::setTitle($this->setting['lists']['title']);
 
-        $listItemDrivers = [];
-        foreach ($rows as $row) {
-
-            $tmpListItemDrivers = [];
-            foreach ($fields as $item) {
-
-                if (!isset($item['value']) && isset($item['field'])) {
-                    $field = $item['field'];
-                    if (isset($row->$field)) {
-                        $item['value'] = $row->$field;
-                    }
-                }
-
-                $driver = null;
-                if (!isset($item['driver'])) {
-                    $driver = ListItemText::class;
-                } else {
-                    $driver = $item['driver'];
-                }
-                $listItemDriver = new $driver($item);
-                $tmpListItemDrivers[] = $listItemDriver;
-            }
-
-            $listItemDrivers[] = $tmpListItemDrivers;
-        }
-
-
-        Response::setTitle($setting['title']);
         Response::set('setting', $this->setting);
+
         Response::set('table', $table);
-
-        Response::set('searchItemDrivers', $searchItemDrivers);
-        Response::set('toolbarItemDrivers', $toolbarItemDrivers);
-        Response::set('listItemDrivers', $listItemDrivers);
-
+        Response::set('rows', $rows);
         Response::set('page', $page);
         Response::set('pageSize', $pageSize);
         Response::set('pages', $pages);
