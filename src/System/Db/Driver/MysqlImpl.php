@@ -406,7 +406,7 @@ class MysqlImpl extends Driver
      *
      * @param string $table 表名
      * @param array | object $object 要插入数据库的对象，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键
+     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
      * @return int 影响的行数
      * @throws DbException
      */
@@ -480,7 +480,7 @@ class MysqlImpl extends Driver
      *
      * @param string $table 表名
      * @param array | object $object 要插入数据库的对象，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键
+     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
      * @return int 影响的行数
      * @throws DbException
      */
@@ -542,10 +542,253 @@ class MysqlImpl extends Driver
     }
 
     /**
-     * 更新一个对象到数据库
+     * 批量更新多个对象到数据库
      *
      * @param string $table 表名
-     * @param array | object $object 要更新的对象，对象属性需要和该表字段一致
+     * @param array $objects $object 要更新的对象数组，对象属性需要和该表字段一致
+     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
+     * @return int 影响的行数
+     * @throws DbException
+     */
+    public function updateMany($table, $objects, $primaryKey = null)
+    {
+        if (!is_array($objects) || count($objects) == 0) return 0;
+
+        if ($primaryKey === null) {
+            $primaryKey = $this->getTablePrimaryKey($table);
+            if ($primaryKey === null) {
+                throw new DbException('新数据表' . $table . '无主键，不支持按主键更新！');
+            }
+        }
+
+        reset($objects);
+        $object = current($objects);
+        $vars = null;
+        if (is_array($object)) {
+            $vars = $object;
+        } elseif (is_object($object)) {
+            $vars = get_object_vars($object);
+        } else {
+            throw new DbException('批量更新的数据格式须为对象或数组');
+        }
+        ksort($vars);
+
+        $fields = [];
+        $where = [];
+        foreach ($vars as $key => $value) {
+            if (is_array($value) || is_object($value)) {
+                continue;
+            }
+
+            if (is_array($primaryKey)) {
+                if (in_array($key, $primaryKey)) {
+                    $where[] = $this->quoteKey($key) . '=?';
+                    continue;
+                }
+            } else {
+                // 主键不更新
+                if ($key == $primaryKey) {
+                    $where[] = $this->quoteKey($key) . '=?';
+                    continue;
+                }
+            }
+
+            $fields[] = $this->quoteKey($key) . '=?';
+        }
+
+        if (!$where) {
+            throw new DbException('更新数据时未指定条件！');
+        }
+
+        $sql = 'UPDATE ' . $this->quoteKey($table) . ' SET ' . implode(',', $fields) . ' WHERE ' . implode(' AND ', $where);
+        $statement = $this->prepare($sql);
+
+        $effectLines = 0;
+        foreach ($objects as $o) {
+            $vars = null;
+            if (is_array($o)) {
+                $vars = $o;
+            } elseif (is_object($o)) {
+                $vars = get_object_vars($o);
+            } else {
+                throw new DbException('批量更新的数据格式须为对象或数组');
+            }
+            ksort($vars);
+
+            $fieldValues = [];
+            $whereValue = [];
+            foreach ($vars as $key => $value) {
+                if (is_array($value) || is_object($value)) {
+                    continue;
+                }
+
+                if (is_array($primaryKey)) {
+
+                    if (in_array($key, $primaryKey)) {
+                        $whereValue[] = $value;
+                        continue;
+                    }
+
+                } else {
+
+                    // 主键不更新
+                    if ($key == $primaryKey) {
+                        $whereValue[] = $value;
+                        continue;
+                    }
+                }
+
+                $fieldValues[] = $value;
+            }
+
+            if (count($whereValue) != count($where)) {
+                throw new DbException('批量更新的数组未包含必须的主键名！');
+            }
+
+            if (count($fieldValues) != count($fields)) {
+                throw new DbException('批量更新的数组内部结构不一致！');
+            }
+
+            $fieldValues = array_merge($fieldValues, $whereValue);
+            $statement->execute(array_values($fieldValues));
+            $effectLines += $statement->rowCount();
+        }
+        $statement->closeCursor();
+
+        return $effectLines;
+    }
+
+    /**
+     * 快速批量更新多个对象到数据库
+     *
+     * @param string $table 表名
+     * @param array $objects 要快速批量更新的对象数组，对象属性需要和该表字段一致
+     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
+     * @return int 影响的行数
+     * @throws DbException
+     */
+    public function quickUpdateMany($table, $objects, $primaryKey = null)
+    {
+        if (!is_array($objects) || count($objects) == 0) return 0;
+
+        if ($primaryKey === null) {
+            $primaryKey = $this->getTablePrimaryKey($table);
+            if ($primaryKey === null) {
+                throw new DbException('新数据表' . $table . '无主键，不支持按主键快速批量更新！');
+            }
+        }
+
+        reset($objects);
+        $object = current($objects);
+        $vars = null;
+        if (is_array($object)) {
+            $vars = $object;
+        } elseif (is_object($object)) {
+            $vars = get_object_vars($object);
+        } else {
+            throw new DbException('快速批量更新的数据格式须为对象或数组');
+        }
+        ksort($vars);
+        $fieldNames = array_keys($vars);
+
+        $sql = 'UPDATE ' . $this->quoteKey($table) . ' SET ';
+
+        foreach ($fieldNames as $fieldName) {
+
+            // 主键不更新
+            if (is_array($primaryKey)) {
+                if (in_array($fieldName, $primaryKey)) {
+                    continue;
+                }
+            } else {
+                if ($fieldName == $primaryKey) {
+                    continue;
+                }
+            }
+
+            $sql .= $this->quoteKey($fieldName) . ' = CASE ';
+            if (!is_array($primaryKey)) {
+                $sql .= $this->quoteKey($primaryKey) . ' ';
+            }
+
+            foreach ($objects as $o) {
+                $vars = null;
+                if (is_array($o)) {
+                    $vars = $o;
+                } elseif (is_object($o)) {
+                    $vars = get_object_vars($o);
+                } else {
+                    throw new DbException('批量更新的数据格式须为对象或数组');
+                }
+                ksort($vars);
+
+                $when = [];
+                $then = '';
+                foreach ($vars as $key => $value) {
+                    if (is_array($value) || is_object($value)) {
+                        continue;
+                    }
+
+                    if (is_array($primaryKey)) {
+                        if (in_array($key, $primaryKey)) {
+                            $when[] = $this->quoteKey($primaryKey) . '=' . $this->quoteValue($value);
+                            continue;
+                        }
+
+                    } else {
+
+                        // 主键不更新
+                        if ($key == $primaryKey) {
+                            $when = $this->quoteValue($value);
+                            continue;
+                        }
+                    }
+
+                    if ($key == $fieldName) {
+                        $then = $this->quoteValue($value);
+                    }
+                }
+
+                if (is_array($when)) {
+                    if (count($when) != $primaryKey) {
+                        throw new DbException('批量更新的数组未包含必须的主键名！');
+                    }
+                } else {
+                    if (!$when) {
+                        throw new DbException('批量更新的数组未包含必须的主键名！');
+                    }
+                }
+
+                if (!$then) {
+                    throw new DbException('批量更新的数组内部结构不一致');
+                }
+
+                $sql .= 'WHEN ';
+                if (is_array($when)) {
+                    $sql .= implode(' AND ', $when);
+                } else {
+                    $sql .= $when;
+                }
+                $sql .= ' THEN ' . $then . ' ';
+            }
+
+            $sql .= 'END,';
+        }
+
+        $sql = substr($sql, 0, -1);
+
+        $statement = $this->execute($sql);
+        $effectLines = $statement->rowCount();
+        $statement->closeCursor();
+
+        return $effectLines;
+    }
+
+    /**
+     * 替换一个对象到数据库
+     *
+     * @param string $table 表名
+     * @param array | object $object 要替换的对象，对象属性需要和该表字段一致
      * @return int 影响的行数
      * @throws DbException
      */
@@ -557,7 +800,7 @@ class MysqlImpl extends Driver
         } elseif (is_object($object)) {
             $vars = get_object_vars($object);
         } else {
-            throw new DbException('更新的数据格式须为对象或数组');
+            throw new DbException('替换的数据格式须为对象或数组');
         }
 
         $fields = [];
@@ -574,10 +817,10 @@ class MysqlImpl extends Driver
     }
 
     /**
-     * 批量更新多个对象到数据库
+     * 批量替换多个对象到数据库
      *
      * @param string $table 表名
-     * @param array $objects 要更新的对象数组，对象属性需要和该表字段一致
+     * @param array $objects 要替换的对象数组，对象属性需要和该表字段一致
      * @return int 影响的行数
      * @throws DbException
      */
@@ -593,7 +836,7 @@ class MysqlImpl extends Driver
         } elseif (is_object($object)) {
             $vars = get_object_vars($object);
         } else {
-            throw new DbException('批量更新的数据格式须为对象或数组');
+            throw new DbException('批量替换的数据格式须为对象或数组');
         }
         ksort($vars);
 
@@ -613,7 +856,7 @@ class MysqlImpl extends Driver
             } elseif (is_object($o)) {
                 $vars = get_object_vars($o);
             } else {
-                throw new DbException('批量更新的数据格式须为对象或数组');
+                throw new DbException('批量替换的数据格式须为对象或数组');
             }
             ksort($vars);
             $statement->execute(array_values($vars));
@@ -625,10 +868,10 @@ class MysqlImpl extends Driver
     }
 
     /**
-     * 快速更新一个对象到数据库
+     * 快速替换一个对象到数据库
      *
      * @param string $table 表名
-     * @param array | object $object 要更新的对象，对象属性需要和该表字段一致
+     * @param array | object $object 要替换的对象，对象属性需要和该表字段一致
      * @return int 影响的行数
      * @throws DbException
      */
@@ -640,7 +883,7 @@ class MysqlImpl extends Driver
         } elseif (is_object($object)) {
             $vars = get_object_vars($object);
         } else {
-            throw new DbException('快速更新的数据格式须为对象或数组');
+            throw new DbException('快速替换的数据格式须为对象或数组');
         }
 
         $fields = [];
@@ -666,10 +909,10 @@ class MysqlImpl extends Driver
     }
 
     /**
-     * 快速批量更新多个对象到数据库
+     * 快速批量替换多个对象到数据库
      *
      * @param string $table 表名
-     * @param array $objects 要更新的对象数组，对象属性需要和该表字段一致
+     * @param array $objects 要替换的对象数组，对象属性需要和该表字段一致
      * @return int 影响的行数
      * @throws DbException
      */
@@ -685,7 +928,7 @@ class MysqlImpl extends Driver
         } elseif (is_object($object)) {
             $vars = get_object_vars($object);
         } else {
-            throw new DbException('快速批量更新的数据格式须为对象或数组');
+            throw new DbException('快速批量替换的数据格式须为对象或数组');
         }
         ksort($vars);
 
@@ -702,7 +945,7 @@ class MysqlImpl extends Driver
             } elseif (is_object($o)) {
                 $vars = get_object_vars($o);
             } else {
-                throw new DbException('快速批量更新的数据格式须为对象或数组');
+                throw new DbException('快速批量替换的数据格式须为对象或数组');
             }
             ksort($vars);
             $values = array_values($vars);
