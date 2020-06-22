@@ -30,7 +30,7 @@ class ConfigItemImage extends DataItemImage
             '_item' => $this->name
         ]);
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' ' . $k;
@@ -40,7 +40,7 @@ class ConfigItemImage extends DataItemImage
         }
         $html .= '>';
 
-        $html .= '<a-upload';
+        $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
             foreach ($this->ui['upload'] as $k => $v) {
                 if ($v === null) {
@@ -54,11 +54,11 @@ class ConfigItemImage extends DataItemImage
 
         $html .= '<img v-if="' . $this->name . '.url" :src="' . $this->name . '.url" alt="'.$this->label.'" style="max-width:120px;" />';
         $html .= '<div v-else>';
-        $html .= '<a-button><a-icon type="upload" ></a-icon> 选择图像文件</a-button>';
+        $html .= '<el-button><el-icon type="upload" ></el-icon> 选择图像文件</el-button>';
         $html .= '</div>';
 
-        $html .= '</a-upload>';
-        $html .= '</a-form-item>';
+        $html .= '</el-upload>';
+        $html .= '</el-form-item>';
         return $html;
     }
 

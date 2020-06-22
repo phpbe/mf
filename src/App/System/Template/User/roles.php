@@ -3,7 +3,7 @@ use Be\System\Be;
 ?>
 
 <be-head>
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/User/js/roles.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/User/js/roles.js"></script>
 </be-head>
 
 <be-center>

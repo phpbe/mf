@@ -14,19 +14,17 @@ $my = Be::getUser();
     <meta charset="utf-8" />
     <title><?php echo $this->title . ' - ' . $config->siteName; ?></title>
 
-    <base href="<?php echo beUrl(); ?>/" />
-
-    <script src="https://unpkg.com/vue@2.6.10/dist/vue.min.js"></script>
+    <script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
 
     <script src="https://unpkg.com/axios@0.19.0/dist/axios.min.js"></script>
     <script>Vue.prototype.$http = axios;</script>
 
     <script src="https://unpkg.com/vue-cookies@1.5.13/vue-cookies.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.css">
-    <script src="https://unpkg.com/ant-design-vue@1.3.16/dist/antd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui@2.13.2/lib/index.js"></script>
 
-    <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Admin')->path; ?>/css/theme.css" />
+    <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Admin')->getUrl(); ?>/css/theme.css" />
     <be-head>
     </be-head>
 </head>
@@ -46,7 +44,7 @@ $my = Be::getUser();
                 $menu = Be::getMenu('Admin');
                 $menuTree = $menu->getMenuTree()
                 ?>
-                <a-menu
+                <el-menu
                         :defaultSelectedKeys="['1']"
                         mode="inline"
                         theme="dark"
@@ -59,27 +57,27 @@ $my = Be::getUser();
                             // 有子菜单
                             if ($menu->subMenu) {
                                 foreach ($menu->subMenu as $subMenu) {
-                                    echo '<a-sub-menu key="west-menu-'.$subMenu->id.'">';
-                                    echo '<span slot="title"><a-icon type="'.$subMenu->icon.'"></a-icon><span>'.$subMenu->label.'</span></span>';
+                                    echo '<el-sub-menu key="west-menu-'.$subMenu->id.'">';
+                                    echo '<span slot="title"><el-icon type="'.$subMenu->icon.'"></el-icon><span>'.$subMenu->label.'</span></span>';
                                     if ($subMenu->subMenu) {
                                         foreach ($subMenu->subMenu as $subSubMenu) {
-                                            echo '<a-menu-item key="west-menu-'.$subSubMenu->id.'">';
-                                            echo '<a href="'.$subSubMenu->url.'">'.'<a-icon type="'.$subSubMenu->icon.'"></a-icon>'.$subSubMenu->label.'</a>';
-                                            echo '</a-menu-item>';
+                                            echo '<el-menu-item key="west-menu-'.$subSubMenu->id.'">';
+                                            echo '<a href="'.$subSubMenu->url.'">'.'<el-icon type="'.$subSubMenu->icon.'"></el-icon>'.$subSubMenu->label.'</a>';
+                                            echo '</el-menu-item>';
                                         }
                                     }
-                                    echo '</a-sub-menu>';
+                                    echo '</el-sub-menu>';
                                 }
                             }
                             break;
                         }
                     }
                     ?>
-                </a-menu>
+                </el-menu>
             </div>
 
             <div class="toggle" @click="toggleMenu">
-                <a-icon :type="collapsed ?'caret-right': 'caret-left'"></a-icon>
+                <el-icon :type="collapsed ?'caret-right': 'caret-left'"></el-icon>
             </div>
 
             </be-west>
@@ -100,52 +98,52 @@ $my = Be::getUser();
                         $menu = Be::getMenu('Admin');
                         $menuTree = $menu->getMenuTree();
                         ?>
-                        <a-menu v-model="current"
+                        <el-menu v-model="current"
                                 mode="horizontal">
 
-                            <a-menu-item key="home">
-                                <a-icon type="home"></a-icon>后台首页
-                            </a-menu-item>
+                            <el-menu-item key="home">
+                                <el-icon type="home"></el-icon>后台首页
+                            </el-menu-item>
 
                             <?php
                             foreach ($menuTree as $menu) {
 
                                 // 有子菜单
                                 if ($menu->subMenu) {
-                                    echo '<a-sub-menu key="north-menu-'.$menu->id.'">';
+                                    echo '<el-sub-menu key="north-menu-'.$menu->id.'">';
                                     echo '<span slot="title">';
-                                    echo '<a-icon type="'.$menu->icon.'"></a-icon>'.$menu->label;
+                                    echo '<el-icon type="'.$menu->icon.'"></el-icon>'.$menu->label;
                                     echo '</span>';
                                     foreach ($menu->subMenu as $subMenu) {
-                                        echo '<a-sub-menu key="north-menu-'.$subMenu->id.'">';
-                                        echo '<span slot="title"><a-icon type="'.$subMenu->icon.'"></a-icon><span>'.$subMenu->label.'</span></span>';
+                                        echo '<el-sub-menu key="north-menu-'.$subMenu->id.'">';
+                                        echo '<span slot="title"><el-icon type="'.$subMenu->icon.'"></el-icon><span>'.$subMenu->label.'</span></span>';
                                         if ($subMenu->subMenu) {
                                             foreach ($subMenu->subMenu as $subSubMenu) {
-                                                echo '<a-menu-item key="north-menu-'.$subSubMenu->id.'">';
-                                                echo '<a href="'.$subSubMenu->url.'">'.'<a-icon type="'.$subSubMenu->icon.'"></a-icon>'.$subSubMenu->label.'</a>';
-                                                echo '</a-menu-item>';
+                                                echo '<el-menu-item key="north-menu-'.$subSubMenu->id.'">';
+                                                echo '<a href="'.$subSubMenu->url.'">'.'<el-icon type="'.$subSubMenu->icon.'"></el-icon>'.$subSubMenu->label.'</a>';
+                                                echo '</el-menu-item>';
                                             }
                                         }
-                                        echo '</a-sub-menu>';
+                                        echo '</el-sub-menu>';
                                     }
-                                    echo '</a-sub-menu>';
+                                    echo '</el-sub-menu>';
                                 }
                             }
                             ?>
 
-                            <a-sub-menu>
+                            <el-sub-menu>
                                 <span slot="title">
-                                    <a-icon type="info-circle"></a-icon>帮助
+                                    <el-icon type="info-circle"></el-icon>帮助
                                 </span>
-                                <a-menu-item key="help-official">
-                                    <a href="http://www.phpbe.com/" target="_blank"><a-icon type="global"></a-icon>官方网站</a>
-                                </a-menu-item>
-                                <a-menu-item key="help-support">
-                                    <a href="http://support.phpbe.com/" target="_blank"><a-icon type="bulb"></a-icon>技术支持</a>
-                                </a-menu-item>
-                            </a-sub-menu>
+                                <el-menu-item key="help-official">
+                                    <a href="http://www.phpbe.com/" target="_blank"><el-icon type="global"></el-icon>官方网站</a>
+                                </el-menu-item>
+                                <el-menu-item key="help-support">
+                                    <a href="http://support.phpbe.com/" target="_blank"><el-icon type="bulb"></el-icon>技术支持</a>
+                                </el-menu-item>
+                            </el-sub-menu>
 
-                        </a-menu>
+                        </el-menu>
 
                     </div>
 
@@ -170,20 +168,20 @@ $my = Be::getUser();
                     $menu = Be::getMenu('Admin');
                     $pathway = $menu->getPathwayByUrl(\Be\System\Request::url());
                     ?>
-                    <a-breadcrumb>
-                        <a-breadcrumb-item href="">
-                            <a-icon type="home"></a-icon>
-                        </a-breadcrumb-item>
+                    <el-breadcrumb>
+                        <el-breadcrumb-item href="">
+                            <el-icon type="home"></el-icon>
+                        </el-breadcrumb-item>
                         <?php
                         foreach ($pathway as $x) {
                             ?>
-                            <a-breadcrumb-item>
+                            <el-breadcrumb-item>
                                 <span><?php echo $x->label; ?></span>
-                            </a-breadcrumb-item>
+                            </el-breadcrumb-item>
                             <?php
                         }
                         ?>
-                    </a-breadcrumb>
+                    </el-breadcrumb>
                 </div>
                 <div class="center-body">
                     <be-center>
@@ -195,7 +193,7 @@ $my = Be::getUser();
 
     </div>
 
-    <script src="<?php echo Be::getProperty('Theme.Admin')->path; ?>/js/theme.js"></script>
+    <script src="<?php echo Be::getProperty('Theme.Admin')->getUrl(); ?>/js/theme.js"></script>
 
     </be-body>
 </body>

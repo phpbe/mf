@@ -7,14 +7,14 @@ $runtime = \Be\System\Be::getRuntime();
 
     <div class="importer-preview">
 
-        <a-form :form="be_form" layout="inline" @submit="handleSubmit">
+        <el-form :form="be_form" layout="inline" @submit="handleSubmit">
             <div class="importer-preview-data">
 
 
 
 
             </div>
-        </a-form>
+        </el-form>
     </div>
 </div>
 

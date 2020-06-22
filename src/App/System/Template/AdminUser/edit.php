@@ -8,7 +8,7 @@ $uiEditor = Be::getUi('editor');
 $uiEditor->head();
 
 $adminUser = $this->adminUser;
-echo '<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty(\'App.System\')->path; ?>/AdminTemplate/adminUser/js/edit.js"></script>';
+echo '<script type="text/javascript" language="javascript" src="'.Be::getProperty('App.System')->getUrl().'/AdminTemplate/adminUser/js/edit.js"></script>';
 if (($adminUser->id>0)) {
     echo '<script type="text/javascript" language="javascript">$(function(){hidePassword();});</script>';
 }

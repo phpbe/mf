@@ -10,8 +10,8 @@ $uiGrid->head();
 <link type="text/css" rel="stylesheet" href="bootstrap/2.3.2/css/bootstrap-lightbox.css" />
 <script type="text/javascript" language="javascript" src="bootstrap/2.3.2/js/bootstrap-lightbox.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/themes.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/themes.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/css/themes.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/themes.js"></script>
 </be-head>
 
 <be-center>

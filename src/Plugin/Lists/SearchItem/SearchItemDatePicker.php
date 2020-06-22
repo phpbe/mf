@@ -20,7 +20,7 @@ class SearchItemDatePicker extends SearchItem
             $this->ui['date-picker']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' '.$k;
@@ -30,7 +30,7 @@ class SearchItemDatePicker extends SearchItem
         }
         $html .= '>';
 
-        $html .= '<a-date-picker';
+        $html .= '<el-date-picker';
         if (isset($this->ui['date-picker'])) {
             foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {
@@ -41,9 +41,9 @@ class SearchItemDatePicker extends SearchItem
             }
         }
         $html .= '>';
-        $html .= '</a-date-picker>';
+        $html .= '</el-date-picker>';
 
-        $html .= '</a-form-item>';
+        $html .= '</el-form-item>';
         return $html;
     }
 

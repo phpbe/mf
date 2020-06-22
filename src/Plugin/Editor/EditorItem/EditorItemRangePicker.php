@@ -22,7 +22,7 @@ class EditorItemRangePicker extends EditorItem
             $this->ui['range-picker']['v-decorator'] = '[\'' . $this->name . '\']';
         }
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' ' . $k;
@@ -32,7 +32,7 @@ class EditorItemRangePicker extends EditorItem
         }
         $html .= '>';
 
-        $html .= '<a-range-picker';
+        $html .= '<el-range-picker';
         if (isset($this->ui['range-picker'])) {
             foreach ($this->ui['range-picker'] as $k => $v) {
                 if ($v === null) {
@@ -43,9 +43,9 @@ class EditorItemRangePicker extends EditorItem
             }
         }
         $html .= '>';
-        $html .= '</a-range-picker>';
+        $html .= '</el-range-picker>';
 
-        $html .= '</a-form-item>';
+        $html .= '</el-form-item>';
         return $html;
     }
 

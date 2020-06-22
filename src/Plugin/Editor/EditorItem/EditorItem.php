@@ -148,6 +148,14 @@ abstract class EditorItem
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
         }
 
+        if (!isset($this->ui['form-item'][':label-col'])) {
+            $this->ui['form-item'][':label-col'] = '{span:6}';
+        }
+
+        if (!isset($this->ui['form-item'][':wrapper-col'])) {
+            $this->ui['form-item'][':wrapper-col'] = '{span:18}';
+        }
+
         if (isset($params['option'])) {
             $option = $params['option'];
             if (is_callable($option)) {

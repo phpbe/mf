@@ -20,7 +20,7 @@ class ListItemAvatar extends ListItem
             $this->ui['avatar']['shape'] = 'square';
         }
 
-        $html = '<a-avatar';
+        $html = '<el-avatar';
         $html .= ' src="' . $this->value . '"';
 
         if (isset($this->ui['avatar'])) {
@@ -33,7 +33,7 @@ class ListItemAvatar extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</a-avatar>';
+        $html .= '</el-avatar>';
 
         return $html;
     }

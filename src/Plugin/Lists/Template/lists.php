@@ -15,7 +15,7 @@ $primaryKey = $this->table->getPrimaryKey();
 
     <div class="curd-lists">
 
-        <a-form :form="be_form" layout="inline" @submit="handleSubmit">
+        <el-form :form="be_form" layout="inline" @submit="handleSubmit">
 
 
             <?php
@@ -100,29 +100,29 @@ $primaryKey = $this->table->getPrimaryKey();
 
             </div>
 
-        </a-form>
+        </el-form>
     </div>
 
-    <a-modal
+    <el-modal
             :title="be_modal.title"
             :visible="be_modal.visible"
     >
         <iframe id="iframe-modal" src="#"></iframe>
-    </a-modal>
+    </el-modal>
 
-    <a-drawer
+    <el-drawer
             title="be_drawer.title"
             :visible="be_drawer.visible"
             :placement="be_drawer.placement"
             :closable="be_drawer.closable"
     >
         <iframe id="iframe-drawer" src="#"></iframe>
-    </a-drawer>
+    </el-drawer>
 
 
 </div>
 
 <script>var g_sPluginListsUrl = "<?php echo $this->url; ?>"; </script>
-<script src="<?php echo \Be\System\Be::getProperty('Plugin.Lists')->path; ?>/js/lists.js"></script>
+<script src="<?php echo \Be\System\Be::getProperty('Plugin.Lists')->getUrl(); ?>/js/lists.js"></script>
 
 </be-center>

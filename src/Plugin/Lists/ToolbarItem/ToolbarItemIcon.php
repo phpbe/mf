@@ -21,7 +21,7 @@ class ToolbarItemIcon extends ToolbarItem
 
         $this->ui['icon']['type'] = $this->value;
 
-        $html = '<a-icon';
+        $html = '<el-icon';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {
@@ -32,7 +32,7 @@ class ToolbarItemIcon extends ToolbarItem
             }
         }
         $html .= '>';
-        $html .= '</a-icon>';
+        $html .= '</el-icon>';
 
         return $html;
     }

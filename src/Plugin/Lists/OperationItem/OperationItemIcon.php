@@ -18,7 +18,7 @@ class OperationItemIcon extends OperationItem
      */
     public function getHtml()
     {
-        $html = '<a-icon';
+        $html = '<el-icon';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {
@@ -29,7 +29,7 @@ class OperationItemIcon extends OperationItem
             }
         }
         $html .= '>';
-        $html .= '</a-icon>';
+        $html .= '</el-icon>';
 
         return $html;
     }

@@ -3,8 +3,8 @@ use Be\System\Be;
 ?>
 
 <be-head>
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/dashboard.js"></script>
 </be-head>
 
 <be-center>

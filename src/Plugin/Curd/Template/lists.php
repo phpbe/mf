@@ -12,7 +12,7 @@
     ?>
     <div id="app" v-cloak>
 
-        <a-form :form="be_form" layout="inline" @submit="handleSubmit">
+        <el-form :form="be_form" layout="inline" @submit="handleSubmit">
 
             <?php
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
@@ -39,7 +39,7 @@
 
             </div>
 
-        </a-form>
+        </el-form>
 
     </div>
 

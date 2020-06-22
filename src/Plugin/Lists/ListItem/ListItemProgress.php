@@ -17,8 +17,8 @@ class ListItemProgress extends ListItem
      */
     public function getHtml()
     {
-        $html = '<a-progress';
-        $html .= ' :percent="' . intval($this->value) . '"';
+        $html = '<el-progress';
+        $html .= ' :percentage="' . intval($this->value) . '"';
 
         if (isset($this->ui['progress'])) {
             foreach ($this->ui['progress'] as $k => $v) {
@@ -30,8 +30,9 @@ class ListItemProgress extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</a-progress>';
+        $html .= '</el-progress>';
 
         return $html;
     }
+
 }

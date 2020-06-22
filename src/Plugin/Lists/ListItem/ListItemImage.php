@@ -1,26 +1,26 @@
 <?php
 
-namespace Be\Plugin\Lists\OperationItem;
+namespace Be\Plugin\Lists\ListItem;
 
 
 /**
- * 搜索项 布尔值
+ * 字段 图片
  */
-class OperationItemButton extends OperationItem
+class ListItemImage extends ListItem
 {
 
-
-
     /**
-     * 编辑
+     * 获取html内容
      *
      * @return string | array
      */
     public function getHtml()
     {
-        $html = '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
+        $html = '<el-image';
+        $html .= ' src="' . $this->value . '"';
+
+        if (isset($this->ui['image'])) {
+            foreach ($this->ui['image'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -29,9 +29,9 @@ class OperationItemButton extends OperationItem
             }
         }
         $html .= '>';
-        $html .= $this->value;
-        $html .= '</el-button>';
+        $html .= '</el-image>';
 
         return $html;
     }
+
 }

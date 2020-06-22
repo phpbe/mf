@@ -7,7 +7,7 @@ use Be\System\Be;
 <script type="text/javascript" language="javascript">
 
 </script>
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/Db/js/tables.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/Db/js/tables.js"></script>
 </be-head>
 
 <be-center>

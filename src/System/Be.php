@@ -454,7 +454,7 @@ abstract class Be
      * 获取一个属性（单例）
      *
      * @param string $name 名称
-     * @return mixed
+     * @return Property
      * @throws RuntimeException
      */
     public static function getProperty($name)

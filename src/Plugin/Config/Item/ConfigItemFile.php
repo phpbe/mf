@@ -28,7 +28,7 @@ class ConfigItemFile extends DataItemFile
             '_item' => $this->name
         ]);
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' ' . $k;
@@ -38,7 +38,7 @@ class ConfigItemFile extends DataItemFile
         }
         $html .= '>';
 
-        $html .= '<a-upload';
+        $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
             foreach ($this->ui['upload'] as $k => $v) {
                 if ($v === null) {
@@ -52,11 +52,11 @@ class ConfigItemFile extends DataItemFile
 
         $html .= '<a v-if="' . $this->name . '.fileName" :href="' . $this->name . '.url">{{' . $this->name . '.newValue}}</a>';
         $html .= '<div v-else>';
-        $html .= '<a-button><a-icon type="upload" ></a-icon> 选择文件</a-button>';
+        $html .= '<el-button><el-icon type="upload" ></el-icon> 选择文件</el-button>';
         $html .= '</div>';
 
-        $html .= '</a-upload>';
-        $html .= '</a-form-item>';
+        $html .= '</el-upload>';
+        $html .= '</el-form-item>';
         return $html;
     }
 

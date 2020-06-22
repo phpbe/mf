@@ -19,7 +19,7 @@ class Config extends Service
         $configTree = [];
         foreach ($appNames as $appName) {
 
-            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.'.$appName)->path . '/Config';
+            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.'.$appName)->getPath() . '/Config';
             $configs = array();
             if (file_exists($dir) && is_dir($dir)) {
                 $fileNames = scandir($dir);

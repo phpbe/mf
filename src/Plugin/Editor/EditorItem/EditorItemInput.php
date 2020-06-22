@@ -20,7 +20,7 @@ class EditorItemInput extends EditorItem
             $this->ui['input']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' '.$k;
@@ -30,7 +30,7 @@ class EditorItemInput extends EditorItem
         }
         $html .= '>';
 
-        $html .= '<a-input';
+        $html .= '<el-input';
         if (isset($this->ui['input'])) {
             foreach ($this->ui['input'] as $k => $v) {
                 if ($v === null) {
@@ -41,9 +41,9 @@ class EditorItemInput extends EditorItem
             }
         }
         $html .= '>';
-        $html .= '</a-input>';
+        $html .= '</el-input>';
 
-        $html .= '</a-form-item>';
+        $html .= '</el-form-item>';
         return $html;
     }
 }

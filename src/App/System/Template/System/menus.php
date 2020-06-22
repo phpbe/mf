@@ -3,13 +3,13 @@ use Be\System\Be;
 ?>
 
 <be-head>
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/base64.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/base64.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menus.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/menus.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/css/menus.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/menus.js"></script>
 
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/css/menuSetLink.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/menuSetLink.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/css/menuSetLink.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/menuSetLink.js"></script>
 
 </be-head>
 

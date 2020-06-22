@@ -8,7 +8,7 @@ use Be\System\Be;
 $adminUiEditor = Be::getUi('editor');
 $adminUiEditor->head();
 ?>
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/User/js/rolePermissions.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/User/js/rolePermissions.js"></script>
 </be-head>
 
 <be-center>

@@ -7,7 +7,7 @@ use Be\System\Be;
 $uiGrid = Be::getUi('grid');
 $uiGrid->head();
 ?>
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/js/apps.js"></script>
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/js/apps.js"></script>
 </be-head>
 
 <be-center>

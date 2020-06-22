@@ -19,9 +19,9 @@ class ListItemIcon extends ListItem
     public function getHtml()
     {
 
-        $this->ui['icon']['type'] = $this->value;
+        $this->ui['icon']['class'] = $this->value;
 
-        $html = '<a-icon ';
+        $html = '<i';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {
@@ -32,7 +32,7 @@ class ListItemIcon extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</a-icon>';
+        $html .= '</i>';
 
         return $html;
     }

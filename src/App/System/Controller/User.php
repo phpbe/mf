@@ -204,7 +204,7 @@ class User extends Controller
                             'driver' => ListItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row->avatar_s == '') {
-                                    return Be::getRuntime()->getRootUrl() . '/' . Be::getProperty('App.System')->path . '/Template/User/images/avatar/small.png';
+                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
                                 } else {
                                     return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
                                 }

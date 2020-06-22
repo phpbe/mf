@@ -24,14 +24,6 @@ abstract class SearchItem extends Item
     {
         parent::__construct($params, $tuple);
 
-        if (!isset($this->ui['form-item'][':label-col'])) {
-            $this->ui['form-item'][':label-col'] = '{span:6}';
-        }
-
-        if (!isset($this->ui['form-item'][':wrapper-col'])) {
-            $this->ui['form-item'][':wrapper-col'] = '{span:18}';
-        }
-
         if ($this->description) {
             if (!isset($this->ui['form-item']['help'])) {
                 $this->ui['form-item']['help'] = htmlspecialchars($this->description);

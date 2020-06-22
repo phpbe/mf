@@ -20,7 +20,7 @@ class EditorItemSelect extends EditorItem
             $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';
         }
 
-        $html = '<a-form-item';
+        $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
                 $html .= ' '.$k;
@@ -30,7 +30,7 @@ class EditorItemSelect extends EditorItem
         }
         $html .= '>';
 
-        $html .= '<a-select';
+        $html .= '<el-select';
         if (isset($this->ui['select'])) {
             foreach ($this->ui['select'] as $k => $v) {
                 if ($v === null) {
@@ -43,15 +43,15 @@ class EditorItemSelect extends EditorItem
 
         $html .= '>';
         foreach ($this->keyValues as $k => $v) {
-            $html .= '<a-select-option';
+            $html .= '<el-select-option';
             $html .= ' key="' . $k . '"';
             $html .= '>';
             $html .= $v;
-            $html .= '</a-select-option>';
+            $html .= '</el-select-option>';
         }
-        $html .= '</a-select>';
+        $html .= '</el-select>';
 
-        $html .= '</a-form-item>';
+        $html .= '</el-form-item>';
         return $html;
     }
 

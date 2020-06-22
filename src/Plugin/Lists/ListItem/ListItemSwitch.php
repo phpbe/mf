@@ -41,7 +41,7 @@ class ListItemSwitch extends ListItem
             $this->ui['switch']['@change'] = 'fieldAction(\''.htmlspecialchars($this->label).'\', \''.$this->url.'\', '.$option.', '.$data.')';
         }
 
-        $html = '<a-switch';
+        $html = '<el-switch';
         if (isset($this->ui['switch'])) {
             foreach ($this->ui['switch'] as $k => $v) {
                 if ($v === null) {
@@ -52,7 +52,7 @@ class ListItemSwitch extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</a-switch>';
+        $html .= '</el-switch>';
 
         return $html;
     }

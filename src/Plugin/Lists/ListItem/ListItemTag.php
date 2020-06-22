@@ -16,7 +16,7 @@ class ListItemTag extends ListItem
      */
     public function getHtml()
     {
-        $html = '<a-tag';
+        $html = '<el-tag';
         if (isset($this->ui['tag'])) {
             foreach ($this->ui['tag'] as $k => $v) {
                 if ($v === null) {
@@ -28,7 +28,7 @@ class ListItemTag extends ListItem
         }
         $html .= '>';
         $html .= $this->value;
-        $html .= '</a-tag>';
+        $html .= '</el-tag>';
 
         return $html;
     }

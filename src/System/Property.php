@@ -43,13 +43,29 @@ abstract class Property
     }
 
     /**
-     * @return null
+     * @return null | string
      */
     public function getIcon()
     {
         return $this->icon;
     }
 
+    /**
+     * @return string
+     */
+    public function getPath()
+    {
+        return $this->path;
+    }
+
+    /**
+     * 获取网址
+     *
+     * @return string
+     */
+    public function getUrl() {
+        return Be::getRuntime()->getRootUrl() . $this->path;
+    }
 
     public function __get($name) {
         if( isset( $this->$name ) ) {

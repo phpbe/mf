@@ -20,7 +20,7 @@ class Template extends \Be\System\Service
     {
         $themeProperty = Be::getProperty('Theme.' . $theme);
 
-        $fileTheme = Be::getRuntime()->getRootPath() . $themeProperty->path . '/' . $theme . '.php';
+        $fileTheme = Be::getRuntime()->getRootPath() . $themeProperty->getPath() . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             throw new ServiceException('主题 ' . $theme . ' 不存在！');
         }
@@ -30,7 +30,7 @@ class Template extends \Be\System\Service
         $name = array_shift($parts);
 
         $property = Be::getProperty($type . '.' . $name);
-        $fileTemplate = Be::getRuntime()->getRootPath() . $property->path . '/Template/' . implode('/', $parts) . '.php';
+        $fileTemplate = Be::getRuntime()->getRootPath() . $property->getPath() . '/Template/' . implode('/', $parts) . '.php';
 
         if (!file_exists($fileTemplate)) {
             throw new ServiceException('模板 ' . $template . ' 不存在！');
@@ -59,7 +59,7 @@ class Template extends \Be\System\Service
                     $tmpName = array_shift($includes);
 
                     $tmpProperty = Be::getProperty($tmpType . '.' . $tmpName);
-                    $fileInclude = Be::getRuntime()->getRootPath() . $tmpProperty->path . '/Template/' . implode('/', $includes) . '.php';
+                    $fileInclude = Be::getRuntime()->getRootPath() . $tmpProperty->getPath() . '/Template/' . implode('/', $includes) . '.php';
                     if (!file_exists($fileInclude)) {
                         throw new ServiceException('模板中包含的文件 ' . $m . ' 不存在！');
                     }

@@ -18,7 +18,7 @@ class ListItemButton extends ListItem
      */
     public function getHtml()
     {
-        $html = '<a-button';
+        $html = '<el-button';
         if (isset($this->ui['button'])) {
             foreach ($this->ui['button'] as $k => $v) {
                 if ($v === null) {
@@ -30,7 +30,7 @@ class ListItemButton extends ListItem
         }
         $html .= '>';
         $html .= $this->value;
-        $html .= '</a-button>';
+        $html .= '</el-button>';
 
         return $html;
     }

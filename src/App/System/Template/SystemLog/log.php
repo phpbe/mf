@@ -7,8 +7,8 @@ use Be\System\Be;
 $log = $this->log;
 if (strlen(serialize($log)) < 100 * 1024) {
     ?>
-    <link rel="stylesheet" href="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/google-code-prettify/prettify.css" type="text/css"/>
-    <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->path; ?>/AdminTemplate/System/google-code-prettify/prettify.js"></script>
+    <link rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/google-code-prettify/prettify.css" type="text/css"/>
+    <script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/System/google-code-prettify/prettify.js"></script>
     <script type="text/javascript">
         $().ready(function () {
             prettyPrint();
