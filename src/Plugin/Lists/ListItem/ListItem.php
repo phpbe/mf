@@ -11,7 +11,8 @@ use Be\System\Be;
 abstract class ListItem extends Item
 {
 
-    protected $exportValue = null; // 导出的
+    protected $export = 1; // 是否可导出
+    protected $exportValue = null; // 控制导出的值，默认取 value
 
     /**
      * 构造函数
@@ -22,6 +23,15 @@ abstract class ListItem extends Item
     public function __construct($params = [], $tuple = null)
     {
         parent::__construct($params, $tuple);
+
+        if (isset($params['export'])) {
+            $export = $params['export'];
+            if (is_callable($export)) {
+                $this->export = $export($tuple);
+            } else {
+                $this->export = $export;
+            }
+        }
 
         if (isset($params['exportValue'])) {
             $exportValue = $params['exportValue'];
