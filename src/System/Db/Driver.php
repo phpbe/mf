@@ -254,20 +254,18 @@ abstract class Driver
         $arrays = $statement->fetchAll(\PDO::FETCH_ASSOC);
         $statement->closeCursor();
 
+        if (count($arrays) == 0) return [];
+
         if ($key === null) {
-            if (count($arrays) > 0) {
-                foreach ($arrays[0] as $k => $v) {
-                    $key = $k;
-                    break;
-                }
+            foreach ($arrays[0] as $k => $v) {
+                $key = $k;
+                break;
             }
         }
 
         $result = [];
-        if (count($arrays) > 0) {
-            foreach ($arrays as $array) {
-                $result[$array[$key]] = $array;
-            }
+        foreach ($arrays as $array) {
+            $result[$array[$key]] = $array;
         }
 
         return $result;
@@ -339,22 +337,21 @@ abstract class Driver
         $objects = $statement->fetchAll(\PDO::FETCH_OBJ);
         $statement->closeCursor();
 
+        if (count($objects) == 0) return [];
+
         if ($key === null) {
-            if (count($objects) > 0) {
-                $vars = get_object_vars($objects[0]);
-                foreach ($vars as $k => $v) {
-                    $key = $k;
-                    break;
-                }
+            $vars = get_object_vars($objects[0]);
+            foreach ($vars as $k => $v) {
+                $key = $k;
+                break;
             }
         }
 
         $result = [];
-        if (count($objects) > 0) {
-            foreach ($objects as $object) {
-                $result[$object->$key] = $object;
-            }
+        foreach ($objects as $object) {
+            $result[$object->$key] = $object;
         }
+
         return $result;
     }
 
