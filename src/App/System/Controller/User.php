@@ -83,6 +83,14 @@ class User extends Controller
 
             'lists' => [
                 'title' => '用户列表',
+
+                'tab' => [
+                    'field' => 'username',
+                    'keyValues' => [
+
+                    ]
+                ],
+
                 'search' => [
                     'items' => [
                         [
