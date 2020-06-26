@@ -16,10 +16,6 @@ class SearchItemDatePicker extends SearchItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['date-picker']['v-decorator'])) {
-            $this->ui['date-picker']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -31,6 +27,7 @@ class SearchItemDatePicker extends SearchItem
         $html .= '>';
 
         $html .= '<el-date-picker';
+        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['date-picker'])) {
             foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {

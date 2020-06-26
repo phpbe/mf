@@ -37,6 +37,11 @@ class Curd extends Plugin
      */
     public function lists()
     {
+        if (Request::isAjax()) {
+
+        }
+
+
         $runtime = Be::getRuntime();
         $appName = $runtime->getAppName();
         $controllerName = $runtime->getControllerName();
@@ -55,7 +60,14 @@ class Curd extends Plugin
             if ($cookiePageSize > 0) {
                 $pageSize = $cookiePageSize;
             } else {
-                $pageSize = Be::getConfig('System.System')->pageSize;;
+                if (isset($this->setting['lists']['defaultPageSize']) &&
+                    is_numeric($this->setting['lists']['defaultPageSize']) &&
+                    $this->setting['lists']['defaultPageSize'] > 0
+                ) {
+                    $pageSize = $this->setting['lists']['defaultPageSize'];
+                } else {
+                    $pageSize = Be::getConfig('System.System')->pageSize;;
+                }
             }
         }
 

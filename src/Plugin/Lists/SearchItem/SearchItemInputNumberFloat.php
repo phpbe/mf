@@ -29,10 +29,6 @@ class SearchItemInputNumberFloat extends SearchItem
             $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseFloat(value)';
         }
 
-        if (!isset($this->ui['input-number']['v-decorator'])) {
-            $this->ui['input-number']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -44,6 +40,7 @@ class SearchItemInputNumberFloat extends SearchItem
         $html .= '>';
 
         $html .= '<el-input-number ';
+        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['input-number'])) {
             foreach ($this->ui['input-number'] as $k => $v) {
                 if ($v === null) {

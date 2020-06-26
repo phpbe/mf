@@ -100,7 +100,21 @@ class OperationItemButtonDropDown extends OperationItem
      */
     public function getHtml()
     {
-        $html = '<el-dropdown';
+
+        $html = '<el-table-column';
+        if (isset($this->ui['table-column'])) {
+            foreach ($this->ui['table-column'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
+            }
+        }
+        $html .= '>';
+        $html .= '<template slot-scope="scope">';
+
+        $html .= '<el-dropdown';
         if (isset($this->ui['dropdown'])) {
             foreach ($this->ui['dropdown'] as $k => $v) {
                 if ($k == 'icon') {
@@ -136,8 +150,10 @@ class OperationItemButtonDropDown extends OperationItem
 
         $html .= $this->value;
         $html .= '<el-button> ' . $this->value . ' <el-icon type="down"></el-icon></el-button>';
-
         $html .= '</el-dropdown>';
+        $html .= '</template>';
+        $html .= '</el-table-column>';
+
         return $html;
     }
 

@@ -18,10 +18,6 @@ class SearchItemRangePicker extends SearchItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['range-picker']['v-decorator'])) {
-            $this->ui['range-picker']['v-decorator'] = '[\'' . $this->name . '\']';
-        }
-
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -33,6 +29,7 @@ class SearchItemRangePicker extends SearchItem
         $html .= '>';
 
         $html .= '<el-range-picker';
+        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['range-picker'])) {
             foreach ($this->ui['range-picker'] as $k => $v) {
                 if ($v === null) {

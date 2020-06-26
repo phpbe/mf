@@ -16,10 +16,6 @@ class SearchItemInput extends SearchItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['input']['v-decorator'])) {
-            $this->ui['input']['v-decorator'] = '[\''.$this->name.'\']';
-        }
-
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -31,6 +27,7 @@ class SearchItemInput extends SearchItem
         $html .= '>';
 
         $html .= '<el-input';
+        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['input'])) {
             foreach ($this->ui['input'] as $k => $v) {
                 if ($v === null) {

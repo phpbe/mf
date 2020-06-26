@@ -144,10 +144,6 @@ abstract class Item
             }
         }
 
-        if (!isset($this->ui['form-item']['label'])) {
-            $this->ui['form-item']['label'] = htmlspecialchars($this->label);
-        }
-
         if (isset($params['option'])) {
             $option = $params['option'];
             if (is_callable($option)) {

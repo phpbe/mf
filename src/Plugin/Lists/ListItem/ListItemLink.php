@@ -18,7 +18,19 @@ class ListItemLink extends ListItem
      */
     public function getHtml()
     {
-        $html = '<a';
+        $html = '<el-table-column';
+        if (isset($this->ui['table-column'])) {
+            foreach ($this->ui['table-column'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
+            }
+        }
+        $html .= '>';
+        $html .= '<template slot-scope="scope">';
+        $html .= '<a';
         if (isset($this->ui['link'])) {
             foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {
@@ -29,8 +41,10 @@ class ListItemLink extends ListItem
             }
         }
         $html .= '>';
-        $html .= $this->value;
+        $html .= '{{scope.row.'.$this->name.'}}';
         $html .= '</a>';
+        $html .= '</template>';
+        $html .= '</el-table-column>';
 
         return $html;
     }

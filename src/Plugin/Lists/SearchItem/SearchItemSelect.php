@@ -16,8 +16,16 @@ class SearchItemSelect extends SearchItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['select']['v-decorator'])) {
-            $this->ui['select']['v-decorator'] = '[\''.$this->name.'\']';
+        if (!isset($this->ui['select']['placeholder'])) {
+            $this->ui['select']['placeholder'] = '请选择';
+        }
+
+        if (!isset($this->ui['select']['filterable'])) {
+            $this->ui['select']['filterable'] = null;
+        }
+
+        if (!isset($this->ui['select']['clearable'])) {
+            $this->ui['select']['clearable'] = null;
         }
 
         $html = '<el-form-item';
@@ -31,6 +39,7 @@ class SearchItemSelect extends SearchItem
         $html .= '>';
 
         $html .= '<el-select';
+        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['select'])) {
             foreach ($this->ui['select'] as $k => $v) {
                 if ($v === null) {
@@ -43,11 +52,11 @@ class SearchItemSelect extends SearchItem
 
         $html .= '>';
         foreach ($this->keyValues as $k => $v) {
-            $html .= '<el-select-option';
-            $html .= ' key="' . $k . '"';
+            $html .= '<el-option';
+            $html .= ' value="' . $k . '"';
+            $html .= ' label="' . $v . '"';
             $html .= '>';
-            $html .= $v;
-            $html .= '</el-select-option>';
+            $html .= '</el-option>';
         }
         $html .= '</el-select>';
 

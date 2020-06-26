@@ -13,7 +13,6 @@ abstract class SearchItem extends Item
 
     protected $newValue = null; // 新值
 
-
     /**
      * 构造函数
      *
@@ -23,6 +22,10 @@ abstract class SearchItem extends Item
     public function __construct($params = [], $tuple = null)
     {
         parent::__construct($params, $tuple);
+
+        if (!isset($this->ui['form-item']['label'])) {
+            $this->ui['form-item']['label'] = htmlspecialchars($this->label);
+        }
 
         if ($this->description) {
             if (!isset($this->ui['form-item']['help'])) {

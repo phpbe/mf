@@ -41,7 +41,20 @@ class ListItemSwitch extends ListItem
             $this->ui['switch']['@change'] = 'fieldAction(\''.htmlspecialchars($this->label).'\', \''.$this->url.'\', '.$option.', '.$data.')';
         }
 
-        $html = '<el-switch';
+
+        $html = '<el-table-column';
+        if (isset($this->ui['table-column'])) {
+            foreach ($this->ui['table-column'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
+            }
+        }
+        $html .= '>';
+        $html .= '<template slot-scope="scope">';
+        $html .= '<el-switch';
         if (isset($this->ui['switch'])) {
             foreach ($this->ui['switch'] as $k => $v) {
                 if ($v === null) {
@@ -53,6 +66,8 @@ class ListItemSwitch extends ListItem
         }
         $html .= '>';
         $html .= '</el-switch>';
+        $html .= '</template>';
+        $html .= '</el-table-column>';
 
         return $html;
     }
