@@ -3,9 +3,9 @@ vendor
 /composer.lock
 .DS_store
 
-/Cache/*
-!/Cache/index.html
+/src/cache/*
+!/src/cache/index.html
 
-/Data/*
-!/Data/index.html
+/src/data/*
+!/src/data/index.html
 

@@ -2,6 +2,7 @@
 
 namespace Be\System;
 
+
 use Be\System\Exception\RuntimeException;
 
 /**
@@ -150,16 +151,17 @@ class Runtime
         return $this->actionName;
     }
 
+    /**
+     * @throws Exception\RuntimeException
+     */
     public function execute()
     {
-
-        // 检查网站配置， 是否暂停服务
-        $configSystem = Be::getConfig('System.System');
-
-        // 默认时区
-        date_default_timezone_set($configSystem->timezone);
-
         try {
+            // 检查网站配置， 是否暂停服务
+            $configSystem = Be::getConfig('System.System');
+
+            // 默认时区
+            date_default_timezone_set($configSystem->timezone);
 
             // 启动 session
             Session::start();
@@ -286,6 +288,5 @@ class Runtime
 
             Response::exception($e);
         }
-
     }
 }
