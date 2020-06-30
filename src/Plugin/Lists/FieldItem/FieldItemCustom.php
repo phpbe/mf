@@ -1,13 +1,14 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 文本
+ * 字段 自定义
  */
-class ListItemText extends ListItem
+class FieldItemCustom extends FieldItem
 {
+
 
 
     /**
@@ -35,6 +36,5 @@ class ListItemText extends ListItem
 
         return $html;
     }
-
 
 }

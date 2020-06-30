@@ -11,12 +11,9 @@
             <?php
             $tabHtml = '';
             $tabPosition = 'BeforeSearch';
-            if (isset($this->setting['lists']['tab']['field']) && isset($this->setting['lists']['tab']['keyValues']) && count($this->setting['lists']['tab']['keyValues']) > 0) {
-                $tabHtml .= '<el-tabs v-model="searchForm.' . $this->setting['lists']['tab']['field'] . '" @tab-click="tabClick">';
-                foreach ($this->setting['lists']['tab']['keyValues'] as $key => $val) {
-                    $tabHtml .= '<el-tab-pane label="' . $val . '" name="' . $key . '"></el-tab-pane>';
-                }
-                $tabHtml .= '</el-tabs>';
+            if (isset($this->setting['lists']['tab']['name']) && isset($this->setting['lists']['tab']['keyValues']) && count($this->setting['lists']['tab']['keyValues']) > 0) {
+                $driver = new \Be\Plugin\Lists\Tab();
+                $tabHtml = $driver->getHtml();
                 if (isset($this->setting['lists']['tab']['position'])) {
                     $tabPosition = $this->setting['lists']['tab']['position'];
                 }
@@ -25,10 +22,7 @@
             if ($tabHtml && $tabPosition == 'BeforeSearch') {
                 echo $tabHtml;
             }
-            ?>
 
-
-            <?php
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                 foreach ($this->setting['lists']['search']['items'] as $item) {
                     $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\SearchItem\\SearchItemInput';
@@ -53,22 +47,18 @@
                     echo '</el-form-item>';
                 }
             }
-            ?>
 
-            <?php
-            if ($tabHtml && $tabPosition == 'BeforeList') {
+            if ($tabHtml && $tabPosition == 'BeforeStage') {
                 echo $tabHtml;
             }
             ?>
 
             <el-table
-                    :data="rows"
-                    ref="indexTable"
+                    :data="tuples"
+                    ref="stageTable"
                     v-loading="loading"
                     size="mini"
-                    :height="tableHeight"
-                    @selection-change="handleSelectionChange"
-            >
+                    :height="stageHeight">
                 <?php
                 $opPosition = 'right';
                 if (isset($this->setting['lists']['operation']['position']) && in_array($this->setting['lists']['operation']['position'], ['left', 'right'])) {
@@ -88,8 +78,8 @@
                     echo $opHtml;
                 }
 
-                foreach ($this->setting['lists']['list']['items'] as $item) {
-                    $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\ListItem\\ListItemText';
+                foreach ($this->setting['lists']['fields']['items'] as $item) {
+                    $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\FieldItem\\FieldItemText';
                     $driver = new $driver($item);
                     echo $driver->getHtml();
                 }
@@ -118,43 +108,85 @@
     </div>
 
     <script>
+
+        var pageSizeKey = "<?php echo $this->url; ?>:pageSize";
+        var pageSize = localStorage.getItem(pageSizeKey);
+        if (pageSize == undefined || isNaN(pageSize)) {
+            pageSize = <?php echo $this->pageSize; ?>;
+        } else {
+            pageSize = Number(pageSize);
+        }
+
         var app = new Vue({
             el: '#app',
             data: {
                 searchForm: <?php echo json_encode($searchForm); ?>,
-                pageSize: <?php echo $this->pageSize; ?>,
+                pageSize: pageSize,
                 page: 1,
                 pages: 1,
                 total: 0,
-                rows: [],
-                subtotal: [],
+                tuples: [],
                 loading: false,
-                tableHeight: 500,
-                multipleSelection: []
+                stageHeight: 500
+            },
+            created: function () {
+                this.search();
             },
             methods: {
-                search: function (e) {
+                search: function () {
+                    this.page = 1;
+                    this.loadData();
+                },
+                loadData: function () {
+                    this.loading = true;
+                    var _this = this;
+                    _this.$http.post("<?php echo $this->url; ?>", {
+                        searchForm: _this.searchForm,
+                        page: _this.page,
+                        pageSize: _this.pageSize
+                    }).then(function (response) {
+                        _this.loading = false;
+                        //console.log(response);
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                _this.total = parseInt(responseData.data.total);
+                                _this.tuples = responseData.data.tuples;
+                                _this.pages = Math.floor(_this.total / _this.pageSize);
+                            } else {
+                                _this.total = 0;
+                                _this.tuples = [];
+                                _this.page = 1;
+                                _this.pages = 1;
+
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.loading = false;
+                        _this.$message.error(error);
+                    });
                 },
                 changePageSize: function (pageSize) {
                     this.pageSize = pageSize;
                     this.page = 1;
+                    localStorage.setItem(pageSizeKey, pageSize);
                     this.loadData();
                 },
                 gotoPage: function (page) {
                     this.page = page;
                     this.loadData();
-                },
-                handleSelectionChange: function (val) {
-                    this.multipleSelection = val;
                 }
             },
 
             mounted: function () {
                 this.$nextTick(function () {
-                    this.tableHeight = document.documentElement.clientHeight - this.$refs.indexTable.$el.offsetTop - 50;
+                    this.stageHeight = document.documentElement.clientHeight - this.$refs.stageTable.$el.offsetTop - 50;
                     var self = this;
                     window.onresize = function () {
-                        self.tableHeight = document.documentElement.clientHeight - self.$refs.indexTable.$el.offsetTop - 50
+                        self.stageHeight = document.documentElement.clientHeight - self.$refs.stageTable.$el.offsetTop - 50
                     }
                 })
             }

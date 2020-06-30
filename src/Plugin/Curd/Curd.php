@@ -37,72 +37,109 @@ class Curd extends Plugin
      */
     public function lists()
     {
-        if (Request::isAjax()) {
-
-        }
-
-
-        $runtime = Be::getRuntime();
-        $appName = $runtime->getAppName();
-        $controllerName = $runtime->getControllerName();
-        $actionName = $runtime->getActionName();
-
         $table = Be::newTable($this->setting['table']);
 
-        $primaryKey = $table->getPrimaryKey();
+        if (Request::isAjax()) {
 
-        $page = Request::post('page', 1, 'int');
+            try {
+                $postData = Request::json();
+                $searchForm = $postData['searchForm'];
+                $page = $postData['page'];
+                $pageSize = $postData['pageSize'];
 
-        $pageSize = Request::post('pageSize', 0, 'int');
-        $cookiePageSizeKey = $appName . '.' . $controllerName . '.' . $actionName . '.pageSize';
-        if (!$pageSize) {
-            $cookiePageSize = Cookie::get($cookiePageSizeKey, 0, 'int');
-            if ($cookiePageSize > 0) {
-                $pageSize = $cookiePageSize;
-            } else {
-                if (isset($this->setting['lists']['defaultPageSize']) &&
-                    is_numeric($this->setting['lists']['defaultPageSize']) &&
-                    $this->setting['lists']['defaultPageSize'] > 0
-                ) {
-                    $pageSize = $this->setting['lists']['defaultPageSize'];
-                } else {
-                    $pageSize = Be::getConfig('System.System')->pageSize;;
+                $total = $table->count();
+
+                $pages = ceil($total / $pageSize);
+                if ($pages == 0) $pages = 1;
+
+                $table->offset(($page - 1) * $pageSize)->limit($pageSize);
+
+                if (isset($this->setting['lists']['tab'])) {
+                    $driver = new \Be\Plugin\Lists\Tab();
+                    $driver->submit($searchForm);
+                    $where = $driver->buildSql();
+                    if ($where) {
+                        $table->where($where);
+                    }
                 }
+
+                if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
+                    foreach ($this->setting['lists']['search']['items'] as $item) {
+                        $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\SearchItem\\SearchItemInput';
+                        $driver = new $driver($item);
+                        $driver->submit($searchForm);
+                        $where = $driver->buildSql();
+                        if ($where) {
+                            foreach ($where as $w) {
+                                $table->where($w);
+                            }
+                        }
+                    }
+                }
+
+                $orderBy = Request::post('orderBy');
+                if ($orderBy) {
+                    $orderByDir = Request::post('orderByDir', 'DESC');
+                    $table->orderBy($orderBy, $orderByDir);
+                } else {
+                    if (isset($this->setting['lists']['orderBy'])) {
+                        $orderBy = $this->setting['lists']['orderBy'];
+                        if (isset($this->setting['lists']['orderByDir'])) {
+                            $orderByDir = $this->setting['lists']['orderByDir'];
+                            $table->orderBy($orderBy, $orderByDir);
+                        } else {
+                            $table->orderBy($orderBy);
+                        }
+                    } else {
+                        $primaryKey = $table->getPrimaryKey();
+                        if (is_array($primaryKey)) {
+                            $orderByStrings = [];
+                            foreach ($primaryKey as $pKey) {
+                                $orderByStrings[] = $pKey . ' DESC';
+                            }
+                            $table->orderBy(implode(',', $orderByStrings));
+                        } else {
+                            $table->orderBy($primaryKey, 'DESC');
+                        }
+                    }
+                }
+
+                $tuples = $table->getObjects();
+
+                Response::set('success', true);
+                Response::set('data', [
+                    'total' => $total,
+                    'tuples' => $tuples,
+                ]);
+                Response::ajax();
+            } catch (\Exception $e) {
+                Response::set('success', false);
+                Response::set('message', $e->getMessage());
+                Response::ajax();
             }
+
+        } else {
+
+            $pageSize = null;
+            if (isset($this->setting['lists']['defaultPageSize']) &&
+                is_numeric($this->setting['lists']['defaultPageSize']) &&
+                $this->setting['lists']['defaultPageSize'] > 0
+            ) {
+                $pageSize = $this->setting['lists']['defaultPageSize'];
+            } else {
+                $pageSize = Be::getConfig('System.System')->pageSize;;
+            }
+
+            Response::setTitle($this->setting['lists']['title']);
+
+            Response::set('url', Request::url());
+            Response::set('setting', $this->setting);
+            Response::set('table', $table);
+            Response::set('pageSize', $pageSize);
+            Response::display('Plugin.Curd.lists');
+            Response::createHistory();
         }
 
-        Cookie::set($cookiePageSizeKey, $pageSize, 86400 * 30);
-
-        if ($pageSize <= 0) $pageSize = Be::getConfig('System.System')->pageSize;;
-        if ($pageSize > 1000) $pageSize = 1000;
-
-        $total = $table->count();
-
-        $pages = ceil($total / $pageSize);
-        if ($pages == 0) $pages = 1;
-
-        $table->offset(($page - 1) * $pageSize)->limit($pageSize);
-
-        $orderBy = Request::post('orderBy', $primaryKey);
-        $orderByDir = Request::post('orderByDir', 'DESC');
-        $table->orderBy($orderBy, $orderByDir);
-
-        $rows = $table->getObjects();
-
-        Response::setTitle($this->setting['lists']['title']);
-
-        Response::set('setting', $this->setting);
-
-        Response::set('table', $table);
-        Response::set('rows', $rows);
-        Response::set('page', $page);
-        Response::set('pageSize', $pageSize);
-        Response::set('pages', $pages);
-        Response::set('total', $total);
-        Response::set('orderBy', $orderBy);
-        Response::set('orderByDir', $orderByDir);
-        Response::display('Plugin.Curd.lists');
-        Response::createHistory();
     }
 
     /**

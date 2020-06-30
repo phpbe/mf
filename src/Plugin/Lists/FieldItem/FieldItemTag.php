@@ -1,20 +1,18 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 链接
+ * 字段 标签
  */
-class ListItemLink extends ListItem
+class FieldItemTag extends FieldItem
 {
-
-
 
     /**
      * 获取html内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {
@@ -30,9 +28,9 @@ class ListItemLink extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<a';
-        if (isset($this->ui['link'])) {
-            foreach ($this->ui['link'] as $k => $v) {
+        $html .= '<el-tag';
+        if (isset($this->ui['tag'])) {
+            foreach ($this->ui['tag'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -42,7 +40,7 @@ class ListItemLink extends ListItem
         }
         $html .= '>';
         $html .= '{{scope.row.'.$this->name.'}}';
-        $html .= '</a>';
+        $html .= '</el-tag>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 

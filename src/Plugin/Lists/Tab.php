@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin\Lists\SearchItem;
+namespace Be\Plugin\Lists;
 
 use Be\Plugin\Lists\Item;
 use Be\System\Be;
@@ -8,30 +8,25 @@ use Be\System\Be;
 /**
  * 搜索项驱动
  */
-abstract class SearchItem extends Item
+class Tab extends Item
 {
 
     protected $newValue = null; // 新值
 
     /**
-     * 构造函数
+     * 获取html内容
      *
-     * @param array $params 参数
-     * @param object $tuple 行数据
+     * @return string | array
      */
-    public function __construct($params = [], $tuple = null)
+    public function getHtml()
     {
-        parent::__construct($params, $tuple);
-
-        if (!isset($this->ui['form-item']['label'])) {
-            $this->ui['form-item']['label'] = htmlspecialchars($this->label);
+        $tabHtml = '<el-tabs v-model="searchForm.' . $this->setting['lists']['tab']['name'] . '" @tab-click="tabClick">';
+        foreach ($this->setting['lists']['tab']['keyValues'] as $key => $val) {
+            $tabHtml .= '<el-tab-pane label="' . $val . '" name="' . $key . '"></el-tab-pane>';
         }
 
-        if ($this->description) {
-            if (!isset($this->ui['form-item']['help'])) {
-                $this->ui['form-item']['help'] = htmlspecialchars($this->description);
-            }
-        }
+        $tabHtml .= '</el-tabs>';
+        return $tabHtml;
     }
 
     /**

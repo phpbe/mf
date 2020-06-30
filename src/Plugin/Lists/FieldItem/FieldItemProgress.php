@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
  * 字段 进度条
  */
-class ListItemProgress extends ListItem
+class FieldItemProgress extends FieldItem
 {
 
 

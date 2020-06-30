@@ -1,15 +1,13 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 按钮
+ * 字段 头像
  */
-class ListItemButton extends ListItem
+class FieldItemAvatar extends FieldItem
 {
-
-
 
     /**
      * 获取html内容
@@ -18,6 +16,10 @@ class ListItemButton extends ListItem
      */
     public function getHtml()
     {
+        if (!isset($this->ui['avatar']['shape'])) {
+            $this->ui['avatar']['shape'] = 'square';
+        }
+
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {
             foreach ($this->ui['table-column'] as $k => $v) {
@@ -30,10 +32,10 @@ class ListItemButton extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-
-        $html .= '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
+        $html .= '<el-avatar';
+        $html .= ' src="{{scope.row.'.$this->name.'}}"';
+        if (isset($this->ui['avatar'])) {
+            foreach ($this->ui['avatar'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -42,11 +44,12 @@ class ListItemButton extends ListItem
             }
         }
         $html .= '>';
-        $html .= '{{scope.row.'.$this->name.'}}';
-        $html .= '</el-button>';
+        $html .= '</el-avatar>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 
         return $html;
+
     }
+
 }

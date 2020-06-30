@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 图标
+ * 字段 链接
  */
-class ListItemIcon extends ListItem
+class FieldItemLink extends FieldItem
 {
 
 
@@ -18,9 +18,6 @@ class ListItemIcon extends ListItem
      */
     public function getHtml()
     {
-
-        $this->ui['icon']['class'] = '{{scope.row.'.$this->name.'}}';
-
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {
             foreach ($this->ui['table-column'] as $k => $v) {
@@ -33,9 +30,9 @@ class ListItemIcon extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<i';
-        if (isset($this->ui['icon'])) {
-            foreach ($this->ui['icon'] as $k => $v) {
+        $html .= '<a';
+        if (isset($this->ui['link'])) {
+            foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -44,7 +41,8 @@ class ListItemIcon extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</i>';
+        $html .= '{{scope.row.'.$this->name.'}}';
+        $html .= '</a>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 

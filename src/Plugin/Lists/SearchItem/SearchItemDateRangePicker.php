@@ -2,11 +2,12 @@
 
 namespace Be\Plugin\Lists\SearchItem;
 
+use Be\System\Be;
 
 /**
  * 搜索项 日期选择器
  */
-class SearchItemDatePicker extends SearchItem
+class SearchItemDateRangePicker extends SearchItem
 {
 
     /**
@@ -16,8 +17,16 @@ class SearchItemDatePicker extends SearchItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['date-picker']['placeholder'])) {
-            $this->ui['date-picker']['placeholder'] = '选择日期';
+        if (!isset($this->ui['date-picker']['range-separator'])) {
+            $this->ui['date-picker']['range-separator'] = '至';
+        }
+
+        if (!isset($this->ui['date-picker']['start-placeholder'])) {
+            $this->ui['date-picker']['start-placeholder'] = '开始日期';
+        }
+
+        if (!isset($this->ui['date-picker']['end-placeholder'])) {
+            $this->ui['date-picker']['end-placeholder'] = '结束日期';
         }
 
         if (!isset($this->ui['date-picker']['value-format'])) {
@@ -35,7 +44,7 @@ class SearchItemDatePicker extends SearchItem
         $html .= '>';
 
         $html .= '<el-date-picker';
-        $html .= ' type="date"';
+        $html .= ' type="daterange"';
         $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['date-picker'])) {
             foreach ($this->ui['date-picker'] as $k => $v) {
@@ -52,5 +61,28 @@ class SearchItemDatePicker extends SearchItem
         return $html;
     }
 
+    /**
+     * 查询SQL
+     *
+     * @return string
+     */
+    public function buildSql()
+    {
+        $where = [];
+        if ($this->newValue !== null) {
+
+            $field = null;
+            if (isset($this->option['table'])) {
+                $field = $this->option['table'] .'.' . $this->name;
+            } else {
+                $field = $this->name;
+            }
+
+            $where[] = [$field, '>=', $this->newValue[0]];
+            $where[] = [$field, '<', $this->newValue[1]];
+        }
+
+        return $where;
+    }
 
 }

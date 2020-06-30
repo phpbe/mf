@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
  * 字段 开关
  */
-class ListItemSwitch extends ListItem
+class FieldItemSwitch extends FieldItem
 {
 
     /**

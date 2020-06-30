@@ -1,13 +1,14 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 图片
+ * 字段 文本
  */
-class ListItemImage extends ListItem
+class FieldItemText extends FieldItem
 {
+
 
     /**
      * 获取html内容
@@ -28,24 +29,12 @@ class ListItemImage extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<el-image';
-        $html .= ' src="{{scope.row.'.$this->name.'}}"';
-
-        if (isset($this->ui['image'])) {
-            foreach ($this->ui['image'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
-            }
-        }
-        $html .= '>';
-        $html .= '</el-image>';
+        $html .= '{{scope.row.'.$this->name.'}}';
         $html .= '</template>';
         $html .= '</el-table-column>';
 
         return $html;
     }
+
 
 }

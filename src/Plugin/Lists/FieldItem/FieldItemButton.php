@@ -1,18 +1,20 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 标签
+ * 字段 按钮
  */
-class ListItemTag extends ListItem
+class FieldItemButton extends FieldItem
 {
+
+
 
     /**
      * 获取html内容
      *
-     * @return string
+     * @return string | array
      */
     public function getHtml()
     {
@@ -28,9 +30,10 @@ class ListItemTag extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<el-tag';
-        if (isset($this->ui['tag'])) {
-            foreach ($this->ui['tag'] as $k => $v) {
+
+        $html .= '<el-button';
+        if (isset($this->ui['button'])) {
+            foreach ($this->ui['button'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -40,7 +43,7 @@ class ListItemTag extends ListItem
         }
         $html .= '>';
         $html .= '{{scope.row.'.$this->name.'}}';
-        $html .= '</el-tag>';
+        $html .= '</el-button>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 

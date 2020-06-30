@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 use Be\Plugin\Lists\Item;
 use Be\System\Be;
@@ -8,7 +8,7 @@ use Be\System\Be;
 /**
  * 字段驱动
  */
-abstract class ListItem extends Item
+abstract class FieldItem extends Item
 {
 
     protected $export = 1; // 是否可导出

@@ -1,13 +1,15 @@
 <?php
 
-namespace Be\Plugin\Lists\ListItem;
+namespace Be\Plugin\Lists\FieldItem;
 
 
 /**
- * 字段 头像
+ * 字段 图标
  */
-class ListItemAvatar extends ListItem
+class FieldItemIcon extends FieldItem
 {
+
+
 
     /**
      * 获取html内容
@@ -16,9 +18,8 @@ class ListItemAvatar extends ListItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['avatar']['shape'])) {
-            $this->ui['avatar']['shape'] = 'square';
-        }
+
+        $this->ui['icon']['class'] = '{{scope.row.'.$this->name.'}}';
 
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {
@@ -32,10 +33,9 @@ class ListItemAvatar extends ListItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<el-avatar';
-        $html .= ' src="{{scope.row.'.$this->name.'}}"';
-        if (isset($this->ui['avatar'])) {
-            foreach ($this->ui['avatar'] as $k => $v) {
+        $html .= '<i';
+        if (isset($this->ui['icon'])) {
+            foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -44,12 +44,10 @@ class ListItemAvatar extends ListItem
             }
         }
         $html .= '>';
-        $html .= '</el-avatar>';
+        $html .= '</i>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 
         return $html;
-
     }
-
 }

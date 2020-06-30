@@ -94,22 +94,22 @@ class User extends Controller
                 'search' => [
                     'items' => [
                         [
-                            'field' => 'username',
+                            'name' => 'username',
                             'label' => '用户名',
                             'driver' => SearchItemInput::class,
                         ],
                         [
-                            'field' => 'name',
+                            'name' => 'name',
                             'label' => '名称',
                             'driver' => SearchItemInput::class,
                         ],
                         [
-                            'field' => 'email',
+                            'name' => 'email',
                             'label' => '邮箱',
                             'driver' => SearchItemInput::class,
                         ],
                         [
-                            'field' => 'block',
+                            'name' => 'block',
                             'label' => '状态',
                             'driver' => SearchItemSelect::class,
                             'keyValues' => [
@@ -119,7 +119,7 @@ class User extends Controller
                             ]
                         ],
                         [
-                            'field' => 'role_id',
+                            'name' => 'role_id',
                             'label' => '角色',
                             'driver' => SearchItemSelect::class,
                             'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
@@ -208,6 +208,7 @@ class User extends Controller
                     // 未指定时取表的所有字段
                     'items' => [
                         [
+                            'name' => 'avatar_s',
                             'label' => '头像',
                             'driver' => ListItemAvatar::class,
                             'value' => function ($row) {
@@ -219,22 +220,22 @@ class User extends Controller
                             }
                         ],
                         [
-                            'field' => 'username',
+                            'name' => 'username',
                             'label' => '用户名',
                             'driver' => ListItemText::class,
                         ],
                         [
-                            'field' => 'email',
+                            'name' => 'email',
                             'label' => '邮箱',
                             'driver' => ListItemText::class,
                         ],
                         [
-                            'field' => 'name',
+                            'name' => 'name',
                             'label' => '名称',
                             'driver' => ListItemText::class,
                         ],
                         [
-                            'field' => 'block',
+                            'name' => 'block',
                             'label' => '启用/禁用',
                             'driver' => ListItemSwitch::class
                         ],
