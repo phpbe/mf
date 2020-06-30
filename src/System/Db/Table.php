@@ -143,7 +143,6 @@ class Table
 
     protected function _join($type, $table, $on)
     {
-
         $alias = null;
         if (strpos($table, ' ') !== false) {
             $splitter = ' ';
@@ -162,7 +161,7 @@ class Table
     }
 
     /**
-     * 设置查询条件
+     * 设置单个查询条件
      *
      * @param string | array $field 字段名或需要直接拼接进SQL的字符
      * @param string $op 操作类型：=/<>/!=/>/</>=/<=/between/not between/in/not in/like/not like
@@ -170,79 +169,91 @@ class Table
      * @return Table
      * @example
      * <pre>
+     * $table->where("username LIKE 'Tom%'");
      * $table->where('username','Tom');
-     * $table->where('username','like','Tom');
+     * $table->where('username','=','Tom');
      * $table->where('age','=',18);
      * $table->where('age','>',18);
      * $table->where('age','between', array(18, 30));
      * $table->where('userId','in', array(1, 2, 3, 4));
-     * $table->where('username LIKE \'Tom\'');
-     * $table->where('username LIKE ?', array('Tom'));
-     * $table->where('(')->where('username','like','Tom')->where('OR')->where('age','>',18)->where(')');
-     * $table->where(array(
-     *     array('username','Tom'),
-     *     'OR',
-     *     array('age','>',18),
-     *)); // 最终SQL: WHERE (username='Tom' OR age>18)
+     * $table->where(["username LIKE 'Tom%'"]);
+     * $table->where(['username','Tom']);
+     * $table->where(['username','=', 'Tom']);
      * </pre>
      */
     public function where($field, $op = null, $value = null)
     {
-        $n = count($this->_where);
-
-        // 如果第一个参数为数组，认定为一次传入多个条件
         if (is_array($field)) {
-
-            if (count($field) == 0) return $this;
-
-            if ($n > 0 && (is_array($this->_where[$n - 1]) || substr($this->_where[$n - 1], -1) == ')')) {
+            $len = count($field);
+            if ($len == 1) {
+                return $this->where($field[0]);
+            } elseif ($len == 2) {
+                return $this->where($field[0], $field[1]);
+            } elseif ($len == 3) {
+                return $this->where($field[0], $field[1], $field[2]);
+            }
+        } else {
+            if (count($this->_where) > 0) {
                 $this->_where[] = 'AND';
             }
 
-            $this->_where[] = '(';
-            foreach ($field as $w) {
-                if (is_array($w)) {
-                    $len = count($w);
-                    if (is_array($w[0]) || $len > 3 || ($len == 3 && is_array($w[1]))) {
-                        $this->where($w);
-                    } else {
-                        if ($len == 2) {
-                            $this->where($w[0], $w[1]);
-                        } elseif ($len == 3) {
-                            $this->where($w[0], $w[1], $w[2]);
-                        }
-                    }
-                } else {
-                    $this->_where[] = $w;
-                }
-            }
-            $this->_where[] = ')';
-        } else {
-
             $field = trim($field);
-
-            if ($op === null) {
-                if (substr($field, 0, 1) == '(') {
-                    if ($n > 0 && (is_array($this->_where[$n - 1]) || substr($this->_where[$n - 1], -1) == ')')) {
-                        $this->_where[] = 'AND';
-                    }
-                }
-            } else {
-                if ($n > 0 && (is_array($this->_where[$n - 1]) || substr($this->_where[$n - 1], -1) == ')')) {
-                    $this->_where[] = 'AND';
-                }
-            }
-
             if ($op === null) {  // 第二个参数为空时，第一个参数直接拼入 sql
                 $this->_where[] = $field;
-            } elseif (is_array($op)) { // 第二个参数为数组时，传入的为带占位符的 sql
-                $this->_where[] = [$field, $op];
             } elseif ($value === null) {
                 $this->_where[] = [$field, '=', $op]; // 等值查询
             } else {
                 $this->_where[] = [$field, $op, $value]; // 普通条件查询
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * 设置一组查询条件
+     *
+     * @param array $wheres 一组查询条件
+     * @return Table
+     * @example
+     * <pre>
+     * $table->wheres([
+     *     ['username','Tom'],
+     *     'OR',
+     *     ['age','>',18],
+     *]); // 最终SQL: WHERE (username='Tom' OR age>18)
+     * </pre>
+     */
+    public function wheres($wheres)
+    {
+        $fieldCount = count($wheres);
+
+        if ($fieldCount == 0) return $this;
+
+        if ($fieldCount == 1) {
+            return $this->where($wheres[0]);
+        }
+
+        if (count($this->_where) > 0) {
+            $this->_where[] = 'AND';
+        }
+
+        $this->_where[] = '(';
+        foreach ($wheres as $w) {
+            if (is_array($w)) {
+                $len = count($w);
+                if ($len == 1) {
+                    $this->_where[] = $w[0];
+                } elseif ($len == 2) {
+                    $this->_where[] = [$w[0], '=', $w[1]];
+                } elseif ($len == 3) {
+                    $this->_where[] = [$w[0], $w[1], $w[2]];
+                }
+            } else {
+                $this->_where[] = $w;
+            }
+        }
+        $this->_where[] = ')';
 
         return $this;
     }
@@ -801,17 +812,16 @@ class Table
 
         // 处理 where 条件
         if (count($this->_where) > 0) {
-            $sql .= ' WHERE ';
+            $sql .= ' WHERE';
             foreach ($this->_where as $where) {
                 if (is_array($where)) {
                     if (is_array($where[1])) {
                         $sql .= ' ' . $where[0];
                         $values = array_merge($values, $where[1]);
                     } else {
-                        $sql .= $db->quoteKey($where[0]) . ' ';
+                        $sql .= ' ' . $db->quoteKey($where[0]);
                         $op = strtoupper($where[1]);
-                        $sql .= $op;
-
+                        $sql .=  ' ' . $op;
                         switch ($op) {
                             case 'IN':
                             case 'NOT IN':
@@ -824,6 +834,7 @@ class Table
                                 break;
                             case 'BETWEEN':
                             case 'NOT BETWEEN':
+                                $sql .=  ' ' . $op;
                                 if (is_array($where[2]) && count($where[2]) == 2) {
                                     $sql .= ' ? AND ?';
                                     $values = array_merge($values, $where[2]);

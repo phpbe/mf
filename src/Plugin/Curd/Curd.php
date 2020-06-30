@@ -2,13 +2,10 @@
 
 namespace Be\Plugin\Curd;
 
-use Be\Plugin\Lists\ListItem\ListItemText;
 use Be\System\Be;
-use Be\System\Db\Tuple;
 use Be\System\Plugin;
 use Be\System\Request;
 use Be\System\Response;
-use Be\System\Cookie;
 
 /**
  * 增删改查
@@ -44,38 +41,33 @@ class Curd extends Plugin
             try {
                 $postData = Request::json();
                 $searchForm = $postData['searchForm'];
-                $page = $postData['page'];
-                $pageSize = $postData['pageSize'];
-
-                $total = $table->count();
-
-                $pages = ceil($total / $pageSize);
-                if ($pages == 0) $pages = 1;
-
-                $table->offset(($page - 1) * $pageSize)->limit($pageSize);
-
                 if (isset($this->setting['lists']['tab'])) {
-                    $driver = new \Be\Plugin\Lists\Tab();
+                    $driver = new \Be\Plugin\Lists\Tab($this->setting['lists']['tab']);
                     $driver->submit($searchForm);
-                    $where = $driver->buildSql();
-                    if ($where) {
-                        $table->where($where);
+                    $wheres = $driver->buildSql();
+                    if ($wheres) {
+                        $table->wheres($wheres);
                     }
                 }
 
                 if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                     foreach ($this->setting['lists']['search']['items'] as $item) {
-                        $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\SearchItem\\SearchItemInput';
-                        $driver = new $driver($item);
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Lists\SearchItem\SearchItemInput($item);
+                        }
                         $driver->submit($searchForm);
-                        $where = $driver->buildSql();
-                        if ($where) {
-                            foreach ($where as $w) {
-                                $table->where($w);
-                            }
+                        $wheres = $driver->buildSql();
+                        if ($wheres) {
+                            $table->wheres($wheres);
                         }
                     }
                 }
+
+                $total = $table->count();
 
                 $orderBy = Request::post('orderBy');
                 if ($orderBy) {
@@ -103,6 +95,10 @@ class Curd extends Plugin
                         }
                     }
                 }
+
+                $page = $postData['page'];
+                $pageSize = $postData['pageSize'];
+                $table->offset(($page - 1) * $pageSize)->limit($pageSize);
 
                 $tuples = $table->getObjects();
 

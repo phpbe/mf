@@ -64,11 +64,11 @@ class SearchItemDateRangePicker extends SearchItem
     /**
      * 查询SQL
      *
-     * @return string
+     * @return array
      */
     public function buildSql()
     {
-        $where = [];
+        $wheres = [];
         if ($this->newValue !== null) {
 
             $field = null;
@@ -78,11 +78,12 @@ class SearchItemDateRangePicker extends SearchItem
                 $field = $this->name;
             }
 
-            $where[] = [$field, '>=', $this->newValue[0]];
-            $where[] = [$field, '<', $this->newValue[1]];
+            $wheres[] = [$field, '>=', $this->newValue[0]];
+            $wheres[] = 'AND';
+            $wheres[] = [$field, '<', $this->newValue[1]];
         }
 
-        return $where;
+        return $wheres;
     }
 
 }

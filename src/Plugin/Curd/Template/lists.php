@@ -12,7 +12,7 @@
             $tabHtml = '';
             $tabPosition = 'BeforeSearch';
             if (isset($this->setting['lists']['tab']['name']) && isset($this->setting['lists']['tab']['keyValues']) && count($this->setting['lists']['tab']['keyValues']) > 0) {
-                $driver = new \Be\Plugin\Lists\Tab();
+                $driver = new \Be\Plugin\Lists\Tab($this->setting['lists']['tab']);
                 $tabHtml = $driver->getHtml();
                 if (isset($this->setting['lists']['tab']['position'])) {
                     $tabPosition = $this->setting['lists']['tab']['position'];
@@ -25,8 +25,13 @@
 
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                 foreach ($this->setting['lists']['search']['items'] as $item) {
-                    $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\SearchItem\\SearchItemInput';
-                    $driver = new $driver($item);
+                    $driver = null;
+                    if (isset($item['driver'])) {
+                        $driverName = $item['driver'];
+                        $driver = new $driverName($item);
+                    } else {
+                        $driver = new \Be\Plugin\Lists\SearchItem\SearchItemInput($item);
+                    }
                     echo $driver->getHtml();
                     $searchForm[$driver->name] = $driver->value;
                 }
@@ -40,8 +45,13 @@
             <?php
             if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
                 foreach ($this->setting['lists']['toolbar']['items'] as $item) {
-                    $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\ToolbarItem\\ToolbarItemButton';
-                    $driver = new $driver($item);
+                    $driver = null;
+                    if (isset($item['driver'])) {
+                        $driverName = $item['driver'];
+                        $driver = new $driverName($item);
+                    } else {
+                        $driver = new \Be\Plugin\Lists\ToolbarItem\ToolbarItemButton($item);
+                    }
                     echo '<el-form-item>';
                     echo $driver->getHtml();
                     echo '</el-form-item>';
@@ -68,8 +78,13 @@
                 $opHtml = '';
                 if (isset($this->setting['lists']['operation']['items'])) {
                     foreach ($this->setting['lists']['operation']['items'] as $item) {
-                        $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\OperationItem\\OperationItemButton';
-                        $driver = new $driver($item);
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Lists\OperationItem\OperationItemButton($item);
+                        }
                         $opHtml .= $driver->getHtml();
                     }
                 }
@@ -79,8 +94,15 @@
                 }
 
                 foreach ($this->setting['lists']['fields']['items'] as $item) {
-                    $driver = isset($item['driver']) ? $item['driver'] : '\\Be\\Plugin\\Lists\\FieldItem\\FieldItemText';
-                    $driver = new $driver($item);
+
+                    print_r($item);
+                    $driver = null;
+                    if (isset($item['driver'])) {
+                        $driverName = $item['driver'];
+                        $driver = new $driverName($item);
+                    } else {
+                        $driver = new \Be\Plugin\Lists\FieldItem\FieldItemText($item);
+                    }
                     echo $driver->getHtml();
                 }
 

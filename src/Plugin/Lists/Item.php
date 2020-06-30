@@ -2,8 +2,7 @@
 
 namespace Be\Plugin\Lists;
 
-use Be\System\Be;
-
+use Be\System\Request;
 
 /**
  * 按钮
@@ -126,8 +125,9 @@ abstract class Item
                     }
                 }
 
-                $runtime = Be::getRuntime();
-                $this->url = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
+                $url = Request::url();
+                $url .= (strpos($url, '?') === false ? '?' : '&') . 'task=' . $task;
+                $this->url = $url;
             }
         }
 

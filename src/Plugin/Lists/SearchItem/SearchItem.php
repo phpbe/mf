@@ -50,34 +50,24 @@ abstract class SearchItem extends Item
     /**
      * 查询SQL
      *
-     * @return string
+     * @return array
      */
     public function buildSql()
     {
-        $where = [];
+        $wheres = [];
         if ($this->newValue !== null) {
-
-            if (isset($this->option['db'])) {
-                $db = Be::getDb($this->option['db']);
-            } else {
-                $db = Be::getDb();
-            }
-
-            if (isset($this->option['table'])) {
-                $where = $db->quoteKey($this->option['table']) . '.';
-            }
 
             $field = null;
             if (isset($this->option['table'])) {
-                $field = $db->quoteKey($this->option['table']) . '.' . $db->quoteKey($this->name);
+                $field = $this->option['table'] .'.' . $this->name;
             } else {
-                $field = $db->quoteKey($this->name);
+                $field = $this->name;
             }
 
-            $where[] =  $field . '=' . $db->quoteValue($this->newValue);
+            $wheres[] = [$field,  $this->newValue];
         }
 
-        return $where;
+        return $wheres;
     }
 
 }
