@@ -3,19 +3,18 @@
 namespace Be\App\System\Controller;
 
 
-use Be\Plugin\Lists\ListItem\ListItemAvatar;
-use Be\Plugin\Lists\ListItem\ListItemSwitch;
-use Be\Plugin\Lists\ListItem\ListItemText;
 use Be\Plugin\Lists\OperationItem\OperationItemButton;
 use Be\Plugin\Lists\SearchItem\SearchItemInput;
 use Be\Plugin\Lists\SearchItem\SearchItemSelect;
 use Be\Plugin\Lists\ToolbarItem\ToolbarItemButton;
 use Be\System\Be;
 use Be\System\Db\Tuple;
+use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Controller;
 use Be\Util\Random;
+use Exception;
 
 /**
  * Class User
@@ -29,7 +28,11 @@ use Be\Util\Random;
 class User extends Controller
 {
 
-    // 登陆页面
+    /**
+     * 登陆页面
+     *
+     * @throws RuntimeException
+     */
     public function login()
     {
         if (Request::isPost()) {
@@ -40,7 +43,7 @@ class User extends Controller
                 $serviceAdminUser = Be::getService('System.User');
                 $serviceAdminUser->login($username, $password, $ip);
                 Response::success('登录成功！');
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Response::error($e->getMessage());
             }
         } else {
@@ -62,7 +65,7 @@ class User extends Controller
         try {
             Be::getService('System.User')->logout();
             Response::success('成功退出！', beUrl('System.User.login'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Response::error($e->getMessage());
         }
     }
@@ -73,6 +76,7 @@ class User extends Controller
      * @be-menu 用户管理
      * @be-menu-icon user
      * @be-permission 用户管理
+     * @throws RuntimeException
      */
     public function users()
     {
@@ -311,12 +315,12 @@ class User extends Controller
                 'BeforeToggle' => function ($tuple) {
                     if ($tuple->block == 1) {
                         if ($tuple->id == 1) {
-                            throw new \Exception('默认用户不能禁用');
+                            throw new Exception('默认用户不能禁用');
                         }
 
                         $my = Be::getUser();
                         if ($tuple->id == $my->id) {
-                            throw new \Exception('不能禁用自已的账号');
+                            throw new Exception('不能禁用自已的账号');
                         }
                     }
                 },
@@ -325,12 +329,12 @@ class User extends Controller
             'delete' => [
                 'BeforeDelete' => function ($tuple) {
                     if ($tuple->id == 1) {
-                        throw new \Exception('默认用户不能删除');
+                        throw new Exception('默认用户不能删除');
                     }
 
                     $my = Be::getUser();
                     if ($tuple->id == $my->id) {
-                        throw new \Exception('不能删除自已');
+                        throw new Exception('不能删除自已');
                     }
                 }
             ],
@@ -344,6 +348,7 @@ class User extends Controller
      * 初始化头像
      *
      * @be-permission 编辑
+     * @throws RuntimeException
      */
     public function initAvatar()
     {
@@ -356,7 +361,7 @@ class User extends Controller
 
             beSystemLog('删除管理员账号：#' . $id . ' 头像');
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             Be::getDb()->rollback();
             Response::error($e->getMessage());

@@ -75,7 +75,7 @@ class App extends \Be\System\Service
         }
 
         $property = Be::getProperty('App.'.$app);
-        $db->insert('system_installed_app', [
+        $db->insert('system_app', [
             'name' => $property->name,
             'label' => $property->label,
             'icon' => $property->icon,

@@ -205,6 +205,10 @@ class Runtime
                 // /{action}[/{k-v}]
                 $uris = explode('/', $uri);
                 $len = count($uris);
+                if ($len > 1) {
+                    $action = $uris[1];
+                }
+
                 if ($len > 2) {
                     /**
                      * 把网址按以下规则匹配
@@ -253,6 +257,12 @@ class Runtime
             if ($my->id == 0) {
                 Be::getService('System.User')->rememberMe();
                 $my = Be::getUser();
+                if ($my->id == 0) {
+                    if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
+                        $return = Request::get('return', base64_encode(Request::url()));
+                        Response::redirect(beUrl('System.User.login', ['return' => $return]));
+                    }
+                }
             }
 
             $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
@@ -260,8 +270,10 @@ class Runtime
             $instance = new $class();
             if (method_exists($instance, $actionName)) {
 
-                if (!$my->hasPermission($appName, $controllerName, $actionName)) {
-                    Response::error('您没有权限操作该功能！',  -1024);
+                if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
+                    if (!$my->hasPermission($appName, $controllerName, $actionName)) {
+                        Response::error('您没有权限操作该功能！', -1024);
+                    }
                 }
 
                 $instance->$actionName();

@@ -19,7 +19,7 @@ function beSystemLog($content) {
  * @param null | string $action 动作名
  * @param null | array $params
  * @return string 生成的网址
- * @throws \Exception
+ * @throws \Be\System\Exception\RuntimeException
  */
 function beUrl($action = null, $params = [])
 {

@@ -8,7 +8,12 @@ use Be\System\Response;
 class System extends \Be\System\Controller
 {
 
-    // 登陆后首页
+    /**
+     * 登陆后首页
+     *
+     * @throws \Be\System\Exception\DbException
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function dashboard()
     {
         $my = Be::getUser();
@@ -34,6 +39,9 @@ class System extends \Be\System\Controller
     }
 
 
+    /**
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function historyBack()
     {
         $libHistory = Be::getLib('History');
