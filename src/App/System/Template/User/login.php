@@ -15,26 +15,26 @@ $config = Be::getConfig('System.System');
     <div class="logo"></div>
 
     <div class="login-box">
-        <a-form size="small" layout="horizontal">
-            <a-form-item label="用户名" :label-col="{span:6}" :wrapper-col="{span:18}">
-                <a-input v-model="formData.username" placeholder="用户名">
-                    <a-icon slot="prefix" type="user"></a-icon>
-                    <a-icon v-if="formData.username" slot="suffix" type="close-circle" @click="formData.username=''"></a-icon>
-                </a-input>
-            </a-form-item>
-            <a-form-item label="密码" :label-col="{span:6}" :wrapper-col="{span:18}">
-                <a-input v-model="formData.password" placeholder="密码" :type="passwordType" ref="passwordInput">
-                    <a-icon slot="prefix" type="lock"></a-icon>
-                    <a-icon v-if="formData.password" slot="suffix" type="close-circle" @click="formData.password=''"></a-icon>
-                    <a-icon slot="suffix" :type="togglePasswordIcon" @click="togglePassword"></a-icon>
-                </a-input>
-            </a-form-item>
-            <a-form-item :wrapper-col="{offset:6}">
-                <a-button type="primary" @click="login" :loading="loginLoading">
-                    <a-icon type="unlock"></a-icon>登陆
-                </a-button>
-            </a-form-item>
-        </a-form>
+        <el-form size="small" layout="horizontal">
+            <el-form-item label="用户名" :label-col="{span:6}" :wrapper-col="{span:18}">
+                <el-input v-model="formData.username" placeholder="用户名">
+                    <el-icon slot="prefix" type="user"></el-icon>
+                    <el-icon v-if="formData.username" slot="suffix" type="close-circle" @click="formData.username=''"></el-icon>
+                </el-input>
+            </el-form-item>
+            <el-form-item label="密码" :label-col="{span:6}" :wrapper-col="{span:18}">
+                <el-input v-model="formData.password" placeholder="密码" :type="passwordType" ref="passwordInput">
+                    <el-icon slot="prefix" type="lock"></el-icon>
+                    <el-icon v-if="formData.password" slot="suffix" type="close-circle" @click="formData.password=''"></el-icon>
+                    <el-icon slot="suffix" :type="togglePasswordIcon" @click="togglePassword"></el-icon>
+                </el-input>
+            </el-form-item>
+            <el-form-item :wrapper-col="{offset:6}">
+                <el-button type="primary" @click="login" :loading="loginLoading">
+                    <el-icon type="unlock"></el-icon>登陆
+                </el-button>
+            </el-form-item>
+        </el-form>
     </div>
 
 </div>
