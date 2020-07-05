@@ -17,17 +17,10 @@ $config = Be::getConfig('System.System');
     <div class="login-box">
         <el-form size="small" layout="horizontal">
             <el-form-item label="用户名" :label-col="{span:6}" :wrapper-col="{span:18}">
-                <el-input v-model="formData.username" placeholder="用户名">
-                    <el-icon slot="prefix" type="user"></el-icon>
-                    <el-icon v-if="formData.username" slot="suffix" type="close-circle" @click="formData.username=''"></el-icon>
-                </el-input>
+                <el-input v-model="formData.username" placeholder="用户名" prefix-icon="el-icon-search"></el-input>
             </el-form-item>
             <el-form-item label="密码" :label-col="{span:6}" :wrapper-col="{span:18}">
-                <el-input v-model="formData.password" placeholder="密码" :type="passwordType" ref="passwordInput">
-                    <el-icon slot="prefix" type="lock"></el-icon>
-                    <el-icon v-if="formData.password" slot="suffix" type="close-circle" @click="formData.password=''"></el-icon>
-                    <el-icon slot="suffix" :type="togglePasswordIcon" @click="togglePassword"></el-icon>
-                </el-input>
+                <el-input v-model="formData.password" placeholder="密码" prefix-icon="el-icon-search" show-password></el-input>
             </el-form-item>
             <el-form-item :wrapper-col="{offset:6}">
                 <el-button type="primary" @click="login" :loading="loginLoading">
@@ -55,21 +48,9 @@ if ($return=='') {
                 username : "",
                 password : ""
             },
-            loginLoading: false,
-            passwordType: "password",
-            togglePasswordIcon: "eye"
+            loginLoading: false
         },
         methods: {
-            togglePassword: function() {
-                if (this.passwordType == "password") {
-                    this.passwordType = "text";
-                    this.togglePasswordIcon = "eye-invisible";
-                } else {
-                    this.passwordType = "password";
-                    this.togglePasswordIcon = "eye";
-                }
-            },
-
             login: function() {
                 var _this = this;
                 _this.loginLoading = true;
