@@ -6,9 +6,10 @@ use Be\System\Be;
  * 系统日志
  *
  * @param string $content 日志内容
+ * @throws \Exception
  */
 function beSystemLog($content) {
-    Be::getService('System.beSystemLog')->addLog($content);
+    Be::getService('System.SystemLog')->addLog($content);
 }
 
 /**

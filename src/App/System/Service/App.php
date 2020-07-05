@@ -9,6 +9,10 @@ class App extends \Be\System\Service
 
 	private $apps = null;
 
+    /**
+     * @return array|null
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function getApps()
     {
 		if ($this->apps == null) {
@@ -18,22 +22,42 @@ class App extends \Be\System\Service
         return $this->apps;
     }
 
+    /**
+     * @return array
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function getAppNames()
     {
         return array_keys($this->getApps());
     }
 
-	public function getAppCount()
+    /**
+     * @return int
+     * @throws \Be\System\Exception\RuntimeException
+     */
+    public function getAppCount()
     {
 		return count($this->getApps());
     }
 
+    /**
+     * @return array
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function getAppNameLabelKeyValues()
     {
         return array_column($this->getApps(), 'label', 'name');
     }
     
     // 安装应用文件
+
+    /**
+     * @param $app
+     * @return bool
+     * @throws ServiceException
+     * @throws \Be\System\Exception\DbException
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function install($app)
     {
 
@@ -61,8 +85,15 @@ class App extends \Be\System\Service
 		return true;
     }
     
-
-    // 删除应用
+    /**
+     * 删除应用
+     *
+     * @param $app
+     * @return bool
+     * @throws ServiceException
+     * @throws \Be\System\Exception\DbException
+     * @throws \Be\System\Exception\RuntimeException
+     */
     public function uninstall($app)
     {
         $db = Be::getDb();

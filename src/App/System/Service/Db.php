@@ -15,6 +15,7 @@ class Db extends \Be\System\Service
      * @param string $app 应用
      * @param string $dbName 库名
      * @return array
+     * @throws \Exception
      */
     public function getTables($app, $dbName = 'master')
     {
@@ -35,6 +36,7 @@ class Db extends \Be\System\Service
      *
      * @param string $tableName 表名
      * @param string $dbName 库名
+     * @throws \Exception
      */
     public function updateTableProperty($tableName, $dbName = 'master')
     {
@@ -85,6 +87,7 @@ class Db extends \Be\System\Service
      *
      * @param string $tableName 表名
      * @param string $dbName 库名
+     * @throws \Exception
      */
     public function updateTable($tableName, $dbName = 'master')
     {
@@ -114,6 +117,7 @@ class Db extends \Be\System\Service
      *
      * @param string $tableName 表名
      * @param string $dbName 库名
+     * @throws \Exception
      */
     public function updateTuple($tableName, $dbName = 'master')
     {
@@ -131,12 +135,12 @@ class Db extends \Be\System\Service
 
         foreach ($fields as $field) {
             if ($field['isNumber']) {
-                $code .= '    public $' . $field->name . ' = ' . ($field['default'] === null ? 0 : $field['default']). ';';
+                $code .= '    public $' . $field['name'] . ' = ' . ($field['default'] === null ? 0 : $field['default']). ';';
             } else {
-                $code .= '    public $' . $field->name . ' = \'' . ($field['default'] === null ? '' : $field['default']) . '\';';
+                $code .= '    public $' . $field['name'] . ' = \'' . ($field['default'] === null ? '' : $field['default']) . '\';';
             }
 
-            if ($field->comment) $code .= ' // ' . $field->comment;
+            if ($field['comment']) $code .= ' // ' . $field['comment'];
             $code .= "\n";
         }
 

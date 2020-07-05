@@ -151,9 +151,6 @@ class Runtime
         return $this->actionName;
     }
 
-    /**
-     * @throws Exception\RuntimeException
-     */
     public function execute()
     {
         try {
@@ -258,7 +255,7 @@ class Runtime
                 $my = Be::getUser();
             }
 
-            $class = 'App\\' . $appName . '\\Controller\\' . $controllerName;
+            $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
             if (!class_exists($class)) throw new RuntimeException('控制器 ' . $appName . '/' . $controllerName . ' 不存在！', -404);
             $instance = new $class();
             if (method_exists($instance, $actionName)) {
@@ -282,9 +279,6 @@ class Runtime
                 'line' => $e->getLine(),
                 'trace' => $e->getTrace()
             ]);
-
-            $db = Be::getDb();
-            if ($db->inTransaction()) $db->rollback();
 
             Response::exception($e);
         }

@@ -161,6 +161,7 @@ class Response
             self::set('code', $e->getCode());
             self::ajax();
         } else {
+            self::set('e', $e);
             self::display('App.System.System.exception');
             exit;
         }

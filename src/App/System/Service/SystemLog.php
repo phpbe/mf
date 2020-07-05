@@ -2,6 +2,7 @@
 namespace Be\App\System\Service;
 
 use Be\System\Be;
+use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 
 class SystemLog extends \Be\System\Service
@@ -13,6 +14,7 @@ class SystemLog extends \Be\System\Service
      *
      * @param array $conditions 查询条件
      * @return array
+     * @throws RuntimeException
      */
     public function getLogs($conditions = [])
     {
@@ -42,6 +44,7 @@ class SystemLog extends \Be\System\Service
      *
      * @param array $conditions 查询条件
      * @return int
+     * @throws RuntimeException
      */
     public function getLogCount($conditions = [])
     {
@@ -68,7 +71,11 @@ class SystemLog extends \Be\System\Service
     }
 
 
-
+    /**
+     * @param $content
+     * @param string $details
+     * @throws RuntimeException
+     */
     public function addLog($content, $details = '')
     {
         $my = Be::getUser();
@@ -85,6 +92,7 @@ class SystemLog extends \Be\System\Service
 
     /**
      * 删除三个月(90天)前的后台用户登陆日志
+     * @throws RuntimeException
      */
     public function deleteLogs()
     {
