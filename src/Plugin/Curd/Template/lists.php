@@ -20,6 +20,8 @@
                     $tabPosition = $this->setting['lists']['tab']['position'];
                 }
 
+                $searchForm[$driver->name] = $driver->value;
+
                 $vueDataX = $driver->getVueData();
                 if ($vueDataX) {
                     $vueData = array_merge($vueData, $vueDataX);
@@ -281,9 +283,6 @@
                 gotoPage: function (page) {
                     this.page = page;
                     this.loadData();
-                },
-                tabClick: function() {
-
                 }
                 <?php
                 if ($vueMethods) {

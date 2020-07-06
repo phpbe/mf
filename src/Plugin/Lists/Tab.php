@@ -37,7 +37,7 @@ class Tab extends Item
      */
     public function submit($data)
     {
-        if (isset($data[$this->name]) && $data[$this->name]) {
+        if (isset($data[$this->name])) {
             $this->newValue = $data[$this->name];
         }
     }
@@ -64,5 +64,23 @@ class Tab extends Item
 
         return $wheres;
     }
+
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'tabClick' => 'function (tab, event) {
+                this.searchForm.'.$this->name.' = tab.name;
+                this.gotoPage(1);
+            }',
+        ];
+    }
+
+
 
 }
