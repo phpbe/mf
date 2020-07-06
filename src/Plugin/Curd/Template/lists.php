@@ -3,6 +3,8 @@
     $primaryKey = $this->table->getPrimaryKey();
 
     $searchForm = [];
+    $vueData = [];
+    $vueMethods = [];
     ?>
     <div id="app" v-cloak>
 
@@ -11,11 +13,21 @@
             <?php
             $tabHtml = '';
             $tabPosition = 'BeforeSearch';
-            if (isset($this->setting['lists']['tab']['name']) && isset($this->setting['lists']['tab']['keyValues']) && count($this->setting['lists']['tab']['keyValues']) > 0) {
+            if (isset($this->setting['lists']['tab'])) {
                 $driver = new \Be\Plugin\Lists\Tab($this->setting['lists']['tab']);
                 $tabHtml = $driver->getHtml();
                 if (isset($this->setting['lists']['tab']['position'])) {
                     $tabPosition = $this->setting['lists']['tab']['position'];
+                }
+
+                $vueDataX = $driver->getVueData();
+                if ($vueDataX) {
+                    $vueData = array_merge($vueData, $vueDataX);
+                }
+
+                $vueMethodsX = $driver->getVueMethods();
+                if ($vueMethodsX) {
+                    $vueMethods = array_merge($vueMethods, $vueMethodsX);
                 }
             }
 
@@ -33,7 +45,18 @@
                         $driver = new \Be\Plugin\Lists\SearchItem\SearchItemInput($item);
                     }
                     echo $driver->getHtml();
+
                     $searchForm[$driver->name] = $driver->value;
+
+                    $vueDataX = $driver->getVueData();
+                    if ($vueDataX) {
+                        $vueData = array_merge($vueData, $vueDataX);
+                    }
+
+                    $vueMethodsX = $driver->getVueMethods();
+                    if ($vueMethodsX) {
+                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                    }
                 }
             }
             ?>
@@ -55,6 +78,16 @@
                     echo '<el-form-item>';
                     echo $driver->getHtml();
                     echo '</el-form-item>';
+
+                    $vueDataX = $driver->getVueData();
+                    if ($vueDataX) {
+                        $vueData = array_merge($vueData, $vueDataX);
+                    }
+
+                    $vueMethodsX = $driver->getVueMethods();
+                    if ($vueMethodsX) {
+                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                    }
                 }
             }
 
@@ -71,31 +104,56 @@
                     :height="stageHeight">
                 <?php
                 $opPosition = 'right';
-                if (isset($this->setting['lists']['operation']['position']) && in_array($this->setting['lists']['operation']['position'], ['left', 'right'])) {
-                    $opPosition = $this->setting['lists']['operation']['position'];
-                }
+                if (isset($this->setting['lists']['operation'])) {
 
-                $opHtml = '';
-                if (isset($this->setting['lists']['operation']['items'])) {
-                    foreach ($this->setting['lists']['operation']['items'] as $item) {
-                        $driver = null;
-                        if (isset($item['driver'])) {
-                            $driverName = $item['driver'];
-                            $driver = new $driverName($item);
-                        } else {
-                            $driver = new \Be\Plugin\Lists\OperationItem\OperationItemButton($item);
+                    $operationDriver = new \Be\Plugin\Lists\Operation($this->setting['lists']['operation']);
+                    $opHtml = $operationDriver->getHtmlBefore();
+
+                    if (isset($this->setting['lists']['operation']['items'])) {
+                        foreach ($this->setting['lists']['operation']['items'] as $item) {
+                            $driver = null;
+                            if (isset($item['driver'])) {
+                                $driverName = $item['driver'];
+                                $driver = new $driverName($item);
+                            } else {
+                                $driver = new \Be\Plugin\Lists\OperationItem\OperationItemButton($item);
+                            }
+                            $opHtml .= $driver->getHtml();
+
+                            $vueDataX = $driver->getVueData();
+                            if ($vueDataX) {
+                                $vueData = array_merge($vueData, $vueDataX);
+                            }
+
+                            $vueMethodsX = $driver->getVueMethods();
+                            if ($vueMethodsX) {
+                                $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                            }
                         }
-                        $opHtml .= $driver->getHtml();
+                    }
+
+                    $opHtml .= $operationDriver->getHtmlAfter();
+
+                    $vueDataX = $operationDriver->getVueData();
+                    if ($vueDataX) {
+                        $vueData = array_merge($vueData, $vueDataX);
+                    }
+
+                    $vueMethodsX = $operationDriver->getVueMethods();
+                    if ($vueMethodsX) {
+                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                    }
+
+                    if (isset($this->setting['lists']['operation']['position']) && in_array($this->setting['lists']['operation']['position'], ['left', 'right'])) {
+                        $opPosition = $this->setting['lists']['operation']['position'];
+                    }
+
+                    if ($opPosition == 'left') {
+                        echo $opHtml;
                     }
                 }
 
-                if ($opPosition == 'left') {
-                    echo $opHtml;
-                }
-
                 foreach ($this->setting['lists']['fields']['items'] as $item) {
-
-                    print_r($item);
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
@@ -104,9 +162,19 @@
                         $driver = new \Be\Plugin\Lists\FieldItem\FieldItemText($item);
                     }
                     echo $driver->getHtml();
+
+                    $vueDataX = $driver->getVueData();
+                    if ($vueDataX) {
+                        $vueData = array_merge($vueData, $vueDataX);
+                    }
+
+                    $vueMethodsX = $driver->getVueMethods();
+                    if ($vueMethodsX) {
+                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                    }
                 }
 
-                if ($opPosition == 'right') {
+                if (isset($this->setting['lists']['operation']) && $opPosition == 'right') {
                     echo $opHtml;
                 }
                 ?>
@@ -129,6 +197,12 @@
 
     </div>
 
+    <?php
+    if ($vueData) {
+
+    }
+    ?>
+
     <script>
 
         var pageSizeKey = "<?php echo $this->url; ?>:pageSize";
@@ -150,6 +224,13 @@
                 tuples: [],
                 loading: false,
                 stageHeight: 500
+                <?php
+                if ($vueData) {
+                    foreach ($vueData as $k => $v) {
+                        echo ',' . $k . ':' . json_encode($v);
+                    }
+                }
+                ?>
             },
             created: function () {
                 this.search();
@@ -200,7 +281,17 @@
                 gotoPage: function (page) {
                     this.page = page;
                     this.loadData();
+                },
+                tabClick: function() {
+
                 }
+                <?php
+                if ($vueMethods) {
+                    foreach ($vueMethods as $k => $v) {
+                        echo ',' . $k . ':' . $v;
+                    }
+                }
+                ?>
             },
 
             mounted: function () {

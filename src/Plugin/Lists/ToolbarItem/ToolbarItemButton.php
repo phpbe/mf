@@ -10,6 +10,22 @@ class ToolbarItemButton extends ToolbarItem
 {
 
 
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        if (!isset($this->ui['button']['icon'])) {
+            if (isset($params['icon'])) {
+                $this->ui['button']['icon'] = $params['icon'];
+            }
+        }
+    }
 
     /**
      * 获取html内容

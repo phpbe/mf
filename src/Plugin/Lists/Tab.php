@@ -20,8 +20,8 @@ class Tab extends Item
      */
     public function getHtml()
     {
-        $tabHtml = '<el-tabs v-model="searchForm.' . $this->setting['lists']['tab']['name'] . '" @tab-click="tabClick">';
-        foreach ($this->setting['lists']['tab']['keyValues'] as $key => $val) {
+        $tabHtml = '<el-tabs v-model="searchForm.' . $this->name . '" @tab-click="tabClick">';
+        foreach ($this->keyValues as $key => $val) {
             $tabHtml .= '<el-tab-pane label="' . $val . '" name="' . $key . '"></el-tab-pane>';
         }
 
