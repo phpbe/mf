@@ -51,11 +51,19 @@ abstract class FieldItem extends Item
         }
 
         if (!isset($this->ui['table-column']['align'])) {
-            $this->ui['table-column']['align'] = 'center';
+            if (!isset($params['align'])) {
+                $this->ui['table-column']['align'] = $params['align'];
+            } else {
+                $this->ui['table-column']['align'] = 'center';
+            }
         }
 
         if (!isset($this->ui['table-column']['header-align'])) {
-            $this->ui['table-column']['header-align'] = $this->ui['table-column']['align'];
+            if (!isset($params['header-align'])) {
+                $this->ui['table-column']['header-align'] = $params['header-align'];
+            } else {
+                $this->ui['table-column']['header-align'] = $this->ui['table-column']['align'];
+            }
         }
 
     }
