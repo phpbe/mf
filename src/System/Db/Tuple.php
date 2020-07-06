@@ -116,7 +116,11 @@ abstract class Tuple
         }
 
         if (!$tuple) {
-            throw new DbException('未找到指定数据记录！');
+            if (is_array($primaryKeyValue)) {
+                throw new DbException('主键编号（' . implode(',', $this->_primaryKey) . '）为 ' . implode(',', $primaryKeyValue) . ' 的记录不存在！');
+            } else {
+                throw new DbException('主键编号（' . $this->_primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
+            }
         }
 
         return $this->bind($tuple);
