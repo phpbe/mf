@@ -61,14 +61,15 @@ class SearchItemDateRangePicker extends SearchItem
         return $html;
     }
 
+
     /**
      * 查询SQL
      *
-     * @return array
+     * @param string $dbName
+     * @return string
      */
-    public function buildSql()
+    public function buildSql($dbName = 'master')
     {
-        $wheres = [];
         if ($this->newValue !== null) {
 
             $field = null;
@@ -78,12 +79,14 @@ class SearchItemDateRangePicker extends SearchItem
                 $field = $this->name;
             }
 
-            $wheres[] = [$field, '>=', $this->newValue[0]];
-            $wheres[] = 'AND';
-            $wheres[] = [$field, '<', $this->newValue[1]];
+            $db = Be::getDb($dbName);
+            $sql = $db->quoteKey($field) . ' >= ' . $db->quoteValue($this->newValue[0]);
+            $sql .= ' AND ';
+            $sql .= $db->quoteKey($field) . ' < ' . $db->quoteValue($this->newValue[1]);
+            return $sql;
         }
 
-        return $wheres;
+        return '';
     }
 
 }

@@ -50,11 +50,11 @@ abstract class SearchItem extends Item
     /**
      * 查询SQL
      *
-     * @return array
+     * @param string $dbName
+     * @return string
      */
-    public function buildSql()
+    public function buildSql($dbName = 'master')
     {
-        $wheres = [];
         if ($this->newValue !== null) {
 
             $field = null;
@@ -64,10 +64,11 @@ abstract class SearchItem extends Item
                 $field = $this->name;
             }
 
-            $wheres[] = [$field,  $this->newValue];
+            $db = Be::getDb($dbName);
+            return $db->quoteKey($field) . ' LIKE ' . $db->quoteValue($this->newValue);
         }
 
-        return $wheres;
+        return '';
     }
 
 }

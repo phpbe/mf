@@ -99,7 +99,7 @@
             ?>
 
             <el-table
-                    :data="tuples"
+                    :data="rows"
                     ref="stageTable"
                     v-loading="loading"
                     size="mini"
@@ -223,7 +223,7 @@
                 page: 1,
                 pages: 1,
                 total: 0,
-                tuples: [],
+                rows: [],
                 loading: false,
                 stageHeight: 500
                 <?php
@@ -256,11 +256,11 @@
                             var responseData = response.data;
                             if (responseData.success) {
                                 _this.total = parseInt(responseData.data.total);
-                                _this.tuples = responseData.data.tuples;
+                                _this.rows = responseData.data.rows;
                                 _this.pages = Math.floor(_this.total / _this.pageSize);
                             } else {
                                 _this.total = 0;
-                                _this.tuples = [];
+                                _this.rows = [];
                                 _this.page = 1;
                                 _this.pages = 1;
 

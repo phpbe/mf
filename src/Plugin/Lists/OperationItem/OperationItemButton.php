@@ -10,6 +10,30 @@ class OperationItemButton extends OperationItem
 {
 
 
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        if (!isset($this->ui['button']['size'])) {
+            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        }
+
+        if (!isset($this->ui['button']['type']) && isset($params['type'])) {
+            $this->ui['button']['type'] = $params['type'];
+        }
+
+        if (!isset($this->ui['button']['icon']) && isset($params['icon'])) {
+            $this->ui['button']['icon'] = $params['icon'];
+        }
+
+    }
+
 
     /**
      * 编辑
@@ -29,7 +53,7 @@ class OperationItemButton extends OperationItem
             }
         }
         $html .= '>';
-        $html .= '{{scope.row.'.$this->name.'}}';
+        $html .= '<span>' . $this->label . '</span>';
         $html .= '</el-button>';
 
         return $html;

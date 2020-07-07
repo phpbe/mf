@@ -50,6 +50,10 @@ abstract class FieldItem extends Item
             $this->ui['table-column']['label'] = $this->label;
         }
 
+        if (!isset($this->ui['table-column']['width']) && isset($params['width'])) {
+            $this->ui['table-column']['width'] = $params['width'];
+        }
+
         if (!isset($this->ui['table-column']['align'])) {
             if (isset($params['align'])) {
                 $this->ui['table-column']['align'] = $params['align'];

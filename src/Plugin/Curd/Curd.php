@@ -20,6 +20,10 @@ class Curd extends Plugin
 
     public function execute($setting = [])
     {
+        if (!isset($setting['db'])) {
+            $setting['db'] = 'master';
+        }
+
         $this->setting = $setting;
 
         $task = Request::request('task', 'lists');
@@ -34,7 +38,7 @@ class Curd extends Plugin
      */
     public function lists()
     {
-        $table = Be::newTable($this->setting['table']);
+        $table = Be::newTable($this->setting['table'], $this->setting['db']);
 
         if (Request::isAjax()) {
 
@@ -44,9 +48,9 @@ class Curd extends Plugin
                 if (isset($this->setting['lists']['tab'])) {
                     $driver = new \Be\Plugin\Lists\Tab($this->setting['lists']['tab']);
                     $driver->submit($searchForm);
-                    $wheres = $driver->buildSql();
-                    if ($wheres) {
-                        $table->wheres($wheres);
+                    $sql = $driver->buildSql($this->setting['db']);
+                    if ($sql) {
+                        $table->where($sql);
                     }
                 }
 
@@ -60,9 +64,9 @@ class Curd extends Plugin
                             $driver = new \Be\Plugin\Lists\SearchItem\SearchItemInput($item);
                         }
                         $driver->submit($searchForm);
-                        $wheres = $driver->buildSql();
-                        if ($wheres) {
-                            $table->wheres($wheres);
+                        $sql = $driver->buildSql($this->setting['db']);
+                        if ($sql) {
+                            $table->where($sql);
                         }
                     }
                 }
@@ -100,12 +104,12 @@ class Curd extends Plugin
                 $pageSize = $postData['pageSize'];
                 $table->offset(($page - 1) * $pageSize)->limit($pageSize);
 
-                $tuples = $table->getObjects();
+                $rows = $table->getObjects();
 
                 Response::set('success', true);
                 Response::set('data', [
                     'total' => $total,
-                    'tuples' => $tuples,
+                    'rows' => $rows,
                 ]);
                 Response::ajax();
             } catch (\Exception $e) {

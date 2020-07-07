@@ -20,7 +20,7 @@ class Tab extends Item
      */
     public function getHtml()
     {
-        $tabHtml = '<el-tabs v-model="searchForm.' . $this->name . '" @tab-click="tabClick">';
+        $tabHtml = '<el-tabs v-model="searchForm.' . $this->name . '" type="card" @tab-click="tabClick">';
         foreach ($this->keyValues as $key => $val) {
             $tabHtml .= '<el-tab-pane label="' . $val . '" name="' . $key . '"></el-tab-pane>';
         }
@@ -45,11 +45,11 @@ class Tab extends Item
     /**
      * 查询SQL
      *
-     * @return array
+     * @param string $dbName
+     * @return string
      */
-    public function buildSql()
+    public function buildSql($dbName = 'master')
     {
-        $wheres = [];
         if ($this->newValue !== null) {
 
             $field = null;
@@ -59,10 +59,11 @@ class Tab extends Item
                 $field = $this->name;
             }
 
-            $wheres[] = [$field,  $this->newValue];
+            $db = Be::getDb($dbName);
+            return $db->quoteKey($field) . ' = ' . $db->quoteValue($this->newValue);
         }
 
-        return $wheres;
+        return '';
     }
 
 
