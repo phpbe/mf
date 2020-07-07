@@ -46,7 +46,7 @@ class Curd extends Plugin
                 $postData = Request::json();
                 $searchForm = $postData['searchForm'];
                 if (isset($this->setting['lists']['tab'])) {
-                    $driver = new \Be\Plugin\Lists\Tab($this->setting['lists']['tab']);
+                    $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
                     $driver->submit($searchForm);
                     $sql = $driver->buildSql($this->setting['db']);
                     if ($sql) {
@@ -61,7 +61,7 @@ class Curd extends Plugin
                             $driverName = $item['driver'];
                             $driver = new $driverName($item);
                         } else {
-                            $driver = new \Be\Plugin\Lists\SearchItem\SearchItemInput($item);
+                            $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
                         }
                         $driver->submit($searchForm);
                         $sql = $driver->buildSql($this->setting['db']);
