@@ -73,9 +73,13 @@ class Curd extends Plugin
 
                 $total = $table->count();
 
-                $orderBy = Request::post('orderBy');
+                $orderBy = isset($postData['orderBy']) ? $postData['orderBy'] : '';
                 if ($orderBy) {
-                    $orderByDir = Request::post('orderByDir', 'DESC');
+                    $orderByDir = isset($postData['orderByDir']) ? strtoupper($postData['orderByDir']) : '';
+                    if (!in_array($orderByDir, ['ASC', 'DESC'])) {
+                        $orderByDir = 'DESC';
+                    }
+
                     $table->orderBy($orderBy, $orderByDir);
                 } else {
                     if (isset($this->setting['lists']['orderBy'])) {
@@ -391,15 +395,48 @@ class Curd extends Plugin
      */
     public function export()
     {
+        $table = Be::newTable($this->setting['table'], $this->setting['db']);
+
+        $postData = Request::json();
+        $searchForm = $postData['searchForm'];
+        if (isset($this->setting['lists']['tab'])) {
+            $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+            $driver->submit($searchForm);
+            $sql = $driver->buildSql($this->setting['db']);
+            if ($sql) {
+                $table->where($sql);
+            }
+        }
+
+        if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
+            foreach ($this->setting['lists']['search']['items'] as $item) {
+                $driver = null;
+                if (isset($item['driver'])) {
+                    $driverName = $item['driver'];
+                    $driver = new $driverName($item);
+                } else {
+                    $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                }
+                $driver->submit($searchForm);
+                $sql = $driver->buildSql($this->setting['db']);
+                if ($sql) {
+                    $table->where($sql);
+                }
+            }
+        }
+
+        $rows = $table->getYieldObjects();
+
+        $exporter = Be::getPlugin('Exporter');
+        $exporter->
+
+
+
         $setting = $this->setting['export'];
 
         $table = Be::newTable($setting['table']);
 
-        foreach ($setting['search'] as $key => $search) {
-            $driver = $search['driver'];
-            $searchDriver = new $driver($key, $search);
-            $searchDriver->buildWhere($table, Request::post());
-        }
+
 
         $lists = $table->getYieldArrays();
 

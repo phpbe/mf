@@ -101,9 +101,11 @@
             <el-table
                     :data="rows"
                     ref="stageTable"
-                    v-loading="loading"
+                    v-loading="loading" 
                     size="mini"
-                    :height="stageHeight">
+                    :height="stageHeight"
+                    :default-sort="{prop:orderBy,order:orderByDir}"
+                    @sort-change="sort">
                 <?php
                 $opPosition = 'right';
                 if (isset($this->setting['lists']['operation'])) {
@@ -219,6 +221,8 @@
             el: '#app',
             data: {
                 searchForm: <?php echo json_encode($searchForm); ?>,
+                orderBy: "",
+                orderByDir: "",
                 pageSize: pageSize,
                 page: 1,
                 pages: 1,
@@ -247,6 +251,8 @@
                     var _this = this;
                     _this.$http.post("<?php echo $this->url; ?>", {
                         searchForm: _this.searchForm,
+                        orderBy: _this.orderBy,
+                        orderByDir: _this.orderByDir,
                         page: _this.page,
                         pageSize: _this.pageSize
                     }).then(function (response) {
@@ -283,6 +289,20 @@
                 gotoPage: function (page) {
                     this.page = page;
                     this.loadData();
+                },
+                sort: function (option) {
+                    if (option.order=="descending") {
+                        this.orderBy = option.prop;
+                        this.orderByDir = "DESC";
+                    } else if (option.order=="ascending") {
+                        this.orderBy = option.prop;
+                        this.orderByDir = "ASC";
+                    } else {
+                        this.orderBy = "";
+                        this.orderByDir = "";
+                    }
+
+                    this.search();
                 }
                 <?php
                 if ($vueMethods) {
