@@ -78,7 +78,7 @@
                         $driver = new \Be\Plugin\Curd\ToolbarItem\ToolbarItemButton($item);
                     }
                     echo '<el-form-item>';
-                    echo $driver->getHtml();
+                    echo $driver->getHtml()."\r\n";
                     echo '</el-form-item>';
 
                     $vueDataX = $driver->getVueData();
@@ -122,7 +122,7 @@
                             } else {
                                 $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
                             }
-                            $opHtml .= $driver->getHtml();
+                            $opHtml .= $driver->getHtml()."\r\n";
 
                             $vueDataX = $driver->getVueData();
                             if ($vueDataX) {
@@ -291,17 +291,13 @@
                     this.loadData();
                 },
                 sort: function (option) {
-                    if (option.order=="descending") {
+                    if (option.order=="ascending" || option.order=="descending") {
                         this.orderBy = option.prop;
-                        this.orderByDir = "DESC";
-                    } else if (option.order=="ascending") {
-                        this.orderBy = option.prop;
-                        this.orderByDir = "ASC";
+                        this.orderByDir = option.order=="ascending" ? "ASC" : "DESC";
                     } else {
                         this.orderBy = "";
                         this.orderByDir = "";
                     }
-
                     this.search();
                 }
                 <?php

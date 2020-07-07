@@ -90,17 +90,6 @@ class Curd extends Plugin
                         } else {
                             $table->orderBy($orderBy);
                         }
-                    } else {
-                        $primaryKey = $table->getPrimaryKey();
-                        if (is_array($primaryKey)) {
-                            $orderByStrings = [];
-                            foreach ($primaryKey as $pKey) {
-                                $orderByStrings[] = $pKey . ' DESC';
-                            }
-                            $table->orderBy(implode(',', $orderByStrings));
-                        } else {
-                            $table->orderBy($primaryKey, 'DESC');
-                        }
                     }
                 }
 
