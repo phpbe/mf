@@ -19,6 +19,7 @@ class OperationItemIcon extends OperationItem
     public function getHtml()
     {
         $html = '<el-icon';
+        $html .= ' @click="operationAction" :data-url="scope.row.'.$this->name.'"';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {

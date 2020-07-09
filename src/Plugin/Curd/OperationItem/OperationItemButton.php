@@ -43,6 +43,7 @@ class OperationItemButton extends OperationItem
     public function getHtml()
     {
         $html = '<el-button';
+        $html .= ' @click="operationAction" :data-url="scope.row.'.$this->name.'"';
         if (isset($this->ui['button'])) {
             foreach ($this->ui['button'] as $k => $v) {
                 if ($v === null) {

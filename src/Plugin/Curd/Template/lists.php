@@ -24,7 +24,7 @@
 
                 $vueDataX = $driver->getVueData();
                 if ($vueDataX) {
-                    $vueData = array_merge($vueData, $vueDataX);
+                    $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                 }
 
                 $vueMethodsX = $driver->getVueMethods();
@@ -52,7 +52,7 @@
 
                     $vueDataX = $driver->getVueData();
                     if ($vueDataX) {
-                        $vueData = array_merge($vueData, $vueDataX);
+                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                     }
 
                     $vueMethodsX = $driver->getVueMethods();
@@ -83,7 +83,7 @@
 
                     $vueDataX = $driver->getVueData();
                     if ($vueDataX) {
-                        $vueData = array_merge($vueData, $vueDataX);
+                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                     }
 
                     $vueMethodsX = $driver->getVueMethods();
@@ -114,7 +114,9 @@
                     $opHtml = $operationDriver->getHtmlBefore();
 
                     if (isset($this->setting['lists']['operation']['items'])) {
+                        $i = 0;
                         foreach ($this->setting['lists']['operation']['items'] as $item) {
+                            $i++;
                             $driver = null;
                             if (isset($item['driver'])) {
                                 $driverName = $item['driver'];
@@ -122,11 +124,12 @@
                             } else {
                                 $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
                             }
+                            $driver->name = 'operation' . $i;
                             $opHtml .= $driver->getHtml()."\r\n";
 
                             $vueDataX = $driver->getVueData();
                             if ($vueDataX) {
-                                $vueData = array_merge($vueData, $vueDataX);
+                                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                             }
 
                             $vueMethodsX = $driver->getVueMethods();
@@ -140,7 +143,7 @@
 
                     $vueDataX = $operationDriver->getVueData();
                     if ($vueDataX) {
-                        $vueData = array_merge($vueData, $vueDataX);
+                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                     }
 
                     $vueMethodsX = $operationDriver->getVueMethods();
@@ -157,7 +160,7 @@
                     }
                 }
 
-                foreach ($this->setting['lists']['fields']['items'] as $item) {
+                foreach ($this->setting['lists']['field']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
@@ -169,7 +172,7 @@
 
                     $vueDataX = $driver->getVueData();
                     if ($vueDataX) {
-                        $vueData = array_merge($vueData, $vueDataX);
+                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
                     }
 
                     $vueMethodsX = $driver->getVueMethods();
@@ -196,19 +199,19 @@
                 </el-pagination>
             </div>
 
-
         </el-form>
+
+        <el-dialog :title="dialog.title" :visible.sync="dialog.visible" :width="dialog.width">
+            <iframe id="frame-dialog" :src="dialog.url" :style="{width: '100%', height: dialog.height}"></iframe>
+        </el-dialog>
+
+        <el-drawer :visible.sync="drawer.visible" :with-header="false" :size="drawer.width">
+            <iframe id="frame-drawer" :src="drawer.url" style="width: 100%; height: 100%;"></iframe>
+        </el-drawer>
 
     </div>
 
-    <?php
-    if ($vueData) {
-
-    }
-    ?>
-
     <script>
-
         var pageSizeKey = "<?php echo $this->url; ?>:pageSize";
         var pageSize = localStorage.getItem(pageSizeKey);
         if (pageSize == undefined || isNaN(pageSize)) {
@@ -229,7 +232,9 @@
                 total: 0,
                 rows: [],
                 loading: false,
-                stageHeight: 500
+                stageHeight: 500,
+                dialog: {visible:false,url:"about:blank",width:"80%",height:"60%",title:""},
+                drawer: {visible:false,url:"about:blank",width:"40%"}
                 <?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
@@ -298,7 +303,14 @@
                         this.orderBy = "";
                         this.orderByDir = "";
                     }
-                    this.search();
+                    this.loadData();
+                },
+                operationAction: function (sUrl, oOption, oPostData) {
+                    this.drawer.url = sUrl;
+                    this.drawer.visible = true;
+                },
+                toolbarAction: function () {
+                    
                 }
                 <?php
                 if ($vueMethods) {
@@ -320,7 +332,5 @@
             }
 
         });
-
-        //console.log(app);
     </script>
 </be-center>

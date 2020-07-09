@@ -11,7 +11,7 @@ use Be\System\Be;
 class ToolbarItemButtonDropDown extends ToolbarItem
 {
 
-    protected $menus = []; // 下拉菜单
+    public $menus = []; // 下拉菜单
 
     /**
      * 构造函数

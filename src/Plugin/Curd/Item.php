@@ -10,17 +10,17 @@ use Be\System\Request;
 abstract class Item
 {
 
-    protected $name = ''; // 键名
-    protected $label = ''; // 配置项中文名称
-    protected $value = ''; // 值
+    public $name = ''; // 键名
+    public $label = ''; // 配置项中文名称
+    public $value = ''; // 值
 
-    protected $keyValues = null; // 可选值键值对
+    public $keyValues = null; // 可选值键值对
 
-    protected $url = null; // 网址
+    public $url = null; // 网址
 
-    protected $option = null; // 控制项
-    protected $ui = []; // UI界面参数
-    protected $actionData = null; // 有后端请求时的附加上的数据
+    public $option = null; // 控制项
+    public $ui = []; // UI界面参数
+    public $postData = null; // 有后端请求时的附加上的数据
 
     protected static $nameIndex = 0;
 
@@ -157,16 +157,16 @@ abstract class Item
             }
         }
 
-        if (isset($params['actionData'])) {
-            $actionData = $params['actionData'];
-            if (is_callable($actionData)) {
+        if (isset($params['postData'])) {
+            $postData = $params['postData'];
+            if (is_callable($postData)) {
                 if ($tuple !== null) {
-                    $this->actionData = $actionData($tuple);
+                    $this->postData = $postData($tuple);
                 } else {
-                    $this->actionData = $actionData();
+                    $this->postData = $postData();
                 }
             } else {
-                $this->actionData = $actionData;
+                $this->postData = $postData;
             }
         }
     }
@@ -199,15 +199,6 @@ abstract class Item
     public function getVueMethods()
     {
         return false;
-    }
-
-    public function __get($property)
-    {
-        if (isset($this->$property)) {
-            return ($this->$property);
-        } else {
-            return null;
-        }
     }
 
 }

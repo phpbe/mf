@@ -39,7 +39,6 @@ class Curd extends Plugin
     public function lists()
     {
         $table = Be::newTable($this->setting['table'], $this->setting['db']);
-
         if (Request::isAjax()) {
 
             try {
@@ -98,6 +97,41 @@ class Curd extends Plugin
                 $table->offset(($page - 1) * $pageSize)->limit($pageSize);
 
                 $rows = $table->getObjects();
+
+                if (isset($this->setting['lists']['operation']['items'])) {
+                    $primaryKey = $table->getPrimaryKey();
+                    if (!$primaryKey) {
+                        throw new \Exception('表 ' . $this->setting['table'] . ' 无主键！');
+                    }
+                    foreach ($rows as $row) {
+                        $i = 0;
+                        foreach ($this->setting['lists']['operation']['items'] as $item) {
+                            $i++;
+                            $driver = null;
+                            if (isset($item['driver'])) {
+                                $driverName = $item['driver'];
+                                $driver = new $driverName($item);
+                            } else {
+                                $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
+                            }
+                            $name = 'operation' . $i;
+                            $driver->name = $name;
+
+                            $primaryKeyParam = null;
+                            if (is_array($primaryKey)) {
+                                $primaryKeyParams = [];
+                                foreach ($primaryKey as $pKey) {
+                                    $primaryKeyParams[] = $pKey . '=' . $row->$pKey;
+                                }
+                                $primaryKeyParam = implode('&', $primaryKeyParams);
+                            } else {
+                                $primaryKeyParam = $primaryKey . '=' . $row->$primaryKey;
+                            }
+
+                            $row->$name = $driver->url . (strpos($driver->url, '?') === false ? '?' : '&') . $primaryKeyParam;
+                        }
+                    }
+                }
 
                 Response::set('success', true);
                 Response::set('data', [
@@ -420,11 +454,9 @@ class Curd extends Plugin
         $exporter->
 
 
-
         $setting = $this->setting['export'];
 
         $table = Be::newTable($setting['table']);
-
 
 
         $lists = $table->getYieldArrays();

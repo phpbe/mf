@@ -10,6 +10,9 @@ use Be\Plugin\Curd\Item;
 abstract class ToolbarItem extends Item
 {
 
+    public $option = []; // 控制项
+    public $postData = []; // 有后端请求时的附加上的数据
+
     /**
      * 获取 vue data
      *
@@ -21,7 +24,7 @@ abstract class ToolbarItem extends Item
             'toolbar' => [
                 $this->name => [
                     'option' => $this->option,
-                    'data' => $this->data,
+                    'postData' => $this->postData,
                 ]
             ]
         ];

@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\Plugin\Curd\ToolbarItem;
+namespace Be\Plugin\Curd\OperationItem;
 
 
 /**
- * 工具栏 链接
+ * 搜索项 布尔值
  */
-class ToolbarItemLink extends ToolbarItem
+class OperationItemLink extends OperationItem
 {
 
 
@@ -28,27 +28,20 @@ class ToolbarItemLink extends ToolbarItem
             $this->ui['link']['icon'] = $params['icon'];
         }
 
-        if (!isset($this->ui['link']['href'])) {
-            if (isset($params['href'])) {
-                $this->ui['link']['href'] = $params['href'];
-            } elseif ($this->url !== null) {
-                $this->ui['link']['href'] = $this->url;
-            }
-        }
-
-        if (!isset($this->ui['link']['target']) && isset($params['target'])) {
-            $this->ui['link']['target'] = $params['target'];
+        if (isset($this->ui['link']['href'])) {
+            unset($this->ui['link']['href']);
         }
     }
 
     /**
-     * 获取html内容
+     * 编辑
      *
      * @return string | array
      */
     public function getHtml()
     {
         $html = '<el-link';
+        $html .= ' @click="operationLinkClick(event, \'' . $this->name . '\')" :data-url="scope.row.'.$this->name.'"';
         if (isset($this->ui['link'])) {
             foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {
@@ -59,9 +52,27 @@ class ToolbarItemLink extends ToolbarItem
             }
         }
         $html .= '>';
-        $html .= $this->value;
+        $html .= $this->label;
         $html .= '</el-link>';
 
         return $html;
+    }
+
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'operationLinkClick' => 'function (event, name) {
+                var sUrl = event.srcElement.parentElement.dataset.url;
+                var oOption = this.operation[name][\'option\'];
+                var oPostData = this.operation[name][\'postData\'];
+                this.operationAction(sUrl, oOption, oPostData);
+            }'
+        ];
     }
 }

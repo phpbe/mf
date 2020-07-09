@@ -11,7 +11,7 @@ use Be\System\Be;
 abstract class SearchItem extends Item
 {
 
-    protected $newValue = null; // 新值
+    public $newValue = null; // 新值
 
     /**
      * 构造函数
@@ -25,12 +25,6 @@ abstract class SearchItem extends Item
 
         if (!isset($this->ui['form-item']['label'])) {
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
-        }
-
-        if ($this->description) {
-            if (!isset($this->ui['form-item']['help'])) {
-                $this->ui['form-item']['help'] = htmlspecialchars($this->description);
-            }
         }
     }
 

@@ -11,7 +11,7 @@ class SearchItemInput extends SearchItem
 {
 
 
-    protected $op = '='; // SQL 操作
+    public $op = '='; // SQL 操作
 
 
     /**

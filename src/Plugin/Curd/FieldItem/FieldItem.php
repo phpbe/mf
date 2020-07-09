@@ -11,8 +11,8 @@ use Be\System\Be;
 abstract class FieldItem extends Item
 {
 
-    protected $export = 1; // 是否可导出
-    protected $exportValue = null; // 控制导出的值，默认取 value
+    public $export = 1; // 是否可导出
+    public $exportValue = null; // 控制导出的值，默认取 value
 
     /**
      * 构造函数

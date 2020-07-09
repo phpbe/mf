@@ -45,7 +45,7 @@ class ToolbarItemButton extends ToolbarItem
             }
         }
         $html .= '>';
-        $html .= $this->value;
+        $html .= $this->label;
         $html .= '</el-button>';
 
         return $html;

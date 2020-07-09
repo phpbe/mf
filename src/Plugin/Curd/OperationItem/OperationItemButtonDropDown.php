@@ -10,7 +10,7 @@ use Be\System\Be;
 class OperationItemButtonDropDown extends OperationItem
 {
 
-    protected $menus = []; // 下拉菜单
+    public $menus = []; // 下拉菜单
 
     /**
      * 构造函数
