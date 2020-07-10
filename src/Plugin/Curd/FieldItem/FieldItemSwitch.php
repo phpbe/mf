@@ -10,37 +10,36 @@ class FieldItemSwitch extends FieldItem
 {
 
     /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        if ($this->url) {
+            if (!isset($this->ui['switch']['@click'])) {
+                $this->ui['switch']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
+            }
+
+            if ($params['task'] =='toggle' && !isset($this->postData['field'])) {
+                $this->postData['field'] = $this->name;
+            }
+        }
+    }
+
+    /**
      * 获取html内容
      *
      * @return string | array
      */
     public function getHtml()
     {
-        if (!isset($this->ui['switch']['defaultChecked'])) {
-            if ($this->value) {
-                $this->ui['switch']['defaultChecked'] = null;
-            }
+        if (!isset($this->ui['switch'][':defaultChecked'])) {
+            $this->ui['switch'][':defaultChecked'] = 'scope.row.' . $this->name;
         }
-
-        // 可点击操作
-        if (isset($this->url)) {
-            $option = null;
-            if (isset($this->option)) {
-                $option = json_encode($this->option);
-            } else {
-                $option = '{}';
-            }
-
-            $data = null;
-            if (isset($this->data)) {
-                $data = json_encode($this->data);
-            } else {
-                $data = '{}';
-            }
-
-            $this->ui['switch']['@change'] = 'fieldAction(\''.htmlspecialchars($this->label).'\', \''.$this->url.'\', '.$option.', '.$data.')';
-        }
-
 
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {

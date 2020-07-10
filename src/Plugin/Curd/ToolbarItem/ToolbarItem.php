@@ -10,8 +10,6 @@ use Be\Plugin\Curd\Item;
 abstract class ToolbarItem extends Item
 {
 
-    public $postData = []; // 有后端请求时的附加上的数据
-
     /**
      * 获取 vue data
      *
@@ -19,15 +17,24 @@ abstract class ToolbarItem extends Item
      */
     public function getVueData()
     {
-        return [
+        $vueData = [
             'toolbar' => [
                 $this->name => [
+                    'url' => $this->url,
+                    'target' => $this->target,
                     'postData' => $this->postData,
                 ]
             ]
         ];
-    }
 
+        if ($this->target == 'dialog') {
+            $vueData['toolbar'][$this->name]['dialog'] = $this->dialog;
+        } elseif ($this->target == 'drawer') {
+            $vueData['toolbar'][$this->name]['drawer'] = $this->drawer;
+        }
+
+        return $vueData;
+    }
 
     /**
      * 获取 vue 方法
@@ -37,11 +44,12 @@ abstract class ToolbarItem extends Item
     public function getVueMethods()
     {
         return [
-            'toolbarClick' => 'function (e, name) {
-                var oToolbar = this.toolbar[name];
-                this.toolbarAction(oToolbar);
+            'toolbarClick' => 'function (name) {
+                var option = this.toolbar[name];
+                this.toolbarAction(option);
             }'
         ];
     }
+
 
 }

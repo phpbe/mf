@@ -33,62 +33,13 @@ class OperationItemButtonDropDown extends OperationItem
             }
 
             if (is_array($tmpMenus)) {
-                $this->menus = $tmpMenus;
-            }
-
-            foreach ($this->menus as &$m) {
-
-                if (isset($m['label'])) {
-                    $label = $m['label'];
-                    if (is_callable($label)) {
-                        $m['label'] = $label();
-                    }
+                $i = 0;
+                $newMenus = [];
+                foreach ($tmpMenus as $tmpMenu) {
+                    $tmpMenu['key'] = $i++;
+                    $newMenus[] = new OperationItemButtonDropDownItem($tmpMenu);
                 }
-
-                if (isset($m['value'])) {
-                    $value = $m['value'];
-                    if (is_callable($value)) {
-                        $m['value'] = $value();
-                    }
-                }
-
-                if (isset($m['url'])) {
-                    $url = $m['url'];
-                    if (is_callable($url)) {
-                        $m['url'] = $url();
-                    }
-                } else {
-                    if (isset($m['task'])) {
-                        $task = $m['task'];
-                        if (is_callable($task)) {
-                            $task = $task();
-                        }
-
-                        $runtime = Be::getRuntime();
-                        $m['url'] = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
-                    }
-                }
-
-                if (isset($m['ui'])) {
-                    $ui = $m['ui'];
-                    if (is_callable($ui)) {
-                        $m['ui'] = $ui();
-                    }
-                }
-
-                if (isset($m['option'])) {
-                    $option = $m['option'];
-                    if (is_callable($option)) {
-                        $m['option'] = $option();
-                    }
-                }
-
-                if (isset($m['data'])) {
-                    $data = $m['data'];
-                    if (is_callable($data)) {
-                        $m['data'] = $data();
-                    }
-                }
+                $this->menus = $newMenus;
             }
         }
     }
@@ -100,7 +51,6 @@ class OperationItemButtonDropDown extends OperationItem
      */
     public function getHtml()
     {
-
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {
             foreach ($this->ui['table-column'] as $k => $v) {
@@ -132,24 +82,14 @@ class OperationItemButtonDropDown extends OperationItem
 
         if (count($this->menus)) {
             $html .= '<el-menu slot="overlay" @click="operationButtonDropDownClick(e, \'' . $this->name . '\')">';
-            $i = 0;
             foreach ($this->menus as $menu) {
-                $html .= '<el-menu-item key="' . $i . '">';
-
-                if (isset($menu['ui']['icon'])) {
-                    $html .= ' <el-icon type="' . $menu['ui']['icon'] . '"></el-icon>';
-                }
-
-                $html .= $menu['value'];
-                $html .= '</el-menu-item>';
-
-                $i++;
+                $html .= $menu->getHtml();
             }
             $html .= '</el-menu>';
         }
 
-        $html .= $this->value;
-        $html .= '<el-button> ' . $this->value . ' <el-icon type="down"></el-icon></el-button>';
+        $html .= $this->label;
+        $html .= '<el-button> ' . $this->label . ' <el-icon type="down"></el-icon></el-button>';
         $html .= '</el-dropdown>';
         $html .= '</template>';
         $html .= '</el-table-column>';
@@ -165,10 +105,27 @@ class OperationItemButtonDropDown extends OperationItem
      */
     public function getVueData()
     {
+        $menus = [];
+        foreach ($this->menus as $menu) {
+            $m = [
+                'url' => $menu->url,
+                'target' => $menu->target,
+                'postData' => $menu->postData,
+            ];
+
+            if ($menu->target == 'dialog') {
+                $m['dialog'] = $menu->dialog;
+            } elseif ($menu->target == 'drawer') {
+                $m['drawer'] = $menu->drawer;
+            }
+
+            $menus[] = $m;
+        }
+
         return [
             'operation' => [
                 $this->name => [
-                    'menus' => $this->menus,
+                    'menus' => $menus,
                 ]
             ]
         ];
@@ -184,8 +141,8 @@ class OperationItemButtonDropDown extends OperationItem
     {
         return [
             'operationButtonDropDownClick' => 'function (e, name) {
-                var oMenu = this.operation[name].menus[e.key];
-                this.operationAction(oMenu);
+                var option = this.operation[name].menus[e.key];
+                this.operationAction(option);
             }',
         ];
     }

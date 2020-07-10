@@ -9,7 +9,20 @@ namespace Be\Plugin\Curd\OperationItem;
 class OperationItemIcon extends OperationItem
 {
 
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
 
+        if (!isset($this->ui['icon']['@click'])) {
+            $this->ui['icon']['@click'] = 'operationClick(\'' . $this->name . '\', scope.row)';
+        }
+    }
 
     /**
      * 获取HTML内容
@@ -19,7 +32,6 @@ class OperationItemIcon extends OperationItem
     public function getHtml()
     {
         $html = '<el-icon';
-        $html .= ' @click="operationAction" :data-url="scope.row.'.$this->name.'"';
         if (isset($this->ui['icon'])) {
             foreach ($this->ui['icon'] as $k => $v) {
                 if ($v === null) {

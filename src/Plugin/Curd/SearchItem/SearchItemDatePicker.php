@@ -10,12 +10,15 @@ class SearchItemDatePicker extends SearchItem
 {
 
     /**
-     * 获取html内容
+     * 构造函数
      *
-     * @return string | array
+     * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function getHtml()
+    public function __construct($params = [], $tuple = null)
     {
+        parent::__construct($params, $tuple);
+
         if (!isset($this->ui['date-picker']['placeholder'])) {
             $this->ui['date-picker']['placeholder'] = '选择日期';
         }
@@ -24,6 +27,17 @@ class SearchItemDatePicker extends SearchItem
             $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd';
         }
 
+        $this->ui['date-picker']['type'] = 'date';
+        $this->ui['date-picker']['v-model'] = 'searchForm.' . $this->name;
+    }
+
+    /**
+     * 获取html内容
+     *
+     * @return string | array
+     */
+    public function getHtml()
+    {
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -35,8 +49,6 @@ class SearchItemDatePicker extends SearchItem
         $html .= '>';
 
         $html .= '<el-date-picker';
-        $html .= ' type="date"';
-        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['date-picker'])) {
             foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {

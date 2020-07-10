@@ -9,6 +9,26 @@ namespace Be\Plugin\Curd\FieldItem;
 class FieldItemProgress extends FieldItem
 {
 
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        if (!isset($this->ui['progress'][':percentage'])) {
+            $this->ui['progress'][':percentage'] = 'scope.row.'.$this->name.'';
+        }
+
+        if ($this->url) {
+            if (!isset($this->ui['progress']['@click'])) {
+                $this->ui['progress']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
+            }
+        }
+    }
 
     /**
      * 获取html内容
@@ -30,8 +50,6 @@ class FieldItemProgress extends FieldItem
         $html .= '>';
         $html .= '<template slot-scope="scope">';
         $html .= '<el-progress';
-        $html .= ' :percentage="{{scope.row.'.$this->name.'}}"';
-
         if (isset($this->ui['progress'])) {
             foreach ($this->ui['progress'] as $k => $v) {
                 if ($v === null) {

@@ -25,6 +25,10 @@ class ToolbarItemButton extends ToolbarItem
                 $this->ui['button']['icon'] = $params['icon'];
             }
         }
+
+        if (!isset($this->ui['button']['@click'])) {
+            $this->ui['button']['@click'] = 'toolbarClick(\'' . $this->name . '\')';
+        }
     }
 
     /**

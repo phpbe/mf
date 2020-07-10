@@ -202,7 +202,8 @@
                 :width="dialog.width"
                 :close-on-click-modal="false"
                 :destroy-on-close="true">
-            <iframe id="frame-dialog" name="frame-dialog" src="about:blank" :style="{width:'100%',height:dialog.height,border:0}"></iframe>
+            <iframe id="frame-dialog" name="frame-dialog" src="about:blank"
+                    :style="{width:'100%',height:dialog.height,border:0}"></iframe>
         </el-dialog>
 
         <el-drawer
@@ -211,7 +212,8 @@
                 :title="drawer.title"
                 :wrapper-closable="false"
                 :destroy-on-close="true">
-            <iframe id="frame-drawer" name="frame-drawer" src="about:blank" style="width:100%;height:100%;border:0;"></iframe>
+            <iframe id="frame-drawer" name="frame-drawer" src="about:blank"
+                    style="width:100%;height:100%;border:0;"></iframe>
         </el-drawer>
 
     </div>
@@ -225,7 +227,7 @@
             pageSize = Number(pageSize);
         }
 
-        var app = new Vue({
+        var vueCurdLists = new Vue({
             el: '#app',
             data: {
                 searchForm: <?php echo json_encode($searchForm); ?>,
@@ -239,7 +241,7 @@
                 loading: false,
                 stageHeight: 500,
                 dialog: {visible: false, width: "600px", height: "400px", title: ""},
-                drawer: {visible: false, width: "60%", title: ""}<?php
+                drawer: {visible: false, width: "40%", title: ""}<?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
@@ -249,6 +251,12 @@
             },
             created: function () {
                 this.search();
+                <?php
+                if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
+                    echo 'var _this = this;';
+                    echo 'setInterval(function () {_this.reload();}, ' . $this->setting['lists']['reload'] . ');';
+                }
+                ?>
             },
             methods: {
                 search: function () {
@@ -289,6 +297,25 @@
                         _this.$message.error(error);
                     });
                 },
+                reload: function () {
+                    var _this = this;
+                    _this.$http.post("<?php echo $this->url; ?>", {
+                        searchForm: _this.searchForm,
+                        orderBy: _this.orderBy,
+                        orderByDir: _this.orderByDir,
+                        page: _this.page,
+                        pageSize: _this.pageSize
+                    }).then(function (response) {
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                _this.total = parseInt(responseData.data.total);
+                                _this.rows = responseData.data.rows;
+                                _this.pages = Math.floor(_this.total / _this.pageSize);
+                            }
+                        }
+                    });
+                },
                 changePageSize: function (pageSize) {
                     this.pageSize = pageSize;
                     this.page = 1;
@@ -309,50 +336,74 @@
                     }
                     this.loadData();
                 },
-                operationAction: function (name, row) {
+                toolbarAction: function (option) {
+                    var data = {
+                        searchForm: this.searchForm,
+                        orderBy: this.orderBy,
+                        orderByDir: this.orderByDir,
+                        page: this.page,
+                        pageSize: this.pageSize
+                    };
 
-                    var postData = this.operation[name].postData;
+                    if (option.postData.length > 0) {
+                        data.postData = option.postData;
+                    }
+
+                    return this.action(option, data);
+                },
+                fieldAction: function (option, row) {
+                    var data;
+                    if (option.postData.length > 0) {
+                        data = option.postData;
+                    } else {
+                        data = {};
+                    }
+
                     <?php
                     if (is_array($primaryKey)) {
                         foreach ($primaryKey as $pKey) {
-                            echo 'postData["'.$pKey.'""]=row.' . $pKey .';';
+                            echo 'data["' . $pKey . '""]=row.' . $pKey . ';';
                         }
                     } else {
-                        echo 'postData["'.$primaryKey.'"]=row.' . $primaryKey .';';
+                        echo 'data["' . $primaryKey . '"]=row.' . $primaryKey . ';';
                     }
                     ?>
 
-                    if (this.operation[name].target == 'ajax') {
+                   return this.action(option, data);
+                },
+                operationAction: function (option, row) {
+                    return this.fieldAction(option, row);
+                },
+                action: function (option, data) {
+                    if (option.target == 'ajax') {
+                        var tmpLoading = this.$loading({
+                            lock: true,
+                            text: '处理中...',
+                            spinner: 'el-icon-loading',
+                            background: 'rgba(0, 0, 0, 0.3)'
+                        });
+
                         var _this = this;
-                        _this.$http.post(this.operation[name].url, postData).then(function (response) {
+                        this.$http.post(option.url, data).then(function (response) {
+                            loading.close();
                             if (response.status == 200) {
                                 var responseData = response.data;
-                                if (responseData.message) {
-                                    _this.$message.error(responseData.message);
-                                }
                                 if (responseData.success) {
                                     _this.loadData();
+                                } else {
+                                    if (responseData.message) {
+                                        _this.$message.error(responseData.message);
+                                    }
                                 }
                             }
                         }).catch(function (error) {
+                            tmpLoading.close();
                             _this.$message.error(error);
                         });
                     } else {
-
-                        switch (this.operation[name].target) {
-                            case "dialog":
-                                this.dialog.title = this.operation[name].dialog.title;
-                                this.dialog.visible = true;
-                                break;
-                            case "drawer":
-                                this.drawer.title = this.operation[name].drawer.title;
-                                this.drawer.visible = true;
-                                break;
-                        }
-
                         var eForm = document.createElement("form");
-                        eForm.action = this.operation[name].url;
-                        switch (this.operation[name].target) {
+                        eForm.action = option.url;
+                        switch (option.target) {
                             case "self":
                             case "_self":
                                 eForm.target = "_self";
@@ -363,25 +414,23 @@
                                 break;
                             case "dialog":
                                 eForm.target = "frame-dialog";
+                                this.dialog.title = option.dialog.title;
+                                this.dialog.visible = true;
                                 break;
                             case "drawer":
                                 eForm.target = "frame-drawer";
+                                this.drawer.title = option.drawer.title;
+                                this.drawer.visible = true;
                                 break;
                         }
                         eForm.method = "post";
                         eForm.style.display = "none";
 
-                        for (var x in postData) {
-                            var e = document.createElement("input");
-                            e.type = "text";
-                            e.name = x;
-                            if (postData[x] instanceof Array) {
-                                e.value = postData[x].join(",");
-                            } else {
-                                e.value = postData[x];
-                            }
-                            eForm.appendChild(e);
-                        }
+                        var e = document.createElement("textarea");
+                        e.name = 'data';
+                        e.value = JSON.stringify(data);
+                        eForm.appendChild(e);
+
                         document.body.appendChild(eForm);
 
                         setTimeout(function () {

@@ -30,6 +30,10 @@ class OperationItemLink extends OperationItem
         if (isset($this->ui['link']['href'])) {
             unset($this->ui['link']['href']);
         }
+
+        if (!isset($this->ui['link']['@click'])) {
+            $this->ui['link']['@click'] = 'operationClick(\'' . $this->name . '\', scope.row)';
+        }
     }
 
     /**
@@ -40,7 +44,6 @@ class OperationItemLink extends OperationItem
     public function getHtml()
     {
         $html = '<el-link';
-        $html .= ' @click="operationAction(\'' . $this->name . '\', scope.row)"';
         if (isset($this->ui['link'])) {
             foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {

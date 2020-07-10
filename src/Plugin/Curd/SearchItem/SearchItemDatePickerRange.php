@@ -7,16 +7,19 @@ use Be\System\Be;
 /**
  * 搜索项 日期选择器
  */
-class SearchItemDateRangePicker extends SearchItem
+class SearchItemDatePickerRange extends SearchItem
 {
 
     /**
-     * 获取html内容
+     * 构造函数
      *
-     * @return string | array
+     * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function getHtml()
+    public function __construct($params = [], $tuple = null)
     {
+        parent::__construct($params, $tuple);
+
         if (!isset($this->ui['date-picker']['range-separator'])) {
             $this->ui['date-picker']['range-separator'] = '至';
         }
@@ -33,6 +36,17 @@ class SearchItemDateRangePicker extends SearchItem
             $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd';
         }
 
+        $this->ui['date-picker']['type'] = 'daterange';
+        $this->ui['date-picker']['v-model'] = 'searchForm.' . $this->name;
+    }
+
+    /**
+     * 获取html内容
+     *
+     * @return string | array
+     */
+    public function getHtml()
+    {
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -44,8 +58,6 @@ class SearchItemDateRangePicker extends SearchItem
         $html .= '>';
 
         $html .= '<el-date-picker';
-        $html .= ' type="daterange"';
-        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['date-picker'])) {
             foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {

@@ -11,6 +11,18 @@ use Be\System\Exception\ServiceException;
 class SearchItemInputNumber extends SearchItem
 {
 
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        $this->ui['input-number']['v-model'] = 'searchForm.' . $this->name;
+    }
 
     /**
      * 获取html内容
@@ -30,7 +42,6 @@ class SearchItemInputNumber extends SearchItem
         $html .= '>';
 
         $html .= '<el-input-number';
-        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['input-number'])) {
             foreach ($this->ui['input-number'] as $k => $v) {
                 if ($v === null) {

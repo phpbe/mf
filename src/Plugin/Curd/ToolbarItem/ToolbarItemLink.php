@@ -28,16 +28,12 @@ class ToolbarItemLink extends ToolbarItem
             $this->ui['link']['icon'] = $params['icon'];
         }
 
-        if (!isset($this->ui['link']['href'])) {
-            if (isset($params['href'])) {
-                $this->ui['link']['href'] = $params['href'];
-            } elseif ($this->url !== null) {
-                $this->ui['link']['href'] = $this->url;
-            }
+        if (isset($this->ui['link']['href'])) {
+            unset($this->ui['link']['href']);
         }
 
-        if (!isset($this->ui['link']['target']) && isset($params['target'])) {
-            $this->ui['link']['target'] = $params['target'];
+        if (!isset($this->ui['link']['@click'])) {
+            $this->ui['link']['@click'] = 'toolbarClick(\'' . $this->name . '\')';
         }
     }
 
@@ -59,7 +55,7 @@ class ToolbarItemLink extends ToolbarItem
             }
         }
         $html .= '>';
-        $html .= $this->value;
+        $html .= $this->label;
         $html .= '</el-link>';
 
         return $html;

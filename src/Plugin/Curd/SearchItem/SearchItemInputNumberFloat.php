@@ -11,12 +11,15 @@ class SearchItemInputNumberFloat extends SearchItem
 {
 
     /**
-     * 获取html内容
+     * 构造函数
      *
-     * @return string | array
+     * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function getEditHtml()
+    public function __construct($params = [], $tuple = null)
     {
+        parent::__construct($params, $tuple);
+
         if (!isset($this->ui['input-number'][':precision'])) {
             $this->ui['input-number'][':precision'] = '2';
         }
@@ -29,6 +32,16 @@ class SearchItemInputNumberFloat extends SearchItem
             $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseFloat(value)';
         }
 
+        $this->ui['input-number']['v-model'] = 'searchForm.' . $this->name;
+    }
+
+    /**
+     * 获取html内容
+     *
+     * @return string | array
+     */
+    public function getEditHtml()
+    {
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -40,7 +53,6 @@ class SearchItemInputNumberFloat extends SearchItem
         $html .= '>';
 
         $html .= '<el-input-number ';
-        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['input-number'])) {
             foreach ($this->ui['input-number'] as $k => $v) {
                 if ($v === null) {

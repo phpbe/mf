@@ -118,7 +118,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         $html .= '>';
 
         if (count($this->menus)) {
-            $html .= '<el-menu slot="overlay" @click="toolbarButtonDropDownClick(e, \'' . $this->name . '\')">';
+            $html .= '<el-menu slot="overlay" @click="toolbarButtonDropDownClick(\'' . $this->name . '\')">';
             $i = 0;
             foreach ($this->menus as $menu) {
                 $html .= '<el-menu-item key="' . $i . '">';
@@ -173,9 +173,9 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     public function getVueMethods()
     {
         return [
-            'toolbarButtonDropDownClick' => 'function (e, name) {
-                var oMenu = this.toolbar[name].menus[e.key];
-                this.toolbarAction(oMenu);
+            'toolbarButtonDropDownClick' => 'function (name) {
+                var option = this.toolbar[name].menus[e.key];
+                this.toolbarAction(option);
             }',
         ];
     }

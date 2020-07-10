@@ -11,12 +11,15 @@ class SearchItemInputNumberInt extends SearchItem
 {
 
     /**
-     * 获取html内容
+     * 构造函数
      *
-     * @return string | array
+     * @param array $params 参数
+     * @param object $tuple 行数据
      */
-    public function getHtml()
+    public function __construct($params = [], $tuple = null)
     {
+        parent::__construct($params, $tuple);
+
         if (!isset($this->ui['input-number'][':step'])) {
             $this->ui['input-number'][':step'] = '1';
         }
@@ -25,6 +28,16 @@ class SearchItemInputNumberInt extends SearchItem
             $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseInt(value)';
         }
 
+        $this->ui['input-number']['v-model'] = 'searchForm.' . $this->name;
+    }
+
+    /**
+     * 获取html内容
+     *
+     * @return string | array
+     */
+    public function getHtml()
+    {
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
@@ -36,7 +49,6 @@ class SearchItemInputNumberInt extends SearchItem
         $html .= '>';
 
         $html .= '<el-input-number';
-        $html .= ' v-model="searchForm.' . $this->name . '"';
         if (isset($this->ui['input-number'])) {
             foreach ($this->ui['input-number'] as $k => $v) {
                 if ($v === null) {

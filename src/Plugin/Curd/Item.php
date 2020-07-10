@@ -16,10 +16,14 @@ abstract class Item
 
     public $keyValues = null; // 可选值键值对
 
-    public $url = null; // 网址
+    public $url = ''; // 网址
 
     public $ui = []; // UI界面参数
-    public $postData = null; // 有后端请求时的附加上的数据
+
+    public $postData = []; // 有后端请求时的附加上的数据
+    public $target = 'drawer';
+    public $dialog = [];
+    public $drawer = [];
 
     protected static $nameIndex = 0;
 
@@ -153,6 +157,56 @@ abstract class Item
                 }
             } else {
                 $this->postData = $postData;
+            }
+        }
+
+
+        if (isset($params['target'])) {
+            $target = $params['target'];
+            if (is_callable($target)) {
+                if ($tuple !== null) {
+                    $this->target = $target($tuple);
+                } else {
+                    $this->target = $target();
+                }
+            } else {
+                $this->target = $target;
+            }
+        }
+
+        if ($this->target == 'dialog') {
+            if (isset($params['dialog'])) {
+                $dialog = $params['dialog'];
+                if (is_callable($dialog)) {
+                    if ($tuple !== null) {
+                        $this->dialog = $dialog($tuple);
+                    } else {
+                        $this->dialog = $dialog();
+                    }
+                } else {
+                    $this->dialog = $dialog;
+                }
+            }
+
+            if (!isset($this->dialog['title'])) {
+                $this->dialog['title'] = $this->label;
+            }
+        } elseif ($this->target == 'drawer') {
+            if (isset($params['drawer'])) {
+                $drawer = $params['drawer'];
+                if (is_callable($drawer)) {
+                    if ($tuple !== null) {
+                        $this->drawer = $drawer($tuple);
+                    } else {
+                        $this->drawer = $drawer();
+                    }
+                } else {
+                    $this->drawer = $drawer;
+                }
+            }
+
+            if (!isset($this->drawer['title'])) {
+                $this->drawer['title'] = $this->label;
             }
         }
     }

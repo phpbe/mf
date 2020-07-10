@@ -10,6 +10,23 @@ class FieldItemTag extends FieldItem
 {
 
     /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param object $tuple 行数据
+     */
+    public function __construct($params = [], $tuple = null)
+    {
+        parent::__construct($params, $tuple);
+
+        if ($this->url) {
+            if (!isset($this->ui['tag']['@click'])) {
+                $this->ui['tag']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
+            }
+        }
+    }
+
+    /**
      * 获取html内容
      *
      * @return string

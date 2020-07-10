@@ -4,14 +4,11 @@ namespace Be\Plugin\Curd\SearchItem;
 
 use Be\System\Be;
 
-
 /**
- * 搜索项 布尔值
+ * 搜索项 日期时间范围选择器
  */
-class SearchItemInput extends SearchItem
+class SearchItemDateTimePickerRange extends SearchItem
 {
-
-    public $op = '='; // SQL 操作
 
     /**
      * 构造函数
@@ -23,11 +20,24 @@ class SearchItemInput extends SearchItem
     {
         parent::__construct($params, $tuple);
 
-        if (isset($params['op'])) {
-            $this->op = strtoupper($params['op']);
+        if (!isset($this->ui['date-picker']['range-separator'])) {
+            $this->ui['date-picker']['range-separator'] = '至';
         }
 
-        $this->ui['input']['v-model'] = 'searchForm.' . $this->name;
+        if (!isset($this->ui['date-picker']['start-placeholder'])) {
+            $this->ui['date-picker']['start-placeholder'] = '开始日期时间';
+        }
+
+        if (!isset($this->ui['date-picker']['end-placeholder'])) {
+            $this->ui['date-picker']['end-placeholder'] = '结束日期时间';
+        }
+
+        if (!isset($this->ui['date-picker']['value-format'])) {
+            $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd HH:mm:ss';
+        }
+
+        $this->ui['date-picker']['type'] = 'datetimerange';
+        $this->ui['date-picker']['v-model'] = 'searchForm.' . $this->name;
     }
 
     /**
@@ -47,9 +57,9 @@ class SearchItemInput extends SearchItem
         }
         $html .= '>';
 
-        $html .= '<el-input';
-        if (isset($this->ui['input'])) {
-            foreach ($this->ui['input'] as $k => $v) {
+        $html .= '<el-date-picker';
+        if (isset($this->ui['date-picker'])) {
+            foreach ($this->ui['date-picker'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -58,8 +68,7 @@ class SearchItemInput extends SearchItem
             }
         }
         $html .= '>';
-        $html .= '</el-input>';
-
+        $html .= '</el-date-picker>';
         $html .= '</el-form-item>';
         return $html;
     }
@@ -73,6 +82,7 @@ class SearchItemInput extends SearchItem
     public function buildSql($dbName = 'master')
     {
         if ($this->newValue !== null) {
+
             $field = null;
             if ($this->table === null) {
                 $field = $this->name;
@@ -81,21 +91,14 @@ class SearchItemInput extends SearchItem
             }
 
             $db = Be::getDb($dbName);
-            switch ($this->op) {
-                case 'LIKE':
-                    return $db->quoteKey($field) . ' LIKE ' . $db->quoteValue($this->newValue);
-                case '%LIKE%':
-                    return $db->quoteKey($field) . ' LIKE ' . $db->quoteValue('%' . $this->newValue . '%');
-                case 'LIKE%':
-                    return $db->quoteKey($field) . ' LIKE ' . $db->quoteValue($this->newValue . '%');
-                case '%LIKE':
-                    return $db->quoteKey($field) . ' LIKE ' . $db->quoteValue('%' . $this->newValue);
-                default:
-                    return $db->quoteKey($field) . ' ' . $this->op . ' ' . $db->quoteValue($this->newValue);
-            }
+            $sql = $db->quoteKey($field) . ' >= ' . $db->quoteValue($this->newValue[0]);
+            $sql .= ' AND ';
+            $sql .= $db->quoteKey($field) . ' < ' . $db->quoteValue($this->newValue[1]);
+            return $sql;
         }
 
         return '';
     }
 
 }
+

@@ -77,5 +77,48 @@ abstract class FieldItem extends Item
     }
 
 
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        if (!$this->url) return false;
+
+        $vueData = [
+            'field' => [
+                $this->name => [
+                    'url' => $this->url,
+                    'target' => $this->target,
+                    'postData' => $this->postData,
+                ]
+            ]
+        ];
+
+        if ($this->target == 'dialog') {
+            $vueData['field'][$this->name]['dialog'] = $this->dialog;
+        } elseif ($this->target == 'drawer') {
+            $vueData['field'][$this->name]['drawer'] = $this->drawer;
+        }
+
+        return $vueData;
+    }
+
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'fieldClick' => 'function (name, row) {
+                var option = this.field[name];
+                this.fieldAction(option, row);
+            }'
+        ];
+    }
 
 }

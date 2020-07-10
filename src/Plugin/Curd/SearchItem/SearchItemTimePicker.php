@@ -4,9 +4,9 @@ namespace Be\Plugin\Curd\SearchItem;
 
 
 /**
- * 搜索项 布尔值
+ * 搜索项 时间选择器
  */
-class SearchItemSelect extends SearchItem
+class SearchItemTimePicker extends SearchItem
 {
 
     /**
@@ -19,19 +19,15 @@ class SearchItemSelect extends SearchItem
     {
         parent::__construct($params, $tuple);
 
-        if (!isset($this->ui['select']['placeholder'])) {
-            $this->ui['select']['placeholder'] = '请选择';
+        if (!isset($this->ui['time-picker']['placeholder'])) {
+            $this->ui['time-picker']['placeholder'] = '选择时间';
         }
 
-        if (!isset($this->ui['select']['filterable'])) {
-            $this->ui['select']['filterable'] = null;
+        if (!isset($this->ui['time-picker']['value-format'])) {
+            $this->ui['time-picker']['value-format'] = 'HH:mm:ss';
         }
 
-        if (!isset($this->ui['select']['clearable'])) {
-            $this->ui['select']['clearable'] = null;
-        }
-
-        $this->ui['select']['v-model'] = 'searchForm.' . $this->name;
+        $this->ui['time-picker']['v-model'] = 'searchForm.' . $this->name;
     }
 
     /**
@@ -51,9 +47,9 @@ class SearchItemSelect extends SearchItem
         }
         $html .= '>';
 
-        $html .= '<el-select';
-        if (isset($this->ui['select'])) {
-            foreach ($this->ui['select'] as $k => $v) {
+        $html .= '<el-time-picker';
+        if (isset($this->ui['time-picker'])) {
+            foreach ($this->ui['time-picker'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -61,20 +57,11 @@ class SearchItemSelect extends SearchItem
                 }
             }
         }
-
         $html .= '>';
-        foreach ($this->keyValues as $k => $v) {
-            $html .= '<el-option';
-            $html .= ' value="' . $k . '"';
-            $html .= ' label="' . $v . '"';
-            $html .= '>';
-            $html .= '</el-option>';
-        }
-        $html .= '</el-select>';
-
+        $html .= '</el-time-picker>';
         $html .= '</el-form-item>';
         return $html;
     }
 
-}
 
+}
