@@ -10,7 +10,6 @@ use Be\Plugin\Curd\Item;
 abstract class ToolbarItem extends Item
 {
 
-    public $option = []; // 控制项
     public $postData = []; // 有后端请求时的附加上的数据
 
     /**
@@ -23,7 +22,6 @@ abstract class ToolbarItem extends Item
         return [
             'toolbar' => [
                 $this->name => [
-                    'option' => $this->option,
                     'postData' => $this->postData,
                 ]
             ]

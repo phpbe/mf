@@ -9,7 +9,6 @@ namespace Be\Plugin\Curd\OperationItem;
 class OperationItemLink extends OperationItem
 {
 
-
     /**
      * 构造函数
      *
@@ -41,7 +40,7 @@ class OperationItemLink extends OperationItem
     public function getHtml()
     {
         $html = '<el-link';
-        $html .= ' @click="operationLinkClick(event, \'' . $this->name . '\')" :data-url="scope.row.'.$this->name.'"';
+        $html .= ' @click="operationAction(\'' . $this->name . '\', scope.row)"';
         if (isset($this->ui['link'])) {
             foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {
@@ -58,21 +57,4 @@ class OperationItemLink extends OperationItem
         return $html;
     }
 
-
-    /**
-     * 获取 vue 方法
-     *
-     * @return false | array
-     */
-    public function getVueMethods()
-    {
-        return [
-            'operationLinkClick' => 'function (event, name) {
-                var sUrl = event.srcElement.parentElement.dataset.url;
-                var oOption = this.operation[name][\'option\'];
-                var oPostData = this.operation[name][\'postData\'];
-                this.operationAction(sUrl, oOption, oPostData);
-            }'
-        ];
-    }
 }

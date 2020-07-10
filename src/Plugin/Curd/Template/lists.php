@@ -78,7 +78,7 @@
                         $driver = new \Be\Plugin\Curd\ToolbarItem\ToolbarItemButton($item);
                     }
                     echo '<el-form-item>';
-                    echo $driver->getHtml()."\r\n";
+                    echo $driver->getHtml() . "\r\n";
                     echo '</el-form-item>';
 
                     $vueDataX = $driver->getVueData();
@@ -101,7 +101,7 @@
             <el-table
                     :data="rows"
                     ref="stageTable"
-                    v-loading="loading" 
+                    v-loading="loading"
                     size="mini"
                     :height="stageHeight"
                     :default-sort="{prop:orderBy,order:orderByDir}"
@@ -114,9 +114,7 @@
                     $opHtml = $operationDriver->getHtmlBefore();
 
                     if (isset($this->setting['lists']['operation']['items'])) {
-                        $i = 0;
                         foreach ($this->setting['lists']['operation']['items'] as $item) {
-                            $i++;
                             $driver = null;
                             if (isset($item['driver'])) {
                                 $driverName = $item['driver'];
@@ -124,8 +122,7 @@
                             } else {
                                 $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
                             }
-                            $driver->name = 'operation' . $i;
-                            $opHtml .= $driver->getHtml()."\r\n";
+                            $opHtml .= $driver->getHtml() . "\r\n";
 
                             $vueDataX = $driver->getVueData();
                             if ($vueDataX) {
@@ -151,9 +148,7 @@
                         $vueMethods = array_merge($vueMethods, $vueMethodsX);
                     }
 
-                    if (isset($this->setting['lists']['operation']['position']) && in_array($this->setting['lists']['operation']['position'], ['left', 'right'])) {
-                        $opPosition = $this->setting['lists']['operation']['position'];
-                    }
+                    $opPosition = $operationDriver->position;
 
                     if ($opPosition == 'left') {
                         echo $opHtml;
@@ -201,12 +196,22 @@
 
         </el-form>
 
-        <el-dialog :title="dialog.title" :visible.sync="dialog.visible" :width="dialog.width">
-            <iframe id="frame-dialog" :src="dialog.url" :style="{width: '100%', height: dialog.height}"></iframe>
+        <el-dialog
+                :title="dialog.title"
+                :visible.sync="dialog.visible"
+                :width="dialog.width"
+                :close-on-click-modal="false"
+                :destroy-on-close="true">
+            <iframe id="frame-dialog" name="frame-dialog" src="about:blank" :style="{width:'100%',height:dialog.height,border:0}"></iframe>
         </el-dialog>
 
-        <el-drawer :visible.sync="drawer.visible" :with-header="false" :size="drawer.width">
-            <iframe id="frame-drawer" :src="drawer.url" style="width: 100%; height: 100%;"></iframe>
+        <el-drawer
+                :visible.sync="drawer.visible"
+                :size="drawer.width"
+                :title="drawer.title"
+                :wrapper-closable="false"
+                :destroy-on-close="true">
+            <iframe id="frame-drawer" name="frame-drawer" src="about:blank" style="width:100%;height:100%;border:0;"></iframe>
         </el-drawer>
 
     </div>
@@ -233,9 +238,8 @@
                 rows: [],
                 loading: false,
                 stageHeight: 500,
-                dialog: {visible:false,url:"about:blank",width:"80%",height:"60%",title:""},
-                drawer: {visible:false,url:"about:blank",width:"40%"}
-                <?php
+                dialog: {visible: false, width: "600px", height: "400px", title: ""},
+                drawer: {visible: false, width: "60%", title: ""}<?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
@@ -296,21 +300,106 @@
                     this.loadData();
                 },
                 sort: function (option) {
-                    if (option.order=="ascending" || option.order=="descending") {
+                    if (option.order == "ascending" || option.order == "descending") {
                         this.orderBy = option.prop;
-                        this.orderByDir = option.order=="ascending" ? "ASC" : "DESC";
+                        this.orderByDir = option.order == "ascending" ? "ASC" : "DESC";
                     } else {
                         this.orderBy = "";
                         this.orderByDir = "";
                     }
                     this.loadData();
                 },
-                operationAction: function (sUrl, oOption, oPostData) {
-                    this.drawer.url = sUrl;
-                    this.drawer.visible = true;
+                operationAction: function (name, row) {
+
+                    var postData = this.operation[name].postData;
+                    <?php
+                    if (is_array($primaryKey)) {
+                        foreach ($primaryKey as $pKey) {
+                            echo 'postData["'.$pKey.'""]=row.' . $pKey .';';
+                        }
+                    } else {
+                        echo 'postData["'.$primaryKey.'"]=row.' . $primaryKey .';';
+                    }
+                    ?>
+
+                    if (this.operation[name].target == 'ajax') {
+                        var _this = this;
+                        _this.$http.post(this.operation[name].url, postData).then(function (response) {
+                            if (response.status == 200) {
+                                var responseData = response.data;
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                                if (responseData.success) {
+                                    _this.loadData();
+                                }
+                            }
+                        }).catch(function (error) {
+                            _this.$message.error(error);
+                        });
+                    } else {
+
+                        switch (this.operation[name].target) {
+                            case "dialog":
+                                this.dialog.title = this.operation[name].dialog.title;
+                                this.dialog.visible = true;
+                                break;
+                            case "drawer":
+                                this.drawer.title = this.operation[name].drawer.title;
+                                this.drawer.visible = true;
+                                break;
+                        }
+
+                        var eForm = document.createElement("form");
+                        eForm.action = this.operation[name].url;
+                        switch (this.operation[name].target) {
+                            case "self":
+                            case "_self":
+                                eForm.target = "_self";
+                                break;
+                            case "blank":
+                            case "_blank":
+                                eForm.target = "_blank";
+                                break;
+                            case "dialog":
+                                eForm.target = "frame-dialog";
+                                break;
+                            case "drawer":
+                                eForm.target = "frame-drawer";
+                                break;
+                        }
+                        eForm.method = "post";
+                        eForm.style.display = "none";
+
+                        for (var x in postData) {
+                            var e = document.createElement("input");
+                            e.type = "text";
+                            e.name = x;
+                            if (postData[x] instanceof Array) {
+                                e.value = postData[x].join(",");
+                            } else {
+                                e.value = postData[x];
+                            }
+                            eForm.appendChild(e);
+                        }
+                        document.body.appendChild(eForm);
+
+                        setTimeout(function () {
+                            eForm.submit();
+                        }, 50);
+
+                        setTimeout(function () {
+                            document.body.removeChild(eForm);
+                        }, 3000);
+                    }
+
+                    return false;
                 },
-                toolbarAction: function () {
-                    
+                hideDialog: function () {
+                    this.dialog.visible = false;
+                },
+                hideDrawer: function () {
+                    this.drawer.visible = false;
                 }
                 <?php
                 if ($vueMethods) {

@@ -30,7 +30,7 @@ class FieldItemLink extends FieldItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '<a';
+        $html .= '<el-link';
         if (isset($this->ui['link'])) {
             foreach ($this->ui['link'] as $k => $v) {
                 if ($v === null) {
@@ -42,7 +42,7 @@ class FieldItemLink extends FieldItem
         }
         $html .= '>';
         $html .= '{{scope.row.'.$this->name.'}}';
-        $html .= '</a>';
+        $html .= '</el-link>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 

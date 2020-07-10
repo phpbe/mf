@@ -8,6 +8,8 @@ namespace Be\Plugin\Curd;
 class Operation extends Item
 {
 
+    public $position = 'right';
+
     /**
      * 构造函数
      *
@@ -17,6 +19,23 @@ class Operation extends Item
     public function __construct($params = [], $tuple = null)
     {
         parent::__construct($params, $tuple);
+
+        if (isset($params['position'])) {
+            $position = $params['position'];
+            if (is_callable($position)) {
+                if ($tuple !== null) {
+                    $this->position = $position($tuple);
+                } else {
+                    $this->position = $position();
+                }
+            } else {
+                $this->position = $position;
+            }
+
+            if (!in_array($this->position, ['left', 'right'])) {
+                $this->position = 'right';
+            }
+        }
 
         if (!isset($this->ui['table-column']['prop'])) {
             $this->ui['table-column']['prop'] = $this->name;

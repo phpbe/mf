@@ -73,10 +73,10 @@ class SearchItemDateRangePicker extends SearchItem
         if ($this->newValue !== null) {
 
             $field = null;
-            if (isset($this->option['table'])) {
-                $field = $this->option['table'] .'.' . $this->name;
-            } else {
+            if ($this->table === null) {
                 $field = $this->name;
+            } else {
+                $field = $this->table .'.' . $this->name;
             }
 
             $db = Be::getDb($dbName);

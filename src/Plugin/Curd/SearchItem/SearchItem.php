@@ -11,6 +11,7 @@ use Be\System\Be;
 abstract class SearchItem extends Item
 {
 
+    public $table = null; // 表名
     public $newValue = null; // 新值
 
     /**
@@ -22,6 +23,19 @@ abstract class SearchItem extends Item
     public function __construct($params = [], $tuple = null)
     {
         parent::__construct($params, $tuple);
+
+        if (isset($params['table'])) {
+            $table = $params['table'];
+            if (is_callable($table)) {
+                if ($tuple !== null) {
+                    $this->table = $table($tuple);
+                } else {
+                    $this->table = $table();
+                }
+            } else {
+                $this->table = $table;
+            }
+        }
 
         if (!isset($this->ui['form-item']['label'])) {
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
@@ -52,10 +66,10 @@ abstract class SearchItem extends Item
         if ($this->newValue !== null) {
 
             $field = null;
-            if (isset($this->option['table'])) {
-                $field = $this->option['table'] .'.' . $this->name;
-            } else {
+            if ($this->table === null) {
                 $field = $this->name;
+            } else {
+                $field = $this->table .'.' . $this->name;
             }
 
             $db = Be::getDb($dbName);

@@ -18,7 +18,6 @@ abstract class Item
 
     public $url = null; // 网址
 
-    public $option = null; // 控制项
     public $ui = []; // UI界面参数
     public $postData = null; // 有后端请求时的附加上的数据
 
@@ -141,19 +140,6 @@ abstract class Item
                 }
             } else {
                 $this->ui = $ui;
-            }
-        }
-
-        if (isset($params['option'])) {
-            $option = $params['option'];
-            if (is_callable($option)) {
-                if ($tuple !== null) {
-                    $this->option = $option($tuple);
-                } else {
-                    $this->option = $option();
-                }
-            } else {
-                $this->option = $option;
             }
         }
 

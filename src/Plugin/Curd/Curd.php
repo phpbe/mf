@@ -98,41 +98,6 @@ class Curd extends Plugin
 
                 $rows = $table->getObjects();
 
-                if (isset($this->setting['lists']['operation']['items'])) {
-                    $primaryKey = $table->getPrimaryKey();
-                    if (!$primaryKey) {
-                        throw new \Exception('表 ' . $this->setting['table'] . ' 无主键！');
-                    }
-                    foreach ($rows as $row) {
-                        $i = 0;
-                        foreach ($this->setting['lists']['operation']['items'] as $item) {
-                            $i++;
-                            $driver = null;
-                            if (isset($item['driver'])) {
-                                $driverName = $item['driver'];
-                                $driver = new $driverName($item);
-                            } else {
-                                $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
-                            }
-                            $name = 'operation' . $i;
-                            $driver->name = $name;
-
-                            $primaryKeyParam = null;
-                            if (is_array($primaryKey)) {
-                                $primaryKeyParams = [];
-                                foreach ($primaryKey as $pKey) {
-                                    $primaryKeyParams[] = $pKey . '=' . $row->$pKey;
-                                }
-                                $primaryKeyParam = implode('&', $primaryKeyParams);
-                            } else {
-                                $primaryKeyParam = $primaryKey . '=' . $row->$primaryKey;
-                            }
-
-                            $row->$name = $driver->url . (strpos($driver->url, '?') === false ? '?' : '&') . $primaryKeyParam;
-                        }
-                    }
-                }
-
                 Response::set('success', true);
                 Response::set('data', [
                     'total' => $total,
@@ -163,7 +128,12 @@ class Curd extends Plugin
             Response::set('setting', $this->setting);
             Response::set('table', $table);
             Response::set('pageSize', $pageSize);
-            Response::display('Plugin.Curd.lists');
+
+            $theme = null;
+            if (isset($this->setting['lists']['theme'])) {
+                $theme = $this->setting['lists']['theme'];
+            }
+            Response::display('Plugin.Curd.lists', $theme);
             Response::createHistory();
         }
 
@@ -196,7 +166,9 @@ class Curd extends Plugin
 
         Response::setTitle($setting['title']);
         Response::set('row', $tuple);
-        Response::display('Plugin.Curd.detail');
+
+        $theme = isset($this->setting['detail']['theme']) ?? 'Nude';
+        Response::display('Plugin.Curd.detail', $theme);
     }
 
     /**
@@ -234,7 +206,9 @@ class Curd extends Plugin
         } else {
             Response::setTitle($setting['title']);
             Response::set('row', $tuple);
-            Response::display('Plugin.Curd.create');
+
+            $theme = isset($this->setting['create']['theme']) ?? 'Nude';
+            Response::display('Plugin.Curd.create', $theme);
         }
     }
 
@@ -285,7 +259,9 @@ class Curd extends Plugin
 
             Response::setTitle($setting['title']);
             Response::set('tuple', $tuple);
-            Response::display('Plugin.Curd.edit');
+
+            $theme = isset($this->setting['edit']['theme']) ?? 'Nude';
+            Response::display('Plugin.Curd.edit', $theme);
         }
     }
 
