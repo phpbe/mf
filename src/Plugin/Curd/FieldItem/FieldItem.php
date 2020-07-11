@@ -116,7 +116,7 @@ abstract class FieldItem extends Item
         return [
             'fieldClick' => 'function (name, row) {
                 var option = this.field[name];
-                this.fieldAction(option, row);
+                this.fieldAction(name, option, row);
             }'
         ];
     }

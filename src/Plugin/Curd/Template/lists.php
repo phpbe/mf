@@ -1,3 +1,9 @@
+<be-head>
+    <style type="text/css">
+        .el-table__row .el-divider__text, .el-link {font-size: 12px;}
+    </style>
+</be-head>
+
 <be-center>
     <?php
     $primaryKey = $this->table->getPrimaryKey();
@@ -336,7 +342,7 @@
                     }
                     this.loadData();
                 },
-                toolbarAction: function (option) {
+                toolbarAction: function (name, option) {
                     var data = {
                         searchForm: this.searchForm,
                         orderBy: this.orderBy,
@@ -351,14 +357,24 @@
 
                     return this.action(option, data);
                 },
-                fieldAction: function (option, row) {
+                fieldAction: function (name, option, row) {
+                    switch (option.target) {
+                        case "dialog":
+                            option.dialog.title = row[name];
+                            break;
+                        case "drawer":
+                            option.drawer.title = row[name];
+                            break;
+                    }
+                   return this.operationAction(name, option, row);
+                },
+                operationAction: function (name, option, row) {
                     var data;
                     if (option.postData.length > 0) {
                         data = option.postData;
                     } else {
                         data = {};
                     }
-
                     <?php
                     if (is_array($primaryKey)) {
                         foreach ($primaryKey as $pKey) {
@@ -368,11 +384,7 @@
                         echo 'data["' . $primaryKey . '"]=row.' . $primaryKey . ';';
                     }
                     ?>
-
-                   return this.action(option, data);
-                },
-                operationAction: function (option, row) {
-                    return this.fieldAction(option, row);
+                    return this.action(option, data);
                 },
                 action: function (option, data) {
                     if (option.target == 'ajax') {

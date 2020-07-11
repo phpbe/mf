@@ -20,8 +20,12 @@ class ToolbarItemLink extends ToolbarItem
     {
         parent::__construct($params, $tuple);
 
-        if (!isset($this->ui['link']['type']) && isset($params['type'])) {
-            $this->ui['link']['type'] = $params['type'];
+        if (!isset($this->ui['link']['type'])) {
+            if (isset($params['type'])) {
+                $this->ui['link']['type'] = $params['type'];
+            } else {
+                $this->ui['link']['type'] = 'primary';
+            }
         }
 
         if (!isset($this->ui['link']['icon']) && isset($params['icon'])) {

@@ -20,6 +20,14 @@ class FieldItemLink extends FieldItem
     {
         parent::__construct($params, $tuple);
 
+        if (!isset($this->ui['link']['type'])) {
+            if (isset($params['type'])) {
+                $this->ui['link']['type'] = $params['type'];
+            } else {
+                $this->ui['link']['type'] = 'primary';
+            }
+        }
+
         if ($this->url) {
             if (!isset($this->ui['link']['@click'])) {
                 $this->ui['link']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';

@@ -47,7 +47,7 @@ abstract class OperationItem extends Item
         return [
             'operationClick' => 'function (name, row) {
                 var option = this.operation[name];
-                this.operationAction(option, row);
+                this.operationAction(name, option, row);
             }'
         ];
     }

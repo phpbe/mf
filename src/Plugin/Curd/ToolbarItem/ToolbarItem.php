@@ -46,7 +46,7 @@ abstract class ToolbarItem extends Item
         return [
             'toolbarClick' => 'function (name) {
                 var option = this.toolbar[name];
-                this.toolbarAction(option);
+                this.toolbarAction(name, option);
             }'
         ];
     }
