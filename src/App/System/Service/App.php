@@ -16,7 +16,7 @@ class App extends \Be\System\Service
     public function getApps()
     {
 		if ($this->apps == null) {
-			$this->apps = Be::getDb()->withCache(600)->getKeyObjects('SELECT * FROM system_app', null, 'name');
+			$this->apps = Be::getDb()->getKeyObjects('SELECT * FROM system_app', null, 'name');
 		}
 
         return $this->apps;

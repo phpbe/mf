@@ -5,6 +5,10 @@ use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 
+/**
+ * @BeMenuGroup("菜单")
+ * @BePermissionGroup("菜单")
+ */
 class Menu extends \Be\System\Controller
 {
 

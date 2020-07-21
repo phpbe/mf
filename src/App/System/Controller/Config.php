@@ -7,17 +7,15 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @be-menu-group-icon setting
- * @be-menu-group 配置中心
- * @be-permission-group 配置中心
+ * @BeMenuGroup("配置中心")
+ * @BePermissionGroup("配置中心")
  */
 class Config extends \Be\System\Controller
 {
 
     /**
-     * @be-menu-icon setting
-     * @be-menu 配置中心
-     * @be-permission 查看
+     * @BeMenu("配置中心")
+     * @BePermission("查看")
      */
     public function dashboard()
     {
@@ -46,7 +44,7 @@ class Config extends \Be\System\Controller
     }
 
     /**
-     * @be-permission 修改
+     * @BePermission("修改")
      */
     public function saveConfig()
     {
@@ -59,7 +57,7 @@ class Config extends \Be\System\Controller
     }
 
     /**
-     * @be-permission 恢复默认值
+     * @BePermission("恢复默认值")
      */
     public function resetConfig()
     {
@@ -72,7 +70,7 @@ class Config extends \Be\System\Controller
     }
 
     /**
-     * @be-permission 修改
+     * @BePermission("修改")
      */
     public function uploadFile() {
 
@@ -145,7 +143,7 @@ class Config extends \Be\System\Controller
     }
 
     /**
-     * @be-permission 修改
+     * @BePermission("修改")
      */
     public function uploadImage() {
 

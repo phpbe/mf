@@ -7,17 +7,15 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @be-menu-group 设置
- * @be-permission-group 设置
+ * @BeMenuGroup("设置", icon="el-icon-setting")
+ * @BePermissionGroup("设置")
  */
 class Mail extends \Be\System\Controller
 {
 
-
     /**
-     * @be-menu 发送邮件测试
-     * @be-menu-icon mail
-     * @be-permission 发送邮件测试
+     * @BeMenu("发送邮件测试", icon="el-icon-fa fa-envelope-o")
+     * @BePermission("发送邮件测试")
      */
     public function test()
     {

@@ -6,8 +6,8 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @be-menu-group 扩展
- * @be-permission-group 扩展
+ * @BeMenuGroup("扩展")
+ * @BePermissionGroup("扩展")
  */
 class Theme extends \Be\System\Controller
 {

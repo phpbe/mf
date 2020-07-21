@@ -33,25 +33,24 @@ if (isset($this->redirectUrl)) {
 </be-head>
 
 <be-body>
-<div class="theme-box-container">
-    <div class="theme-box">
-        <div class="theme-box-title">操作成功</div>
-        <div class="theme-box-body">
-            <p>
-                <?php echo $this->message; ?>
-            </p>
 
-            <?php
-            if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
-            {
-                ?>
-                <p>
-                    <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后跳转
-                </p>
-                <?php
-            }
-            ?>
-        </div>
+    <div style="text-align: center; font-size: 48px; padding: 40px;">
+        <i class="el-icon-success"></i>
     </div>
-</div>
+
+    <div style="text-align: center; font-size: 48px; padding: 40px;">
+        <?php echo $this->message; ?>
+    </div>
+
+    <?php
+    if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
+    {
+        ?>
+        <div style="text-align: center; font-size: 48px; padding: 40px;">
+            <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后跳转
+        </div>
+        <?php
+    }
+    ?>ccccc
+
 </be-body>

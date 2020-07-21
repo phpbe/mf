@@ -5,17 +5,18 @@ use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 
+
 /**
- * @be-menu-group 缓存管理
- * @be-permission-group 缓存管理
+ * @BeMenuGroup("缓存管理", icon = "el-icon-fa fa-database")
+ * @BePermissionGroup("缓存管理")
  */
 class Cache extends \Be\System\Controller
 {
 
 
     /**
-     * @be-menu 缓存管理
-     * @be-permission 缓存管理
+     * @BeMenu("缓存管理")
+     * @BePermission("缓存管理")
      */
     public function cache()
     {
@@ -23,10 +24,9 @@ class Cache extends \Be\System\Controller
         Response::display();
     }
 
-
     /**
-     * @be-menu 删除缓存
-     * @be-permission 删除缓存
+     * @BeMenu("删除缓存")
+     * @BePermission("删除缓存")
      */
     public function clearCache()
     {

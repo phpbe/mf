@@ -7,22 +7,19 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @be-menu-group 设置
- * @be-menu-group-icon tool
- * @be-permission-group 设置
+ * @BeMenuGroup("设置")
+ * @BePermissionGroup("设置")
  */
 class Watermark extends \Be\System\Controller
 {
 
 
     /**
-     * @be-menu 水印测试
-     * @be-menu-icon picture
-     * @be-permission 水印测试
+     * @BeMenu("水印测试", icon = "el-icon-fa fa-image")
+     * @BePermission("水印测试")
      */
     public function test()
     {
-
         $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getUrl() . 'Template/System/Watermark/images/material.jpg';
         $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
 

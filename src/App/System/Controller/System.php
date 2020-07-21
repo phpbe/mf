@@ -22,18 +22,19 @@ class System extends \Be\System\Controller
 
         $tupleUser = Be::newTuple('system_user');
         $tupleUser->load($my->id);
+        unset($tupleUser->password, $tupleUser->salt, $tupleUser->remember_me_token);
         Response::set('user', $tupleUser);
 
         $tableAdminUser = Be::getTable('system_user');
         $userCount = $tableAdminUser->count();
         Response::set('userCount', $userCount);
 
-        $servicebeSystemLog = Be::getService('System.beSystemLog');
-        $adminServiceApp = Be::getService('System.App');
-        $adminServiceTheme = Be::getService('System.Theme');
-        Response::set('recentLogs', $servicebeSystemLog->getLogs(array('userId' => $my->id, 'offset' => 0, 'limit' => 10)));
-        Response::set('appCount', $adminServiceApp->getAppCount());
-        Response::set('themeCount', $adminServiceTheme->getThemeCount());
+        $serviceSystemLog = Be::getService('System.SystemLog');
+        $serviceApp = Be::getService('System.App');
+        $serviceTheme = Be::getService('System.Theme');
+        Response::set('recentLogs', $serviceSystemLog->getLogs(array('userId' => $my->id, 'offset' => 0, 'limit' => 10)));
+        Response::set('appCount', $serviceApp->getAppCount());
+        Response::set('themeCount', $serviceTheme->getThemeCount());
 
         Response::display();
     }

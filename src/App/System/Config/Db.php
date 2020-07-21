@@ -13,10 +13,10 @@ class Db
      */
     public $master = [
         'driver' => 'mysql',
-        'host' => '172.24.0.100', // 主机名
+        'host' => '127.0.0.1', // 主机名
         'port' => 3306, // 端口号
         'user' => 'root', // 用户名
-        'pass' => '12341234', // 密码
+        'pass' => 'root', // 密码
         'name' => 'be' // 数据库名称
     ]; // 主数据库
 

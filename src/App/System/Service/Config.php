@@ -1,7 +1,7 @@
 <?php
 namespace Be\App\System\Service;
 
-use App\System\Helper\DocComment;
+use Be\App\System\Helper\DocComment;
 use Be\System\Be;
 use Be\System\Service;
 use Be\System\Exception\ServiceException;

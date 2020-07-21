@@ -1,7 +1,7 @@
 html{background:#FFF;}
 body{text-align:center; background-color: #fff;}
 
-#app{margin:0 auto; width:300px;}
+#app{margin:0 auto; width:350px;}
 
 .logo{background:url(../images/logo.gif) center center no-repeat; height:60px; margin:60px 0 30px 0;}
 .login-box{

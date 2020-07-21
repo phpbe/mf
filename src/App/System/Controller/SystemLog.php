@@ -6,12 +6,11 @@ use Be\System\Be;
 use Be\System\Response;
 
 /**
- * @be-controller 系统日志
+ * @BeMenuGroup("系统日志")
+ * @BePermissionGroup("系统日志")
  */
-class beSystemLog extends \Be\System\Controller
+class SystemLog extends \Be\System\Controller
 {
-
-    use \App\System\AdminTrait\Curd;
 
     public function __construct()
     {
@@ -77,14 +76,14 @@ class beSystemLog extends \Be\System\Controller
      * 删除后台日志
      *
      * @be-action 删除后台日志
-     * @be-permission
+     * @BePermission
      */
     public function deleteLogs()
     {
         Be::getDb()->startTransaction();
         try {
-            Be::getService('System.beSystemLog')->deleteLogs();
-            Be::getService('System.beSystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
+            Be::getService('System.SystemLog')->deleteLogs();
+            Be::getService('System.SystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
 
             Be::getDb()->commit();
 

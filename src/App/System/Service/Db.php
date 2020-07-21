@@ -80,6 +80,8 @@ class Db extends \Be\System\Service
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
+
+        @include_once $path;
     }
 
     /**
@@ -110,6 +112,8 @@ class Db extends \Be\System\Service
         if (!is_dir($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
+
+        @include_once $path;
     }
 
     /**
@@ -153,6 +157,8 @@ class Db extends \Be\System\Service
 
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
+
+        @include_once $path;
     }
 
 }

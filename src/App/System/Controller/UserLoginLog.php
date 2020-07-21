@@ -9,8 +9,6 @@ use Be\System\Controller;
 class UserLoginLog extends Controller
 {
 
-    use \App\System\AdminTrait\Curd;
-
     public function __construct()
     {
         $this->config = [
@@ -76,8 +74,8 @@ class UserLoginLog extends Controller
      * 删除管理员登陆日志
      *
      * @be-action 删除管理员登陆日志
-     * @be-menu 删除管理员登陆日志
-     * @be-permission 删除管理员登陆日志
+     * @BeMenu("删除管理员登陆日志")
+     * @BePermission("删除管理员登陆日志")
      */
     public function deleteLogs()
     {

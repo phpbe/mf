@@ -9,7 +9,7 @@ use Be\System\Be;
 
 <be-center>
 <?php
-$my = Be::getAdminUser();
+$my = Be::getUser();
 $user = $this->user;
 $recentLogs = $this->recentLogs;
 $userCount = $this->userCount;
@@ -34,10 +34,16 @@ $configUser = Be::getConfig('System.User');
             <div class="box-body" style="height:80px;">
             <table style="width:100%;">
             <tr>
-                <td style="width:80px; text-align:left; "><img src="../<?php echo DATA.'/user/avatar/'.($user->avatarM == ''?('default/'.$configUser->defaultAvatarM):$user->avatarM); ?>" /></td>
+                <td style="width:80px; text-align:left; "><img src="<?php
+                    if ($user->avatar_m == '') {
+                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar/medium.png';
+                    } else {
+                        echo Be::getRuntime()->getDataUrl().'/user/avatar/'.$user->avatar_m;
+                    }
+                    ?>" /></td>
                 <td valign="top">
                     <p>您好 <span style="font-weight:bold; color:red;"><?php echo $user->name; ?></span>(<?php echo implode(', ', $my->getRoleNames()); ?>), 欢迎回来。</p>
-                    <p class="muted">上次登陆时间：<?php echo date('Y-m-d H:i', $user->lastLoginTime); ?> [<a href="./?controller=user&action=logs" class="text-info">查看登陆日志</a>]</p>
+                    <p class="muted">上次登陆时间：<?php echo date('Y-m-d H:i', $user->last_login_time); ?> [<a href="<?php echo beUrl('System.User.logs'); ?>" class="text-info">查看登陆日志</a>]</p>
                 </td>
             </tr>
             </table>

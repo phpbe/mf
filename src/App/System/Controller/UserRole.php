@@ -9,16 +9,15 @@ use Be\System\Controller;
 /**
  * Class UserRole
  * @package App\System\Controller
- * @be-menu-group 用户
- * @be-menu-group-icon user
- * @be-permission-group 用户角色
+ * @BeMenuGroup("用户")
+ * @BePermissionGroup("用户角色")
  */
 class UserRole extends Controller
 {
 
     /**
-     * @be-menu 角色管理
-     * @be-permission 角色列表
+     * @BeMenu("角色管理", icon="el-icon-fa fa-user-secret")
+     * @BePermission("角色列表")
      */
     public function roles()
     {
@@ -67,7 +66,7 @@ class UserRole extends Controller
     }
 
     /**
-     * @be-permission 修改角色
+     * @BePermission("修改角色")
      */
     public function ajaxDeleteRole()
     {
@@ -105,7 +104,7 @@ class UserRole extends Controller
 
 
     /**
-     * @be-permission 角色权限配置
+     * @BePermission("角色权限配置")
      */
     public function rolePermissions()
     {
@@ -126,7 +125,7 @@ class UserRole extends Controller
     }
 
     /**
-     * @be-permission 角色权限配置
+     * @BePermission("角色权限配置")
      */
     public function rolePermissionsSave()
     {

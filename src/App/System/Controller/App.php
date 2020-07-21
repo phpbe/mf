@@ -2,17 +2,22 @@
 namespace Be\App\System\Controller;
 
 use Be\System\Be;
+use Be\System\Exception\RuntimeException;
+use Be\System\Exception\ServiceException;
 use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @be-menu-group 扩展
- * @be-permission-group 扩展
+ * @BeMenuGroup("扩展", icon="el-icon-fa fa-cube")
+ * @BePermissionGroup("扩展")
  */
 class App extends \Be\System\Controller
 {
 
-    // 应用管理
+    /**
+     * @BeMenu("应用管理", icon="el-icon-fa fa-cubes")
+     * @BePermission("应用管理")
+     */
     public function apps()
     {
         $adminServiceApp = Be::getService('System.App');

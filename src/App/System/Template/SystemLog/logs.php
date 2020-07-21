@@ -38,7 +38,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System.SystemLog.logs', ['year' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -59,7 +59,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $year, 'month' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System.SystemLog.logs', ['year' => $year, 'month' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }
@@ -80,7 +80,7 @@ $logCount = $this->logCount;
                     <?php
                 } else {
                     ?>
-                    <a href="<?php echo beUrl('System', 'beSystemLog', 'logs', ['year' => $year, 'month' => $month, 'day' => $x]); ?>"><?php echo $x; ?></a>
+                    <a href="<?php echo beUrl('System.SystemLog.logs', ['year' => $year, 'month' => $month, 'day' => $x]); ?>"><?php echo $x; ?></a>
                     <?php
                 }
             }

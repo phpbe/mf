@@ -5,6 +5,7 @@ use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 
+
 class Db extends \Be\System\Controller
 {
 

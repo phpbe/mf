@@ -5,6 +5,10 @@ use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 
+/**
+ * @BeMenuGroup("运行日志")
+ * @BePermissionGroup("运行日志")
+ */
 class RuntimeLog extends \Be\System\Controller
 {
 
@@ -24,8 +28,8 @@ class RuntimeLog extends \Be\System\Controller
 
         Response::setTitle('系统运行日志列表');
 
-        $servicebeSystemLog = Be::getService('System.RuntimeLog');
-        $years = $servicebeSystemLog->getYears();
+        $serviceSystemLog = Be::getService('System.RuntimeLog');
+        $years = $serviceSystemLog->getYears();
         Response::set('years', $years);
 
         if (!$year && count($years)) $year = $years[0];
@@ -33,7 +37,7 @@ class RuntimeLog extends \Be\System\Controller
         if ($year && in_array($year, $years)) {
             Response::set('year', $year);
 
-            $months = $servicebeSystemLog->getMonths($year);
+            $months = $serviceSystemLog->getMonths($year);
             Response::set('months', $months);
 
             if (!$month && count($months)) $month = $months[0];
@@ -41,7 +45,7 @@ class RuntimeLog extends \Be\System\Controller
             if ($month && in_array($month, $months)) {
                 Response::set('month', $month);
 
-                $days = $servicebeSystemLog->getDays($year, $month);
+                $days = $serviceSystemLog->getDays($year, $month);
                 Response::set('days', $days);
 
                 if (!$day && count($days)) $day = $days[0];
@@ -49,7 +53,7 @@ class RuntimeLog extends \Be\System\Controller
                 if ($day && in_array($day, $days)) {
                     Response::set('day', $day);
 
-                    $errorCount = $servicebeSystemLog->getlogCount($year, $month, $day);
+                    $errorCount = $serviceSystemLog->getlogCount($year, $month, $day);
                     Response::set('logCount', $errorCount);
 
                     $pagination = Be::getUi('Pagination');
@@ -58,7 +62,7 @@ class RuntimeLog extends \Be\System\Controller
                     $pagination->setPage(Request::request('page', 1, 'int'));
                     Response::set('pagination', $pagination);
 
-                    $logs = $servicebeSystemLog->getlogs($year, $month, $day, $pagination->getOffset(), $limit);
+                    $logs = $serviceSystemLog->getlogs($year, $month, $day, $pagination->getOffset(), $limit);
                     Response::set('logs', $logs);
                 }
             }
@@ -75,7 +79,7 @@ class RuntimeLog extends \Be\System\Controller
         $hash = Request::request('hash');
 
         try {
-            $servicebeSystemLog = Be::getService('System.beSystemLog');
+            $servicebeSystemLog = Be::getService('System.SystemLog');
             $log = $servicebeSystemLog->getlog($year, $month, $day, $hash);
             Response::setTitle('系统日志详情');
             Response::set('log', $log);
@@ -92,7 +96,7 @@ class RuntimeLog extends \Be\System\Controller
         $day = Request::request('day', 0, 'int');
 
         try {
-            $servicebeSystemLog = Be::getService('System.beSystemLog');
+            $servicebeSystemLog = Be::getService('System.SystemLog');
             $servicebeSystemLog->deleteLogs($year, $month, $day);
             Response::success('删除日志成功！');
         } catch (\Exception $e) {

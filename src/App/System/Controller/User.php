@@ -3,10 +3,10 @@
 namespace Be\App\System\Controller;
 
 
-use Be\Plugin\Lists\OperationItem\OperationItemButton;
-use Be\Plugin\Lists\SearchItem\SearchItemInput;
-use Be\Plugin\Lists\SearchItem\SearchItemSelect;
-use Be\Plugin\Lists\ToolbarItem\ToolbarItemButton;
+use Be\Plugin\Curd\OperationItem\OperationItemButton;
+use Be\Plugin\Curd\SearchItem\SearchItemInput;
+use Be\Plugin\Curd\SearchItem\SearchItemSelect;
+use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\RuntimeException;
@@ -20,10 +20,8 @@ use Exception;
  * Class User
  * @package App\System\Controller
  *
- * @be-menu-group 用户
- * @be-menu-group-icon user
- *
- * @be-permission-group 用户
+ * @BeMenuGroup("用户", icon="el-icon-fa fa-user")
+ * @BePermissionGroup("用户")
  */
 class User extends Controller
 {
@@ -73,9 +71,8 @@ class User extends Controller
     /**
      * 用户管理
      *
-     * @be-menu 用户管理
-     * @be-menu-icon user
-     * @be-permission 用户管理
+     * @BeMenu("用户管理", icon="el-icon-fa fa-user-circle")
+     * @BePermission("用户管理")
      * @throws RuntimeException
      */
     public function users()
@@ -347,8 +344,9 @@ class User extends Controller
     /**
      * 初始化头像
      *
-     * @be-permission 编辑
      * @throws RuntimeException
+     *
+     * @BePermission("编辑")
      */
     public function initAvatar()
     {

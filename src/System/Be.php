@@ -391,28 +391,27 @@ abstract class Be
     /**
      * 获取指定的一个菜单（单例）
      *
-     * @param string $menu 菜单名
      * @return Menu
      * @throws RuntimeException
      */
-    public static function getMenu($menu)
+    public static function getMenu()
     {
-        $key = 'Menu:' . $menu;
+        $key = 'Menu' ;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Cache\\System\\Menu\\' . $menu;
+        $class = 'Be\\Cache\\System\\Menu';
         if (class_exists($class)) {
             self::$cache[$key] = new $class();
             return self::$cache[$key];
         }
 
-        $path = self::$runtime->getCachePath() . '/System/Menu/' . $menu . '.php';
+        $path = self::$runtime->getCachePath() . '/System/Menu.php';
         $service = self::getService('System.Menu');
-        $service->update($menu);
+        $service->update();
         include_once $path;
 
         if (!class_exists($class)) {
-            throw new RuntimeException('菜单 ' . $menu . ' 不存在！');
+            throw new RuntimeException('菜单不存在！');
         }
 
         self::$cache[$key] = new $class();
@@ -496,13 +495,13 @@ abstract class Be
         }
 
         $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts);
-        if (isset(self::$cache[$class])) return self::$cache[$class];
+        //if (isset(self::$cache[$class])) return self::$cache[$class];
 
         $path = self::$runtime->getCachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
-        if (!file_exists($path)) {
+        //if (!file_exists($path)) {
             $service = self::getService('System.Template');
             $service->update($template, $theme);
-        }
+        //}
 
         if (!class_exists($class)) throw new RuntimeException('模板（' . $template . '）不存在！');
 
@@ -527,10 +526,7 @@ abstract class Be
         } else {
             $user = self::getTuple('system_user')->load($id)->toObject();
             if ($user) {
-                unset($user->password);
-                unset($user->salt);
-                unset($user->remember_me_token);
-                unset($user->token);
+                unset($user->password, $user->salt, $user->remember_me_token);
             }
         }
 
