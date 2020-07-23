@@ -1,69 +1,66 @@
 <be-head>
-<?php
-if (isset($this->redirectUrl)) {
-
-    $redirectTimeout = isset($this->redirectTimeout) ? $this->redirectTimeout : 0;
-    if ($redirectTimeout > 0) {
-        ?>
-        <script>
-            var iRedirectTimeout = <?php echo $redirectTimeout; ?>;
-            setInterval(function () {
-                iRedirectTimeout--;
-                $("#redirect-timeout").html(iRedirectTimeout);
-                if (iRedirectTimeout <= 0) {
-                    document.getElementById("from-history").submit();
-                }
-            }, 1000);
-
-        </script>
-        <?php
-
-    } else {
-        ?>
-        <script>
-            $(document).ready(function () {
-                document.getElementById("from-history").submit();
-            });
-        </script>
-        <?php
-    }
-}
-?>
+    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/success.css">
 </be-head>
 
-
-
 <be-body>
-<div class="theme-box-container">
-    <div class="theme-box">
-        <div class="theme-box-title">操作成功</div>
-        <div class="theme-box-body">
-            <p>
-                <?php echo $this->message; ?>
-            </p>
 
+    <div id="app" v-cloak>
+        <div class="success-icon">
+            <i class="el-icon-success"></i>
+        </div>
+
+        <div class="success-message">
+            <?php echo $this->message; ?>
+        </div>
+
+        <?php
+        if (isset($this->redirectTimeout) && $this->redirectTimeout > 0)
+        {
+            ?>
+            <div class="success-timer">
+                <span>{{timer}}</span> 秒后返回
+            </div>
             <?php
-            if (isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
-            {
-                ?>
-                <p>
-                    <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后跳转
-                </p>
-                <?php
+        }
+        ?>
+
+        <form action="<?php echo $this->historyUrl; ?>" id="from-history" method="post">
+            <?php
+            if (is_array($this->historyPost) && count($this->historyPost) > 0) {
+                foreach ($this->historyPost as $key => $val) {
+                    echo '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
+                }
             }
             ?>
+        </form>
+    </div>
 
-            <form action="<?php echo $this->historyUrl; ?>" id="from-history" method="post">
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                timer: <?php echo isset($this->redirectTimeout) ? $this->redirectTimeout : 0; ?>
+            },
+            created: function () {
                 <?php
-                if (is_array($this->historyPost) && count($this->historyPost) > 0) {
-                    foreach ($this->historyPost as $key => $val) {
-                        echo '<input type="hidden" name="' . $key . '" value="' . $val . '"/>';
-                    }
+                if (isset($this->redirectTimeout) && $this->redirectTimeout > 0) {
+                    ?>
+                    var _this = this;
+                    setInterval(function () {
+                        _this.timer--;
+                        if (_this.timer <= 0) {
+                            document.getElementById("from-history").submit();
+                        }
+                    }, 1000);
+                    <?php
+                } else {
+                    ?>
+                    document.getElementById("from-history").submit();
+                    <?php
                 }
                 ?>
-            </form>
+            }
+        });
+    </script>
 
-        </div>
-    </div>
-</div>
 </be-body>

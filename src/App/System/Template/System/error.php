@@ -1,50 +1,58 @@
+<be-head>
+    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/error.css">
+</be-head>
 
 <be-body>
-    <div id="vue">
-        <el-alert
-                title="错误"
-                description="<?php echo $this->get('message', ''); ?>"
-                type="error"
-                show-icon></el-alert>
+
+    <div id="app" v-cloak>
+        <div class="error-icon">
+            <i class="el-icon-warning"></i>
+        </div>
+
+        <div class="error-message">
+            <?php echo $this->message; ?>
+        </div>
 
         <?php
         if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
         {
             ?>
-            <p>
-                <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后<a href="<?php echo $this->redirectUrl; ?>">跳转</a>
-            </p>
+            <div class="error-timer">
+                <span>{{timer}}</span> 秒后跳转到：<el-link type="primary" href="<?php echo $this->redirectUrl; ?>"><?php echo $this->redirectUrl; ?></el-link>
+            </div>
             <?php
         }
         ?>
     </div>
 
     <script>
-        <?php
-        if (isset($this->redirectUrl)) {
-
-        $redirectTimeout = isset($this->redirectTimeout) ? $this->redirectTimeout : 0;
-        if ($redirectTimeout > 0) {
-        ?>
-        var iRedirectTimeout = <?php echo $redirectTimeout; ?>;
-        setInterval(function () {
-            iRedirectTimeout--;
-            $("#redirect-timeout").html(iRedirectTimeout);
-            if (iRedirectTimeout <= 0) {
+        new Vue({
+            el: '#app',
+            data: {
+                timer: <?php echo isset($this->redirectTimeout) ? $this->redirectTimeout : 0; ?>
+            },
+            created: function () {
+                <?php
+                if (isset($this->redirectUrl)) {
+                if (isset($this->redirectTimeout) && $this->redirectTimeout > 0) {
+                ?>
+                var _this = this;
+                setInterval(function () {
+                    _this.timer--;
+                    if (_this.timer <= 0) {
+                        window.location.href = "<?php echo $this->redirectUrl; ?>";
+                    }
+                }, 1000);
+                <?php
+                } else {
+                ?>
                 window.location.href = "<?php echo $this->redirectUrl; ?>";
+                <?php
+                }
+                }
+                ?>
             }
-        }, 1000);
-        <?php
-    } else {
-        ?>
-        $(document).ready(function () {
-            window.location.href = "<?php echo $this->redirectUrl; ?>";
         });
-        <?php
-    }
-
-    }
-    ?>
     </script>
 
 </be-body>

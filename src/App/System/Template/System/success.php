@@ -1,56 +1,58 @@
 <be-head>
-<?php
-if (isset($this->redirectUrl)) {
-
-    $redirectTimeout = isset($this->redirectTimeout) ? $this->redirectTimeout : 0;
-    if ($redirectTimeout > 0) {
-        ?>
-        <script>
-            var iRedirectTimeout = <?php echo $redirectTimeout; ?>;
-            setInterval(function () {
-                iRedirectTimeout--;
-                $("#redirect-timeout").html(iRedirectTimeout);
-                if (iRedirectTimeout <= 0) {
-                    window.location.href = "<?php echo $this->redirectUrl; ?>";
-                }
-            }, 1000);
-
-        </script>
-        <?php
-
-    } else {
-        ?>
-        <script>
-            $(document).ready(function () {
-                window.location.href = "<?php echo $this->redirectUrl; ?>";
-            });
-        </script>
-        <?php
-    }
-
-}
-?>
+    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/success.css">
 </be-head>
 
 <be-body>
 
-    <div style="text-align: center; font-size: 48px; padding: 40px;">
-        <i class="el-icon-success"></i>
-    </div>
-
-    <div style="text-align: center; font-size: 48px; padding: 40px;">
-        <?php echo $this->message; ?>
-    </div>
-
-    <?php
-    if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
-    {
-        ?>
-        <div style="text-align: center; font-size: 48px; padding: 40px;">
-            <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后跳转
+    <div id="app" v-cloak>
+        <div class="success-icon">
+            <i class="el-icon-success"></i>
         </div>
+
+        <div class="success-message">
+            <?php echo $this->message; ?>
+        </div>
+
         <?php
-    }
-    ?>ccccc
+        if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
+        {
+            ?>
+            <div class="success-timer">
+                <span>{{timer}}</span> 秒后跳转到：<el-link type="primary" href="<?php echo $this->redirectUrl; ?>"><?php echo $this->redirectUrl; ?></el-link>
+            </div>
+            <?php
+        }
+        ?>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                timer: <?php echo isset($this->redirectTimeout) ? $this->redirectTimeout : 0; ?>
+            },
+            created: function () {
+                <?php
+                if (isset($this->redirectUrl)) {
+                    if (isset($this->redirectTimeout) && $this->redirectTimeout > 0) {
+                        ?>
+                        var _this = this;
+                        setInterval(function () {
+                            _this.timer--;
+                            if (_this.timer <= 0) {
+                                window.location.href = "<?php echo $this->redirectUrl; ?>";
+                            }
+                        }, 1000);
+                        <?php
+                    } else {
+                        ?>
+                        window.location.href = "<?php echo $this->redirectUrl; ?>";
+                        <?php
+                    }
+                }
+                ?>
+            }
+        });
+    </script>
 
 </be-body>

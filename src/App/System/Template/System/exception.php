@@ -1,71 +1,59 @@
 <be-head>
-<?php
-if (isset($this->redirectUrl)) {
-
-    $redirectTimeout = isset($this->redirectTimeout) ? $this->redirectTimeout : 0;
-    if ($redirectTimeout > 0) {
-        ?>
-        <script>
-            var iRedirectTimeout = <?php echo $redirectTimeout; ?>;
-            setInterval(function () {
-                iRedirectTimeout--;
-                $("#redirect-timeout").html(iRedirectTimeout);
-                if (iRedirectTimeout <= 0) {
-                    window.location.href = "<?php echo $this->redirectUrl; ?>";
-                }
-            }, 1000);
-
-        </script>
-        <?php
-
-    } else {
-        ?>
-        <script>
-            $(document).ready(function () {
-                window.location.href = "<?php echo $this->redirectUrl; ?>";
-            });
-        </script>
-        <?php
-    }
-
-}
-?>
+    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/exception.css">
+    <link rel="stylesheet" href="<?php echo Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.css" type="text/css"/>
+    <script type="text/javascript" language="javascript" src="<?php echo Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.js"></script>
+    <style type="text/css">
+        .prettyprint {
+            background-color: #fff;color:#000;white-space: pre-wrap;word-wrap: break-word;
+        }
+    </style>
 </be-head>
 
-
 <be-body>
-<div class="theme-box-container">
-    <div class="theme-box">
-        <div class="theme-box-title">服务器错误</div>
-        <div class="theme-box-body">
 
+    <div id="app" v-cloak>
+        <div class="exception-icon">
+            <i class="el-icon-warning"></i>
+        </div>
+
+        <div class="exception-message">
             <?php
             if (isset($this->e)) {
-                ?>
+                echo $this->e->getMessage();
 
-                <?php
             } else {
                 ?>
-
+                出错啦！
                 <?php
             }
             ?>
-
-
-            <?php
-            if (isset($this->redirectUrl) && isset($this->redirectTimeout) && $this->redirectTimeout > 0 )
-            {
-                ?>
-                <p>
-                    <span id="redirect-timeout"><?php echo $this->redirectTimeout; ?></span>>秒后<a href="<?php echo $this->redirectUrl; ?>">跳转</a>
-                </p>
-                <?php
-            }
-            ?>
-
         </div>
-    </div>
-</div>
 
+        <?php
+        if (isset($this->e)) {
+            ?>
+            <div class="exception-trace">
+                <pre class="prettyprint linenums">
+                    <?php
+                    if (isset($this->e)) {
+                        print_r($this->e->getTrace());
+                    }
+                    ?>
+                </pre>
+            </div>
+            <?php
+        }
+        ?>
+
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            created: function () {
+                prettyPrint();
+            }
+        });
+    </script>
 
 </be-body>

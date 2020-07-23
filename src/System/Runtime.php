@@ -266,20 +266,23 @@ class Runtime
             }
 
             $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
-            if (!class_exists($class)) throw new RuntimeException('控制器 ' . $appName . '/' . $controllerName . ' 不存在！', -404);
+            if (!class_exists($class)) {
+                Response::set('code', -404);
+                Response::error('控制器 ' . $appName . '/' . $controllerName . ' 不存在！');
+            }
+
             $instance = new $class();
             if (method_exists($instance, $actionName)) {
-
                 if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
                     if (!$my->hasPermission($appName, $controllerName, $actionName)) {
-                        Response::error('您没有权限操作该功能！', -1024);
+                        Response::set('code', -1024);
+                        Response::error('您没有权限操作该功能！');
                     }
                 }
-
                 $instance->$actionName();
-
             } else {
-                throw new RuntimeException('未定义的任务：' . $actionName,  -404);
+                Response::set('code', -404);
+                Response::error('未定义的任务：' . $actionName);
             }
 
 

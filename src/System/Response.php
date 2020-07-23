@@ -124,15 +124,13 @@ class Response
      * 失败
      *
      * @param string $message 消息
-     * @param int $code 错误码
      * @param string $redirectUrl 跳转网址
      * @param int $redirectTimeout 跳转超时时长
      */
-    public static function error($message, $code = 1, $redirectUrl = null, $redirectTimeout = 3)
+    public static function error($message, $redirectUrl = null, $redirectTimeout = 3)
     {
         self::set('success', false);
         self::set('message', $message);
-        self::set('code', $code);
 
         if ($redirectUrl !== null) {
             self::set('redirectUrl', $redirectUrl);
@@ -226,11 +224,10 @@ class Response
      * 失败
      *
      * @param string $message 消息
-     * @param int $code 错误码
      * @param string $historyKey 历史节点键名
      * @param int $redirectTimeout 跳转超时时长
      */
-    public static function errorAndBack($message, $code = 1, $historyKey = null, $redirectTimeout = 3)
+    public static function errorAndBack($message, $historyKey = null, $redirectTimeout = 3)
     {
         if ($historyKey === null) {
             $runtime = Be::getRuntime();
@@ -239,7 +236,6 @@ class Response
 
         self::set('success', false);
         self::set('message', $message);
-        self::set('code', $code);
         self::set('historyKey', $historyKey);
 
         $historyUrl = null;

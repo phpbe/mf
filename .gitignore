@@ -2,10 +2,12 @@
 vendor
 /composer.lock
 .DS_store
+Thumbs.db
 
 /src/cache/*
 !/src/cache/index.html
 
 /src/data/*
 !/src/data/index.html
+
 
