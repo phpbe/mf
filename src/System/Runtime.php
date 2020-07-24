@@ -287,14 +287,21 @@ class Runtime
 
 
         } catch (\Throwable $e) {
+            $hash = md5(json_encode([
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage()
+            ]));
 
             RuntimeLog::emergency($e->getMessage(), [
+                'hash' => $hash,
                 'code' => $e->getCode(),
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
                 'trace' => $e->getTrace()
             ]);
 
+            Response::set('logHash', $hash);
             Response::exception($e);
         }
     }

@@ -2,6 +2,7 @@
 
 namespace Be\System\RuntimeLog\Processor;
 
+use Be\Util\FileSystem\FileSize;
 use Monolog\Logger;
 
 class SystemProcessor
@@ -49,12 +50,18 @@ class SystemProcessor
         $trace = null;
 
         $hash = null;
+        if (isset($record['id'])) {
+            $hash = $record['id'];
+        }
+
         if (isset($record['file']) && isset($record['line'])) {
-            $hash = md5(json_encode([
-                'file' => $record['file'],
-                'line' => $record['line'],
-                'message' => $record['message']
-            ]));
+            if ($hash === null) {
+                $hash = md5(json_encode([
+                    'file' => $record['file'],
+                    'line' => $record['line'],
+                    'message' => $record['message']
+                ]));
+            }
 
             if (isset($record['trace'])) {
                 $trace = $record['trace'];
@@ -90,11 +97,13 @@ class SystemProcessor
             $record['extra']['class'] = isset($trace[$i]['class']) ? $trace[$i]['class'] : null;
             $record['extra']['function'] = isset($trace[$i]['function']) ? $trace[$i]['function'] : null;
 
-            $hash = md5(json_encode([
-                'file' => $record['extra']['file'],
-                'line' => $record['extra']['line'],
-                'message' => $record['message']
-            ]));
+            if ($hash === null) {
+                $hash = md5(json_encode([
+                    'file' => $record['extra']['file'],
+                    'line' => $record['extra']['line'],
+                    'message' => $record['message']
+                ]));
+            }
         }
 
         $record['extra']['hash'] = $hash;
@@ -129,34 +138,14 @@ class SystemProcessor
 
         if (isset($config->memery) && $config->memery) {
             $bytes = memory_get_usage();
-            $record['extra']['memory_usage'] = $this->formatBytes($bytes);
+            $record['extra']['memory_usage'] = FileSize::int2String($bytes);
 
             $bytes = memory_get_peak_usage();
-            $record['extra']['memory_peak_usage'] = $this->formatBytes($bytes);
+            $record['extra']['memory_peak_usage'] = FileSize::int2String($bytes);
         }
 
         return $record;
     }
-
-    /**
-     * 格式化内存占数数字
-     *
-     * @param int $bytes 整型内存占用量
-     * @return string 含单位的容量字符
-     */
-    protected function formatBytes($bytes)
-    {
-        $bytes = (int)$bytes;
-
-        if ($bytes > 1024 * 1024) {
-            return round($bytes / 1024 / 1024, 2) . ' MB';
-        } elseif ($bytes > 1024) {
-            return round($bytes / 1024, 2) . ' KB';
-        }
-
-        return $bytes . ' B';
-    }
-
 
     private function isTraceClassOrSkippedFunction(array $trace, $index)
     {

@@ -1,10 +1,17 @@
 <be-head>
-    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/exception.css">
-    <link rel="stylesheet" href="<?php echo Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.css" type="text/css"/>
-    <script type="text/javascript" language="javascript" src="<?php echo Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.js"></script>
+    <link type="text/css" rel="stylesheet"
+          href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/exception.css">
+    <link rel="stylesheet"
+          href="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.css"
+          type="text/css"/>
+    <script type="text/javascript" language="javascript"
+            src="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.js"></script>
     <style type="text/css">
         .prettyprint {
-            background-color: #fff;color:#000;white-space: pre-wrap;word-wrap: break-word;
+            background-color: #fff;
+            color: #000;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </be-head>
@@ -12,34 +19,46 @@
 <be-body>
 
     <div id="app" v-cloak>
-        <div class="exception-icon">
-            <i class="el-icon-warning"></i>
-        </div>
-
-        <div class="exception-message">
-            <?php
-            if (isset($this->e)) {
-                echo $this->e->getMessage();
-
-            } else {
-                ?>
-                出错啦！
-                <?php
-            }
-            ?>
-        </div>
-
         <?php
-        if (isset($this->e)) {
+        $configSystem = \Be\System\Be::getConfig('System.System');
+        if ($configSystem->developer) {
             ?>
-            <div class="exception-trace">
-                <pre class="prettyprint linenums">
-                    <?php
-                    if (isset($this->e)) {
-                        print_r($this->e->getTrace());
-                    }
-                    ?>
-                </pre>
+            <el-alert
+                    title="<?php echo $this->e->getMessage(); ?>"
+                    type="error"
+                    description="<?php echo '#' . $this->logHash; ?>"
+                    show-icon>
+            </el-alert>
+
+            <el-tabs v-model="activeTab" type="border-card">
+                <el-tab-pane label="错误跟踪信息" name="tab-trace">
+                    <pre class="prettyprint linenums"><?php var_export($this->e->getTrace()); ?></pre>
+                </el-tab-pane>
+                <el-tab-pane label="$_SERVER" name="tab-server">
+                    <pre class="prettyprint linenums"><?php var_export($_SERVER) ?></pre>
+                </el-tab-pane>
+                <el-tab-pane label="$_GET" name="tab-get">
+                    <pre class="prettyprint linenums"><?php var_export($_GET) ?></pre>
+                </el-tab-pane>
+                <el-tab-pane label="$_POST" name="tab-post">
+                    <pre class="prettyprint linenums"><?php var_export($_POST) ?></pre>
+                </el-tab-pane>
+                <el-tab-pane label="$_REQUEST" name="tab-request">
+                    <pre class="prettyprint linenums"><?php var_export($_REQUEST) ?></pre>
+                </el-tab-pane>
+                <el-tab-pane label="$_COOKIE" name="tab-cookie">
+                    <pre class="prettyprint linenums"><?php var_export($_COOKIE) ?></pre>
+                </el-tab-pane>
+            </el-tabs>
+            <?php
+        } else {
+            ?>
+            <div class="exception-icon">
+                <i class="el-icon-warning"></i>
+            </div>
+
+            <div class="exception-message">
+                <?php echo $this->e->getMessage() . '（#' . $this->logHash . '）'; ?>
             </div>
             <?php
         }
@@ -50,6 +69,9 @@
     <script>
         new Vue({
             el: '#app',
+            data: {
+                activeTab: 'tab-trace'
+            },
             created: function () {
                 prettyPrint();
             }

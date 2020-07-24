@@ -52,4 +52,10 @@ class System
      */
     public $pageSize = 12;
 
+    /**
+     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
+     * @be-config-item-label 是否开启开发者模式
+     */
+    public $developer = true;
+
 }

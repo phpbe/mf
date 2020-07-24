@@ -255,7 +255,6 @@ abstract class Be
      *
      * @param string $name 服务名
      * @return Service | mixed
-     * @throws RuntimeException
      */
     public static function getService($name)
     {
@@ -270,16 +269,12 @@ abstract class Be
      *
      * @param string $name 服务名
      * @return Service | mixed
-     * @throws RuntimeException
      */
     public static function newService($name)
     {
         $parts = explode('.', $name);
         $app = array_shift($parts);
         $class = 'Be\\App\\' . $app . '\\Service\\' . implode('\\', $parts);
-
-        if (!class_exists($class)) throw new RuntimeException('服务 ' . $name . ' 不存在！');
-
         return new $class();
     }
 
@@ -289,7 +284,6 @@ abstract class Be
      * @param string $name 数据库行记灵对象名
      * @param string $db 库名
      * @return \Be\System\Db\Tuple | mixed
-     * @throws RuntimeException
      */
     public static function getTuple($name, $db = 'master')
     {
@@ -305,20 +299,18 @@ abstract class Be
      * @param string $name 数据库行记灵对象名
      * @param string $db 库名
      * @return \Be\System\Db\Tuple | mixed
-     * @throws RuntimeException
      */
     public static function newTuple($name, $db = 'master')
     {
-        $class = 'Be\\Cache\\System\\Tuple\\' . $db . '\\' . $name;
-        if (class_exists($class)) return (new $class());
-
-        $service = self::getService('System.Db');
-        $service->updateTuple($name, $db);
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('行记灵对象 ' . $name . ' 不存在！');
+        $path = self::$runtime->getCachePath() . '/System/Tuple/'.$db.'/'.$name.'.php';
+        $configSystem = self::getConfig('System.System');
+        if ($configSystem->developer || !file_exists($path)) {
+            $service = self::getService('System.Db');
+            $service->updateTuple($name, $db);
+            include_once $path;
         }
 
+        $class = 'Be\\Cache\\System\\Tuple\\' . $db . '\\' . $name;
         return (new $class());
     }
 
@@ -328,7 +320,6 @@ abstract class Be
      * @param string $name 表名
      * @param string $db 库名
      * @return \Be\System\Db\Table
-     * @throws RuntimeException
      */
     public static function getTable($name, $db = 'master')
     {
@@ -344,20 +335,18 @@ abstract class Be
      * @param string $name 表名
      * @param string $db 库名
      * @return \Be\System\Db\Table
-     * @throws RuntimeException
      */
     public static function newTable($name, $db = 'master')
     {
-        $class = 'Be\\Cache\\System\\Table\\' . $db . '\\' . $name;
-        if (class_exists($class)) return (new $class());
-
-        $service = self::getService('System.Db');
-        $service->updateTable($name, $db);
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('表对象 ' . $name . ' 不存在！');
+        $path = self::$runtime->getCachePath() . '/System/Table/'.$db.'/'.$name.'.php';
+        $configSystem = self::getConfig('System.System');
+        if ($configSystem->developer || !file_exists($path)) {
+            $service = self::getService('System.Db');
+            $service->updateTable($name, $db);
+            include_once $path;
         }
 
+        $class = 'Be\\Cache\\System\\Table\\' . $db . '\\' . $name;
         return (new $class());
     }
 
@@ -367,23 +356,21 @@ abstract class Be
      * @param string $name 表名
      * @param string $db 库名
      * @return \Be\System\Db\TableProperty
-     * @throws RuntimeException
      */
     public static function getTableProperty($name, $db = 'master')
     {
         $key = 'TableProperty:' . $db . ':'  . $name;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Cache\\System\\TableProperty\\' . $db . '\\' . $name;
-        if (!class_exists($class)) {
+        $path = self::$runtime->getCachePath() . '/System/TableProperty/'.$db.'/'.$name.'.php';
+        $configSystem = self::getConfig('System.System');
+        if ($configSystem->developer || !file_exists($path)) {
             $service = self::getService('System.Db');
             $service->updateTableProperty($name, $db);
+            include_once $path;
         }
 
-        if (!class_exists($class)) {
-            throw new RuntimeException('表属性 ' . $name . ' 不存在！');
-        }
-
+        $class = 'Be\\Cache\\System\\TableProperty\\' . $db . '\\' . $name;
         self::$cache[$key] = new $class();
         return self::$cache[$key];
     }
@@ -392,28 +379,21 @@ abstract class Be
      * 获取指定的一个菜单（单例）
      *
      * @return Menu
-     * @throws RuntimeException
      */
     public static function getMenu()
     {
         $key = 'Menu' ;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Cache\\System\\Menu';
-        if (class_exists($class)) {
-            self::$cache[$key] = new $class();
-            return self::$cache[$key];
-        }
-
         $path = self::$runtime->getCachePath() . '/System/Menu.php';
-        $service = self::getService('System.Menu');
-        $service->update();
-        include_once $path;
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('菜单不存在！');
+        $configSystem = self::getConfig('System.System');
+        if ($configSystem->developer || !file_exists($path)) {
+            $service = self::getService('System.Menu');
+            $service->update();
+            include_once $path;
         }
 
+        $class = 'Be\\Cache\\System\\Menu';
         self::$cache[$key] = new $class();
         return self::$cache[$key];
     }
@@ -423,28 +403,21 @@ abstract class Be
      *
      * @param int $roleId 角色ID
      * @return Role
-     * @throws RuntimeException
      */
     public static function getRole($roleId)
     {
         $key = 'Role:' . $roleId;
         if (isset(self::$cache[$key])) return self::$cache[$key];
 
-        $class = 'Be\\Cache\\System\\Role\\Role' . $roleId;
-        if (class_exists($class)) {
-            self::$cache[$key] = new $class();
-            return self::$cache[$key];
-        }
-
         $path = self::$runtime->getCachePath() . '/System/Role/Role' . $roleId . '.php';
-        $service = self::getService('System.Role');
-        $service->updateRole($roleId);
-        include_once $path;
-
-        if (!class_exists($class)) {
-            throw new RuntimeException('前台角色 #' . $roleId . ' 不存在！');
+        $configSystem = self::getConfig('System.System');
+        if ($configSystem->developer || !file_exists($path)) {
+            $service = self::getService('System.Role');
+            $service->updateRole($roleId);
+            include_once $path;
         }
 
+        $class = 'Be\\Cache\\System\\Role\\Role' . $roleId;
         self::$cache[$key] = new $class();
         return self::$cache[$key];
     }
@@ -484,29 +457,29 @@ abstract class Be
         $type = array_shift($parts);
         $name = array_shift($parts);
 
+        $configSystem = self::getConfig('System.System');
+
         if ($theme === null) {
             $property = Be::getProperty($type . '.' . $name);
             if (isset($property->theme)) {
                 $theme = $property->theme;
             } else {
-                $config = Be::getConfig('System.System');
-                $theme = $config->theme;
+                $theme = $configSystem->theme;
             }
         }
 
-        $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts);
-        //if (isset(self::$cache[$class])) return self::$cache[$class];
+        $key = 'Template:' . $theme.':' . $template;
+        if (isset(self::$cache[$key])) return self::$cache[$key];
 
         $path = self::$runtime->getCachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
-        //if (!file_exists($path)) {
+        if ($configSystem->developer || !file_exists($path)) {
             $service = self::getService('System.Template');
             $service->update($template, $theme);
-        //}
+        }
 
-        if (!class_exists($class)) throw new RuntimeException('模板（' . $template . '）不存在！');
-
-        self::$cache[$class] = new $class();
-        return self::$cache[$class];
+        $class = 'Be\\Cache\\System\\Template\\' . $theme . '\\' . $type . '\\' . $name . '\\' . implode('\\', $parts);
+        self::$cache[$key] = new $class();
+        return self::$cache[$key];
     }
 
     /**
