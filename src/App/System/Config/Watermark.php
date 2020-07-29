@@ -2,66 +2,58 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label 图片水印
- * @be-config-test beUrl('System.Watermark.test')
+ * @BeConfig("图片水印", test = "beUrl('System.Watermark.test')")
  */
 class Watermark
 {
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
-     * @be-config-item-label 是否启用
+     * @BeConfigItem("是否启用", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
      */
     public $watermark = true;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 类型
-     * @be-config-item-keyValues {"text":"文字","image":"图像"}
+     * @BeConfigItem("类型",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     keyValues = "{'text' => '文字', 'image' => '图像']"
+     * )
      */
     public $type = 'image';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 水印位置
-     * @be-config-item-keyValues {"north":"上","northeast":"右上","east":"左","southeast":"右下","south":"下","southwest":"下左","west":"右","northwest":"左上","center":"中"}
+     * @BeConfigItem("水印位置",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     keyValues = "['north'=>'上','south'=>'下','east'=>'左','west'=>'右','center'=>'中','northwest'=>'左上','southwest'=>'左下','northeast'=>'右上','southeast'=>'右下']"
+     * )
      */
     public $position = 'southeast';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label 水平偏移像素值
+     * @BeConfigItem("水平偏移像素值", driver="\Be\\Plugin\Config\Item\ConfigItemInt")
      */
     public $offsetX = -70;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label 垂直偏移像素值
+     * @BeConfigItem("垂直偏移像素值", driver="\Be\\Plugin\Config\Item\ConfigItemInt")
      */
     public $offsetY = -70;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemImage
-     * @be-config-item-label 图像水印文件
-     * @be-config-item-path /System/Watermark/
+     * @BeConfigItem("图像水印文件", driver="\Be\\Plugin\Config\Item\ConfigItemImage", path="/System/Watermark/")
      */
     public $image = '0.png';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 文印文字
+     * @BeConfigItem("文印文字", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $text = 'BE';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label 文印文字大小
-     * @be-config-item-ui {":min":1}
+     * @BeConfigItem("文印文字大小", driver="\Be\\Plugin\Config\Item\ConfigItemInt", ui="[':min' => 1]")
      */
     public $textSize = 20;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemArrayInt
-     * @be-config-item-label 文印文字颜色
+     * @BeConfigItem("文印文字颜色", driver="\Be\\Plugin\Config\Item\ConfigItemArrayInt")
      */
     public $textColor = [255, 255, 255];
 

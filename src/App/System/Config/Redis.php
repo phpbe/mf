@@ -2,13 +2,12 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label Redis
+ * @BeConfig("Redis")
  */
 class Redis
 {
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label 主库
+     * @BeConfigItem("主库", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
      */
     public $master = [
         'host' => '172.24.0.110', // 主机名

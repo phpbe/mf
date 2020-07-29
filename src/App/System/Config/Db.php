@@ -2,14 +2,13 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label 数据库
+ * @BeConfig("数据库")
  */
 class Db
 {
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label 主库
+     * @BeConfigItem("主库", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
      */
     public $master = [
         'driver' => 'mysql',

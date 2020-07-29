@@ -2,59 +2,52 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label 系统
+ * @BeConfig("系统")
  */
 class System
 {
-
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
-     * @be-config-item-label 是否开启伪静态
+     * @BeConfigItem("是否开启伪静态", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
      */
     public $urlRewrite = true;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 伪静态页后辍
+     * @BeConfigItem("伪静态页后辍", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $urlSuffix = '.html';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 主题
-     * @be-config-item-keyValueType code
-     * @be-config-item-keyValues \Be\System\Be::getService('System.Theme')->getThemeKeyValues()
+     * @BeConfigItem("主题",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     keyValueType = "code",
+     *     keyValues = "\Be\System\Be::getService('System.Theme')->getThemeKeyValues()")
      */
     public $theme = 'Admin';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemArrayString
-     * @be-config-item-label 允许上传的文件类型
+     * @BeConfigItem("允许上传的文件类型", driver="\Be\\Plugin\Config\Item\ConfigItemArrayString")
      */
     public $allowUploadFileTypes = ['jpg', 'jpeg', 'gif', 'png', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar'];
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemArrayString
-     * @be-config-item-label 允许上传的图片类型
+     * @BeConfigItem("允许上传的图片类型", driver="\Be\\Plugin\Config\Item\ConfigItemArrayString")
      */
     public $allowUploadImageTypes = ['jpg', 'jpeg', 'gif', 'png'];
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 时区
+     * @BeConfigItem("时区", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $timezone = 'Asia/Shanghai';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label 默认分页显示条数
-     * @be-config-item-ui {":min":1}
+     * @BeConfigItem("时区",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     ui="[':min' => 1]")
      */
     public $pageSize = 12;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
-     * @be-config-item-label 是否开启开发者模式
+     * @BeConfigItem("是否开启开发者模式", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
      */
     public $developer = true;
 

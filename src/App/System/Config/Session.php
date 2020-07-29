@@ -3,36 +3,35 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label SESSION
+ * @BeConfig("SESSION")
  */
 class Session
 {
-
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 名称
-     * @be-config-item-description 用在 cookie 或者 URL 中的会话名称， 例如：PHPSESSID。 只能使用字母和数字，建议尽可能的短一些
+     * @BeConfigItem("名称",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     description = "用在 cookie 或者 URL 中的会话名称， 例如：PHPSESSID。 只能使用字母和数字，建议尽可能的短一些")
      */
     public $name = 'SSID';
 
+
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label 超时时间
-     * @be-config-item-ui {":min":1}
+     * @BeConfigItem("超时时间",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     ui = "['min' => 1]")
      */
     public $expire = 1440;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label SESSION 驱动
-     * @be-config-item-description SESSION 驱动 Default：系统默认/Mysql/Memcache/Memcached/Redis
-     * @be-config-item-keyValues {"Default":"Default","Mysql":"Mysql","Memcache":"Memcache","Memcached":"Memcached","Redis":"Redis"}
+     * @BeConfigItem("SESSION 驱动",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     description = "SESSION 驱动 Default：系统默认/Redis"
+     *     values = "['Default','Redis']")
      */
     public $driver = 'Default';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label REDIS设置项
+     * @BeConfigItem("REDIS设置项", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

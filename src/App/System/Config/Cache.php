@@ -3,20 +3,17 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label 缓存
+ * @BeConfig("缓存")
  */
 class Cache
 {
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 缓存类型
-     * @be-config-item-keyValues {"File":"File","Memcache":"Memcache","Memcached":"Memcached","Redis":"Redis"}
+     * @BeConfigItem("缓存类型", driver="\Be\\Plugin\Config\Item\ConfigItemSelect", values="['File','Redis']")
      */
     public $driver = 'File';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label REDIS设置项
+     * @BeConfigItem("REDIS设置项", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

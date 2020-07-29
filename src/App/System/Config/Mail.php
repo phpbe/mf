@@ -2,77 +2,68 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label 邮件
- * @be-config-test beUrl('System.Mail.test')
+ * @BeConfig("邮件", test = "beUrl('System.Mail.test')")
  */
 class Mail
 {
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemEmail
-     * @be-config-item-label 发件人邮箱
+     * @BeConfigItem("发件人邮箱", driver="\Be\\Plugin\Config\Item\ConfigItemEmail")
      */
     public $fromMail = 'be@phpbe.com';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 发件人名称
+     * @BeConfigItem("发件人名称", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $fromName = 'BE';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 默认字符编码
+     * @BeConfigItem("默认字符编码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $charset = 'utf-8';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label 默认字符编码
+     * @BeConfigItem("默认字符编码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $encoding = 'base64';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemBool
-     * @be-config-item-label 是否启用SMTP
+     * @BeConfigItem("是否启用SMTP", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
      */
     public $smtp = false;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label SMTP地址
+     * @BeConfigItem("SMTP地址", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $smtpHost = '';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label SMTP端口号
-     * @be-config-item-ui {"input-number":{":min":1}}
+     * @BeConfigItem("SMTP端口号",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     ui="['input-number' => [':min' => 1]]")
      */
     public $smtpPort = 25;
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label SMTP用户名
+     * @BeConfigItem("SMTP用户名", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $smtpUser = '';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label SMTP密码
+     * @BeConfigItem("SMTP密码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
      */
     public $smtpPass = '';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemString
-     * @be-config-item-label SMTP安全连接
-     * @be-config-item-keyValues {"0":"不加密","ssl":"SSL","tls":"TLS"}
+     * @BeConfigItem("SMTP安全连接",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     keyValues="['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS']")
      */
     public $smtpSecure = '0';
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemInt
-     * @be-config-item-label SMTP超时时间
-     * @be-config-item-ui {"input-number":{":min":1}}
+     * @BeConfigItem("SMTP超时时间",
+     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     ui="['input-number' => [':min' => 1]]")
      */
     public $smtpTimeout = 10;
 }

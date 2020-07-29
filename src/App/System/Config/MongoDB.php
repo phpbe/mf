@@ -2,14 +2,13 @@
 namespace Be\App\System\Config;
 
 /**
- * @be-config-label MongoDB数据库配置
+ * @BeConfig("MongoDB数据库配置")
  */
 class MongoDB
 {
 
     /**
-     * @be-config-item-driver \Be\System\App\ConfigItem\ConfigItemMixed
-     * @be-config-item-label 主库
+     * @BeConfigItem("主库", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
      */
     public $master = [
         'host' => '172.24.0.120', // 主机名
