@@ -20,7 +20,7 @@ class System
      * @BeConfigItem("主题",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
      *     keyValueType = "code",
-     *     keyValues = "\Be\System\Be::getService('System.Theme')->getThemeKeyValues()")
+     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();)"
      */
     public $theme = 'Admin';
 
@@ -42,7 +42,7 @@ class System
     /**
      * @BeConfigItem("时区",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
-     *     ui="[':min' => 1]")
+     *     ui="return [':min' => 1];")
      */
     public $pageSize = 12;
 

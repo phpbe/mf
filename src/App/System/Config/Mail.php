@@ -2,7 +2,7 @@
 namespace Be\App\System\Config;
 
 /**
- * @BeConfig("邮件", test = "beUrl('System.Mail.test')")
+ * @BeConfig("邮件", test = "return beUrl('System.Mail.test');")
  */
 class Mail
 {
@@ -39,7 +39,7 @@ class Mail
     /**
      * @BeConfigItem("SMTP端口号",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
-     *     ui="['input-number' => [':min' => 1]]")
+     *     ui="return ['input-number' => [':min' => 1]];")
      */
     public $smtpPort = 25;
 
@@ -56,14 +56,14 @@ class Mail
     /**
      * @BeConfigItem("SMTP安全连接",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
-     *     keyValues="['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS']")
+     *     keyValues="return ['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS'];")
      */
     public $smtpSecure = '0';
 
     /**
      * @BeConfigItem("SMTP超时时间",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
-     *     ui="['input-number' => [':min' => 1]]")
+     *     ui="return ['input-number' => [':min' => 1]];")
      */
     public $smtpTimeout = 10;
 }

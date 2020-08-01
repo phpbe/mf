@@ -18,7 +18,19 @@ class Driver
         if ($value) {
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    $this->$k = $v;
+                    if (substr($v, 7) == 'return ') {
+                        if (substr($v,-1) != ';') {
+                            $v .= ';';
+                        }
+
+                        try {
+                            $this->$k = eval($v);
+                        } catch (\Throwable $e) {
+
+                        }
+                    } else {
+                        $this->$k = $v;
+                    }
                 }
             } else {
                 $this->value = $value;

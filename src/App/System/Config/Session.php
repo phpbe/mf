@@ -18,7 +18,7 @@ class Session
     /**
      * @BeConfigItem("超时时间",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
-     *     ui = "['min' => 1]")
+     *     ui = "return ['min' => 1];")
      */
     public $expire = 1440;
 
@@ -26,7 +26,7 @@ class Session
      * @BeConfigItem("SESSION 驱动",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
      *     description = "SESSION 驱动 Default：系统默认/Redis"
-     *     values = "['Default','Redis']")
+     *     values = "return ['Default','Redis'];")
      */
     public $driver = 'Default';
 

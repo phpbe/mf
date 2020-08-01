@@ -2,7 +2,7 @@
 namespace Be\App\System\Config;
 
 /**
- * @BeConfig("图片水印", test = "beUrl('System.Watermark.test')")
+ * @BeConfig("图片水印", test = "return beUrl('System.Watermark.test');")
  */
 class Watermark
 {
@@ -14,7 +14,7 @@ class Watermark
     /**
      * @BeConfigItem("类型",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
-     *     keyValues = "{'text' => '文字', 'image' => '图像']"
+     *     keyValues = "return ['text' => '文字', 'image' => '图像'];"
      * )
      */
     public $type = 'image';
@@ -22,7 +22,7 @@ class Watermark
     /**
      * @BeConfigItem("水印位置",
      *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
-     *     keyValues = "['north'=>'上','south'=>'下','east'=>'左','west'=>'右','center'=>'中','northwest'=>'左上','southwest'=>'左下','northeast'=>'右上','southeast'=>'右下']"
+     *     keyValues = "return ['north'=>'上','south'=>'下','east'=>'左','west'=>'右','center'=>'中','northwest'=>'左上','southwest'=>'左下','northeast'=>'右上','southeast'=>'右下'];"
      * )
      */
     public $position = 'southeast';
@@ -48,7 +48,7 @@ class Watermark
     public $text = 'BE';
 
     /**
-     * @BeConfigItem("文印文字大小", driver="\Be\\Plugin\Config\Item\ConfigItemInt", ui="[':min' => 1]")
+     * @BeConfigItem("文印文字大小", driver="\Be\\Plugin\Config\Item\ConfigItemInt", ui="return [':min' => 1];")
      */
     public $textSize = 20;
 
