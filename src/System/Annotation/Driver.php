@@ -18,7 +18,7 @@ class Driver
         if ($value) {
             if (is_array($value)) {
                 foreach ($value as $k => $v) {
-                    if (substr($v, 7) == 'return ') {
+                    if (substr($v, 0, 7) == 'return ') {
                         if (substr($v,-1) != ';') {
                             $v .= ';';
                         }

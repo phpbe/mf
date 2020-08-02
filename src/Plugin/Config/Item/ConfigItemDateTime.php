@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\System\App\ConfigItem;
+namespace Be\Plugin\Config\Item;
 
 use Be\System\App\DataItem\DataItemDateTime;
 

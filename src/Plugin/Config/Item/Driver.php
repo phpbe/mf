@@ -1,7 +1,8 @@
 <?php
 
-namespace Be\System\App\ConfigItem;
+namespace Be\Plugin\Config\Item;
 
+use Be\System\Annotation\BeConfigItem;
 use Be\System\Be;
 use Be\System\Exception\ServiceException;
 use Be\Util\Str;
@@ -18,9 +19,9 @@ trait Driver
      *
      * @param string $name 键名
      * @param mixed $value 值
-     * @param array $params 注解参数
+     * @param BeConfigItem $annotation 注解参数
      */
-    public function __construct($name, $value, $params = array())
+    public function __construct($name, $value, $annotation)
     {
         /*
          * 配置项示例:
@@ -33,9 +34,8 @@ trait Driver
         $this->name = $name;
         $this->value = $value;
 
-        if (isset($params['label'])) {
-            $this->label = $params['label'];
-        }
+        $this->label = $annotation->value;
+
 
         if (isset($params['keyValueType'])) {
             $this->keyValueType = $params['keyValueType'];
