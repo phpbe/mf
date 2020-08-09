@@ -155,8 +155,7 @@ class Config extends Service
         $this->configs[$className] = $config;
         return $config;
     }
-
-
+    
     /*
      * 保存配置文件到指定咱径
      *
@@ -178,23 +177,15 @@ class Config extends Service
         $code .= "{\n";
 
         foreach ($vars as $k => $v) {
-            $found = false;
-            foreach ($config['items'] as $configItem) {
-                $itemName = $configItem->name;
-                if ($k == $itemName) {
-
-                    if (!isset($data[$itemName])) {
-                        throw new ServiceException('参数 ' . $configItem->label . ' (' . $itemName . ') 缺失！');
-                    }
-
-                    $configItem->submit($data);
-                    $code .= '  public $' . $itemName . ' = ' . var_export($configItem->newValue, true) . ';' . "\n";
-                    $found = true;
-                    break;
+             if (isset($config['items'][$k])) {
+                $configItem = $config['items'][$k];
+                $driver = $configItem['driver'];
+                if (!isset($data[$k])) {
+                    throw new ServiceException('参数 ' . $driver->label . ' (' . $k . ') 缺失！');
                 }
-            }
-
-            if (!$found) {
+                $driver->submit($data);
+                $code .= '  public $' . $k . ' = ' . var_export($driver->newValue, true) . ';' . "\n";
+            } else {
                 $code .= '  public $' . $k . ' = ' . var_export($v, true) . ';' . "\n";
             }
         }
