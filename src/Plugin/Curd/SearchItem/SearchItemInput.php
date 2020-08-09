@@ -6,7 +6,7 @@ use Be\System\Be;
 
 
 /**
- * 搜索项 布尔值
+ * 输入框
  */
 class SearchItemInput extends SearchItem
 {
@@ -27,13 +27,13 @@ class SearchItemInput extends SearchItem
             $this->op = strtoupper($params['op']);
         }
 
-        $this->ui['input']['v-model'] = 'searchForm.' . $this->name;
+        $this->ui['input']['v-model'] = 'formData.' . $this->name;
     }
 
     /**
      * 获取html内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {

@@ -32,13 +32,13 @@ class SearchItemInputNumberFloat extends SearchItem
             $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseFloat(value)';
         }
 
-        $this->ui['input-number']['v-model'] = 'searchForm.' . $this->name;
+        $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
     }
 
     /**
      * 获取html内容
      *
-     * @return string | array
+     * @return string
      */
     public function getEditHtml()
     {

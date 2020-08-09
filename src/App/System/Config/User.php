@@ -9,7 +9,7 @@ class User
 
     /**
      * @BeConfigItem("用户小头像宽度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
@@ -17,7 +17,7 @@ class User
 
     /**
      * @BeConfigItem("用户小头像高度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];"
      * )
@@ -26,7 +26,7 @@ class User
 
     /**
      * @BeConfigItem("用户中头像宽度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
@@ -34,7 +34,7 @@ class User
 
     /**
      * @BeConfigItem("用户中头像高度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
@@ -42,7 +42,7 @@ class User
 
     /**
      * @BeConfigItem("用户大头像宽度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
@@ -50,7 +50,7 @@ class User
 
     /**
      * @BeConfigItem("用户大头像高度",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */

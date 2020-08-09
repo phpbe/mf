@@ -1,33 +1,45 @@
 <?php
 
-namespace Be\Plugin\Curd\SearchItem;
+namespace Be\Plugin\Config\Item;
 
+use Be\System\Annotation\BeConfigItem;
 
 /**
- * 搜索项 日期选择器
+ * 配置项 日期选择器
  */
-class SearchItemDateTimePicker extends SearchItem
+class ConfigItemDatePickerRange extends ConfigItem
 {
+
+    public $valueType = 'array';
 
     /**
      * 构造函数
      *
-     * @param array $params 参数
-     * @param object $tuple 行数据
+     * @param string $name 键名
+     * @param mixed $value 值
+     * @param BeConfigItem $annotation 注解参数
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($name, $value, $annotation)
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($name, $value, $annotation);
 
-        if (!isset($this->ui['date-picker']['placeholder'])) {
-            $this->ui['date-picker']['placeholder'] = '选择日期时间';
+        if (!isset($this->ui['date-picker']['range-separator'])) {
+            $this->ui['date-picker']['range-separator'] = '至';
+        }
+
+        if (!isset($this->ui['date-picker']['start-placeholder'])) {
+            $this->ui['date-picker']['start-placeholder'] = '开始日期';
+        }
+
+        if (!isset($this->ui['date-picker']['end-placeholder'])) {
+            $this->ui['date-picker']['end-placeholder'] = '结束日期';
         }
 
         if (!isset($this->ui['date-picker']['value-format'])) {
-            $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd HH:mm:ss';
+            $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd';
         }
 
-        $this->ui['date-picker']['type'] = 'datetime';
+        $this->ui['date-picker']['type'] = 'daterange';
         $this->ui['date-picker']['v-model'] = 'formData.' . $this->name;
     }
 
@@ -63,6 +75,5 @@ class SearchItemDateTimePicker extends SearchItem
         $html .= '</el-form-item>';
         return $html;
     }
-
 
 }

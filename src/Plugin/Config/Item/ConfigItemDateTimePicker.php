@@ -1,23 +1,25 @@
 <?php
 
-namespace Be\Plugin\Curd\SearchItem;
+namespace Be\Plugin\Config\Item;
 
+use Be\System\Annotation\BeConfigItem;
 
 /**
- * 搜索项 日期选择器
+ * 配置项 日期选择器
  */
-class SearchItemDateTimePicker extends SearchItem
+class ConfigItemDateTimePicker extends ConfigItem
 {
 
     /**
      * 构造函数
      *
-     * @param array $params 参数
-     * @param object $tuple 行数据
+     * @param string $name 键名
+     * @param mixed $value 值
+     * @param BeConfigItem $annotation 注解参数
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($name, $value, $annotation)
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($name, $value, $annotation);
 
         if (!isset($this->ui['date-picker']['placeholder'])) {
             $this->ui['date-picker']['placeholder'] = '选择日期时间';

@@ -9,7 +9,7 @@ class Session
 {
     /**
      * @BeConfigItem("名称",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     driver="ConfigItemInput",
      *     description = "用在 cookie 或者 URL 中的会话名称， 例如：PHPSESSID。 只能使用字母和数字，建议尽可能的短一些")
      */
     public $name = 'SSID';
@@ -17,21 +17,21 @@ class Session
 
     /**
      * @BeConfigItem("超时时间",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     ui = "return ['min' => 1];")
      */
     public $expire = 1440;
 
     /**
      * @BeConfigItem("SESSION 驱动",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemSelect",
      *     description = "SESSION 驱动 Default：系统默认/Redis"
      *     values = "return ['Default','Redis'];")
      */
     public $driver = 'Default';
 
     /**
-     * @BeConfigItem("REDIS设置项", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
+     * @BeConfigItem("REDIS设置项", driver="ConfigItemInputTextArea", valueType = "mixed")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

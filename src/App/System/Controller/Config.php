@@ -29,8 +29,8 @@ class Config extends \Be\System\Controller
         $appName = Request::get('appName', '');
         $configName = Request::get('configName', '');
         if (!$appName || !$configName) {
-            $appName = $configTree[0]['app']->name;
-            $configName = $configTree[0]['configs'][0]['name'];
+            $appName = $configTree[0]['configs'][0]['appName'];
+            $configName = $configTree[0]['configs'][0]['configName'];
         }
 
         Response::set('appName', $appName);

@@ -8,7 +8,7 @@ class Db
 {
 
     /**
-     * @BeConfigItem("主库", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
+     * @BeConfigItem("主库", driver="ConfigItemInputTextArea", valueType = "mixed")
      */
     public $master = [
         'driver' => 'mysql',

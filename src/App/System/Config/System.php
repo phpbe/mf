@@ -7,47 +7,47 @@ namespace Be\App\System\Config;
 class System
 {
     /**
-     * @BeConfigItem("是否开启伪静态", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
+     * @BeConfigItem("是否开启伪静态", driver="ConfigItemSwitch")
      */
     public $urlRewrite = true;
 
     /**
-     * @BeConfigItem("伪静态页后辍", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("伪静态页后辍", driver="ConfigItemInput")
      */
     public $urlSuffix = '.html';
 
     /**
      * @BeConfigItem("主题",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     driver="ConfigItemSelect",
      *     keyValueType = "code",
-     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();)"
+     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();"
      */
     public $theme = 'Admin';
 
     /**
-     * @BeConfigItem("允许上传的文件类型", driver="\Be\\Plugin\Config\Item\ConfigItemArrayString")
+     * @BeConfigItem("允许上传的文件类型", driver="ConfigItemInputTextArea", valueType = "array(string)")
      */
     public $allowUploadFileTypes = ['jpg', 'jpeg', 'gif', 'png', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar'];
 
     /**
-     * @BeConfigItem("允许上传的图片类型", driver="\Be\\Plugin\Config\Item\ConfigItemArrayString")
+     * @BeConfigItem("允许上传的图片类型", driver="ConfigItemInputTextArea")
      */
     public $allowUploadImageTypes = ['jpg', 'jpeg', 'gif', 'png'];
 
     /**
-     * @BeConfigItem("时区", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("时区", driver="ConfigItemInput")
      */
     public $timezone = 'Asia/Shanghai';
 
     /**
      * @BeConfigItem("时区",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     driver="ConfigItemInputNumberInt",
      *     ui="return [':min' => 1];")
      */
     public $pageSize = 12;
 
     /**
-     * @BeConfigItem("是否开启开发者模式", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
+     * @BeConfigItem("是否开启开发者模式", driver="ConfigItemSwitch")
      */
     public $developer = true;
 

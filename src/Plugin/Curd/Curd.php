@@ -43,10 +43,10 @@ class Curd extends Plugin
 
             try {
                 $postData = Request::json();
-                $searchForm = $postData['searchForm'];
+                $formData = $postData['formData'];
                 if (isset($this->setting['lists']['tab'])) {
                     $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
-                    $driver->submit($searchForm);
+                    $driver->submit($formData);
                     $sql = $driver->buildSql($this->setting['db']);
                     if ($sql) {
                         $table->where($sql);
@@ -62,7 +62,7 @@ class Curd extends Plugin
                         } else {
                             $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
                         }
-                        $driver->submit($searchForm);
+                        $driver->submit($formData);
                         $sql = $driver->buildSql($this->setting['db']);
                         if ($sql) {
                             $table->where($sql);
@@ -397,10 +397,10 @@ class Curd extends Plugin
         $table = Be::newTable($this->setting['table'], $this->setting['db']);
 
         $postData = Request::json();
-        $searchForm = $postData['searchForm'];
+        $formData = $postData['formData'];
         if (isset($this->setting['lists']['tab'])) {
             $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
-            $driver->submit($searchForm);
+            $driver->submit($formData);
             $sql = $driver->buildSql($this->setting['db']);
             if ($sql) {
                 $table->where($sql);
@@ -416,7 +416,7 @@ class Curd extends Plugin
                 } else {
                     $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
                 }
-                $driver->submit($searchForm);
+                $driver->submit($formData);
                 $sql = $driver->buildSql($this->setting['db']);
                 if ($sql) {
                     $table->where($sql);

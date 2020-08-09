@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\Plugin\Curd\ToolbarItem;
+namespace Be\Plugin\Config\Item;
 
 
 /**
- * 工具栏 自定义
+ * 配置项 自定义
  */
-class ToolbarItemCustom extends ToolbarItem
+class ConfigItemCustom extends ConfigItem
 {
 
     /**

@@ -7,62 +7,62 @@ namespace Be\App\System\Config;
 class Mail
 {
     /**
-     * @BeConfigItem("发件人邮箱", driver="\Be\\Plugin\Config\Item\ConfigItemEmail")
+     * @BeConfigItem("发件人邮箱", driver="ConfigItemInput")
      */
     public $fromMail = 'be@phpbe.com';
 
     /**
-     * @BeConfigItem("发件人名称", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("发件人名称", driver="ConfigItemInput")
      */
     public $fromName = 'BE';
 
     /**
-     * @BeConfigItem("默认字符编码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("默认字符编码", driver="ConfigItemInput")
      */
     public $charset = 'utf-8';
 
     /**
-     * @BeConfigItem("默认字符编码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("默认字符编码", driver="ConfigItemInput")
      */
     public $encoding = 'base64';
 
     /**
-     * @BeConfigItem("是否启用SMTP", driver="\Be\\Plugin\Config\Item\ConfigItemBool")
+     * @BeConfigItem("是否启用SMTP", driver="ConfigItemSwitch")
      */
     public $smtp = false;
 
     /**
-     * @BeConfigItem("SMTP地址", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("SMTP地址", driver="ConfigItemInput")
      */
     public $smtpHost = '';
 
     /**
      * @BeConfigItem("SMTP端口号",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     ui="return ['input-number' => [':min' => 1]];")
      */
     public $smtpPort = 25;
 
     /**
-     * @BeConfigItem("SMTP用户名", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("SMTP用户名", driver="ConfigItemInput")
      */
     public $smtpUser = '';
 
     /**
-     * @BeConfigItem("SMTP密码", driver="\Be\\Plugin\Config\Item\ConfigItemString")
+     * @BeConfigItem("SMTP密码", driver="ConfigItemInput")
      */
     public $smtpPass = '';
 
     /**
      * @BeConfigItem("SMTP安全连接",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemString",
+     *     driver="ConfigItemInput",
      *     keyValues="return ['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS'];")
      */
     public $smtpSecure = '0';
 
     /**
      * @BeConfigItem("SMTP超时时间",
-     *     driver="\Be\\Plugin\Config\Item\ConfigItemInt",
+     *     driver="ConfigItemInputNumberInt",
      *     ui="return ['input-number' => [':min' => 1]];")
      */
     public $smtpTimeout = 10;

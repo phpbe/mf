@@ -1,129 +1,109 @@
-<?php
-use Be\System\Be;
-?>
-
-<be-head>
-<script src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/Tempalte/Config/js/base64.min.js"></script>
-</be-head>
-
 <be-center>
+    <?php
+    $formData = [];
+    $vueData = [];
+    $vueMethods = [];
+    ?>
+    <div id="app" v-cloak>
 
-<?php
-$formData = [];
+        <el-tabs tab-position="left" value="<?php echo $this->appName; ?>">
+            <?php foreach ($this->configTree as $x) { ?>
+                <el-tab-pane name="<?php echo $x['app']->name; ?>" label="<?php echo $x['app']->label; ?>">
+                    <el-tabs tab-position="left" value="<?php echo $this->appName . '-' . $this->configName; ?>" @tab-click="goto">
+                        <?php
+                        foreach ($x['configs'] as $xx) {
+                            ?>
+                            <el-tab-pane name="<?php echo $xx['appName'] . '-' . $xx['configName']; ?>" label="<?php echo $xx['annotation']->value; ?>">
+                                <?php
+                                if ($xx['appName'] == $this->appName && $xx['configName'] == $this->configName) {
+                                    if (count($this->config['items'])) {
+                                        ?>
+                                        <div style="max-width: 800px;">
+                                            <el-form size="small" label-width="200px" :disabled="loading">
+                                                <?php
+                                                foreach ($this->config['items'] as $key => $configItem) {
+                                                    $driver = $configItem['driver'];
+                                                    echo $driver->getHtml();
 
+                                                    $formData[$driver->name] = $driver->getValueString();
 
-$data = [];
-$methods = [];
-?>
-<div id="app" v-cloak>
-    <a-card>
-        <a-tabs default-active-key="<?php echo $this->appName; ?>"  size="small" tab-position="left">
-            <?php
-            //print_r($this->configTree);
-            foreach ($this->configTree as $x) {
-                echo '<a-tab-pane key="'.$x['app']->name.'">';
-                echo '<span slot="tab">';
-                echo '<a-icon type="'.$x['app']->icon.'"></a-icon>';
-                echo $x['app']->label;
-                echo '</span>';
-                echo '<a-tabs default-active-key="'. $this->appName.'-'.$this->configName.'" size="small" tab-position="left" @change="goto">';
-                foreach ($x['configs'] as $xx) {
-                    echo '<a-tab-pane key="'. $x['app']->name.'-'.$xx['name'].'" tab="'.$xx['label'].'">';
-                    if ($x['app']->name == $this->appName && $xx['name'] == $this->configName) {
-                        if (count($this->config['items'])) {
-                            echo '<a-form :form="be_form" layout="horizontal" style="max-width:800px" @submit="handleSubmit">';
-                            foreach ($this->config['items'] as $key => $configItem) {
-                                $formData[$key] = $configItem->value;
-                                echo $configItem->getEditHtml();
+                                                    $vueDataX = $driver->getVueData();
+                                                    if ($vueDataX) {
+                                                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                                                    }
 
-                                $tmpData = $configItem->getEditData();
-                                if ($tmpData) {
-                                    $data[$configItem->name] = $tmpData;
+                                                    $vueMethodsX = $driver->getVueMethods();
+                                                    if ($vueMethodsX) {
+                                                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                                                    }
+                                                }
+                                                ?>
+                                                <el-form-item>
+                                                    <el-button type="success" icon="el-icon-check" @click="saveConfig">保存</el-button>
+                                                    <el-button type="danger" icon="el-icon-close" @click="resetConfig">恢复默认值</el-button>
+                                                    <?php if (isset($this->config['test'])) { ?>
+                                                        <el-button icon="question" onclick="window.open(\'' . $this->config['test'] . '\');">测试</el-button>
+                                                    <?php } ?>
+                                                </el-form-item>
+                                            </el-form>
+                                        </div>
+                                        <?php
+                                    }
                                 }
-
-                                $tmpMethod = $configItem->getEditMethods();
-                                if ($tmpMethod) {
-                                    $methods = array_merge($methods, $tmpMethod);
-                                }
-                            }
-                            echo ' <a-form-item :wrapper-col="{span:18,offset:6}">';
-                            echo '<a-button type="primary" icon="save" html-type="submit" :loading="be_saving">保存</a-button>';
-                            echo '<a-button type="danger" icon="undo" :style="{marginLeft: \'8px\'}" @click="resetConfig">恢复默认值</a-button>';
-                            if (isset($this->config['test'])) {
-                                echo '<a-button icon="question" :style="{marginLeft: \'8px\'}" onclick="window.open(\'' . $this->config['test'] . '\');">测试</a-button>';
-                            }
-                            echo '</a-form-item>';
-                            echo ' </a-form>';
+                                ?>
+                            </el-tab-pane>
+                            <?php
                         }
-                    }
-                    echo '</a-tab-pane>';
-                }
-                echo '</a-tabs>';
-                echo '</a-tab-pane>';
-            }
-            ?>
-        </a-tabs>
-    </a-card>
-</div>
+                        ?>
+                    </el-tabs>
+                </el-tab-pane>
+            <?php } ?>
+        </el-tabs>
+    </div>
 
-<script>
-    var app = new Vue({
-        el: '#app',
-        data: function() {
-            return {
-                be_saving: false,
-                be_form: this.$form.createForm(this)<?php
-                if ($data) {
-                    foreach ($data as $key => $v) {
-                        echo ',' . $key . ': ' . json_encode($v);
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                formData: <?php echo json_encode($formData); ?>,
+                loading: false<?php
+                if ($vueData) {
+                    foreach ($vueData as $k => $v) {
+                        echo ',' . $k . ':' . json_encode($v);
                     }
                 }
                 ?>
-            };
-        },
-        methods: {
-            handleSubmit: function (e) {
-                e.preventDefault();
-
-                var _this = this;
-                this.be_form.validateFields(function(err, values){
-                    if (!err) {
-                        _this.be_saving = true;
-                        _this.$http.post("<?php echo beUrl('System.Config.saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>", values)
-                            .then(function (response) {
-                                _this.be_saving = false;
-                                if (response.status == 200) {
-                                    if (response.data.success) {
-                                        _this.$message.success(response.data.message);
-                                    } else {
-                                        _this.$message.error(response.data.message);
-                                    }
+            },
+            methods: {
+                saveConfig: function () {
+                    this.loading = true;
+                    var _this = this;
+                    _this.$http.post("<?php echo beUrl('System.Config.saveConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>",_this.formData)
+                        .then(function (response) {
+                            _this.loading = false;
+                            if (response.status == 200) {
+                                if (response.data.success) {
+                                    _this.$message.success(response.data.message);
+                                } else {
+                                    _this.$message.error(response.data.message);
                                 }
-                            })
-                            .catch(function (error) {
-                                _this.be_saving = false;
-                                _this.$message.error(error);
-                            });
-                    }
-                });
-            },
-            goto: function (key) {
-                var arr = key.split('-');
-                window.location.href = '<?php echo beUrl('System.Config.dashboard'); ?>?appName=' + arr[0] + '&configName=' + arr[1];
-            },
-
-            resetConfig: function () {
-
-                var _this = this;
-                this.$confirm({
-                    title: '确认恢复默认值吗？',
-                    content: '该操作不可恢复，确认恢复默认值吗？',
-                    okText: '确认',
-                    cancelText: '取消',
-                    onOk: function() {
-
+                            }
+                        }).catch(function (error) {
+                            _this.loading = false;
+                            _this.$message.error(error);
+                        });
+                },
+                resetConfig: function () {
+                    var _this = this;
+                    this.$confirm('该操作不可恢复，确认恢复默认值吗？', '确认恢复默认值吗', {
+                        confirmButtonText: '确定',
+                        cancelButtonText: '取消',
+                        type: 'warning'
+                    }).then(function () {
+                        _this.loading = true;
                         _this.$http.get("<?php echo beUrl('System.Config.resetConfig', ['appName' => $this->appName, 'configName' => $this->configName]); ?>")
                             .then(function (response) {
+                                _this.loading = false;
                                 if (response.status == 200) {
                                     if (response.data.success) {
                                         _this.$message.success(response.data.message);
@@ -134,25 +114,25 @@ $methods = [];
                                 }
                             })
                             .catch(function (error) {
+                                _this.loading = false;
                                 _this.$message.error(error);
                             });
-
-                    },
-                    onCancel: function() {}
-                });
+                    }).catch(function () {
+                        _this.loading = false;
+                    });
+                },
+                goto: function (tab) {
+                    var arr = tab.name.split('-');
+                    window.location.href = '<?php echo beUrl('System.Config.dashboard'); ?>?appName=' + arr[0] + '&configName=' + arr[1];
+                }
+                <?php
+                if ($vueMethods) {
+                    foreach ($vueMethods as $k => $v) {
+                        echo ',' . $k . ':' . $v;
+                    }
+                }
+                ?>
             }
-
-            <?php
-            if ($methods) { echo ',', implode(',', $methods); }
-            ?>
-        },
-
-        mounted: function () {
-            this.be_form.setFieldsValue(<?php echo json_encode($formData); ?>);
-        }
-
-    });
-
-    //console.log(app);
-</script>
+        });
+    </script>
 </be-center>

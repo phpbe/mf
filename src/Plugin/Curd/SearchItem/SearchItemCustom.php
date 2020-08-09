@@ -12,7 +12,7 @@ class SearchItemCustom extends SearchItem
     /**
      * 获取html内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {

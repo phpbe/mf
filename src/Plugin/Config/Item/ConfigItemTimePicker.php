@@ -1,23 +1,25 @@
 <?php
 
-namespace Be\Plugin\Curd\SearchItem;
+namespace Be\Plugin\Config\Item;
 
+use Be\System\Annotation\BeConfigItem;
 
 /**
- * 搜索项 时间选择器
+ * 配置项 时间选择器
  */
-class SearchItemTimePicker extends SearchItem
+class ConfigItemTimePicker extends ConfigItem
 {
 
     /**
      * 构造函数
      *
-     * @param array $params 参数
-     * @param object $tuple 行数据
+     * @param string $name 键名
+     * @param mixed $value 值
+     * @param BeConfigItem $annotation 注解参数
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($name, $value, $annotation)
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($name, $value, $annotation);
 
         if (!isset($this->ui['time-picker']['placeholder'])) {
             $this->ui['time-picker']['placeholder'] = '选择时间';
@@ -62,6 +64,5 @@ class SearchItemTimePicker extends SearchItem
         $html .= '</el-form-item>';
         return $html;
     }
-
 
 }

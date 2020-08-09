@@ -51,7 +51,7 @@ var vueLists = new Vue({
 
             if (sTarget == 'ajax') {
                 var _this = this;
-                this.$http.post(g_sPluginListsUrl, this.searchForm)
+                this.$http.post(g_sPluginListsUrl, this.formData)
                     .then(function (response) {
                         if (response.status == 200) {
                             if (response.data.success) {
@@ -78,13 +78,13 @@ var vueLists = new Vue({
                 eForm.method = "post";
                 eForm.style.display = "none";
 
-                for (var x in this.searchForm) {
+                for (var x in this.formData) {
                     var e = document.createElement("textarea");
                     e.name = x;
-                    if (this.searchForm[x] instanceof Array) {
-                        e.value = this.searchForm[x].join(",");
+                    if (this.formData[x] instanceof Array) {
+                        e.value = this.formData[x].join(",");
                     } else {
-                        e.value = this.searchForm[x];
+                        e.value = this.formData[x];
                     }
                     eForm.appendChild(e);
                 }

@@ -41,7 +41,7 @@ class OperationItemButton extends OperationItem
     /**
      * 编辑
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {

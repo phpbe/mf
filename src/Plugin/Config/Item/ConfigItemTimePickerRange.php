@@ -1,24 +1,27 @@
 <?php
 
-namespace Be\Plugin\Curd\SearchItem;
+namespace Be\Plugin\Config\Item;
 
-use Be\System\Be;
+use Be\System\Annotation\BeConfigItem;
 
 /**
- * 搜索项 日期时间范围选择器
+ * 配置项 日期时间范围选择器
  */
-class SearchItemTimePickerRange extends SearchItem
+class ConfigItemTimePickerRange extends ConfigItem
 {
+
+    public $valueType = 'array';
 
     /**
      * 构造函数
      *
-     * @param array $params 参数
-     * @param object $tuple 行数据
+     * @param string $name 键名
+     * @param mixed $value 值
+     * @param BeConfigItem $annotation 注解参数
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($name, $value, $annotation)
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($name, $value, $annotation);
 
         if (!isset($this->ui['time-picker']['range-separator'])) {
             $this->ui['time-picker']['range-separator'] = '至';
@@ -71,33 +74,6 @@ class SearchItemTimePickerRange extends SearchItem
         $html .= '</el-time-picker>';
         $html .= '</el-form-item>';
         return $html;
-    }
-
-    /**
-     * 查询SQL
-     *
-     * @param string $dbName
-     * @return string
-     */
-    public function buildSql($dbName = 'master')
-    {
-        if ($this->newValue !== null) {
-
-            $field = null;
-            if ($this->table === null) {
-                $field = $this->name;
-            } else {
-                $field = $this->table . '.' . $this->name;
-            }
-
-            $db = Be::getDb($dbName);
-            $sql = $db->quoteKey($field) . ' >= ' . $db->quoteValue($this->newValue[0]);
-            $sql .= ' AND ';
-            $sql .= $db->quoteKey($field) . ' < ' . $db->quoteValue($this->newValue[1]);
-            return $sql;
-        }
-
-        return '';
     }
 
 }

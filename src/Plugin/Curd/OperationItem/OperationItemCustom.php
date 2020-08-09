@@ -14,7 +14,7 @@ class OperationItemCustom extends OperationItem
     /**
      * 获取HTML内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {

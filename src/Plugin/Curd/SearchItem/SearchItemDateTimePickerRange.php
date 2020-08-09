@@ -37,13 +37,13 @@ class SearchItemDateTimePickerRange extends SearchItem
         }
 
         $this->ui['date-picker']['type'] = 'datetimerange';
-        $this->ui['date-picker']['v-model'] = 'searchForm.' . $this->name;
+        $this->ui['date-picker']['v-model'] = 'formData.' . $this->name;
     }
 
     /**
      * 获取html内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {

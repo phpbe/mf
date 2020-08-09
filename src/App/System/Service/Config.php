@@ -1,7 +1,10 @@
 <?php
+
 namespace Be\App\System\Service;
 
 use Be\App\System\Helper\DocComment;
+use Be\System\Annotation\BeConfig;
+use Be\System\Annotation\BeConfigItem;
 use Be\System\Be;
 use Be\System\Service;
 use Be\System\Exception\ServiceException;
@@ -9,17 +12,19 @@ use Be\System\Exception\ServiceException;
 class Config extends Service
 {
 
+    private $configTree = null;
+
     /**
      * 获取配置文件树状结构
      */
     public function getConfigTree()
     {
+        if ($this->configTree !== null) return $this->configTree;
         $appNames = Be::getService('System.App')->getApps();
 
         $configTree = [];
         foreach ($appNames as $app) {
-
-            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.'.$app->name)->getPath() . '/Config';
+            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.' . $app->name)->getPath() . '/Config';
             $configs = array();
             if (file_exists($dir) && is_dir($dir)) {
                 $fileNames = scandir($dir);
@@ -27,7 +32,7 @@ class Config extends Service
                     if ($fileName != '.' && $fileName != '..' && is_file($dir . '/' . $fileName)) {
                         $configName = substr($fileName, 0, -4);
                         $configSummary = $this->getConfigSummary($app->name, $configName);
-                        if (isset($configSummary['name'])) {
+                        if ($configSummary) {
                             $configs[] = $configSummary;
                         }
                     }
@@ -42,275 +47,114 @@ class Config extends Service
             }
         }
 
-        print_r($configTree);
-
+        $this->configTree = $configTree;
         return $configTree;
     }
 
 
+    private $configSummaries = [];
+
     /**
-     * 获取配置文件文档注释
+     * 获取配置信息摘要（不包含配置项信息）
      *
-     * @param string $app 应用名
-     * @param string $config 配置文件名
-     * @return array
+     * @param string $appName 应用名
+     * @param string $configName 配置文件名
+     * @return array | false
      */
-    public function getConfigSummary($app, $config)
+    public function getConfigSummary($appName, $configName)
     {
-        $className = 'Be\\App\\' . $app . '\\Config\\' . $config;
-
-        if (!class_exists($className)) return [];
-        $reflection = $this->getReflectionClass($className);
-
-        $config = [
-            'app' => $app,
-            'name' => $config,
-        ];
-
-        // 类注释
-        $classComment = $reflection->getDocComment();
-        $parseClassComments = DocComment::parse($classComment);
-        foreach ($parseClassComments as $key => $val) {
-            if (substr($key, 0, 10) == 'be-config-') {
-                $config[substr($key,10)] = $val;
-            }
+        $className = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
+        if (isset($this->configSummaries[$className])) {
+            return $this->configSummaries[$className];
         }
 
-        return $config;
-    }
-
-    private $reflectionClass = [];
-    private function getReflectionClass($className) {
-        if (isset($this->reflectionClass[$className])) return $this->reflectionClass[$className];
-
+        $this->configSummaries[$className] = false;
         if (class_exists($className)) {
-            $this->reflectionClass[$className] = new \ReflectionClass($className);
-            return $this->reflectionClass[$className];
+            $reflection = $this->getReflectionClass($className);
+            $classComment = $reflection->getDocComment();
+            $parseClassComments = DocComment::parse($classComment);
+            if (isset($parseClassComments['BeConfig'][0])) {
+                $this->configSummaries[$className] = [
+                    'appName' => $appName,
+                    'configName' => $configName,
+                    'annotation' => new BeConfig($parseClassComments['BeConfig'][0])
+                ];
+            }
         }
 
-        return null;
+        return $this->configSummaries[$className];
     }
 
+
+    private $configs = [];
 
     /**
-     * 获取配置文件文档注释
+     * 获取配置信息
      *
-     * @param string $app 应用名
-     * @param string $config 配置文件名
+     * @param string $appName 应用名
+     * @param string $configName 配置文件名
      * @return array
      */
-    public function getConfig($app, $config)
+    public function getConfig($appName, $configName)
     {
-        $className = 'Be\\App\\' . $app . '\\Config\\' . $config;
-        if (!class_exists($className)) return [];
-
-        $instance = Be::getConfig($app.'.'.$config);
-
-
-        $config = [
-            'app' => $app,
-            'name' => $config
-        ];
-
-        $reflection = $this->getReflectionClass($className);
-
-        // 类注释
-        $classComment = $reflection->getDocComment();
-        $parseClassComments = DocComment::parse($classComment);
-        foreach ($parseClassComments as $key => $val) {
-            if (substr($key, 0, 10) == 'be-config-') {
-                $config[substr($key,10)] = $val;
-            }
+        $className = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
+        if (isset($this->configs[$className])) {
+            return $this->configs[$className];
         }
 
-        if (isset($config['test'])) {
-            try {
-                $config['test'] = eval('return ' . $config['test'] . ';');
-            } catch (\Throwable $e) {
+        $config = false;
+        if (class_exists($className)) {
+            $reflection = $this->getReflectionClass($className);
+            $classComment = $reflection->getDocComment();
+            $parseClassComments = DocComment::parse($classComment);
+            if (isset($parseClassComments['BeConfig'][0])) {
+                $config = [
+                    'appName' => $appName,
+                    'configName' => $configName,
+                    'annotation' => new BeConfig($parseClassComments['BeConfig'][0])
+                ];
 
-            }
-        }
+                $configInstance = Be::getConfig($appName . '.' . $configName);
 
-        $configItems = [];
-        $properties = $reflection->getProperties(\ReflectionMethod::IS_PUBLIC);
+                $configItems = [];
+                $properties = $reflection->getProperties(\ReflectionMethod::IS_PUBLIC);
+                foreach ($properties as &$property) {
+                    $itemName = $property->getName();
+                    $itemComment = $property->getDocComment();
+                    $parseItemComments = DocComment::parse($itemComment);
+                    if (isset($parseItemComments['BeConfigItem'][0])) {
+                        $annotation = new BeConfigItem($parseItemComments['BeConfigItem'][0]);
 
-        foreach ($properties as &$property) {
-            $propertyName = $property->getName();
-            $propertyComment = $property->getDocComment();
-            $propertyComments = DocComment::parse($propertyComment);
+                        $driverClass = $annotation->driver;
+                        if (!$driverClass) {
+                            $driverClass = \Be\Plugin\Config\Item\ConfigItemInput::class;
+                        } else {
+                            if (substr($driverClass, 0, 10) == 'ConfigItem') {
+                                $driverClass = '\\Be\\Plugin\\Config\\Item\\' . $driverClass;
+                            }
+                        }
 
+                        $configItemDriver = new $driverClass($itemName, $configInstance->$itemName, $annotation);
+                        $configItemDriver->appName = $appName;
+                        $configItemDriver->configName = $configName;
 
-            $keyValueType = null;
-            $dataKeyValues = null;
-            $dataValues = null;
-
-            $params = [];
-            foreach ($propertyComments as $key => $val) {
-                if (substr($key, 0, 15) == 'be-config-item-') {
-
-                    $k = substr($key,15);
-                    switch ($k) {
-                        case 'option':
-                        case 'ui':
-                            $params[$k] = json_decode($val, true);
-                            break;
-
-                        case 'keyValueType':
-                            $keyValueType = $val;
-                            break;
-
-                        case 'keyValues':
-                            $dataKeyValues = $val;
-                            break;
-
-                        case 'values':
-                            $dataValues = $val;
-                            break;
-
-                        default:
-                            $params[$k] = $val;
-
+                        $configItem = [
+                            'appName' => $appName,
+                            'configName' => $configName,
+                            'itemName' => $itemName,
+                            'annotation' => $annotation,
+                            'driver' => $configItemDriver
+                        ];
+                        $configItems[$itemName] = $configItem;
                     }
                 }
-            }
-
-            $keyValues = null;
-            $values = null;
-            switch ($keyValueType) {
-                case 'sql':
-                    if ($dataKeyValues !== null) {
-                        $dataKeyValues = json_decode($dataKeyValues, true);
-                        if (isset($dataKeyValues['sql'])) {
-                            $sql = $dataKeyValues['sql'];
-
-                            $cache = 0;
-                            if (isset($dataKeyValues['cache'])) {
-                                $cache = intval($dataKeyValues['cache']);
-                            }
-
-                            if ($cache > 0) {
-                                $keyValues = Be::getDb()->withCache($cache)->getKeyValues($sql);
-                            } else {
-                                $keyValues = Be::getDb()->getKeyValues($sql);
-                            }
-                        }
-                    } elseif ($dataValues !== null) {
-                        $tmpValues = json_decode($dataValues, true);
-                        if (isset($tmpValues['sql'])) {
-                            $sql = $tmpValues['sql'];
-
-                            $cache = 0;
-                            if (isset($tmpValues['cache'])) {
-                                $cache = intval($tmpValues['cache']);
-                            }
-
-                            if ($cache > 0) {
-                                $values = Be::getDb()->withCache($cache)->getValues($sql);
-                            } else {
-                                $values = Be::getDb()->getValues($sql);
-                            }
-                        }
-                    }
-                    break;
-                case 'code':
-                    if ($dataKeyValues !== null) {
-                        $dataKeyValues = trim($dataKeyValues);
-                        if ($dataKeyValues) {
-
-                            $newKeyValues = null;
-                            try {
-                                if (strpos($dataKeyValues, 'return ') === false) {
-                                    $dataKeyValues = 'return ' . $dataKeyValues;
-                                }
-
-                                if (substr($dataKeyValues, 0, -1) != ';') {
-                                    $dataKeyValues .= ';';
-                                }
-
-                                $newKeyValues = eval($dataKeyValues);
-                            } catch (\Throwable $e) {
-
-                            }
-
-                            if (is_array($newKeyValues)) {
-                                $keyValues = $newKeyValues;
-                            }
-                        }
-                    } elseif ($dataValues !== null) {
-                        $tmpValues = trim($dataValues);
-                        if ($tmpValues) {
-
-                            $newValues = null;
-                            try {
-                                if (strpos($tmpValues, 'return ') === false) {
-                                    $tmpValues = 'return ' . $tmpValues;
-                                }
-
-                                if (substr($tmpValues, 0, -1) != ';') {
-                                    $tmpValues .= ';';
-                                }
-
-                                $newValues = eval($tmpValues);
-                            } catch (\Throwable $e) {
-
-                            }
-
-                            if (is_array($newValues)) {
-                                $values = $newValues;
-                            }
-                        }
-                    }
-                    break;
-                default:
-                    if ($dataKeyValues !== null) {
-                        if (is_array($dataKeyValues)) {
-                            $keyValues = $dataKeyValues;
-                        } else {
-                            $dataKeyValues = trim($dataKeyValues);
-                            if ($dataKeyValues) {
-                                $dataKeyValues = json_decode($dataKeyValues, true);
-                                if (is_array($dataKeyValues)) {
-                                    $keyValues = $dataKeyValues;
-                                }
-                            }
-                        }
-                    } elseif ($dataValues !== null) {
-                        if (is_array($dataValues)) {
-                            $values = $dataValues;
-                        } else {
-                            $dataValues = trim($dataValues);
-                            if ($dataValues) {
-                                $values = json_decode($dataValues, true);
-                            }
-                        }
-                    }
-            }
-
-            if ($keyValues === null) {
-                if ($values !== null && is_array($values) && count($values) > 0) {
-                    $keyValues = [];
-                    foreach ($values as $value) {
-                        $keyValues[$value] = $value;
-                    }
-                    $params['keyValues'] = $keyValues;
-                }
-            } else {
-                $params['keyValues'] = $keyValues;
-            }
-
-
-            if (isset($params['driver'])) {
-                $driverClass = $params['driver'];
-                $configItemDriver = new $driverClass($propertyName, $instance->$propertyName, $params);
-                $configItemDriver->setConfig($config);
-                $configItems[$propertyName] = $configItemDriver;
+                $config['items'] = $configItems;
             }
         }
 
-        $config['items'] = $configItems;
+        $this->configs[$className] = $config;
         return $config;
     }
-
 
 
     /*
@@ -322,7 +166,7 @@ class Config extends Service
      */
     public function saveConfig($appName, $configName, $data)
     {
-        $class = '\\App\\' . $appName . '\\Config\\' . $configName;
+        $class = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
         $instance = new $class();
         $vars = get_object_vars($instance);
 
@@ -334,7 +178,6 @@ class Config extends Service
         $code .= "{\n";
 
         foreach ($vars as $k => $v) {
-
             $found = false;
             foreach ($config['items'] as $configItem) {
                 $itemName = $configItem->name;
@@ -358,7 +201,7 @@ class Config extends Service
 
         $code .= "}\n";
 
-        $path = Be::getRuntime()->getDataPath() . '/System/Config/' . $appName. '/' . $configName . '.php';
+        $path = Be::getRuntime()->getDataPath() . '/System/Config/' . $appName . '/' . $configName . '.php';
         return file_put_contents($path, $code, LOCK_EX);
     }
 
@@ -371,10 +214,25 @@ class Config extends Service
      */
     public function resetConfig($appName, $configName)
     {
-        $path = Be::getRuntime()->getDataPath() . '/System/Config/' . $appName. '/' . $configName . '.php';
-        if(file_exists($path)) @unlink($path);
+        $path = Be::getRuntime()->getDataPath() . '/System/Config/' . $appName . '/' . $configName . '.php';
+        if (file_exists($path)) @unlink($path);
         return true;
     }
+
+
+    private $reflectionClass = [];
+    private function getReflectionClass($className)
+    {
+        if (isset($this->reflectionClass[$className])) return $this->reflectionClass[$className];
+
+        if (class_exists($className)) {
+            $this->reflectionClass[$className] = new \ReflectionClass($className);
+            return $this->reflectionClass[$className];
+        }
+
+        return null;
+    }
+
 }
 
 

@@ -8,12 +8,12 @@ namespace Be\App\System\Config;
 class Cache
 {
     /**
-     * @BeConfigItem("缓存类型", driver="\Be\\Plugin\Config\Item\ConfigItemSelect", values="['File','Redis']")
+     * @BeConfigItem("缓存类型", driver="ConfigItemSelect", values="return ['File','Redis'];")
      */
     public $driver = 'File';
 
     /**
-     * @BeConfigItem("REDIS设置项", driver="\Be\\Plugin\Config\Item\ConfigItemMixed")
+     * @BeConfigItem("REDIS设置项", driver="ConfigItemInputTextArea", valueType = "mixed")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

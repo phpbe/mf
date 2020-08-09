@@ -19,7 +19,7 @@ class Tab extends Item
      */
     public function getHtml()
     {
-        $tabHtml = '<el-tabs v-model="searchForm.' . $this->name . '" type="card" @tab-click="tabClick">';
+        $tabHtml = '<el-tabs v-model="formData.' . $this->name . '" type="card" @tab-click="tabClick">';
         foreach ($this->keyValues as $key => $val) {
             $tabHtml .= '<el-tab-pane label="' . $val . '" name="' . $key . '"></el-tab-pane>';
         }
@@ -75,7 +75,7 @@ class Tab extends Item
     {
         return [
             'tabClick' => 'function (tab, event) {
-                this.searchForm.'.$this->name.' = tab.name;
+                this.formData.'.$this->name.' = tab.name;
                 this.gotoPage(1);
             }',
         ];

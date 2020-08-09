@@ -8,7 +8,7 @@
     <?php
     $primaryKey = $this->table->getPrimaryKey();
 
-    $searchForm = [];
+    $formData = [];
     $vueData = [];
     $vueMethods = [];
     ?>
@@ -26,7 +26,7 @@
                     $tabPosition = $this->setting['lists']['tab']['position'];
                 }
 
-                $searchForm[$driver->name] = $driver->value;
+                $formData[$driver->name] = $driver->value;
 
                 $vueDataX = $driver->getVueData();
                 if ($vueDataX) {
@@ -54,7 +54,7 @@
                     }
                     echo $driver->getHtml();
 
-                    $searchForm[$driver->name] = $driver->value;
+                    $formData[$driver->name] = $driver->value;
 
                     $vueDataX = $driver->getVueData();
                     if ($vueDataX) {
@@ -70,7 +70,7 @@
             ?>
 
             <el-form-item>
-                <el-button type="success" icon="el-icon-search" @click="search">查询</el-button>
+                <el-button type="success" icon="el-icon-search" @click="search" v-loading="loading">查询</el-button>
             </el-form-item>
 
             <?php
@@ -236,7 +236,7 @@
         var vueCurdLists = new Vue({
             el: '#app',
             data: {
-                searchForm: <?php echo json_encode($searchForm); ?>,
+                formData: <?php echo json_encode($formData); ?>,
                 orderBy: "",
                 orderByDir: "",
                 pageSize: pageSize,
@@ -273,7 +273,7 @@
                     this.loading = true;
                     var _this = this;
                     _this.$http.post("<?php echo $this->url; ?>", {
-                        searchForm: _this.searchForm,
+                        formData: _this.formData,
                         orderBy: _this.orderBy,
                         orderByDir: _this.orderByDir,
                         page: _this.page,
@@ -306,7 +306,7 @@
                 reload: function () {
                     var _this = this;
                     _this.$http.post("<?php echo $this->url; ?>", {
-                        searchForm: _this.searchForm,
+                        formData: _this.formData,
                         orderBy: _this.orderBy,
                         orderByDir: _this.orderByDir,
                         page: _this.page,
@@ -344,7 +344,7 @@
                 },
                 toolbarAction: function (name, option) {
                     var data = {
-                        searchForm: this.searchForm,
+                        formData: this.formData,
                         orderBy: this.orderBy,
                         orderByDir: this.orderByDir,
                         page: this.page,
