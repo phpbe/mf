@@ -3,7 +3,7 @@
 namespace Be\Plugin\Editor\EditorItem;
 
 
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 搜索项 数字
@@ -55,7 +55,7 @@ class EditorItemInputNumber extends EditorItem
      * 提交处理
      *
      * @param $data
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function submit($data)
     {
@@ -63,7 +63,7 @@ class EditorItemInputNumber extends EditorItem
             $newValue =  $data[$this->field];
 
             if (!is_numeric($newValue)) {
-                throw new ServiceException('参数 ' . $this->label . ' (' . $this->field . ') 不是合法的数字');
+                throw new PluginException('参数 ' . $this->label . ' (' . $this->field . ') 不是合法的数字');
             }
 
             $this->newValue = $newValue;

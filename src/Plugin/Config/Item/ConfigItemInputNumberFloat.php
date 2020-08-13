@@ -31,10 +31,6 @@ class ConfigItemInputNumberFloat extends ConfigItem
             $this->ui['input-number'][':step'] = '0.01';
         }
 
-        if (!isset($this->ui['input-number'][':formatter'])) {
-            $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseFloat(value)';
-        }
-
         $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
     }
 

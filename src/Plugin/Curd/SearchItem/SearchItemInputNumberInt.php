@@ -2,7 +2,7 @@
 
 namespace Be\Plugin\Curd\SearchItem;
 
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 搜索项 整型
@@ -22,10 +22,6 @@ class SearchItemInputNumberInt extends SearchItem
 
         if (!isset($this->ui['input-number'][':step'])) {
             $this->ui['input-number'][':step'] = '1';
-        }
-
-        if (!isset($this->ui['input-number'][':formatter'])) {
-            $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseInt(value)';
         }
 
         $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
@@ -70,7 +66,7 @@ class SearchItemInputNumberInt extends SearchItem
      * 提交处理
      *
      * @param $data
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function submit($data)
     {
@@ -78,7 +74,7 @@ class SearchItemInputNumberInt extends SearchItem
             $newValue =  $data[$this->name];
 
             if (!is_numeric($newValue)) {
-                throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
+                throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
             }
 
             $this->newValue = (int) $newValue;

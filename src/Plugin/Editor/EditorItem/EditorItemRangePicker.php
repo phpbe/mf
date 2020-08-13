@@ -3,7 +3,7 @@
 namespace Be\Plugin\Editor\EditorItem;
 
 use Be\System\Be;
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 搜索项 布尔值

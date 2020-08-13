@@ -18,7 +18,7 @@ class Session
     /**
      * @BeConfigItem("超时时间",
      *     driver="ConfigItemInputNumberInt",
-     *     ui = "return ['min' => 1];")
+     *     ui = "return ['input-number' => [':min' => 1]];")
      */
     public $expire = 1440;
 
@@ -31,7 +31,10 @@ class Session
     public $driver = 'Default';
 
     /**
-     * @BeConfigItem("REDIS设置项", driver="ConfigItemInputTextArea", valueType = "mixed")
+     * @BeConfigItem("REDIS设置项",
+     *     driver="ConfigItemInputTextArea",
+     *     valueType = "mixed",
+     *     ui="return ['form-item' => ['v-if' => 'formData.driver==\'Redis\'']];")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

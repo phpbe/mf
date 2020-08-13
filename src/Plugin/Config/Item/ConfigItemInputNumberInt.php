@@ -27,10 +27,6 @@ class ConfigItemInputNumberInt extends ConfigItem
             $this->ui['input-number'][':step'] = '1';
         }
 
-        if (!isset($this->ui['input-number'][':formatter'])) {
-            $this->ui['input-number'][':formatter'] = 'value => isNaN(value)||value==\'\'?0:parseInt(value)';
-        }
-
         $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
     }
 

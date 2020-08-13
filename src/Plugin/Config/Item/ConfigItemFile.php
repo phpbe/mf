@@ -4,7 +4,7 @@ namespace Be\Plugin\Config\Item;
 
 
 use Be\System\Annotation\BeConfigItem;
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 use Be\System\Be;
 use Be\Util\FileSystem\FileSize;
 
@@ -25,14 +25,14 @@ class ConfigItemFile extends ConfigItem
      * @param string $name 键名
      * @param mixed $value 值
      * @param BeConfigItem $annotation 注解参数
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function __construct($name, $value, $annotation)
     {
         parent::__construct($name, $value, $annotation);
 
-        if (isset($annotation->path)) {
-            throw new ServiceException('参数' . $this->label . ' ('.$this->name.') 须指定保存路径（path）');
+        if (!isset($annotation->path)) {
+            throw new PluginException('参数' . $this->label . ' ('.$this->name.') 须指定保存路径（path）');
         }
         $this->path = $annotation->path;
 
@@ -127,7 +127,7 @@ class ConfigItemFile extends ConfigItem
         }
         $html .= '>';
 
-        $html .= '<a v-if="' . $this->name . '.fileName" :href="' . $this->name . '.url">{{' . $this->name . '.newValue}}</a>';
+        $html .= '<a v-if="config.' . $this->name . '.fileName" :href="config.' . $this->name . '.url">{{config.' . $this->name . '.newValue}}</a>';
         $html .= '<div v-else>';
         $html .= '<el-button><el-icon type="upload" ></el-icon> 选择文件</el-button>';
         $html .= '</div>';
@@ -148,6 +148,9 @@ class ConfigItemFile extends ConfigItem
             'config' => [
                 $this->name => [
                     'loading' => false,
+                    'fileName' => '',
+                    'url' => '',
+                    'newValue' => ''
                 ]
             ]
         ];
@@ -163,19 +166,18 @@ class ConfigItemFile extends ConfigItem
     {
         return [
             'configItemFileChange' => 'function (info) {
-
+                  console.log(info);
                 if (info.file.status === \'uploading\') {
                     this.'.$this->name.'.loading = true;
                     return;
                 }
                 
                 if (info.file.status === \'done\') {
-                    var _this = this;
                     if (info.file.response) {
                         if (info.file.response.success) {
-                            _this.'.$this->name.'.url = info.file.response.url;
-                            _this.'.$this->name.'.newValue = info.file.response.newValue;
-                            _this.'.$this->name.'.loading = false;
+                            this.'.$this->name.'.url = info.file.response.url;
+                            this.'.$this->name.'.newValue = info.file.response.newValue;
+                            this.'.$this->name.'.loading = false;
                         } else {
                             this.$message.error(info.file.response.message);
                         }
@@ -196,7 +198,7 @@ class ConfigItemFile extends ConfigItem
      * 提交处理
      *
      * @param $data
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function submit($data)
     {

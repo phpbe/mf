@@ -21,18 +21,6 @@ class ConfigItemSelect extends ConfigItem
     {
         parent::__construct($name, $value, $annotation);
 
-        if (!isset($this->ui['select']['placeholder'])) {
-            $this->ui['select']['placeholder'] = '请选择';
-        }
-
-        if (!isset($this->ui['select']['filterable'])) {
-            $this->ui['select']['filterable'] = null;
-        }
-
-        if (!isset($this->ui['select']['clearable'])) {
-            $this->ui['select']['clearable'] = null;
-        }
-
         $this->ui['select']['v-model'] = 'formData.' . $this->name;
     }
 

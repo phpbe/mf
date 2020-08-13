@@ -3,7 +3,7 @@
 namespace Be\Plugin\Config\Item;
 
 use Be\System\Annotation\BeConfigItem;
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 按钮
@@ -106,7 +106,7 @@ abstract class ConfigItem
      * 提交处理
      *
      * @param $data
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function submit($data)
     {
@@ -117,18 +117,18 @@ abstract class ConfigItem
                     $newValue =  htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_walk($newValue, 'intval');
+                    $newValue = array_map('intval',$newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'array(float)':
                     $newValue =  htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_walk($newValue, 'floatval');
+                    $newValue = array_map('floatval',$newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'array':
@@ -136,16 +136,16 @@ abstract class ConfigItem
                     $newValue = htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_walk($newValue, 'trim');
+                    $newValue = array_map('trim',$newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'mixed':
                     $newValue = htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
                     $this->newValue = $newValue;
                     break;
@@ -154,13 +154,13 @@ abstract class ConfigItem
                     break;
                 case 'int':
                     if (!is_numeric($newValue)) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
                     }
                     $this->newValue = intval($newValue);
                     break;
                 case 'float':
                     if (!is_numeric($newValue)) {
-                        throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
+                        throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
                     }
                     $this->newValue = floatval($newValue);
                     break;

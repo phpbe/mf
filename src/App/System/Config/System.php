@@ -19,8 +19,7 @@ class System
     /**
      * @BeConfigItem("主题",
      *     driver="ConfigItemSelect",
-     *     keyValueType = "code",
-     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();"
+     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();")
      */
     public $theme = 'Admin';
 
@@ -40,9 +39,9 @@ class System
     public $timezone = 'Asia/Shanghai';
 
     /**
-     * @BeConfigItem("时区",
+     * @BeConfigItem("默认分页",
      *     driver="ConfigItemInputNumberInt",
-     *     ui="return [':min' => 1];")
+     *     ui="return ['input-number' => [':min' => 1]];")
      */
     public $pageSize = 12;
 

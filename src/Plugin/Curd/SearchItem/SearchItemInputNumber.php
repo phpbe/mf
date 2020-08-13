@@ -3,7 +3,7 @@
 namespace Be\Plugin\Curd\SearchItem;
 
 
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 搜索项 数字
@@ -63,7 +63,7 @@ class SearchItemInputNumber extends SearchItem
      * 提交处理
      *
      * @param $data
-     * @throws ServiceException
+     * @throws PluginException
      */
     public function submit($data)
     {
@@ -71,7 +71,7 @@ class SearchItemInputNumber extends SearchItem
             $newValue =  $data[$this->name];
 
             if (!is_numeric($newValue)) {
-                throw new ServiceException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
+                throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 不是合法的数字');
             }
 
             $this->newValue = $newValue;

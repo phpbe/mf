@@ -4,7 +4,7 @@ namespace Be\Plugin\Config\Item;
 
 use Be\System\Annotation\BeConfigItem;
 use Be\System\Be;
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 use Be\Util\Str;
 
 /**

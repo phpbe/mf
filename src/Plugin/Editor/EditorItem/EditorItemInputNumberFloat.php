@@ -2,7 +2,7 @@
 
 namespace Be\Plugin\Editor\EditorItem;
 
-use Be\System\Exception\ServiceException;
+use Be\System\Exception\PluginException;
 
 /**
  * 搜索项 浮点数
@@ -73,7 +73,7 @@ class EditorItemInputNumberFloat extends EditorItem
             $newValue = $data[$this->field];
 
             if (!is_numeric($newValue)) {
-                throw new ServiceException('参数 ' . $this->label . ' (' . $this->field . ') 不是合法的数字');
+                throw new PluginException('参数 ' . $this->label . ' (' . $this->field . ') 不是合法的数字');
             }
 
             $this->newValue = (float) $newValue;

@@ -155,7 +155,7 @@ class Config extends Service
         $this->configs[$className] = $config;
         return $config;
     }
-    
+
     /*
      * 保存配置文件到指定咱径
      *
