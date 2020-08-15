@@ -5,6 +5,7 @@ namespace Be\App\System\Controller;
 use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
+use Be\Util\Net\FileUpload;
 
 /**
  * @BeMenuGroup("配置中心")
@@ -72,144 +73,116 @@ class Config extends \Be\System\Controller
     /**
      * @BePermission("修改")
      */
-    public function uploadFile() {
+    public function uploadFile()
+    {
+        $appName = Request::get('appName');
+        $configName = Request::get('configName');
+        $itemName = Request::get('itemName');
 
-        $file = Request::files('file');
-
+        $file = Request::files($itemName);
         if ($file['error'] == 0) {
 
-            $app = Request::get('_app');
-            $config = Request::get('_config');
-            $item = Request::get('_item');
-
             $service = Be::getService('System.Config');
-            $configObj = $service->getConfig($app, $config);
-            $configItemObj = null;
-            foreach ($configObj['items'] as $x) {
-                if ($x->name == $item) {
-                    $configItemObj = $x;
-                    break;
-                }
-            }
+            $config = $service->getConfig($appName, $configName);
+            $configItemDriver = $config['items'][$itemName]['driver'];
 
-            if ($file['size'] > $configItemObj->option['maxSizeInt']) {
-                Response::error('您上传的文件尺寸已超过最大限制：'.$configItemObj->option['maxSize'].'！');
+            if ($file['size'] > $configItemDriver->maxSizeInt) {
+                Response::set('success', false);
+                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $configItemDriver->maxSize . '！');
+                Response::ajax();
             }
-
 
             $ext = '';
-            $rpos = strrpos($file['name'], '.');
-            if ($rpos !== false) {
-                $ext = substr($file['name'], $rpos + 1);
+            $rPos = strrpos($file['name'], '.');
+            if ($rPos !== false) {
+                $ext = substr($file['name'], $rPos + 1);
+            }
+            if (!in_array($ext, $configItemDriver->allowUploadFileTypes)) {
+                Response::error('禁止上传的文件类型：' . $ext . '！');
             }
 
-            if (!in_array($ext, $configItemObj->option['allowUploadFileTypes'])) {
-                Response::error('禁止上传的文件类型：'.$ext.'！');
-            }
-
-            $newName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
-            $newPath = Be::getRuntime()->getDataPath() . $configItemObj->option['path'] . $newName;
-
-            if (move_uploaded_file($file['tmp_name'], $newPath)) {
-                $newUrl = Be::getRuntime()->getDataUrl() . $configItemObj->option['path'] . $newName;
-
-                Response::set('newValue', $newName);
-                Response::set('url', $newUrl);
-                Response::success('上传成功！');
-
+            $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
+            $newFilePath = Be::getRuntime()->getDataPath() . $configItemDriver->path . $newFileName;
+            if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
+                $newFileUrl = Be::getRuntime()->getDataUrl() . $configItemDriver->path . $newFileName;
+                Response::set('newValue', $newFileName);
+                Response::set('url', $newFileUrl);
+                Response::set('success', true);
+                Response::set('message', '上传成功！');
+                Response::ajax();
             } else {
-                Response::error('服务器处理上传文件出错！');
+                Response::set('success', false);
+                Response::set('message', '服务器处理上传文件出错！');
+                Response::ajax();
             }
-
         } else {
-            $uploadErrors = array(
-                '1' => '上传的文件过大（超过了 php.ini 中 upload_max_filesize 选项限制的值：' . ini_get('upload_max_filesize') . '）！',
-                '2' => '上传的文件过大（超过了 php.ini 中 post_max_size 选项限制的值：' . ini_get('post_max_size') . '）！',
-                '3' => '文件只有部分被上传！',
-                '4' => '没有文件被上传！',
-                '5' => '上传的文件大小为 0！',
-                '6' => '找不到临时文件夹！',
-                '7' => '文件写入失败！'
-            );
-            $error = null;
-            if (array_key_exists($file['error'], $uploadErrors)) {
-                $error = $uploadErrors[$file['error']];
-            } else {
-                $error = '错误代码：' . $file['error'];
-            }
-
-            Response::error('上传失败' . '(' . $error . ')');
+            $errorDesc = FileUpload::errorDescription($file['error']);
+            Response::set('success', false);
+            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
+            Response::ajax();
         }
     }
 
     /**
      * @BePermission("修改")
      */
-    public function uploadImage() {
+    public function uploadImage()
+    {
+        $appName = Request::get('appName');
+        $configName = Request::get('configName');
+        $itemName = Request::get('itemName');
 
-        $file = Request::files('file');
+        $file = Request::files($itemName);
         if ($file['error'] == 0) {
-
-            $app = Request::get('_app');
-            $config = Request::get('_config');
-            $item = Request::get('_item');
-
             $service = Be::getService('System.Config');
-            $configObj = $service->getConfig($app, $config);
-            $configItemObj = null;
-            foreach ($configObj['items'] as $x) {
-                if ($x->name == $item) {
-                    $configItemObj = $x;
-                    break;
-                }
+            $config = $service->getConfig($appName, $configName);
+            $configItemDriver = $config['items'][$itemName]['driver'];
+
+            if ($file['size'] > $configItemDriver->maxSizeInt) {
+                Response::set('success', false);
+                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $configItemDriver->maxSize . '！');
+                Response::ajax();
             }
 
-            if ($file['size'] > $configItemObj->option['maxSizeInt']) {
-                Response::error('您上传的图像尺寸已超过最大限制：'.$configItemObj->option['maxSize'].'！');
+            $ext = '';
+            $rPos = strrpos($file['name'], '.');
+            if ($rPos !== false) {
+                $ext = substr($file['name'], $rPos + 1);
+            }
+            if (!in_array($ext, $configItemDriver->allowUploadImageTypes)) {
+                Response::error('禁止上传的图像类型：' . $ext . '！');
             }
 
+            ini_set('memory_limit', '-1');
             $libImage = Be::getLib('Image');
             $libImage->open($file['tmp_name']);
             if ($libImage->isImage()) {
-
-                if ($configItemObj->option['maxWidth'] > 0 && $configItemObj->option['maxHeight'] > 0) {
-                    if ($libImage->getWidth() > $configItemObj->option['maxWidth']|| $libImage->getheight() > $configItemObj->option['maxHeight']) {
-                        $libImage->resize($configItemObj->option['maxWidth'], $configItemObj->option['maxHeight'], 'scale');
+                if ($configItemDriver->maxWidth > 0 && $configItemDriver->maxHeight> 0) {
+                    if ($libImage->getWidth() > $configItemDriver->maxWidth || $libImage->getheight() > $configItemDriver->maxHeight) {
+                        $libImage->resize($configItemDriver->maxWidth, $configItemDriver->maxHeight, 'scale');
                     }
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . $configItemObj->option['path'] . $newImageName;
-
+                $newImagePath = Be::getRuntime()->getDataPath() . $configItemDriver->path . $newImageName;
                 if ($libImage->save($newImagePath)) {
-
-                    $newImageUrl = Be::getRuntime()->getDataUrl() . $configItemObj->option['path'] . $newImageName;
-
+                    $newImageUrl = Be::getRuntime()->getDataUrl() . $configItemDriver->path . $newImageName;
                     Response::set('newValue', $newImageName);
                     Response::set('url', $newImageUrl);
-                    Response::success('上传成功！');
+                    Response::set('success', true);
+                    Response::set('message', '上传成功！');
+                    Response::ajax();
                 }
             } else {
-                Response::error('您上传的不是有效的图像文件！');
+                Response::set('success', false);
+                Response::set('message', '您上传的不是有效的图像文件！');
+                Response::ajax();
             }
         } else {
-            $uploadErrors = array(
-                '1' => '上传的文件过大（超过了 php.ini 中 upload_max_filesize 选项限制的值：' . ini_get('upload_max_filesize') . '）！',
-                '2' => '上传的文件过大（超过了 php.ini 中 post_max_size 选项限制的值：' . ini_get('post_max_size') . '）！',
-                '3' => '文件只有部分被上传！',
-                '4' => '没有文件被上传！',
-                '5' => '上传的文件大小为 0！',
-                '6' => '找不到临时文件夹！',
-                '7' => '文件写入失败！'
-            );
-            $error = null;
-            if (array_key_exists($file['error'], $uploadErrors)) {
-                $error = $uploadErrors[$file['error']];
-            } else {
-                $error = '错误代码：' . $file['error'];
-            }
-
-            Response::error('上传失败' . '(' . $error . ')');
+            $errorDesc = FileUpload::errorDescription($file['error']);
+            Response::set('success', false);
+            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
+            Response::ajax();
         }
     }
 

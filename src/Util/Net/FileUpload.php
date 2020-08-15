@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\Util\FileSystem;
+namespace Be\Util\Net;
 
-class Upload
+class FileUpload
 {
 
     /**
@@ -11,7 +11,7 @@ class Upload
      * @param int $errorCode 错误码
      * @return string
      */
-    public static function errorDesc($errorCode)
+    public static function errorDescription($errorCode)
     {
         switch ($errorCode) {
             case 1:
@@ -32,8 +32,5 @@ class Upload
                 return '未知错误，代码：' . $errorCode;
 
         }
-
     }
-
-
 }

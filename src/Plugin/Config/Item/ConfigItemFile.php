@@ -66,31 +66,37 @@ class ConfigItemFile extends ConfigItem
             $this->description = '格式：'. implode(', ', $this->allowUploadFileTypes) .'，小于 ' . $this->maxSize;
         }
 
-        if ($this->description) {
-            if (!isset($this->ui['form-item']['help'])) {
-                $this->ui['form-item']['help'] = htmlspecialchars($this->description);
-            }
-        }
-
         if (!isset($this->ui['upload']['accept'])) {
-            $this->ui['upload']['accept'] = '.' . implode(', ', $this->allowUploadFileTypes);
+            $this->ui['upload']['accept'] = implode(',', $this->allowUploadFileTypes);
         }
 
-        if (!isset($this->ui['upload'][':show-upload-list'])) {
-            $this->ui['upload'][':show-upload-list'] = 'false';
+        if (!isset($this->ui['upload'][':on-success'])) {
+            $this->ui['upload'][':on-success'] = 'configItemFile_' . $this->name . '_onSuccess';
         }
 
         if (!isset($this->ui['upload'][':before-upload'])) {
-            $this->ui['upload'][':beforeUpload'] = 'configItemFileBeforeUpload';
+            $this->ui['upload'][':before-upload'] = 'configItemFile_' . $this->name . '_beforeUpload';
         }
 
-        if (!isset($this->ui['upload']['@change'])) {
-            $this->ui['upload']['@change'] = 'configItemFileChange';
+        if (!isset($this->ui['upload'][':on-error'])) {
+            $this->ui['upload'][':on-error'] = 'configItemFile_onError';
+        }
+
+        if (!isset($this->ui['upload'][':file-list'])) {
+            $this->ui['upload'][':file-list'] = 'config.'.$this->name.'.fileList';
+        }
+
+        if (!isset($this->ui['upload']['name'])) {
+            $this->ui['upload']['name'] = $this->name;
+        }
+
+        if (!isset($this->ui['upload']['limit'])) {
+            $this->ui['upload']['limit'] = 1;
         }
 
         $this->ui['upload']['v-model'] = 'formData.' . $this->name;
-
     }
+
 
     /**
      * 获取html内容
@@ -99,11 +105,13 @@ class ConfigItemFile extends ConfigItem
      */
     public function getHtml()
     {
-        $this->ui['upload']['action'] = beUrl('System.Config.uploadFile', [
-            'appName' => $this->appName,
-            'configName' => $this->configName,
-            'itemName' => $this->name
-        ]);
+        if (!isset($this->ui['upload']['action'])) {
+            $this->ui['upload']['action'] = beUrl('System.Config.uploadFile', [
+                'appName' => $this->appName,
+                'configName' => $this->configName,
+                'itemName' => $this->name
+            ]);;
+        }
 
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
@@ -115,6 +123,7 @@ class ConfigItemFile extends ConfigItem
         }
         $html .= '>';
 
+        $html .= '<a v-if="formData.' . $this->name . '" :href="config.' . $this->name . '.url" target="_blank">{{formData.' . $this->name . '}}</a>';
         $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
             foreach ($this->ui['upload'] as $k => $v) {
@@ -126,12 +135,8 @@ class ConfigItemFile extends ConfigItem
             }
         }
         $html .= '>';
-
-        $html .= '<a v-if="config.' . $this->name . '.fileName" :href="config.' . $this->name . '.url">{{config.' . $this->name . '.newValue}}</a>';
-        $html .= '<div v-else>';
-        $html .= '<el-button><el-icon type="upload" ></el-icon> 选择文件</el-button>';
-        $html .= '</div>';
-
+        $html .= '<el-button size="small" type="primary"><i class="el-icon-upload2"></i> 选择文件</el-button>';
+        $html .= '<div class="el-upload__tip" slot="tip">'.$this->description.'</div>';
         $html .= '</el-upload>';
         $html .= '</el-form-item>';
         return $html;
@@ -147,10 +152,8 @@ class ConfigItemFile extends ConfigItem
         return [
             'config' => [
                 $this->name => [
-                    'loading' => false,
-                    'fileName' => '',
-                    'url' => '',
-                    'newValue' => ''
+                    'url' => Be::getRuntime()->getDataUrl() . $this->path . $this->value,
+                    'fileList' => []
                 ]
             ]
         ];
@@ -165,34 +168,28 @@ class ConfigItemFile extends ConfigItem
     public function getVueMethods()
     {
         return [
-            'configItemFileChange' => 'function (info) {
-                  console.log(info);
-                if (info.file.status === \'uploading\') {
-                    this.'.$this->name.'.loading = true;
-                    return;
-                }
-                
-                if (info.file.status === \'done\') {
-                    if (info.file.response) {
-                        if (info.file.response.success) {
-                            this.'.$this->name.'.url = info.file.response.url;
-                            this.'.$this->name.'.newValue = info.file.response.newValue;
-                            this.'.$this->name.'.loading = false;
-                        } else {
-                            this.$message.error(info.file.response.message);
-                        }
-                    }
-                }
-            }',
-            'configItemFileBeforeUpload' => 'function(file) {
+            'configItemFile_' . $this->name . '_beforeUpload' => 'function(file) {
                 if (file.size > '. $this->maxSizeInt.'){
-                    this.$message.error(\''.$this->label.' 文件尺寸须小于 '.$this->maxSize.'！\');
+                    this.$message.error("'.$this->label.' 文件尺寸须小于 '.$this->maxSize.'！");
+                    return false;
                 }
                 return true;
             }',
+            'configItemFile_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
+                if (response.success) {
+                    this.$message.success(response.message);
+                    this.config.'.$this->name.'.url = response.url;
+                    this.formData.'.$this->name.' = response.newValue;
+                } else {
+                    this.$message.error(response.message);
+                }
+                this.config.'.$this->name.'.fileList = [];
+            }',
+            'configItemFile_onError' => 'function(){
+                this.$message.error("上传失败，请重新上传");
+            }',
         ];
     }
-
 
     /**
      * 提交处理

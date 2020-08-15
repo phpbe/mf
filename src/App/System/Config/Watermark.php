@@ -45,7 +45,10 @@ class Watermark
      * @BeConfigItem("图像水印文件",
      *     driver = "ConfigItemImage",
      *     path = "/System/Watermark/",
-     *     ui = "return ['form-item' => ['v-if' => 'formData.enable && formData.type == \'image\'']];")
+     *     ui = "return ['form-item' => ['v-if' => 'formData.enable && formData.type == \'image\'']];",
+     *     maxWidth = "256",
+     *     maxHeight = "256",
+     * )
      */
     public $image = '0.png';
 

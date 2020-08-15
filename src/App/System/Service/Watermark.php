@@ -2,6 +2,7 @@
 namespace Be\App\System\Service;
 
 use Be\System\Be;
+use Be\System\Exception\ServiceException;
 use Be\System\RuntimeException;
 
 class Watermark extends \Be\System\Service
@@ -13,7 +14,7 @@ class Watermark extends \Be\System\Service
         $libImage->open($image);
 
         if (!$libImage->isImage()) {
-            throw new RuntimeException('不是合法的图片！');
+            throw new ServiceException('不是合法的图片！');
         }
 
         $width = $libImage->getWidth();
