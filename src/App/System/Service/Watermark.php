@@ -76,10 +76,10 @@ class Watermark extends \Be\System\Service
         } else {
 
             $watermarkImage = Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image;
-            if (!file_exists($watermarkImage)) {
-                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . 'Template/Watermark/images/watermark.png';
+            if (!$configWatermark->image || !file_exists($watermarkImage)) {
+                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/watermark.png';
             }
-
+            
             // 添加图像水印
             $libImage->watermark($watermarkImage, $x, $y);
         }
