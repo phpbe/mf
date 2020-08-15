@@ -418,7 +418,7 @@ class GdImpl implements Driver
         // jpeg
         if (function_exists('imagecreatefromjpeg') && (($type == 'image/jpg') || ($type == 'image/jpeg') || ($type == 'image/pjpeg'))) {
             $image = @imagecreatefromjpeg($path);
-            if ($image !== false) {
+               if ($image !== false) {
                 return $image;
             }
         }

@@ -4,7 +4,7 @@ namespace Be\System\Db;
 
 use Be\System\Be;
 use Be\System\CacheProxy;
-use Be\System\Exception\DbException;
+use Be\System\Exception\TableException;
 
 /**
  * 数据库表 查询器
@@ -801,7 +801,7 @@ class Table
      * 准备查询的 sql
      *
      * @return array
-     * @throws DbException
+     * @throws TableException
      */
     public function prepareSql()
     {
@@ -829,7 +829,7 @@ class Table
                                     $sql .= ' (' . implode(',', array_fill(0, count($where[2]), '?')) . ')';
                                     $values = array_merge($values, $where[2]);
                                 } else {
-                                    throw new DbException('IN 查询条件异常！');
+                                    throw new TableException('IN 查询条件异常！');
                                 }
                                 break;
                             case 'BETWEEN':
@@ -839,7 +839,7 @@ class Table
                                     $sql .= ' ? AND ?';
                                     $values = array_merge($values, $where[2]);
                                 } else {
-                                    throw new DbException('BETWEEN 查询条件异常！');
+                                    throw new TableException('BETWEEN 查询条件异常！');
                                 }
                                 break;
                             default:

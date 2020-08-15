@@ -4,7 +4,7 @@ namespace Be\System\Db;
 
 use Be\System\Be;
 use Be\System\CacheProxy;
-use Be\System\Exception\DbException;
+use Be\System\Exception\TupleException;
 
 /**
  * 数据库表行记录
@@ -48,12 +48,12 @@ abstract class Tuple
      *
      * @param string | array | object $data 要绑定的数据对象
      * @return \Be\System\Db\Tuple | bool
-     * @throws DbException
+     * @throws TupleException
      */
     public function bind($data)
     {
         if (!is_object($data) && !is_array($data)) {
-            throw new DbException('绑定失败，不合法的数据源！');
+            throw new TupleException('绑定失败，不合法的数据源！');
         }
 
         if (is_object($data)) $data = get_object_vars($data);
@@ -75,12 +75,12 @@ abstract class Tuple
      *
      * @param string | array $primaryKeyValue 主锓的值，当为数组时格式为键值对
      * @return \Be\System\Db\Tuple
-     * @throws DbException
+     * @throws TupleException
      */
     public function load($primaryKeyValue)
     {
         if ($this->_primaryKey === null) {
-            throw new DbException('表' . $this->_tableName . '无主键，不支持按主键载入数据！');
+            throw new TupleException('表' . $this->_tableName . '无主键，不支持按主键载入数据！');
         }
 
         $db = Be::getDb($this->_dbName);
@@ -88,7 +88,7 @@ abstract class Tuple
         $tuple = null;
         if (is_array($primaryKeyValue)) {
             if (!is_array($this->_primaryKey)) {
-                throw new DbException('表' . $this->_tableName . '非复合主键，不支持按复合主键载入数据！');
+                throw new TupleException('表' . $this->_tableName . '非复合主键，不支持按复合主键载入数据！');
             }
 
             $keys = [];
@@ -97,7 +97,7 @@ abstract class Tuple
                 $keys[] = $db->quoteKey($primaryKey) . '=?';
 
                 if (!isset($primaryKeyValue[$primaryKey])) {
-                    throw new DbException('表' . $this->_tableName . '按复合主键载入数据时未指定主键' . $primaryKey . '的值！');
+                    throw new TupleException('表' . $this->_tableName . '按复合主键载入数据时未指定主键' . $primaryKey . '的值！');
                 }
 
                 $values[] = $primaryKeyValue[$primaryKey];
@@ -108,7 +108,7 @@ abstract class Tuple
 
         } else {
             if (is_array($this->_primaryKey)) {
-                throw new DbException('表' . $this->_tableName . '是复合主键，不支持章个主键载入数据！');
+                throw new TupleException('表' . $this->_tableName . '是复合主键，不支持章个主键载入数据！');
             }
 
             $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($this->_primaryKey) . '=?';
@@ -117,9 +117,9 @@ abstract class Tuple
 
         if (!$tuple) {
             if (is_array($primaryKeyValue)) {
-                throw new DbException('主键编号（' . implode(',', $this->_primaryKey) . '）为 ' . implode(',', $primaryKeyValue) . ' 的记录不存在！');
+                throw new TupleException('主键编号（' . implode(',', $this->_primaryKey) . '）为 ' . implode(',', $primaryKeyValue) . ' 的记录不存在！');
             } else {
-                throw new DbException('主键编号（' . $this->_primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
+                throw new TupleException('主键编号（' . $this->_primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
             }
         }
 
@@ -132,7 +132,7 @@ abstract class Tuple
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
      * @return \Be\System\Db\Tuple | false
-     * @throws DbException
+     * @throws TupleException
      */
     public function loadBy($field, $value = null)
     {
@@ -155,14 +155,14 @@ abstract class Tuple
             }
         } else {
             if (is_array($field)) {
-                throw new DbException('Tuple->load() 方法参数错误！');
+                throw new TupleException('Tuple->load() 方法参数错误！');
             }
             $sql = 'SELECT * FROM ' . $db->quoteKey($this->_tableName) . ' WHERE ' . $db->quoteKey($field) . '=?';
             $tuple = $db->getObject($sql, [$value]);
         }
 
         if (!$tuple) {
-            throw new DbException('未找到指定数据记录！');
+            throw new TupleException('未找到指定数据记录！');
         }
 
         return $this->bind($tuple);
@@ -220,17 +220,17 @@ abstract class Tuple
      *
      * @param int $primaryKeyValue 主键值
      * @return Tuple
-     * @throws DbException
+     * @throws TupleException
      */
     public function delete($primaryKeyValue = null)
     {
         if ($this->_primaryKey === null) {
-            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持按主键删除！');
+            throw new TupleException('表 ' . $this->_tableName . ' 无主键, 不支持按主键删除！');
         }
 
         if ($primaryKeyValue === null) {
             if ($this->_primaryKey === null) {
-                throw new DbException('参数缺失, 请指定要删除记录的编号！');
+                throw new TupleException('参数缺失, 请指定要删除记录的编号！');
             } elseif (is_array($this->_primaryKey)) {
                 $primaryKeyValue = [];
                 foreach ($this->_primaryKey as $primaryKey) {
@@ -243,7 +243,7 @@ abstract class Tuple
             if (is_array($this->_primaryKey)) {
                 foreach ($this->_primaryKey as $primaryKey) {
                     if (!isset($primaryKeyValue[$primaryKey])) {
-                        throw new DbException('表' . $this->_tableName . '按复合主键删除时未指定主键' . $primaryKey . '的值！');
+                        throw new TupleException('表' . $this->_tableName . '按复合主键删除时未指定主键' . $primaryKey . '的值！');
                     }
                 }
             }
@@ -270,12 +270,12 @@ abstract class Tuple
      * @param string $field 字段名
      * @param int $step 自增量
      * @return Tuple
-     * @throws DbException
+     * @throws TupleException
      */
     public function increment($field, $step = 1)
     {
         if ($this->_primaryKey === null) {
-            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持字段自增！');
+            throw new TupleException('表 ' . $this->_tableName . ' 无主键, 不支持字段自增！');
         }
 
         $db = Be::getDb($this->_dbName);
@@ -304,12 +304,12 @@ abstract class Tuple
      * @param string $field 字段名
      * @param int $step 自减量
      * @return Tuple
-     * @throws DbException
+     * @throws TupleException
      */
     public function decrement($field, $step = 1)
     {
         if ($this->_primaryKey === null) {
-            throw new DbException('表 ' . $this->_tableName . ' 无主键, 不支持字段自减！');
+            throw new TupleException('表 ' . $this->_tableName . ' 无主键, 不支持字段自减！');
         }
 
         $db = Be::getDb($this->_dbName);

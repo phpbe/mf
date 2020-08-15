@@ -1,6 +1,8 @@
 <?php
 namespace Be\Lib\Ip2Country;
 
+use Be\System\Exception\LibException;
+
 /**
  *  Convert IP to country name
  *
@@ -276,7 +278,7 @@ class Ip2Country
     {
         $this->db = @fopen(__DIR__ . '/ip.dat', 'rb');
         if (!$this->db) {
-            throw new \Exception('IP database（ip.dat）not found！');
+            throw new LibException('IP database（ip.dat）not found！');
         }
 
         $stat = fstat($this->db);

@@ -1,6 +1,8 @@
 <?php
 namespace Be\Lib\Zip;
 
+use Be\System\Exception\LibException;
+
 /**
  *  zip 压缩文件处理
  *
@@ -77,7 +79,7 @@ class Zip
         if (!$this->info) $this->loadInfo();
 
         if (!extension_loaded('zlib')) {
-            throw new \Exception('你的服务器不支持 zlib');
+            throw new LibException('你的服务器不支持 zlib');
         }
 
         for ($i = 0, $n = count($this->info); $i < $n; $i++) {
@@ -141,7 +143,7 @@ class Zip
         $start = strpos($this->data, $this->dir_header, $offset);
         do {
             if (strlen($this->data) < $start + 31) {
-                throw new \Exception('zip文件数据错误');
+                throw new LibException('zip文件数据错误');
             }
             $info = unpack('vMethod/VTime/VCRC32/VCompressed/VUncompressed/vLength', substr($this->data, $start + 10, 20));
             $name = substr($this->data, $start + 46, $info['Length']);
@@ -150,7 +152,7 @@ class Zip
             $entries[$name]['date'] = mktime((($info['Time'] >> 11) & 0x1f), (($info['Time'] >> 5) & 0x3f), (($info['Time'] << 1) & 0x3e), (($info['Time'] >> 21) & 0x07), (($info['Time'] >> 16) & 0x1f), ((($info['Time'] >> 25) & 0x7f) + 1980));
 
             if (strlen($this->data) < $start + 43) {
-                throw new \Exception('zip文件数据错误');
+                throw new LibException('zip文件数据错误');
             }
             $info = unpack('vInternal/VExternal', substr($this->data, $start + 36, 6));
 
@@ -161,7 +163,7 @@ class Zip
         $start = strpos($this->data, $this->file_header);
         do {
             if (strlen($this->data) < $start + 34) {
-                throw new \Exception('zip文件数据错误');
+                throw new LibException('zip文件数据错误');
             }
             $info = unpack('vMethod/VTime/VCRC32/VCompressed/VUncompressed/vLength/vExtraLength', substr($this->data, $start + 8, 25));
             $name = substr($this->data, $start + 30, $info['Length']);

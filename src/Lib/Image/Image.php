@@ -1,6 +1,8 @@
 <?php
 namespace Be\Lib\Image;
 
+use Be\System\Exception\LibException;
+
 /**
  * 图像处理库
  *
@@ -16,12 +18,14 @@ class Image
     // 构造函数
     public function __construct()
     {
-        if (class_exists('Imagick')) {
+        if (extension_loaded('Imagick')) {
             $this->handler = new \Be\Lib\Image\Driver\ImagickImpl();
             $this->imagick = true;
-        } else {
+        } elseif (extension_loaded('gd'))  {
             $this->handler = new \Be\Lib\Image\Driver\GdImpl();
             $this->gd = true;
+        } else {
+            throw new LibException('未安装可用的图像扩展（Imagick或GD）！');
         }
     }
 

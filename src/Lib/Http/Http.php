@@ -1,6 +1,8 @@
 <?php
 namespace Be\Lib\Http;
 
+use Be\System\Exception\LibException;
+
 /**
  * HTTP 封装库
  *
@@ -24,7 +26,7 @@ class Http
     public function __construct()
     {
         if (!function_exists('curl_init')) {
-            throw new \Exception('您的服务器未安装用于HTTP通信的 CURL 扩展');
+            throw new LibException('您的服务器未安装用于HTTP通信的 CURL 扩展');
         }
 
         $this->init();
@@ -200,7 +202,7 @@ class Http
 
         if (curl_errno($handle)) {
             curl_close($handle);
-            throw new \Exception('连接主机' . $this->url . '时发生错误: ' . curl_error($handle));
+            throw new LibException('连接主机' . $this->url . '时发生错误: ' . curl_error($handle));
         }
 
         curl_close($handle);

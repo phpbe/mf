@@ -2,6 +2,8 @@
 
 namespace Be\Lib\Ip;
 
+use Be\System\Exception\LibException;
+
 /**
  * 转换到地理位置（QQwry纯真地址库）
  *
@@ -25,7 +27,7 @@ class Ip
     {
         $this->db = @fopen(__DIR__ . '/ip.dat', 'rb');
         if (!$this->db) {
-            throw new \Exception('无法读取IP地址库');
+            throw new LibException('无法读取IP地址库');
         }
 
         $buffer = fread($this->db, 4);
