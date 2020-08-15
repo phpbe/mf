@@ -8,7 +8,9 @@
 
         <el-tabs tab-position="left" value="<?php echo $this->appName; ?>">
             <?php foreach ($this->configTree as $x) { ?>
-                <el-tab-pane name="<?php echo $x['app']->name; ?>" label="<?php echo $x['app']->label; ?>">
+                <el-tab-pane name="<?php echo $x['app']->name; ?>">
+                    <span slot="label"><i class="<?php echo $x['app']->icon; ?>"></i> <?php echo $x['app']->label; ?></span>
+
                     <el-tabs tab-position="left" value="<?php echo $this->appName . '-' . $this->configName; ?>" @tab-click="goto">
                         <?php
                         foreach ($x['configs'] as $xx) {
@@ -41,8 +43,8 @@
                                                 <el-form-item>
                                                     <el-button type="success" icon="el-icon-check" @click="saveConfig">保存</el-button>
                                                     <el-button type="danger" icon="el-icon-close" @click="resetConfig">恢复默认值</el-button>
-                                                    <?php if (isset($this->config['test'])) { ?>
-                                                        <el-button icon="question" onclick="window.open(\'' . $this->config['test'] . '\');">测试</el-button>
+                                                    <?php if ($this->config['annotation']->test) { ?>
+                                                        <el-button icon="el-icon-view" @click="window.open('<?php echo $this->config['annotation']->test; ?>');">测试</el-button>
                                                     <?php } ?>
                                                 </el-form-item>
                                             </el-form>

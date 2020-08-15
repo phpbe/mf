@@ -7,8 +7,8 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("设置", icon="el-icon-setting")
- * @BePermissionGroup("设置")
+ * @BeMenuGroup("配置中心", icon="el-icon-setting")
+ * @BePermissionGroup("配置中心")
  */
 class Mail extends \Be\System\Controller
 {

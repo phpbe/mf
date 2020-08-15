@@ -25,8 +25,8 @@ class Config extends \Be\System\Controller
         if (count($configTree) == 0) {
             Response::error('暂无配置项');
         }
-
         Response::set('configTree', $configTree);
+
         $appName = Request::get('appName', '');
         $configName = Request::get('configName', '');
         if (!$appName || !$configName) {

@@ -51,7 +51,8 @@ $my = Be::getUser();
                         text-color="#ccc"
                         active-text-color="#ffd04b"
                         :default-active="activeIndex"
-                        :collapse="collapse" :collapse-transition="false">
+                        :collapse="collapse"
+                        :collapse-transition="false">
                     <?php
                     $appName = Be::getRuntime()->getAppName();
                     foreach ($menuTree as $menu) {
@@ -108,8 +109,12 @@ $my = Be::getUser();
                         $menu = Be::getMenu();
                         $menuTree = $menu->getMenuTree();
                         ?>
-                        <el-menu mode="horizontal" :default-active="defaultActive">
-
+                        <el-menu
+                                mode="horizontal"
+                                :default-active="defaultActive"
+                                background-color="#eee"
+                                text-color="#444"
+                                active-text-color="#000">
                             <?php
                             foreach ($menuTree as $menu) {
 
@@ -133,12 +138,11 @@ $my = Be::getUser();
                                         if ($subMenu->subMenu) {
                                             foreach ($subMenu->subMenu as $subSubMenu) {
                                                 echo '<el-menu-item key="north-menu-'.$subSubMenu->id.'">';
-                                                echo '<i class="'.$subSubMenu->icon.'"></i>';
-                                                echo '<span slot="title">';
-                                                echo '<el-link href="'.$subSubMenu->url.'">';
+                                                echo '<template slot="title">';
+                                                echo '<el-link href="'.$subSubMenu->url.'" icon="'.$subSubMenu->icon.'" :underline="false">';
                                                 echo $subSubMenu->label;
                                                 echo '</el-link>';
-                                                echo '</span>';
+                                                echo '</template>';
                                                 echo '</el-menu-item>';
                                             }
                                         }
@@ -156,10 +160,10 @@ $my = Be::getUser();
                                 </template>
 
                                 <el-menu-item key="help-official">
-                                    <el-link href="http://www.phpbe.com/" target="_blank"><el-icon type="global"></el-icon>官方网站</el-link>
+                                    <el-link href="http://www.phpbe.com/" target="_blank" icon="el-icon-position" :underline="false">官方网站</el-link>
                                 </el-menu-item>
                                 <el-menu-item key="help-support">
-                                    <el-link href="http://support.phpbe.com/" target="_blank"><el-icon type="bulb"></el-icon>技术支持</el-link>
+                                    <el-link href="http://support.phpbe.com/" target="_blank" icon="el-icon-help" :underline="false">技术支持</el-link>
                                 </el-menu-item>
                             </el-submenu>
 
@@ -191,26 +195,6 @@ $my = Be::getUser();
             </div>
 
             <div class="be-center">
-                <div class="center-title" id="app-center-title" v-cloak>
-                    <?php
-                    $menu = Be::getMenu();
-                    $pathway = $menu->getPathwayByUrl(\Be\System\Request::url());
-                    ?>
-                    <el-breadcrumb separator="/">
-                        <el-breadcrumb-item>
-                            <i class="el-icon-s-home"></i>
-                        </el-breadcrumb-item>
-                        <?php
-                        foreach ($pathway as $x) {
-                            ?>
-                            <el-breadcrumb-item>
-                                <span><?php echo $x->label; ?></span>
-                            </el-breadcrumb-item>
-                            <?php
-                        }
-                        ?>
-                    </el-breadcrumb>
-                </div>
                 <div class="center-body">
                     <be-center>
                     </be-center>
@@ -226,7 +210,7 @@ $my = Be::getUser();
         var vueNorth = new Vue({
             el: '#be-north',
             data: {
-                defaultActive: "home",
+                defaultActive: "<?php echo Be::getRuntime()->getAppName(); ?>",
                 aboutModel: false
             },
             methods: {
@@ -239,7 +223,7 @@ $my = Be::getUser();
         var vueWestMenu = new Vue({
             el: '#app-west',
             data : {
-                activeIndex: "",
+                activeIndex: "<?php echo Be::getRuntime()->getAppName(); ?>",
                 collapse: this.$cookies.isKey(sWestMenuCollapseKey) && this.$cookies.get(sWestMenuCollapseKey) == '1'
             },
             methods: {
@@ -256,8 +240,6 @@ $my = Be::getUser();
                 }
             }
         });
-
-        new Vue({el: '#app-center-title'});
 
     </script>
 

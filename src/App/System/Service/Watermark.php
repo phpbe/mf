@@ -29,7 +29,7 @@ class Watermark extends \Be\System\Service
                 $x = $width / 2 + $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
-            case 'northEast':
+            case 'northeast':
                 $x = $width + $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
@@ -37,7 +37,7 @@ class Watermark extends \Be\System\Service
                 $x = $width + $configWatermark->offsetX;
                 $y = $height / 2 + $configWatermark->offsetY;
                 break;
-            case 'southEast':
+            case 'southeast':
                 $x = $width + $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
@@ -45,7 +45,7 @@ class Watermark extends \Be\System\Service
                 $x = $width / 2 + $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
-            case 'southWest':
+            case 'southwest':
                 $x = $configWatermark->offsetX;
                 $y = $height + $configWatermark->offsetY;
                 break;
@@ -53,7 +53,7 @@ class Watermark extends \Be\System\Service
                 $x = $configWatermark->offsetX;
                 $y = $height / 2 + $configWatermark->offsetY;
                 break;
-            case 'northWest':
+            case 'northwest':
                 $x = $configWatermark->offsetX;
                 $y = $configWatermark->offsetY;
                 break;
@@ -77,7 +77,7 @@ class Watermark extends \Be\System\Service
 
             $watermarkImage = Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image;
             if (!file_exists($watermarkImage)) {
-                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . 'Template/System/Watermark/images/watermark.png';
+                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . 'Template/Watermark/images/watermark.png';
             }
 
             // 添加图像水印

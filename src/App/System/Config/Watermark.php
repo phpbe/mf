@@ -9,7 +9,7 @@ class Watermark
     /**
      * @BeConfigItem("是否启用", driver = "ConfigItemSwitch")
      */
-    public $enable = true;
+    public $enable = false;
 
     /**
      * @BeConfigItem("类型",
@@ -17,7 +17,7 @@ class Watermark
      *     keyValues = "return ['text' => '文字', 'image' => '图像'];",
      *     ui="return ['form-item' => ['v-if' => 'formData.enable']];")
      */
-    public $type = 'image';
+    public $type = 'text';
 
     /**
      * @BeConfigItem("水印位置",
@@ -50,7 +50,7 @@ class Watermark
      *     maxHeight = "256",
      * )
      */
-    public $image = '0.png';
+    public $image = '';
 
     /**
      * @BeConfigItem("文印文字",

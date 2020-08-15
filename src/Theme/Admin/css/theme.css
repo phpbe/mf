@@ -1,4 +1,4 @@
-body {background-color: #f2f2f2;}
+body {background-color: #fff;}
 ::-webkit-scrollbar {width: 8px;}
 ::-webkit-scrollbar-thumb {background-color: #555;}
 [v-cloak] {display: none;}
@@ -32,7 +32,7 @@ body {background-color: #f2f2f2;}
 
 .be-west .logo {
     height: 48px;
-    background: #fff url("../images/logo.gif") no-repeat;
+    background: #eee url("../images/logo.png") no-repeat;
 }
 .be-west .logo a{
     display: block;
@@ -77,7 +77,7 @@ body {background-color: #f2f2f2;}
 
 .be-north {
     width: 100%;
-    background-color: #fff;
+    background-color: #eee;
     box-shadow: 0 0 5px #ddd;
     height: 48px;
     z-index: 998;
@@ -102,14 +102,12 @@ body {background-color: #f2f2f2;}
     margin-top: 48px;
 }
 
-.be-center .center-title {
-    padding: 12px 0 0 12px;
-}
-
 .be-center .center-body {
-    padding: 0 10px;
+    padding: 10px;
 }
 
+.el-menu .el-link{display: block !important;}
+.el-menu .el-link:hover{color: #000 !important;}
 
 /* 顶部菜单头 */
 .be-north .el-menu--horizontal>.el-submenu .el-submenu__title{
