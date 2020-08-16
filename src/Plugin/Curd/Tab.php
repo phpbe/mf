@@ -10,7 +10,8 @@ use Be\System\Be;
 class Tab extends Item
 {
 
-    protected $newValue = null; // 新值
+    public $table = null; // 表名
+    public $newValue = null; // 新值
 
     /**
      * 获取html内容
@@ -52,10 +53,10 @@ class Tab extends Item
         if ($this->newValue !== null) {
 
             $field = null;
-            if (isset($this->option['table'])) {
-                $field = $this->option['table'] .'.' . $this->name;
-            } else {
+            if ($this->table === null) {
                 $field = $this->name;
+            } else {
+                $field = $this->table .'.' . $this->name;
             }
 
             $db = Be::getDb($dbName);
@@ -64,6 +65,7 @@ class Tab extends Item
 
         return '';
     }
+
 
 
     /**

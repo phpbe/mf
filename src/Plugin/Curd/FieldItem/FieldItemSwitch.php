@@ -13,11 +13,10 @@ class FieldItemSwitch extends FieldItem
      * 构造函数
      *
      * @param array $params 参数
-     * @param object $tuple 行数据
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($params = [])
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($params);
 
         if ($this->url) {
             if (!isset($this->ui['switch']['@click'])) {

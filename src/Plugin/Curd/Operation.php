@@ -14,20 +14,16 @@ class Operation extends Item
      * 构造函数
      *
      * @param array $params 参数
-     * @param object $tuple 行数据
+
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($params = [])
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($params);
 
         if (isset($params['position'])) {
             $position = $params['position'];
             if (is_callable($position)) {
-                if ($tuple !== null) {
-                    $this->position = $position($tuple);
-                } else {
-                    $this->position = $position();
-                }
+                $this->position = $position();
             } else {
                 $this->position = $position;
             }

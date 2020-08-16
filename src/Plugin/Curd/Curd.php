@@ -98,10 +98,29 @@ class Curd extends Plugin
 
                 $rows = $table->getObjects();
 
+                $formattedRows = [];
+                foreach ($rows as $row) {
+                    $formattedRow = [];
+                    foreach ($this->setting['lists']['field']['items'] as $item) {
+                        $itemName = $item['name'];
+                        if (isset($item['value'])) {
+                            $value = $item['value'];
+                            if (is_callable($value)) {
+                                $formattedRow[$itemName] = $value($row);
+                            } else {
+                                $formattedRow[$itemName] = $value;
+                            }
+                        } else {
+                            $formattedRow[$itemName] = isset($row->$itemName) ? $row->$itemName : '';
+                        }
+                    }
+                    $formattedRows[] = $formattedRow;
+                }
+
                 Response::set('success', true);
                 Response::set('data', [
                     'total' => $total,
-                    'rows' => $rows,
+                    'rows' => $formattedRows,
                 ]);
                 Response::ajax();
             } catch (\Exception $e) {

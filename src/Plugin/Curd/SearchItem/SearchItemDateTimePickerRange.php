@@ -14,11 +14,10 @@ class SearchItemDateTimePickerRange extends SearchItem
      * 构造函数
      *
      * @param array $params 参数
-     * @param object $tuple 行数据
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($params = [])
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($params);
 
         if (!isset($this->ui['date-picker']['range-separator'])) {
             $this->ui['date-picker']['range-separator'] = '至';

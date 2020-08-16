@@ -65,7 +65,7 @@ $my = Be::getUser();
 
                                     echo '<template slot="title">';
                                     echo '<i class="'.$subMenu->icon.'"></i>';
-                                    echo '<span slot="title">'.$subMenu->label.'</span>';
+                                    echo '<span>'.$subMenu->label.'</span>';
                                     echo '</template>';
 
                                     if ($subMenu->subMenu) {
@@ -114,7 +114,7 @@ $my = Be::getUser();
                                 mode="horizontal"
                                 :default-active="defaultActive"
                                 background-color="#eee"
-                                text-color="#444"
+                                text-color="#666"
                                 active-text-color="#000">
                             <?php
                             foreach ($menuTree as $menu) {
@@ -125,7 +125,7 @@ $my = Be::getUser();
 
                                     echo '<template slot="title">';
                                     echo '<i class="'.$menu->icon.'"></i>';
-                                    echo '<span slot="title">'.$menu->label.'</span>';
+                                    echo '<span>'.$menu->label.'</span>';
                                     echo '</template>';
 
                                     foreach ($menu->subMenu as $subMenu) {
@@ -133,17 +133,15 @@ $my = Be::getUser();
 
                                         echo '<template slot="title">';
                                         echo '<i class="'.$subMenu->icon.'"></i>';
-                                        echo '<span slot="title">'.$subMenu->label.'</span>';
+                                        echo '<span>'.$subMenu->label.'</span>';
                                         echo '</template>';
 
                                         if ($subMenu->subMenu) {
                                             foreach ($subMenu->subMenu as $subSubMenu) {
-                                                echo '<el-menu-item key="north-menu-'.$subSubMenu->id.'">';
-                                                echo '<template slot="title">';
+                                                echo '<el-menu-item index="north-menu-'.$subSubMenu->id.'">';
                                                 echo '<el-link href="'.$subSubMenu->url.'" icon="'.$subSubMenu->icon.'" :underline="false">';
                                                 echo $subSubMenu->label;
                                                 echo '</el-link>';
-                                                echo '</template>';
                                                 echo '</el-menu-item>';
                                             }
                                         }
@@ -160,10 +158,10 @@ $my = Be::getUser();
                                     <span slot="title">帮助</span>
                                 </template>
 
-                                <el-menu-item key="help-official">
+                                <el-menu-item index="help-official">
                                     <el-link href="http://www.phpbe.com/" target="_blank" icon="el-icon-position" :underline="false">官方网站</el-link>
                                 </el-menu-item>
-                                <el-menu-item key="help-support">
+                                <el-menu-item index="help-support">
                                     <el-link href="http://support.phpbe.com/" target="_blank" icon="el-icon-help" :underline="false">技术支持</el-link>
                                 </el-menu-item>
                             </el-submenu>
@@ -207,11 +205,14 @@ $my = Be::getUser();
     </div>
 
     <script>
-
+        <?php
+        $runtime = Be::getRuntime();
+        $menuKey = $runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName();
+        ?>
         var vueNorth = new Vue({
             el: '#be-north',
             data: {
-                defaultActive: "<?php echo Be::getRuntime()->getAppName(); ?>",
+                defaultActive: "north-menu-<?php echo $menuKey; ?>",
                 aboutModel: false
             },
             methods: {
@@ -224,7 +225,7 @@ $my = Be::getUser();
         var vueWestMenu = new Vue({
             el: '#app-west',
             data : {
-                activeIndex: "<?php echo Be::getRuntime()->getAppName(); ?>",
+                activeIndex: "west-menu-<?php echo $menuKey; ?>",
                 collapse: this.$cookies.isKey(sWestMenuCollapseKey) && this.$cookies.get(sWestMenuCollapseKey) == '1'
             },
             methods: {

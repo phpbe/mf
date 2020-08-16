@@ -3,6 +3,9 @@
 namespace Be\App\System\Controller;
 
 
+use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
+use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
+use Be\Plugin\Curd\FieldItem\FieldItemText;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
@@ -73,7 +76,6 @@ class User extends Controller
      *
      * @BeMenu("用户管理", icon="el-icon-fa fa-user-circle")
      * @BePermission("用户管理")
-     * @throws RuntimeException
      */
     public function users()
     {
@@ -84,13 +86,6 @@ class User extends Controller
 
             'lists' => [
                 'title' => '用户列表',
-
-                'tab' => [
-                    'field' => 'username',
-                    'keyValues' => [
-
-                    ]
-                ],
 
                 'search' => [
                     'items' => [
@@ -126,12 +121,6 @@ class User extends Controller
                             'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
                         ]
                     ],
-
-                    'ui' => [
-                        'form' => [
-                            'size' => 'small'
-                        ],
-                    ],
                 ],
 
 
@@ -142,11 +131,11 @@ class User extends Controller
                             'label' => '新增用户',
                             'task' => 'create',
                             'driver' => ToolbarItemButton::class,
-                            'target' => 'pop', // 'ajax - ajax请求 / pop - 弹出新窗口 / self - 当前页面 / blank - 新页面'
+                            'target' => 'pop', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'url' => '',    // 拽定网址
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'plus',
+                                    'icon' => 'el-icon-fa fa-user-plus',
                                 ]
                             ]
                         ],
@@ -160,7 +149,7 @@ class User extends Controller
                             ],
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'check',
+                                    'icon' => 'el-icon-fa fa-check',
                                     'type' => 'primary',
                                 ]
                             ]
@@ -175,8 +164,8 @@ class User extends Controller
                             ],
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'stop',
-                                    'type' => 'danger',
+                                    'icon' => 'el-icon-fa fa-lock',
+                                    'type' => 'warning',
                                 ]
                             ]
                         ],
@@ -186,7 +175,7 @@ class User extends Controller
                             'driver' => ToolbarItemButton::class,
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'delete',
+                                    'icon' => 'el-icon-delete',
                                     'type' => 'danger'
                                 ]
                             ]
@@ -195,54 +184,56 @@ class User extends Controller
                             'label' => '导出',
                             'task' => 'export',
                             'driver' => ToolbarItemButton::class,
+                            'target' => 'blank',
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'download',
+                                    'icon' => 'el-icon-fa fa-download',
                                 ]
                             ]
                         ],
                     ]
                 ],
 
-                'list' => [
+                'field' => [
 
                     // 未指定时取表的所有字段
                     'items' => [
                         [
                             'name' => 'avatar_s',
                             'label' => '头像',
-                            'driver' => ListItemAvatar::class,
+                            'driver' => FieldItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row->avatar_s == '') {
                                     return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
                                 } else {
                                     return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
                                 }
-                            }
+                            },
+                            'ui' => [
+                                'avatar' => [
+                                    ':size' => '32',
+                                ]
+                            ]
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
-                            'driver' => ListItemText::class,
                         ],
                         [
                             'name' => 'email',
                             'label' => '邮箱',
-                            'driver' => ListItemText::class,
                         ],
                         [
                             'name' => 'name',
                             'label' => '名称',
-                            'driver' => ListItemText::class,
                         ],
                         [
                             'name' => 'block',
                             'label' => '启用/禁用',
-                            'driver' => ListItemSwitch::class
+                            'driver' => FieldItemSwitch::class
                         ],
                     ],
                 ],
-
 
                 'operation' => [
                     'label' => '操作',
@@ -343,9 +334,6 @@ class User extends Controller
 
     /**
      * 初始化头像
-     *
-     * @throws RuntimeException
-     *
      * @BePermission("编辑")
      */
     public function initAvatar()

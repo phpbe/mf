@@ -18,21 +18,23 @@ abstract class FieldItem extends Item
      * 构造函数
      *
      * @param array $params 参数
-     * @param object $tuple 行数据
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($params = [])
     {
-        parent::__construct($params, $tuple);
+        unset($params['value']);
+
+        parent::__construct($params);
 
         if (isset($params['export'])) {
             $export = $params['export'];
             if (is_callable($export)) {
-                $this->export = $export($tuple);
+                $this->export = $export();
             } else {
                 $this->export = $export;
             }
         }
 
+        /*
         if (isset($params['exportValue'])) {
             $exportValue = $params['exportValue'];
             if (is_callable($exportValue)) {
@@ -41,6 +43,7 @@ abstract class FieldItem extends Item
                 $this->exportValue = $exportValue;
             }
         }
+        */
 
         if (!isset($this->ui['table-column']['prop'])) {
             $this->ui['table-column']['prop'] = $this->name;

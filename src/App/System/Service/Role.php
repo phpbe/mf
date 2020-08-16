@@ -31,6 +31,16 @@ class Role extends \Be\System\Service
     }
 
     /**
+     * 获取角色銉值对
+     *
+     * @return array
+     */
+    public function getRoleKeyValues()
+    {
+        return Be::newTable('system_role')->orderBy('ordering', 'ASC')->getKeyValues('id', 'name');
+    }
+
+    /**
      * 更新所有角色缓存
      */
     public function updateRoles()

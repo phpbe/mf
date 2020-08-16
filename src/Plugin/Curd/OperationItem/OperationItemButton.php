@@ -14,11 +14,10 @@ class OperationItemButton extends OperationItem
      * 构造函数
      *
      * @param array $params 参数
-     * @param object $tuple 行数据
      */
-    public function __construct($params = [], $tuple = null)
+    public function __construct($params = [])
     {
-        parent::__construct($params, $tuple);
+        parent::__construct($params);
 
         if (!isset($this->ui['button']['size'])) {
             $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';

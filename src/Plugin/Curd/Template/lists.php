@@ -44,37 +44,43 @@
             }
 
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
-                foreach ($this->setting['lists']['search']['items'] as $item) {
-                    $driver = null;
-                    if (isset($item['driver'])) {
-                        $driverName = $item['driver'];
-                        $driver = new $driverName($item);
-                    } else {
-                        $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
-                    }
-                    echo $driver->getHtml();
+                ?>
+                <el-row>
+                    <el-col :span="24">
+                        <?php
+                        foreach ($this->setting['lists']['search']['items'] as $item) {
+                            $driver = null;
+                            if (isset($item['driver'])) {
+                                $driverName = $item['driver'];
+                                $driver = new $driverName($item);
+                            } else {
+                                $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                            }
+                            echo $driver->getHtml();
 
-                    $formData[$driver->name] = $driver->value;
+                            $formData[$driver->name] = $driver->value;
 
-                    $vueDataX = $driver->getVueData();
-                    if ($vueDataX) {
-                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                    }
+                            $vueDataX = $driver->getVueData();
+                            if ($vueDataX) {
+                                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                            }
 
-                    $vueMethodsX = $driver->getVueMethods();
-                    if ($vueMethodsX) {
-                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                    }
-                }
+                            $vueMethodsX = $driver->getVueMethods();
+                            if ($vueMethodsX) {
+                                $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                            }
+                        }
+                        ?>
+                        <el-form-item>
+                            <el-button type="success" icon="el-icon-search" @click="search" v-loading="loading">查询</el-button>
+                        </el-form-item>
+                    </el-col>
+                </el-row>
+                <?php
             }
-            ?>
 
-            <el-form-item>
-                <el-button type="success" icon="el-icon-search" @click="search" v-loading="loading">查询</el-button>
-            </el-form-item>
-
-            <?php
             if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
+                echo '<el-row><el-col :span="24">';
                 foreach ($this->setting['lists']['toolbar']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
@@ -97,6 +103,7 @@
                         $vueMethods = array_merge($vueMethods, $vueMethodsX);
                     }
                 }
+                echo '</el-col></el-row>';
             }
 
             if ($tabHtml && $tabPosition == 'BeforeStage') {

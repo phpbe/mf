@@ -111,6 +111,9 @@ body {background-color: #fff;}
 .el-menu .el-link:hover{color: #333 !important;}
 .be-west .el-menu .el-link:hover{color: #ccc !important;}
 
+.el-menu .is-active .el-link:hover{color: #333 !important;}
+.be-west .el-menu .is-active .el-link:hover{color: #ccc !important;}
+
 /* 顶部菜单头 */
 .be-north .el-menu--horizontal>.el-submenu .el-submenu__title{
     height: 48px !important;
