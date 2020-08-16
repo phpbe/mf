@@ -2,9 +2,9 @@ SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 
 CREATE TABLE `system_app` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `name` varchar(60) NOT NULL COMMENT '应用名',
-  `label` varchar(60) NOT NULL COMMENT '应用中文标识',
-  `icon` varchar(60) NOT NULL COMMENT '应用图标',
+  `name` varchar(60) NOT NULL DEFAULT '' COMMENT '应用名',
+  `label` varchar(60) NOT NULL DEFAULT '' COMMENT '应用中文标识',
+  `icon` varchar(60) NOT NULL DEFAULT '' COMMENT '应用图标',
   `install_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '安装时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
@@ -13,17 +13,17 @@ CREATE TABLE `system_app` (
 CREATE TABLE `system_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
-  `title` varchar(240) NOT NULL,
-  `ip` varchar(15) NOT NULL,
-  `create_time` int(11) NOT NULL,
+  `title` varchar(240) NOT NULL DEFAULT '',
+  `ip` varchar(15) NOT NULL DEFAULT '',
+  `create_time` int(11) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 CREATE TABLE `system_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL,
-  `note` varchar(120) NOT NULL,
+  `name` varchar(60) NOT NULL DEFAULT '',
+  `note` varchar(120) NOT NULL DEFAULT '',
   `permission` tinyint(4) NOT NULL,
   `permissions` text NOT NULL,
   `ordering` int(11) NOT NULL COMMENT '排序（越小越靠前）',
@@ -34,21 +34,22 @@ INSERT INTO `system_role` (`id`, `name`, `note`, `permission`, `permissions`, `o
 
 CREATE TABLE `system_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增编号',
-  `username` varchar(120) NOT NULL COMMENT '用户名',
-  `password` char(40) NOT NULL COMMENT '密码',
-  `salt` char(32) NOT NULL COMMENT '密码盐值',
-  `remember_me_token` char(32) NOT NULL COMMENT '记住我 Token',
-  `avatar_s` varchar(60) NOT NULL COMMENT '大头像',
-  `avatar_m` varchar(60) NOT NULL COMMENT '中头像',
-  `avatar_l` varchar(60) NOT NULL COMMENT '小头像',
-  `email` varchar(120) NOT NULL COMMENT '邮箱',
-  `name` varchar(120) NOT NULL COMMENT '名称',
+  `username` varchar(120) NOT NULL DEFAULT '' COMMENT '用户名',
+  `password` char(40) NOT NULL DEFAULT '' COMMENT '密码',
+  `salt` char(32) NOT NULL DEFAULT '' COMMENT '密码盐值',
+  `remember_me_token` char(32) NOT NULL DEFAULT '' COMMENT '记住我 Token',
+  `avatar_s` varchar(60) NOT NULL DEFAULT '' COMMENT '大头像',
+  `avatar_m` varchar(60) NOT NULL DEFAULT '' COMMENT '中头像',
+  `avatar_l` varchar(60) NOT NULL DEFAULT '' COMMENT '小头像',
+  `email` varchar(120) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `name` varchar(120) NOT NULL DEFAULT '' COMMENT '名称',
   `gender` tinyint(3) NOT NULL DEFAULT '-1' COMMENT '性别（0：女/1：男/-1：保密）',
-  `phone` varchar(20) NOT NULL COMMENT '电话',
-  `mobile` varchar(20) NOT NULL COMMENT '手机',
+  `phone` varchar(20) NOT NULL DEFAULT '' COMMENT '电话',
+  `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '手机',
   `block` tinyint(3) unsigned NOT NULL COMMENT '是否屏蔽',
   `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
   `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后一次登陆时间',
+  `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '最后一次登录的IP',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -59,10 +60,10 @@ INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_to
 
 CREATE TABLE `system_user_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` varchar(120) NOT NULL,
+  `username` varchar(120) NOT NULL DEFAULT '',
   `success` tinyint(1) NOT NULL,
-  `description` varchar(240) NOT NULL,
-  `ip` varchar(15) NOT NULL,
+  `description` varchar(240) NOT NULL DEFAULT '',
+  `ip` varchar(15) NOT NULL DEFAULT '',
   `create_time` int(11) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

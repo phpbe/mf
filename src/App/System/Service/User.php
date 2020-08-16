@@ -4,6 +4,8 @@ namespace Be\App\System\Service;
 
 use Be\System\Db\Tuple;
 use Be\System\Exception\ServiceException;
+use Be\System\Request;
+use Be\Util\Net\FileUpload;
 use Be\Util\Random;
 use Be\Util\Validator;
 use Be\System\Be;
@@ -84,6 +86,7 @@ class User extends \Be\System\Service
                     } while (Be::newTable('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
                     $tupleUser->last_login_time = time();
+                    $tupleUser->last_login_ip = Request::ip();
                     $tupleUser->remember_me_token = $rememberMeToken;
                     $tupleUser->save();
 
@@ -156,9 +159,7 @@ class User extends \Be\System\Service
                 $tupleUser->loadBy('remember_me_token', $rememberMe);
 
                 if ($tupleUser->id > 0 && $tupleUser->block == 0) {
-
                     $this->makeLogin($tupleUser);
-
                     $db = Be::getDb();
                     $db->beginTransaction();
                     try {
@@ -325,20 +326,7 @@ class User extends \Be\System\Service
 
             @unlink($avatarFile['tmp_name']);
         } else {
-            $uploadErrors = array(
-                '1' => '您上传的文件过大！',
-                '2' => '您上传的文件过大！',
-                '3' => '文件只有部分被上传！',
-                '4' => '没有文件被上传！',
-                '5' => '上传的文件大小为 0！'
-            );
-            $error = null;
-            if (array_key_exists($avatarFile['error'], $uploadErrors)) {
-                $error = $uploadErrors[$avatarFile['error']];
-            } else {
-                $error = '错误代码：' . $avatarFile['error'];
-            }
-
+            $error = FileUpload::errorDescription($avatarFile['error']);
             throw new ServiceException('上传失败' . '(' . $error . ')');
         }
     }

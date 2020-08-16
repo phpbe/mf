@@ -71,10 +71,11 @@ $my = Be::getUser();
                                     if ($subMenu->subMenu) {
                                         foreach ($subMenu->subMenu as $subSubMenu) {
                                             echo '<el-menu-item index="west-menu-'.$subSubMenu->id.'">';
-                                            //echo '<el-link href="'.$subSubMenu->url.'">';
-                                            echo '<i class="'.$subSubMenu->icon.'"></i>';
-                                            echo '<span slot="title">'.$subSubMenu->label.'</span>';
-                                            //echo '</el-link>';
+                                            echo '<template slot="title">';
+                                            echo '<el-link href="'.$subSubMenu->url.'" icon="'.$subSubMenu->icon.'" :underline="false">';
+                                            echo $subSubMenu->label;
+                                            echo '</el-link>';
+                                            echo '</template>';
                                             echo '</el-menu-item>';
                                         }
                                     }

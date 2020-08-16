@@ -8,6 +8,13 @@ class User
 {
 
     /**
+     * @BeConfigItem("锁定IP",
+     *     driver="ConfigItemSwitch",
+     *     description="启用锁定IP时，若用户IP变化，需重新登录。")
+     */
+    public $ipLock = true;
+
+    /**
      * @BeConfigItem("用户小头像宽度",
      *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",

@@ -265,6 +265,13 @@ class Runtime
                 }
             }
 
+            $configUser = Be::getConfig('System.User');
+            if ($configUser->ipLock) {
+                if ($my->last_login_ip != Request::ip()) {
+                    Response::error('检测到您的账号使用另外的IP地址登录！', beUrl('System.User.login'));
+                }
+            }
+
             $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
             if (!class_exists($class)) {
                 Response::set('code', -404);
