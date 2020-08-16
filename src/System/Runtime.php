@@ -254,21 +254,22 @@ class Runtime
             $this->actionName = $actionName;
 
             $my = Be::getUser();
-            if ($my->id == 0) {
-                Be::getService('System.User')->rememberMe();
-                $my = Be::getUser();
+            if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
                 if ($my->id == 0) {
-                    if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
+                    Be::getService('System.User')->rememberMe();
+                    $my = Be::getUser();
+                    if ($my->id == 0) {
                         $return = Request::get('return', base64_encode(Request::url()));
                         Response::redirect(beUrl('System.User.login', ['return' => $return]));
                     }
                 }
-            }
 
-            $configUser = Be::getConfig('System.User');
-            if ($configUser->ipLock) {
-                if ($my->last_login_ip != Request::ip()) {
-                    Response::error('检测到您的账号使用另外的IP地址登录！', beUrl('System.User.login'));
+                $configUser = Be::getConfig('System.User');
+                if ($configUser->ipLock) {
+                    if ($my->last_login_ip != Request::ip()) {
+                        Be::getService('System.User')->logout();
+                        Response::error('检测到您的账号使用另外的IP地址登录！', beUrl('System.User.login'));
+                    }
                 }
             }
 

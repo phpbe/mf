@@ -53,7 +53,7 @@ class User extends \Be\System\Service
         $tupleUserAdminLog = Be::newTuple('system_user_log');
         $tupleUserAdminLog->username = $username;
         $tupleUserAdminLog->ip = $ip;
-        $tupleUserAdminLog->create_time = time();
+        $tupleUserAdminLog->create_time = date('Y-m-d H:i:s');
 
         $db = Be::getDb();
         $db->beginTransaction();
@@ -85,7 +85,7 @@ class User extends \Be\System\Service
                         $rememberMeToken = Random::complex(32);
                     } while (Be::newTable('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
-                    $tupleUser->last_login_time = time();
+                    $tupleUser->last_login_time = date('Y-m-d H:i:s');
                     $tupleUser->last_login_ip = Request::ip();
                     $tupleUser->remember_me_token = $rememberMeToken;
                     $tupleUser->save();

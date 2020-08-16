@@ -64,7 +64,7 @@ CREATE TABLE `system_user_log` (
   `success` tinyint(1) NOT NULL,
   `description` varchar(240) NOT NULL DEFAULT '',
   `ip` varchar(15) NOT NULL DEFAULT '',
-  `create_time` int(11) NOT NULL,
+  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
