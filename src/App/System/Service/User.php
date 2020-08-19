@@ -70,8 +70,10 @@ class User extends \Be\System\Service
             $password = $this->encryptPassword($password, $tupleUser->salt);
 
             if ($tupleUser->password === $password) {
-                if ($tupleUser->block == 1) {
-                    throw new ServiceException('用户账号（'.$username.'）已被停用！');
+                if ($tupleUser->is_delete == 1) {
+                    throw new ServiceException('用户账号（'.$username.'）不可用！');
+                } elseif ($tupleUser->is_enable == 0) {
+                    throw new ServiceException('用户账号（'.$username.'）已被禁用！');
                 } else {
                     session::delete($timesKey);
 
@@ -158,7 +160,7 @@ class User extends \Be\System\Service
                 $tupleUser = Be::newTuple('system_user');
                 $tupleUser->loadBy('remember_me_token', $rememberMe);
 
-                if ($tupleUser->id > 0 && $tupleUser->block == 0) {
+                if ($tupleUser->id > 0 && $tupleUser->is_enable == 1 && $tupleUser->is_delete == 0) {
                     $this->makeLogin($tupleUser);
                     $db = Be::getDb();
                     $db->beginTransaction();

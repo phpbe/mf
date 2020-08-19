@@ -5,7 +5,6 @@ namespace Be\App\System\Controller;
 
 use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
-use Be\Plugin\Curd\FieldItem\FieldItemText;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
@@ -79,6 +78,8 @@ class User extends Controller
      */
     public function users()
     {
+        $roleKeyValues = Be::getService('System.Role')->getRoleKeyValues();
+
         Be::getPlugin('Curd')->execute([
 
             'label' => '用户管理',
@@ -87,8 +88,18 @@ class User extends Controller
             'lists' => [
                 'title' => '用户列表',
 
+                'filter' => [
+                    ['is_delete', '=', '0'],
+                ],
+
                 'search' => [
                     'items' => [
+                        [
+                            'name' => 'role_id',
+                            'label' => '角色',
+                            'driver' => SearchItemSelect::class,
+                            'keyValues' => array_merge(['' => '所有角色'], $roleKeyValues)
+                        ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
@@ -105,21 +116,15 @@ class User extends Controller
                             'driver' => SearchItemInput::class,
                         ],
                         [
-                            'name' => 'block',
-                            'label' => '状态',
+                            'name' => 'is_enable',
+                            'label' => '启用状态',
                             'driver' => SearchItemSelect::class,
                             'keyValues' => [
                                 '' => '不限',
-                                '0' => '启用',
-                                '1' => '禁用',
+                                '1' => '启用',
+                                '0' => '禁用',
                             ]
                         ],
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'driver' => SearchItemSelect::class,
-                            'keyValues' => Be::getService('System.Role')->getRoleKeyValues()
-                        ]
                     ],
                 ],
 
@@ -129,10 +134,9 @@ class User extends Controller
                     'items' => [
                         [
                             'label' => '新增用户',
-                            'task' => 'create',
                             'driver' => ToolbarItemButton::class,
-                            'target' => 'pop', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
-                            'url' => '',    // 拽定网址
+                            'task' => 'create',
+                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-user-plus',
@@ -141,12 +145,13 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量启用',
-                            'task' => 'toggle',
                             'driver' => ToolbarItemButton::class,
-                            'data' => [
-                                'field' => 'block',
-                                'value' => 0,
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '1',
                             ],
+                            'target' => 'ajax',
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-check',
@@ -156,12 +161,13 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量禁用',
-                            'task' => 'toggle',
                             'driver' => ToolbarItemButton::class,
-                            'data' => [
-                                'field' => 'block',
-                                'value' => 1,
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '0',
                             ],
+                            'target' => 'ajax',
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-lock',
@@ -171,8 +177,13 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量删除',
-                            'task' => 'delete',
                             'driver' => ToolbarItemButton::class,
+                            'task' => 'fieldEdit',
+                            'target' => 'ajax',
+                            'postData' => [
+                                'field' => 'is_delete',
+                                'value' => '1',
+                            ],
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-delete',
@@ -203,21 +214,40 @@ class User extends Controller
                             'label' => '头像',
                             'driver' => FieldItemAvatar::class,
                             'value' => function ($row) {
-                                if ($row->avatar_s == '') {
+                                if ($row['avatar_s'] == '') {
                                     return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
                                 } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row->avatar_s;
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row['avatar_s'];
                                 }
                             },
                             'ui' => [
                                 'avatar' => [
                                     ':size' => '32',
                                 ]
-                            ]
+                            ],
+                            'width' => '60',
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
+                            'width' => '120',
+                        ],
+                        [
+                            'name' => 'role_id',
+                            'label' => '角色',
+                            'value' => function ($row) use ($roleKeyValues) {
+                                $roleIds = Be::newTable('system_user_role')
+                                    ->where('user_id', $row['id'])
+                                    ->getArray('role_id');
+
+                                $roleNames = [];
+                                foreach ($roleIds as $roleId) {
+                                    if (isset($roleKeyValues[$roleId])) {
+                                        $roleNames[] = $roleKeyValues[$roleId];
+                                    }
+                                }
+                                return implode(', ', $roleNames);
+                            },
                         ],
                         [
                             'name' => 'email',
@@ -228,31 +258,58 @@ class User extends Controller
                             'label' => '名称',
                         ],
                         [
-                            'name' => 'block',
+                            'name' => 'is_enable',
                             'label' => '启用/禁用',
-                            'driver' => FieldItemSwitch::class
+                            'driver' => FieldItemSwitch::class,
+                            'target' => 'ajax',
+                            'task' => 'fieldEdit',
+                            'width' => '90',
                         ],
                     ],
+                    'exclude' => ['password', 'salt', 'remember_me_token', 'is_delete']
                 ],
 
                 'operation' => [
                     'label' => '操作',
-                    'position' => 'left',
+                    'width' => '280',
                     'items' => [
                         [
                             'label' => '查看',
                             'driver' => OperationItemButton::class,
                             'task' => 'detail',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-search',
+                                    'type' => 'success'
+                                ]
+                            ]
                         ],
                         [
                             'label' => '编辑',
                             'driver' => OperationItemButton::class,
                             'task' => 'edit',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-edit',
+                                    'type' => 'primary'
+                                ]
+                            ]
                         ],
                         [
                             'label' => '删除',
                             'driver' => OperationItemButton::class,
-                            'task' => 'delete',
+                            'task' => 'fieldEdit',
+                            'target' => 'ajax',
+                            'postData' => [
+                                'field' => 'is_delete',
+                                'value' => 1,
+                            ],
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-delete',
+                                    'type' => 'danger'
+                                ]
+                            ]
                         ],
                     ]
                 ],
@@ -299,32 +356,20 @@ class User extends Controller
                 'title' => '编辑用户'
             ],
 
-            'toggle' => [
-                'BeforeToggle' => function ($tuple) {
-                    if ($tuple->block == 1) {
-                        if ($tuple->id == 1) {
-                            throw new Exception('默认用户不能禁用');
-                        }
+            'fieldEdit' => [
+                'BeforeFieldEdit' => function ($tuple) {
 
-                        $my = Be::getUser();
-                        if ($tuple->id == $my->id) {
-                            throw new Exception('不能禁用自已的账号');
-                        }
+                    $avatar = Request::files('avatar');
+                    $avatar = Request::files('avatar');
+
+                    if ($tuple->password != '') {
+                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+                    } else {
+                        unset($tuple->password);
+                        unset($tuple->register_time);
+                        unset($tuple->last_login_time);
                     }
                 },
-            ],
-
-            'delete' => [
-                'BeforeDelete' => function ($tuple) {
-                    if ($tuple->id == 1) {
-                        throw new Exception('默认用户不能删除');
-                    }
-
-                    $my = Be::getUser();
-                    if ($tuple->id == $my->id) {
-                        throw new Exception('不能删除自已');
-                    }
-                }
             ],
 
             'export' => [],
