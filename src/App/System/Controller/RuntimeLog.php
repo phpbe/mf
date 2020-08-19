@@ -6,7 +6,7 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("运行日志")
+ * @BeMenuGroup("日志")
  * @BePermissionGroup("运行日志")
  */
 class RuntimeLog extends \Be\System\Controller

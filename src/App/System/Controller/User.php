@@ -359,16 +359,16 @@ class User extends Controller
             'fieldEdit' => [
                 'BeforeFieldEdit' => function ($tuple) {
 
-                    $avatar = Request::files('avatar');
-                    $avatar = Request::files('avatar');
-
-                    if ($tuple->password != '') {
-                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
-                    } else {
-                        unset($tuple->password);
-                        unset($tuple->register_time);
-                        unset($tuple->last_login_time);
-                    }
+//                    $avatar = Request::files('avatar');
+//                    $avatar = Request::files('avatar');
+//
+//                    if ($tuple->password != '') {
+//                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+//                    } else {
+//                        unset($tuple->password);
+//                        unset($tuple->register_time);
+//                        unset($tuple->last_login_time);
+//                    }
                 },
             ],
 

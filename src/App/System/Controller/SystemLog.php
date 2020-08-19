@@ -2,95 +2,153 @@
 
 namespace Be\App\System\Controller;
 
+use Be\Plugin\Curd\SearchItem\SearchItemDatePickerRange;
+use Be\Plugin\Curd\SearchItem\SearchItemInput;
+use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\System\Be;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("系统日志")
- * @BePermissionGroup("系统日志")
+ * @BeMenuGroup("日志")
+ * @BePermissionGroup("日志")
  */
 class SystemLog extends \Be\System\Controller
 {
 
-    public function __construct()
+    /**
+     * 系统日志
+     *
+     * @BeMenu("操作日志", icon="el-icon-fa fa-user-circle")
+     * @BePermission("操作日志")
+     */
+    public function logs()
     {
-        $this->config = [
+        $userKeyValues = Be::getDb()->getKeyValues('SELECT id, `name` FROM `system_user` WHERE is_delete=0');
 
-            'name' => '后台日志',
-
-            'table' => ['System', 'AdminLog'],
-
-            'action' => [
-
-                'lists' => [
-
-                    'search' => [
-
-                        'content' => [
-                            'name' => '内容',
-                            'driver' => \Be\System\App\SearchItem\SearchItemString::class,
-                            'uiType' => 'text',
-                            'operation' => '%like%',
-                        ],
-
-                        'user_id' => [
-                            'name' => '用户',
-                            'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
-                            'uiType' => 'select',
-                            'keyValues' => Be::newTable('system_admin_user')->withCache(600)->getKeyValues('user_id', 'user_name')
-                        ]
-                    ],
-
-                    'toolbar' => [
+        Be::getPlugin('Curd')->execute([
+            'label' => '操作日志',
+            'table' => 'system_log',
+            'lists' => [
+                'title' => '操作日志',
+                'orderBy' => 'create_time',
+                'orderByDir' => 'DESC',
+                'search' => [
+                    'items' => [
                         [
-                            'name' => '删除三个月前系统日志',
-                            'url' => beUrl('System.AdminLog.deleteLogs'),
-                            'icon' => 'fa fa-times-circle',
-                            'class' => 'text-danger',
+                            'name' => 'user_id',
+                            'label' => '用户',
+                            'driver' => SearchItemSelect::class,
+                            'keyValues' => $userKeyValues,
                         ],
                         [
-                            'name' => '导出',
-                            'action' => 'export',
-                            'icon' => 'fa fa-array-circle-down',
+                            'name' => 'content',
+                            'label' => '内容',
+                            'driver' => SearchItemInput::class,
+                            'op' => '%LIKE%',
                         ],
-                    ],
-
-                    'operation' => [
                         [
-                            'name' => '查看',
-                            'action' => 'detail',
-                            'icon' => 'fa fa-search',
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'driver' => SearchItemDatePickerRange::class,
                         ],
                     ],
                 ],
 
-                'detail' => [],
+                'toolbar' => [
+                    'items' => [
+                        [
+                            'label' => '删除三个月前系统日志',
+                            'url' => beUrl('System.SystemLog.deleteLogs'),
+                            "target" => 'ajax',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-delete',
+                                    'type' => 'danger'
+                                ]
+                            ],
+                        ],
+                        [
+                            'label' => '导出',
+                            'task' => 'export',
+                            'target' => 'blank',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-fa fa-download',
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
+
+                'field' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'name' => 'user_id',
+                            'label' => '用户',
+                            'width' => '120',
+                            'keyValues' => $userKeyValues,
+                        ],
+                        [
+                            'name' => 'content',
+                            'label' => '内容',
+                            'align' => 'left',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
+                        ],
+                        [
+                            'name' => 'ip',
+                            'label' => 'IP地址',
+                            'width' => '120',
+                        ],
+                    ],
+                ],
+
+                'operation' => [
+                    'label' => '操作',
+                    'width' => '120',
+                    'items' => [
+                        [
+                            'label' => '查看',
+                            'task' => 'detail',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-search',
+                                    'type' => 'success'
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
+
             ],
 
             'export' => [],
-
-        ];
+        ]);
     }
 
     /**
      * 删除后台日志
      *
-     * @be-action 删除后台日志
-     * @BePermission
+     * @BePermission("操作日志")
      */
     public function deleteLogs()
     {
-        Be::getDb()->startTransaction();
+        $db = Be::getDb();
+        $db->startTransaction();
         try {
-            Be::getService('System.SystemLog')->deleteLogs();
-            Be::getService('System.SystemLog')->addLog($this->config['name'] . '：删除三个月前系统日志！');
-
-            Be::getDb()->commit();
-
-            Response::success('删除系统日志成功！');
+            Be::newTable('system_log')
+                ->where('create_time', '<', date('Y-m-d H:i:s', time() - 90 * 86400))
+                ->delete();
+            beSystemLog('删除三个月前操作日志！');
+            $db->commit();
+            Response::success('删除三个月前操作日志成功！');
         } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
+            $db->rollback();
             Response::error($e->getMessage());
         }
     }

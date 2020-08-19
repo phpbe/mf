@@ -5,27 +5,30 @@ CREATE TABLE `system_app` (
   `name` varchar(60) NOT NULL DEFAULT '' COMMENT '应用名',
   `label` varchar(60) NOT NULL DEFAULT '' COMMENT '应用中文标识',
   `icon` varchar(60) NOT NULL DEFAULT '' COMMENT '应用图标',
-  `install_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '安装时间',
+  `install_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '安装时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用';
 
 CREATE TABLE `system_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `title` varchar(240) NOT NULL DEFAULT '',
-  `ip` varchar(15) NOT NULL DEFAULT '',
-  `create_time` int(11) NOT NULL DEFAULT '',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+  `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
+  `content` VARCHAR(240) NOT NULL DEFAULT '' COMMENT '内容',
+  `details` text NOT NULL DEFAULT '' COMMENT '明细',
+  `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'IP',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
+
+
 CREATE TABLE `system_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(60) NOT NULL DEFAULT '',
-  `note` varchar(120) NOT NULL DEFAULT '',
-  `permission` tinyint(4) NOT NULL,
-  `permissions` text NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
+  `name` varchar(60) NOT NULL DEFAULT '' COMMENT '角色名',
+  `note` varchar(120) NOT NULL DEFAULT '' COMMENT '备注',
+  `permission` tinyint(4) NOT NULL COMMENT '权限',
+  `permissions` text NOT NULL COMMENT '权限明细',
   `ordering` int(11) NOT NULL COMMENT '排序（越小越靠前）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
@@ -48,7 +51,7 @@ CREATE TABLE `system_user` (
   `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '手机',
   `is_enable` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否可用',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已删除',
-  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后一次登陆时间',
   `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '最后一次登录的IP',
   PRIMARY KEY (`id`),
@@ -60,12 +63,12 @@ INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_to
 
 
 CREATE TABLE `system_user_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `username` varchar(120) NOT NULL DEFAULT '',
   `success` tinyint(1) NOT NULL,
   `description` varchar(240) NOT NULL DEFAULT '',
   `ip` varchar(15) NOT NULL DEFAULT '',
-  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -373,25 +373,37 @@
 
                     var data = {};
                     data.postData = option.postData;
-                    data.row = row;
-                    return this.action(option, data);
-                },
-                operationAction: function (name, option, row) {
-                    var data;
-                    if (option.postData instanceof Object) {
-                        data = option.postData;
-                    } else {
-                        data = {};
-                    }
+
+                    var tmpRow = {};
+                    tmpRow[name] = row[name];
                     <?php
                     if (is_array($primaryKey)) {
                         foreach ($primaryKey as $pKey) {
-                            echo 'data["' . $pKey . '""]=row.' . $pKey . ';';
+                            echo 'tmpRow["' . $pKey . '""]=row.' . $pKey . ';';
                         }
                     } else {
-                        echo 'data["' . $primaryKey . '"]=row.' . $primaryKey . ';';
+                        echo 'tmpRow["' . $primaryKey . '"]=row.' . $primaryKey . ';';
                     }
                     ?>
+                    data.row = tmpRow;
+                    return this.action(option, data);
+                },
+                operationAction: function (name, option, row) {
+
+                    var data = {};
+                    data.postData = option.postData;
+
+                    var tmpRow = {};
+                    <?php
+                    if (is_array($primaryKey)) {
+                        foreach ($primaryKey as $pKey) {
+                            echo 'tmpRow["' . $pKey . '""]=row.' . $pKey . ';';
+                        }
+                    } else {
+                        echo 'tmpRow["' . $primaryKey . '"]=row.' . $primaryKey . ';';
+                    }
+                    ?>
+                    data.row = tmpRow;
                     return this.action(option, data);
                 },
                 action: function (option, data) {

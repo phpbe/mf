@@ -110,16 +110,34 @@ class Curd extends Plugin
 
                     foreach ($this->setting['lists']['field']['items'] as $item) {
                         $itemName = $item['name'];
+                        $itemValue = '';
                         if (isset($item['value'])) {
                             $value = $item['value'];
                             if (is_callable($value)) {
-                                $formattedRow[$itemName] = $value($row);
+                                $itemValue = $value($row);
                             } else {
-                                $formattedRow[$itemName] = $value;
+                                $itemValue = $value;
                             }
                         } else {
-                            $formattedRow[$itemName] = isset($row[$itemName]) ? $row[$itemName] : '';
+                            if (isset($row[$itemName])) {
+                                $itemValue = $row[$itemName];
+                            }
                         }
+
+                        if (isset($item['keyValues'])) {
+                            $keyValues = $item['keyValues'];
+                            if (is_callable($keyValues)) {
+                                $itemValue = $keyValues($itemValue);
+                            } else {
+                                if (isset($keyValues[$itemValue])) {
+                                    $itemValue = $keyValues[$itemValue];
+                                } else {
+                                    $itemValue = '';
+                                }
+                            }
+                        }
+
+                        $formattedRow[$itemName] = $itemValue;
                     }
 
                     foreach ($row as $k => $v) {
@@ -154,11 +172,11 @@ class Curd extends Plugin
         } else {
 
             $pageSize = null;
-            if (isset($this->setting['lists']['defaultPageSize']) &&
-                is_numeric($this->setting['lists']['defaultPageSize']) &&
-                $this->setting['lists']['defaultPageSize'] > 0
+            if (isset($this->setting['lists']['pageSize']) &&
+                is_numeric($this->setting['lists']['pageSize']) &&
+                $this->setting['lists']['pageSize'] > 0
             ) {
-                $pageSize = $this->setting['lists']['defaultPageSize'];
+                $pageSize = $this->setting['lists']['pageSize'];
             } else {
                 $pageSize = Be::getConfig('System.System')->pageSize;;
             }
@@ -224,7 +242,8 @@ class Curd extends Plugin
 
         if (Request::isPost()) {
 
-            Be::getDb()->startTransaction();
+            $db = Be::getDb($this->setting['db']);
+            $db->startTransaction();
             try {
                 $tuple->bind(Request::post());
                 $primaryKey = $tuple->getPrimaryKey();
@@ -235,10 +254,10 @@ class Curd extends Plugin
 
                 beSystemLog($setting['title'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
 
-                Be::getDb()->commit();
+                $db->commit();
             } catch (\Exception $e) {
 
-                Be::getDb()->rollback();
+                $db->rollback();
                 Response::error($e->getMessage());
             }
 
@@ -277,7 +296,8 @@ class Curd extends Plugin
 
         if (Request::isPost()) {
 
-            Be::getDb()->startTransaction();
+            $db = Be::getDb($this->setting['db']);
+            $db->startTransaction();
             try {
 
                 $tuple->bind(Request::post());
@@ -287,10 +307,10 @@ class Curd extends Plugin
 
                 beSystemLog($setting['title'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
 
-                Be::getDb()->commit();
+                $db->commit();
             } catch (\Exception $e) {
 
-                Be::getDb()->rollback();
+                $db->rollback();
                 Response::error($e->getMessage());
             }
 
@@ -311,59 +331,160 @@ class Curd extends Plugin
      */
     public function fieldEdit()
     {
-        $field = Request::request('field', 'enable');
-        $value = Request::request('value', 1);
+        $postData = Request::json();
+        if (!isset($postData['postData']['field'])) {
+            Response::error('参数（postData.field）缺失！');
+        }
+        $field = $postData['postData']['field'];
 
-        if (isset($this->setting['fieldEdit']['field'])) {
-            $field = $this->setting['fieldEdit']['field'];
+        $fieldLabel = '';
+        if (isset($this->setting['lists']['field']['items'])) {
+            foreach ($this->setting['lists']['field']['items'] as $fieldItem) {
+                if ($fieldItem['name'] == $field) {
+                    $fieldLabel = $fieldItem['label'];
+                    break;
+                }
+            }
         }
 
-        if (isset($this->setting['fieldEdit']['value'])) {
-            $value = $this->setting['fieldEdit']['value'];
-        }
+        $title = null;
 
-        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+        $db = Be::getDb($this->setting['db']);
+        if (isset($postData['rows'])) {
+            if (!isset($postData['postData']['value'])) {
+                Response::error('参数（postData.value）缺失！');
+            }
+            $value = $postData['postData']['value'];
 
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
+            $title = '修改字段 ' . $fieldLabel . '（' . $field . '）的值为' . $value;
+            if (isset($this->setting['fieldEdit']['title'])) {
+                $title = $this->setting['fieldEdit']['title'] . '（' . $title . '）';
+            }
 
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
-        }
+            Be::getDb()->startTransaction();
+            try {
+                $strPrimaryKey = null;
+                $primaryKeyValues = [];
 
-        $title = '修改字段' . $field . '的值为' . $value;
-        if (isset($this->setting['fieldEdit']['title'])) {
-            $title = $this->setting['fieldEdit']['title'] . '（' . $title . '）';
-        }
+                $i = 0;
+                foreach ($postData['rows'] as $row) {
+                    $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+                    $primaryKey = $tuple->getPrimaryKey();
 
-        Be::getDb()->startTransaction();
-        try {
+                    $value = $row[$field];
 
-            if (is_array($primaryKeyValue)) {
-                foreach ($primaryKeyValue as $x) {
-                    $tuple->load($x);
+                    $primaryKeyValue = null;
+                    if (is_array($primaryKey)) {
+                        $primaryKeyValue = [];
+                        foreach ($primaryKey as $pKey) {
+                            if (!isset($row[$pKey])) {
+                                Response::error('主键（rows[' . $i . '].' . $pKey . '）缺失！');
+                            }
+
+                            $primaryKeyValue[$pKey] = $row[$pKey];
+                        }
+                    } else {
+                        if (isset($row[$primaryKey])) {
+                            Response::error('主键（rows[' . $i . '].' . $primaryKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue = $row[$primaryKey];
+                    }
+
+                    $tuple->load($primaryKeyValue);
                     $tuple->$field = $value;
                     $this->trigger('BeforeFieldEdit', $tuple);
                     $tuple->save();
                     $this->trigger('AfterFieldEdit', $tuple);
 
-                    beSystemLog($title . '（#' . $primaryKey . '：' . $x . '）');
+                    if ($strPrimaryKey === null) {
+                        if (is_array($primaryKey)) {
+                            $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+                        } else {
+                            $strPrimaryKey = $primaryKey;
+                        }
+                    }
+
+                    if (is_array($primaryKeyValue)) {
+                        $primaryKeyValues[] = '（' . implode(',', $primaryKeyValue) . '）';
+                    } else {
+                        $primaryKeyValues[] = $primaryKeyValue;
+                    }
+
+                    $i++;
                 }
-            } else {
+
+                $strPrimaryKeyValue = implode(',', $primaryKeyValues);
+
+                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+
+                Be::getDb()->commit();
+            } catch (\Exception $e) {
+
+                Be::getDb()->rollback();
+                Response::error($e->getMessage());
+            }
+
+        } elseif (isset($postData['row'])) {
+
+            if (!isset($postData['row'][$field])) {
+                Response::error('参数（row.' . $field . '）缺失！');
+            }
+
+            $value = $postData['row'][$field];
+
+            $title = '修改字段 ' . $fieldLabel . '（' . $field . '）的值为' . $value;
+            if (isset($this->setting['fieldEdit']['title'])) {
+                $title = $this->setting['fieldEdit']['title'] . '（' . $title . '）';
+            }
+
+            $db->startTransaction();
+            try {
+                $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+                $primaryKey = $tuple->getPrimaryKey();
+
+                $primaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $primaryKeyValue = [];
+                    foreach ($primaryKey as $pKey) {
+                        if (!isset($postData['row'][$pKey])) {
+                            Response::error('主键（row.' . $pKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue[$pKey] = $postData['row'][$pKey];
+                    }
+                } else {
+                    if (!isset($postData['row'][$primaryKey])) {
+                        Response::error('主键（row.' . $primaryKey . '）缺失！');
+                    }
+
+                    $primaryKeyValue = $postData['row'][$primaryKey];
+                }
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
                 $this->trigger('BeforeFieldEdit', $tuple);
                 $tuple->save();
                 $this->trigger('AfterFieldEdit', $tuple);
 
-                beSystemLog($title . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
+                $strPrimaryKey = null;
+                $strPrimaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+                    $strPrimaryKeyValue = '（' . implode(',', $primaryKeyValue) . '）';
+                } else {
+                    $strPrimaryKey = $primaryKey;
+                    $strPrimaryKeyValue = $primaryKeyValue;
+                }
+
+                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+
+                $db->commit();
+            } catch (\Exception $e) {
+                $db->rollback();
+                Response::error($e->getMessage());
             }
-
-            Be::getDb()->commit();
-        } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
-            Response::error($e->getMessage());
+        } else {
+            Response::error('参数（rows或row）缺失！');
         }
 
         Response::success($title . '，执行成功！');
