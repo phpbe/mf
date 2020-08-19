@@ -19,13 +19,25 @@ class FieldItemSwitch extends FieldItem
         parent::__construct($params);
 
         if ($this->url) {
-            if (!isset($this->ui['switch']['@click'])) {
-                $this->ui['switch']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
+            if (!isset($this->ui['switch']['@change'])) {
+                $this->ui['switch']['@change'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
             }
 
-            if ($params['task'] =='toggle' && !isset($this->postData['field'])) {
+            if (!isset($this->postData['field'])) {
                 $this->postData['field'] = $this->name;
             }
+        }
+
+        if (!isset($this->ui['switch']['active-value'])) {
+            $this->ui['switch']['active-value'] = '1';
+        }
+
+        if (!isset($this->ui['switch']['inactive-value'])) {
+            $this->ui['switch']['inactive-value'] = '0';
+        }
+
+        if (!isset($this->ui['switch']['v-model'])) {
+            $this->ui['switch']['v-model'] = 'rows[scope.$index].' . $this->name; //'scope.row.' . $this->name;
         }
     }
 
@@ -36,9 +48,6 @@ class FieldItemSwitch extends FieldItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['switch'][':defaultChecked'])) {
-            $this->ui['switch'][':defaultChecked'] = 'scope.row.' . $this->name;
-        }
 
         $html = '<el-table-column';
         if (isset($this->ui['table-column'])) {

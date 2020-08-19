@@ -358,10 +358,7 @@
                         pageSize: this.pageSize
                     };
 
-                    if (option.postData.length > 0) {
-                        data.postData = option.postData;
-                    }
-
+                    data.postData = option.postData;
                     return this.action(option, data);
                 },
                 fieldAction: function (name, option, row) {
@@ -373,11 +370,15 @@
                             option.drawer.title = row[name];
                             break;
                     }
-                   return this.operationAction(name, option, row);
+
+                    var data = {};
+                    data.postData = option.postData;
+                    data.row = row;
+                    return this.action(option, data);
                 },
                 operationAction: function (name, option, row) {
                     var data;
-                    if (option.postData.length > 0) {
+                    if (option.postData instanceof Object) {
                         data = option.postData;
                     } else {
                         data = {};
@@ -395,29 +396,21 @@
                 },
                 action: function (option, data) {
                     if (option.target == 'ajax') {
-                        var tmpLoading = this.$loading({
-                            lock: true,
-                            text: '处理中...',
-                            spinner: 'el-icon-loading',
-                            background: 'rgba(0, 0, 0, 0.3)'
-                        });
-
                         var _this = this;
                         this.$http.post(option.url, data).then(function (response) {
-                            loading.close();
                             if (response.status == 200) {
-                                var responseData = response.data;
-                                if (responseData.success) {
-                                    _this.loadData();
+                                if (response.data.success) {
+                                    _this.$message.success(response.data.message);
                                 } else {
-                                    if (responseData.message) {
-                                        _this.$message.error(responseData.message);
+                                    if (response.data.message) {
+                                        _this.$message.error(response.data.message);
                                     }
                                 }
+                                _this.loadData();
                             }
                         }).catch(function (error) {
-                            tmpLoading.close();
                             _this.$message.error(error);
+                            _this.loadData();
                         });
                     } else {
                         var eForm = document.createElement("form");

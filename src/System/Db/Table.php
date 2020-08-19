@@ -184,14 +184,7 @@ class Table
     public function where($field, $op = null, $value = null)
     {
         if (is_array($field)) {
-            $len = count($field);
-            if ($len == 1) {
-                return $this->where($field[0]);
-            } elseif ($len == 2) {
-                return $this->where($field[0], $field[1]);
-            } elseif ($len == 3) {
-                return $this->where($field[0], $field[1], $field[2]);
-            }
+            $this->where(...$field);
         } else {
             if (count($this->_where) > 0) {
                 $this->_where[] = 'AND';

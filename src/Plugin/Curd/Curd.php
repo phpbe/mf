@@ -42,6 +42,12 @@ class Curd extends Plugin
         if (Request::isAjax()) {
 
             try {
+                if (isset($this->setting['lists']['filter']) && count($this->setting['lists']['filter']) > 0) {
+                    foreach ($this->setting['lists']['filter'] as $filter) {
+                        $table->where($filter);
+                    }
+                }
+
                 $postData = Request::json();
                 $formData = $postData['formData'];
                 if (isset($this->setting['lists']['tab'])) {
@@ -96,11 +102,12 @@ class Curd extends Plugin
                 $pageSize = $postData['pageSize'];
                 $table->offset(($page - 1) * $pageSize)->limit($pageSize);
 
-                $rows = $table->getObjects();
+                $rows = $table->getArrays();
 
                 $formattedRows = [];
                 foreach ($rows as $row) {
                     $formattedRow = [];
+
                     foreach ($this->setting['lists']['field']['items'] as $item) {
                         $itemName = $item['name'];
                         if (isset($item['value'])) {
@@ -111,8 +118,23 @@ class Curd extends Plugin
                                 $formattedRow[$itemName] = $value;
                             }
                         } else {
-                            $formattedRow[$itemName] = isset($row->$itemName) ? $row->$itemName : '';
+                            $formattedRow[$itemName] = isset($row[$itemName]) ? $row[$itemName] : '';
                         }
+                    }
+
+                    foreach ($row as $k => $v) {
+                        if (isset($formattedRow[$k])) {
+                            continue;
+                        }
+
+                        if (isset($this->setting['lists']['field']['exclude']) &&
+                            is_array($this->setting['lists']['field']['exclude']) &&
+                            in_array($k, $this->setting['lists']['field']['exclude'])
+                        ) {
+                            continue;
+                        }
+
+                        $formattedRow[$k] = $v;
                     }
                     $formattedRows[] = $formattedRow;
                 }
@@ -285,17 +307,22 @@ class Curd extends Plugin
     }
 
     /**
-     * 切换某个字段的值，示例功能：启用/禁用
-     *
+     * 编辑某个字段的值
      */
-    public function toggle()
+    public function fieldEdit()
     {
-        $setting = $this->setting['toggle'];
-
-        $field = Request::request('field', 'block');
+        $field = Request::request('field', 'enable');
         $value = Request::request('value', 1);
 
-        $tuple = Be::newTuple($setting['table']);
+        if (isset($this->setting['fieldEdit']['field'])) {
+            $field = $this->setting['fieldEdit']['field'];
+        }
+
+        if (isset($this->setting['fieldEdit']['value'])) {
+            $value = $this->setting['fieldEdit']['value'];
+        }
+
+        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
 
         $primaryKey = $tuple->getPrimaryKey();
         $primaryKeyValue = Request::get($primaryKey, null);
@@ -304,46 +331,32 @@ class Curd extends Plugin
             Response::error('参数（' . $primaryKey . '）缺失！');
         }
 
+        $title = '修改字段' . $field . '的值为' . $value;
+        if (isset($this->setting['fieldEdit']['title'])) {
+            $title = $this->setting['fieldEdit']['title'] . '（' . $title . '）';
+        }
+
         Be::getDb()->startTransaction();
         try {
 
             if (is_array($primaryKeyValue)) {
-
                 foreach ($primaryKeyValue as $x) {
-
-                    if (isset($setting['field'])) {
-                        $field = $setting['field'];
-                    }
-
-                    if (isset($setting['value'])) {
-                        $value = $setting['value'];
-                    }
-
                     $tuple->load($x);
                     $tuple->$field = $value;
-                    $this->trigger('BeforeToggle', $tuple);
+                    $this->trigger('BeforeFieldEdit', $tuple);
                     $tuple->save();
-                    $this->trigger('AfterToggle', $tuple);
+                    $this->trigger('AfterFieldEdit', $tuple);
 
-                    beSystemLog($setting['title'] . '（#' . $primaryKey . '：' . $x . '）');
+                    beSystemLog($title . '（#' . $primaryKey . '：' . $x . '）');
                 }
             } else {
-
-                if (isset($setting['field'])) {
-                    $field = $setting['field'];
-                }
-
-                if (isset($setting['value'])) {
-                    $value = $setting['value'];
-                }
-
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
-                $this->trigger('BeforeToggle', $tuple);
+                $this->trigger('BeforeFieldEdit', $tuple);
                 $tuple->save();
-                $this->trigger('AfterToggle', $tuple);
+                $this->trigger('AfterFieldEdit', $tuple);
 
-                beSystemLog($setting['title'] . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
+                beSystemLog($title . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
             }
 
             Be::getDb()->commit();
@@ -353,7 +366,74 @@ class Curd extends Plugin
             Response::error($e->getMessage());
         }
 
-        Response::success($setting['title'] . '，执行成功！');
+        Response::success($title . '，执行成功！');
+    }
+
+
+    /**
+     * 切换某个字段的值，示例功能：启用/禁用
+     *
+     */
+    public function toggle()
+    {
+        $field = Request::request('field', 'enable');
+        $value = Request::request('value', 1);
+
+        if (isset($this->setting['toggle']['field'])) {
+            $field = $this->setting['toggle']['field'];
+        }
+
+        if (isset($this->setting['toggle']['value'])) {
+            $value = $this->setting['toggle']['value'];
+        }
+
+        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+
+        $primaryKey = $tuple->getPrimaryKey();
+        $primaryKeyValue = Request::get($primaryKey, null);
+
+        if (!$primaryKeyValue) {
+            Response::error('参数（' . $primaryKey . '）缺失！');
+        }
+
+        $title = null;
+        if (isset($this->setting['toggle']['title'])) {
+            $title = $this->setting['toggle']['title'];
+        } else {
+            $title = $value ? '启用' : '禁用';
+        }
+
+        Be::getDb()->startTransaction();
+        try {
+
+            if (is_array($primaryKeyValue)) {
+                foreach ($primaryKeyValue as $x) {
+                    $tuple->load($x);
+                    $tuple->$field = $value;
+                    $this->trigger('BeforeToggle', $tuple);
+                    $tuple->save();
+                    $this->trigger('AfterToggle', $tuple);
+
+                    beSystemLog($title . '（#' . $primaryKey . '：' . $x . '）');
+                }
+            } else {
+                $tuple->load($primaryKeyValue);
+                $tuple->$field = $value;
+                $this->trigger('BeforeToggle', $tuple);
+                $tuple->save();
+                $this->trigger('AfterToggle', $tuple);
+
+                beSystemLog($title . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
+            }
+
+            Be::getDb()->commit();
+        } catch (\Exception $e) {
+
+            Be::getDb()->rollback();
+            Response::error($e->getMessage());
+        }
+
+        Response::success($title . '，执行成功！');
     }
 
     /**
