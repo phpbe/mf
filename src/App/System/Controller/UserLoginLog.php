@@ -3,8 +3,6 @@
 namespace Be\App\System\Controller;
 
 use Be\Plugin\Curd\FieldItem\FieldItemCustom;
-use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
-use Be\Plugin\Curd\FieldItem\FieldItemTag;
 use Be\Plugin\Curd\SearchItem\SearchItemDatePickerRange;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\System\Be;

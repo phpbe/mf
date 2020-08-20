@@ -11,6 +11,8 @@
     $formData = [];
     $vueData = [];
     $vueMethods = [];
+
+    $toolbarItemDriverNames = [];
     ?>
     <div id="app" v-cloak>
 
@@ -89,6 +91,8 @@
                     } else {
                         $driver = new \Be\Plugin\Curd\ToolbarItem\ToolbarItemButton($item);
                     }
+                    $toolbarItemDriverNames[] = $driver->name;
+
                     echo '<el-form-item>';
                     echo $driver->getHtml() . "\r\n";
                     echo '</el-form-item>';
@@ -118,7 +122,8 @@
                     size="mini"
                     :height="stageHeight"
                     :default-sort="{prop:orderBy,order:orderByDir}"
-                    @sort-change="sort">
+                    @sort-change="sort"
+                    @selection-change="selectionChange">
                 <?php
                 $opPosition = 'right';
                 if (isset($this->setting['lists']['operation'])) {
@@ -251,6 +256,7 @@
                 pages: 1,
                 total: 0,
                 rows: [],
+                selectedRows: [],
                 loading: false,
                 stageHeight: 500,
                 dialog: {visible: false, width: "600px", height: "400px", title: ""},
@@ -304,6 +310,7 @@
                                     _this.$message.error(responseData.message);
                                 }
                             }
+                            _this.updateToolbars();
                         }
                     }).catch(function (error) {
                         _this.loading = false;
@@ -326,6 +333,7 @@
                                 _this.rows = responseData.data.rows;
                                 _this.pages = Math.floor(_this.total / _this.pageSize);
                             }
+                            _this.updateToolbars();
                         }
                     });
                 },
@@ -359,6 +367,7 @@
                     };
 
                     data.postData = option.postData;
+                    data.selectedRows = this.selectedRows;
                     return this.action(option, data);
                 },
                 fieldAction: function (name, option, row) {
@@ -373,37 +382,13 @@
 
                     var data = {};
                     data.postData = option.postData;
-
-                    var tmpRow = {};
-                    tmpRow[name] = row[name];
-                    <?php
-                    if (is_array($primaryKey)) {
-                        foreach ($primaryKey as $pKey) {
-                            echo 'tmpRow["' . $pKey . '""]=row.' . $pKey . ';';
-                        }
-                    } else {
-                        echo 'tmpRow["' . $primaryKey . '"]=row.' . $primaryKey . ';';
-                    }
-                    ?>
-                    data.row = tmpRow;
+                    data.row = row;
                     return this.action(option, data);
                 },
                 operationAction: function (name, option, row) {
-
                     var data = {};
                     data.postData = option.postData;
-
-                    var tmpRow = {};
-                    <?php
-                    if (is_array($primaryKey)) {
-                        foreach ($primaryKey as $pKey) {
-                            echo 'tmpRow["' . $pKey . '""]=row.' . $pKey . ';';
-                        }
-                    } else {
-                        echo 'tmpRow["' . $primaryKey . '"]=row.' . $primaryKey . ';';
-                    }
-                    ?>
-                    data.row = tmpRow;
+                    data.row = row;
                     return this.action(option, data);
                 },
                 action: function (option, data) {
@@ -473,6 +458,39 @@
                 },
                 hideDrawer: function () {
                     this.drawer.visible = false;
+                },
+                selectionChange: function(rows) {
+                    this.selectedRows = rows;
+                    this.updateToolbars();
+                },
+                updateToolbars: function() {
+                    var toolbarEnable;
+                    <?php
+                    if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
+                        $i = 0;
+                        foreach ($this->setting['lists']['toolbar']['items'] as $item) {
+                            if (isset($item['task']) &&
+                                $item['task'] == 'fieldEdit' &&
+                                isset($item['postData']['field']) &&
+                                isset($item['postData']['value'])) {
+                                ?>
+                                if (this.selectedRows.length > 0) {
+                                    toolbarEnable = true;
+                                    for(var x in this.selectedRows) {
+                                        if (this.selectedRows[x].<?php echo $item['postData']['field']; ?> == "<?php echo $item['postData']['value']; ?>") {
+                                            toolbarEnable = false;
+                                        }
+                                    }
+                                } else {
+                                    toolbarEnable = false;
+                                }
+                                this.toolbar.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
+                                <?php
+                            }
+                            $i++;
+                        }
+                    }
+                    ?>
                 }
                 <?php
                 if ($vueMethods) {
@@ -482,7 +500,6 @@
                 }
                 ?>
             },
-
             mounted: function () {
                 this.$nextTick(function () {
                     this.stageHeight = document.documentElement.clientHeight - this.$refs.stageTable.$el.offsetTop - 50;

@@ -10,7 +10,7 @@ use Be\System\Request;
 abstract class Item
 {
 
-    public $name = ''; // 键名
+    public $name = null; // 键名
     public $label = ''; // 配置项中文名称
     public $value = ''; // 值
 

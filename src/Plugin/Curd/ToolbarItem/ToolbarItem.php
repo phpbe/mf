@@ -23,6 +23,7 @@ abstract class ToolbarItem extends Item
                     'url' => $this->url,
                     'target' => $this->target,
                     'postData' => $this->postData,
+                    'enable' => true,
                 ]
             ]
         ];

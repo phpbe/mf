@@ -4,6 +4,8 @@ namespace Be\App\System\Controller;
 
 
 use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
+use Be\Plugin\Curd\FieldItem\FieldItemIndex;
+use Be\Plugin\Curd\FieldItem\FieldItemSelection;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
@@ -210,6 +212,13 @@ class User extends Controller
                     // 未指定时取表的所有字段
                     'items' => [
                         [
+                            'driver' => FieldItemSelection::class,
+                        ],
+                        [
+                            'label' => '行号',
+                            'driver' => FieldItemIndex::class,
+                        ],
+                        [
                             'name' => 'avatar_s',
                             'label' => '头像',
                             'driver' => FieldItemAvatar::class,
@@ -266,7 +275,7 @@ class User extends Controller
                             'width' => '90',
                         ],
                     ],
-                    'exclude' => ['password', 'salt', 'remember_me_token', 'is_delete']
+                    'exclude' => ['password', 'salt', 'remember_me_token']
                 ],
 
                 'operation' => [

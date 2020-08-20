@@ -350,7 +350,11 @@ class Curd extends Plugin
         $title = null;
 
         $db = Be::getDb($this->setting['db']);
-        if (isset($postData['rows'])) {
+        if (isset($postData['selectedRows'])) {
+            if (!is_array($postData['selectedRows']) || count($postData['selectedRows']) == 0) {
+                Response::error('你尚未选择要操作的数据！');
+            }
+
             if (!isset($postData['postData']['value'])) {
                 Response::error('参数（postData.value）缺失！');
             }
@@ -367,25 +371,23 @@ class Curd extends Plugin
                 $primaryKeyValues = [];
 
                 $i = 0;
-                foreach ($postData['rows'] as $row) {
+                foreach ($postData['selectedRows'] as $row) {
                     $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
                     $primaryKey = $tuple->getPrimaryKey();
-
-                    $value = $row[$field];
 
                     $primaryKeyValue = null;
                     if (is_array($primaryKey)) {
                         $primaryKeyValue = [];
                         foreach ($primaryKey as $pKey) {
                             if (!isset($row[$pKey])) {
-                                Response::error('主键（rows[' . $i . '].' . $pKey . '）缺失！');
+                                Response::error('主键（selectedRows[' . $i . '].' . $pKey . '）缺失！');
                             }
 
                             $primaryKeyValue[$pKey] = $row[$pKey];
                         }
                     } else {
-                        if (isset($row[$primaryKey])) {
-                            Response::error('主键（rows[' . $i . '].' . $primaryKey . '）缺失！');
+                        if (!isset($row[$primaryKey])) {
+                            Response::error('主键（selectedRows[' . $i . '].' . $primaryKey . '）缺失！');
                         }
 
                         $primaryKeyValue = $row[$primaryKey];
@@ -485,73 +487,6 @@ class Curd extends Plugin
             }
         } else {
             Response::error('参数（rows或row）缺失！');
-        }
-
-        Response::success($title . '，执行成功！');
-    }
-
-
-    /**
-     * 切换某个字段的值，示例功能：启用/禁用
-     *
-     */
-    public function toggle()
-    {
-        $field = Request::request('field', 'enable');
-        $value = Request::request('value', 1);
-
-        if (isset($this->setting['toggle']['field'])) {
-            $field = $this->setting['toggle']['field'];
-        }
-
-        if (isset($this->setting['toggle']['value'])) {
-            $value = $this->setting['toggle']['value'];
-        }
-
-        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
-
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
-
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
-        }
-
-        $title = null;
-        if (isset($this->setting['toggle']['title'])) {
-            $title = $this->setting['toggle']['title'];
-        } else {
-            $title = $value ? '启用' : '禁用';
-        }
-
-        Be::getDb()->startTransaction();
-        try {
-
-            if (is_array($primaryKeyValue)) {
-                foreach ($primaryKeyValue as $x) {
-                    $tuple->load($x);
-                    $tuple->$field = $value;
-                    $this->trigger('BeforeToggle', $tuple);
-                    $tuple->save();
-                    $this->trigger('AfterToggle', $tuple);
-
-                    beSystemLog($title . '（#' . $primaryKey . '：' . $x . '）');
-                }
-            } else {
-                $tuple->load($primaryKeyValue);
-                $tuple->$field = $value;
-                $this->trigger('BeforeToggle', $tuple);
-                $tuple->save();
-                $this->trigger('AfterToggle', $tuple);
-
-                beSystemLog($title . '（#' . $primaryKey . '：' . $primaryKeyValue . '）');
-            }
-
-            Be::getDb()->commit();
-        } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
-            Response::error($e->getMessage());
         }
 
         Response::success($title . '，执行成功！');
