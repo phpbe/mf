@@ -30,7 +30,7 @@ class FieldItemCustom extends FieldItem
         }
         $html .= '>';
         $html .= '<template slot-scope="scope">';
-        $html .= '{{scope.row.'.$this->name.'}}';
+        $html .= '<div v-html="scope.row.'.$this->name.'"></div>';
         $html .= '</template>';
         $html .= '</el-table-column>';
 

@@ -45,7 +45,7 @@ abstract class SearchItem extends Item
      */
     public function submit($data)
     {
-        if (isset($data[$this->name]) && $data[$this->name]) {
+        if (isset($data[$this->name]) && $data[$this->name] != '') {
             $this->newValue = $data[$this->name];
         }
     }

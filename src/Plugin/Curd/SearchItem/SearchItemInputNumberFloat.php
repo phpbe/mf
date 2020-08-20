@@ -73,7 +73,7 @@ class SearchItemInputNumberFloat extends SearchItem
      */
     public function submit($data)
     {
-        if (isset($data[$this->name])) {
+        if (isset($data[$this->name]) && $data[$this->name]!= '') {
             $newValue = $data[$this->name];
 
             if (!is_numeric($newValue)) {
