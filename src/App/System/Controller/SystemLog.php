@@ -9,7 +9,7 @@ use Be\System\Be;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("日志")
+ * @BeMenuGroup("日志", icon="el-icon-info")
  * @BePermissionGroup("日志")
  */
 class SystemLog extends \Be\System\Controller
@@ -18,8 +18,8 @@ class SystemLog extends \Be\System\Controller
     /**
      * 系统日志
      *
-     * @BeMenu("操作日志", icon="el-icon-fa fa-user-circle")
-     * @BePermission("操作日志")
+     * @BeMenu("操作日志", icon="el-icon-finished")
+     * @BePermission("查看操作日志")
      */
     public function logs()
     {
@@ -103,7 +103,7 @@ class SystemLog extends \Be\System\Controller
                         [
                             'name' => 'ip',
                             'label' => 'IP地址',
-                            'width' => '120',
+                            'width' => '160',
                         ],
                     ],
                 ],
@@ -132,9 +132,9 @@ class SystemLog extends \Be\System\Controller
     }
 
     /**
-     * 删除后台日志
+     * 删除操作日志
      *
-     * @BePermission("操作日志")
+     * @BePermission("删除操作日志")
      */
     public function deleteLogs()
     {

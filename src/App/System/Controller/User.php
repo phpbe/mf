@@ -73,7 +73,7 @@ class User extends Controller
     /**
      * 用户管理
      *
-     * @BeMenu("用户管理", icon="el-icon-fa fa-user-circle")
+     * @BeMenu("用户管理", icon="el-icon-fa fa-users")
      * @BePermission("用户管理")
      */
     public function users()

@@ -2,94 +2,157 @@
 
 namespace Be\App\System\Controller;
 
+use Be\Plugin\Curd\FieldItem\FieldItemCustom;
+use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
+use Be\Plugin\Curd\FieldItem\FieldItemTag;
+use Be\Plugin\Curd\SearchItem\SearchItemDatePickerRange;
+use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\System\Be;
 use Be\System\Response;
 use Be\System\Controller;
 
+/**
+ * @BeMenuGroup("日志", icon="el-icon-info")
+ * @BePermissionGroup("日志")
+ */
 class UserLoginLog extends Controller
 {
 
-    public function __construct()
+    /**
+     * 系统日志
+     *
+     * @BeMenu("用户登录日志", icon="el-icon-finished")
+     * @BePermission("查看用户登录日志")
+     */
+    public function logs()
     {
-        $this->config = [
 
-            'name' => '管理员登陆日志',
-
-            'table' => 'System.AdminUserLog',
-
-            'action' => [
-
-                'lists' => [
-
-                    'search' => [
-
-                        'content' => [
-                            'name' => '内容',
-                            'driver' => \Be\System\App\SearchItem\SearchItemString::class,
-                            'uiType' => 'text',
-                            'operation' => '%like%',
-                        ],
-
-                        'success' => [
-                            'name' => '登录成功',
-                            'driver' => \Be\System\App\SearchItem\SearchItemInt::class,
-                            'uiType' => 'select',
-                            'keyValues' => ':不限|0:失败|1:成功'
-                        ]
-                    ],
-
-
-                    'toolbar' => [
+        Be::getPlugin('Curd')->execute([
+            'label' => '用户登录日志',
+            'table' => 'system_user_login_log',
+            'lists' => [
+                'title' => '用户登录日志',
+                'orderBy' => 'create_time',
+                'orderByDir' => 'DESC',
+                'search' => [
+                    'items' => [
                         [
-                            'name' => '删除三个月前后台日志',
-                            'url' => beUrl('System.AdminUserLog.deleteLogs'),
-                            'icon' => 'fa fa-times-circle',
-                            'class' => 'text-danger',
+                            'name' => 'username',
+                            'label' => '用户名',
+                            'op' => '%LIKE%',
                         ],
                         [
-                            'name' => '导出',
-                            'action' => 'export',
-                            'icon' => 'fa fa-array-circle-down',
+                            'name' => 'success',
+                            'label' => '登录结果',
+                            'driver' => SearchItemSelect::class,
+                            'keyValues' => [
+                                '' => '不限',
+                                '0' => '失败',
+                                '1' => '成功',
+                            ],
                         ],
-                    ],
-
-                    'operation' => [
                         [
-                            'name' => '查看',
-                            'action' => 'detail',
-                            'icon' => 'fa fa-search',
+                            'name' => 'description',
+                            'label' => '描述',
+                            'op' => '%LIKE%',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'driver' => SearchItemDatePickerRange::class,
                         ],
                     ],
-
                 ],
 
-                'detail' => [],
+                'toolbar' => [
+                    'items' => [
+                        [
+                            'label' => '删除三个月前系统日志',
+                            'url' => beUrl('System.UserLoginLog.deleteLogs'),
+                            "target" => 'ajax',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-delete',
+                                    'type' => 'danger'
+                                ]
+                            ],
+                        ],
+                        [
+                            'label' => '导出',
+                            'task' => 'export',
+                            'target' => 'blank',
+                            'ui' => [
+                                'button' => [
+                                    'icon' => 'el-icon-fa fa-download',
+                                ]
+                            ]
+                        ],
+                    ]
+                ],
 
-                'export' => [],
+                'field' => [
+
+                    // 未指定时取表的所有字段
+                    'items' => [
+                        [
+                            'name' => 'username',
+                            'label' => '用户名',
+                            'width' => '120',
+                        ],
+                        [
+                            'name' => 'success',
+                            'label' => '登录结果',
+                            'driver' => FieldItemCustom::class,
+                            'width' => '150',
+                            'keyValues' => [
+                                '0' => '<span class="el-tag el-tag--info el-tag--light">失败</span>',
+                                '1' => '<span class="el-tag el-tag--success el-tag--light">成功</span>',
+                            ],
+                            'exportValue' => function($row){
+                                return $row['success'] ? '成功' : '失败';
+                            },
+                        ],
+                        [
+                            'name' => 'description',
+                            'label' => '描述',
+                            'align' => 'left',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
+                        ],
+                        [
+                            'name' => 'ip',
+                            'label' => 'IP地址',
+                            'width' => '160',
+                        ],
+                    ],
+                ],
             ],
-        ];
+
+            'export' => [],
+        ]);
     }
 
     /**
-     * 删除管理员登陆日志
+     * 删除用户登录日志
      *
-     * @be-action 删除管理员登陆日志
-     * @BeMenu("删除管理员登陆日志")
-     * @BePermission("删除管理员登陆日志")
+     * @BePermission("删除用户登录日志")
      */
     public function deleteLogs()
     {
-        Be::getDb()->startTransaction();
+        $db = Be::getDb();
+        $db->startTransaction();
         try {
-            Be::getService('System.UserLoginLog')->deleteLogs();
-            beSystemLog($this->config['name'] . '：删除三个月前管理员登陆日志日志！');
-
-            Be::getDb()->commit();
-
-            Response::success('删除管理员登陆日志成功！');
+            Be::newTable('system_user_login_log')
+                ->where('create_time', '<', date('Y-m-d H:i:s', time() - 90 * 86400))
+                ->delete();
+            beSystemLog('删除三个月前用户登录日志！');
+            $db->commit();
+            Response::success('删除三个月前用户登录日志成功！');
         } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
+            $db->rollback();
             Response::error($e->getMessage());
         }
     }

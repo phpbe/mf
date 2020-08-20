@@ -50,10 +50,10 @@ class User extends \Be\System\Service
         }
         Session::set($timesKey, $times);
 
-        $tupleUserAdminLog = Be::newTuple('system_user_log');
-        $tupleUserAdminLog->username = $username;
-        $tupleUserAdminLog->ip = $ip;
-        $tupleUserAdminLog->create_time = date('Y-m-d H:i:s');
+        $tupleUserLoginLog = Be::newTuple('system_user_login_log');
+        $tupleUserLoginLog->username = $username;
+        $tupleUserLoginLog->ip = $ip;
+        $tupleUserLoginLog->create_time = date('Y-m-d H:i:s');
 
         $db = Be::getDb();
         $db->beginTransaction();
@@ -79,8 +79,8 @@ class User extends \Be\System\Service
 
                     $this->makeLogin($tupleUser);
 
-                    $tupleUserAdminLog->success = 1;
-                    $tupleUserAdminLog->description = '登陆成功！';
+                    $tupleUserLoginLog->success = 1;
+                    $tupleUserLoginLog->description = '登陆成功！';
 
                     $rememberMeToken = null;
                     do {
@@ -101,14 +101,14 @@ class User extends \Be\System\Service
             }
 
             $db->commit();
-            $tupleUserAdminLog->save();
+            $tupleUserLoginLog->save();
             return $tupleUser;
 
         } catch (\Exception $e) {
             $db->rollback();
 
-            $tupleUserAdminLog->description = $e->getMessage();
-            $tupleUserAdminLog->save();
+            $tupleUserLoginLog->description = $e->getMessage();
+            $tupleUserLoginLog->save();
             throw $e;
         }
     }
