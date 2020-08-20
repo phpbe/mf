@@ -4,7 +4,6 @@ namespace Be\App\System\Controller;
 
 
 use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
-use Be\Plugin\Curd\FieldItem\FieldItemIndex;
 use Be\Plugin\Curd\FieldItem\FieldItemSelection;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
@@ -13,12 +12,12 @@ use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\System\Be;
 use Be\System\Db\Tuple;
+use Be\System\Exception\PluginException;
 use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Controller;
 use Be\Util\Random;
-use Exception;
 
 /**
  * Class User
@@ -45,7 +44,7 @@ class User extends Controller
                 $serviceAdminUser = Be::getService('System.User');
                 $serviceAdminUser->login($username, $password, $ip);
                 Response::success('登录成功！');
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 Response::error($e->getMessage());
             }
         } else {
@@ -67,7 +66,7 @@ class User extends Controller
         try {
             Be::getService('System.User')->logout();
             Response::success('成功退出！', beUrl('System.User.login'));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
     }
@@ -215,8 +214,9 @@ class User extends Controller
                             'driver' => FieldItemSelection::class,
                         ],
                         [
-                            'label' => '行号',
-                            'driver' => FieldItemIndex::class,
+                            'name' => 'id',
+                            'label' => 'ID',
+                            'width' => '80',
                         ],
                         [
                             'name' => 'avatar_s',
@@ -367,17 +367,31 @@ class User extends Controller
 
             'fieldEdit' => [
                 'BeforeFieldEdit' => function ($tuple) {
+                    $postData = Request::json();
+                    $field = $postData['postData']['field'];
+                    if ($field == 'is_enable') {
+                        if ($tuple->is_enable == 0) {
+                            if ($tuple->id == 1) {
+                                throw new PluginException('默认用户不能禁用');
+                            }
 
-//                    $avatar = Request::files('avatar');
-//                    $avatar = Request::files('avatar');
-//
-//                    if ($tuple->password != '') {
-//                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
-//                    } else {
-//                        unset($tuple->password);
-//                        unset($tuple->register_time);
-//                        unset($tuple->last_login_time);
-//                    }
+                            $my = Be::getUser();
+                            if ($tuple->id == $my->id) {
+                                throw new PluginException('不能禁用自已的账号');
+                            }
+                        }
+                    } elseif ($field == 'is_delete') {
+                        if ($tuple->is_delete == 1) {
+                            if ($tuple->id == 1) {
+                                throw new PluginException('默认用户不能删除');
+                            }
+
+                            $my = Be::getUser();
+                            if ($tuple->id == $my->id) {
+                                throw new PluginException('不能删除自已');
+                            }
+                        }
+                    }
                 },
             ],
 

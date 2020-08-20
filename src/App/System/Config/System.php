@@ -43,7 +43,7 @@ class System
      *     driver="ConfigItemInputNumberInt",
      *     ui="return ['input-number' => [':min' => 1]];")
      */
-    public $pageSize = 12;
+    public $pageSize = 10;
 
     /**
      * @BeConfigItem("是否开启开发者模式", driver="ConfigItemSwitch")

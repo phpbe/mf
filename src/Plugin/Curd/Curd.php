@@ -242,6 +242,14 @@ class Curd extends Plugin
 
         if (Request::isPost()) {
 
+            if (isset($this->setting['create']['BeforeCreate'])) {
+                $this->on('BeforeCreate', $this->setting['create']['BeforeCreate']);
+            }
+
+            if (isset($this->setting['create']['AfterCreate'])) {
+                $this->on('AfterCreate', $this->setting['create']['AfterCreate']);
+            }
+
             $db = Be::getDb($this->setting['db']);
             $db->startTransaction();
             try {
@@ -296,6 +304,14 @@ class Curd extends Plugin
 
         if (Request::isPost()) {
 
+            if (isset($this->setting['edit']['BeforeEdit'])) {
+                $this->on('BeforeEdit', $this->setting['edit']['BeforeEdit']);
+            }
+
+            if (isset($this->setting['edit']['AfterEdit'])) {
+                $this->on('AfterEdit', $this->setting['edit']['AfterEdit']);
+            }
+
             $db = Be::getDb($this->setting['db']);
             $db->startTransaction();
             try {
@@ -331,6 +347,14 @@ class Curd extends Plugin
      */
     public function fieldEdit()
     {
+        if (isset($this->setting['fieldEdit']['BeforeFieldEdit'])) {
+            $this->on('BeforeFieldEdit', $this->setting['fieldEdit']['BeforeFieldEdit']);
+        }
+
+        if (isset($this->setting['fieldEdit']['AfterFieldEdit'])) {
+            $this->on('AfterFieldEdit', $this->setting['fieldEdit']['AfterFieldEdit']);
+        }
+
         $postData = Request::json();
         if (!isset($postData['postData']['field'])) {
             Response::error('参数（postData.field）缺失！');
@@ -433,7 +457,7 @@ class Curd extends Plugin
                 Response::error('参数（row.' . $field . '）缺失！');
             }
 
-            $value = $postData['row'][$field];
+            $value = isset($postData['postData']['value']) ? $postData['postData']['value'] : $postData['row'][$field];
 
             $title = '修改字段 ' . $fieldLabel . '（' . $field . '）的值为' . $value;
             if (isset($this->setting['fieldEdit']['title'])) {

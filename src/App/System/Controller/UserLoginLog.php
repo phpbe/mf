@@ -90,8 +90,12 @@ class UserLoginLog extends Controller
 
                 'field' => [
 
-                    // 未指定时取表的所有字段
                     'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                            'width' => '80',
+                        ],
                         [
                             'name' => 'username',
                             'label' => '用户名',

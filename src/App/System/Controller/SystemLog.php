@@ -81,9 +81,12 @@ class SystemLog extends \Be\System\Controller
                 ],
 
                 'field' => [
-
-                    // 未指定时取表的所有字段
                     'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                            'width' => '80',
+                        ],
                         [
                             'name' => 'user_id',
                             'label' => '用户',
