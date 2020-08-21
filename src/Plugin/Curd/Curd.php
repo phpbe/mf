@@ -51,27 +51,44 @@ class Curd extends Plugin
                 $postData = Request::json();
                 $formData = $postData['formData'];
                 if (isset($this->setting['lists']['tab'])) {
-                    $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
-                    $driver->submit($formData);
-                    $sql = $driver->buildSql($this->setting['db']);
-                    if ($sql) {
-                        $table->where($sql);
+                    if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                        $buildSql = $item['buildSql'];
+                        $sql = $buildSql($this->setting['db'], $formData);
+                        if ($sql) {
+                            $table->where($sql);
+                        }
+                    } else {
+                        $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+                        $driver->submit($formData);
+                        $sql = $driver->buildSql($this->setting['db']);
+                        if ($sql) {
+                            $table->where($sql);
+                        }
                     }
                 }
 
                 if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                     foreach ($this->setting['lists']['search']['items'] as $item) {
-                        $driver = null;
-                        if (isset($item['driver'])) {
-                            $driverName = $item['driver'];
-                            $driver = new $driverName($item);
+
+                        if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                            $buildSql = $item['buildSql'];
+                            $sql = $buildSql($this->setting['db'], $formData);
+                            if ($sql) {
+                                $table->where($sql);
+                            }
                         } else {
-                            $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
-                        }
-                        $driver->submit($formData);
-                        $sql = $driver->buildSql($this->setting['db']);
-                        if ($sql) {
-                            $table->where($sql);
+                            $driver = null;
+                            if (isset($item['driver'])) {
+                                $driverName = $item['driver'];
+                                $driver = new $driverName($item);
+                            } else {
+                                $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                            }
+                            $driver->submit($formData);
+                            $sql = $driver->buildSql($this->setting['db']);
+                            if ($sql) {
+                                $table->where($sql);
+                            }
                         }
                     }
                 }

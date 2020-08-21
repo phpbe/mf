@@ -99,7 +99,13 @@ class User extends Controller
                             'name' => 'role_id',
                             'label' => '角色',
                             'driver' => SearchItemSelect::class,
-                            'keyValues' => array_merge(['' => '所有角色'], $roleKeyValues)
+                            'keyValues' => ['' => '所有角色'] + $roleKeyValues,
+                            'buildSql' => function($dbName, $formData) {
+                                if (isset($formData['role_id']) && $formData['role_id'] !='') {
+                                    return 'id IN(SELECT user_id FROM system_user_role WHERE role_id='.intval($formData['role_id']).')';
+                                }
+                                return false;
+                            }
                         ],
                         [
                             'name' => 'username',
