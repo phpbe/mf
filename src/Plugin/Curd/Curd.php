@@ -590,40 +590,133 @@ class Curd extends Plugin
      */
     public function export()
     {
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
+
         $table = Be::newTable($this->setting['table'], $this->setting['db']);
 
-        $postData = Request::json();
-        $formData = $postData['formData'];
-        if (isset($this->setting['lists']['tab'])) {
-            $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
-            $driver->submit($formData);
-            $sql = $driver->buildSql($this->setting['db']);
-            if ($sql) {
-                $table->where($sql);
+        try {
+            if (isset($this->setting['lists']['filter']) && count($this->setting['lists']['filter']) > 0) {
+                foreach ($this->setting['lists']['filter'] as $filter) {
+                    $table->where($filter);
+                }
             }
-        }
 
-        if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
-            foreach ($this->setting['lists']['search']['items'] as $item) {
-                $driver = null;
-                if (isset($item['driver'])) {
-                    $driverName = $item['driver'];
-                    $driver = new $driverName($item);
+            $formData = $postData['formData'];
+            if (isset($this->setting['lists']['tab'])) {
+                if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                    $buildSql = $item['buildSql'];
+                    $sql = $buildSql($this->setting['db'], $formData);
+                    if ($sql) {
+                        $table->where($sql);
+                    }
                 } else {
-                    $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
-                }
-                $driver->submit($formData);
-                $sql = $driver->buildSql($this->setting['db']);
-                if ($sql) {
-                    $table->where($sql);
+                    $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+                    $driver->submit($formData);
+                    $sql = $driver->buildSql($this->setting['db']);
+                    if ($sql) {
+                        $table->where($sql);
+                    }
                 }
             }
+
+            if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
+                foreach ($this->setting['lists']['search']['items'] as $item) {
+
+                    if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                        $buildSql = $item['buildSql'];
+                        $sql = $buildSql($this->setting['db'], $formData);
+                        if ($sql) {
+                            $table->where($sql);
+                        }
+                    } else {
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                        }
+                        $driver->submit($formData);
+                        $sql = $driver->buildSql($this->setting['db']);
+                        if ($sql) {
+                            $table->where($sql);
+                        }
+                    }
+                }
+            }
+
+            $rows = $table->getYieldArrays();
+
+
+
+            $formattedRows = [];
+            foreach ($rows as $row) {
+                $formattedRow = [];
+
+                foreach ($this->setting['lists']['field']['items'] as $item) {
+                    $itemName = $item['name'];
+                    $itemValue = '';
+                    if (isset($item['value'])) {
+                        $value = $item['value'];
+                        if (is_callable($value)) {
+                            $itemValue = $value($row);
+                        } else {
+                            $itemValue = $value;
+                        }
+                    } else {
+                        if (isset($row[$itemName])) {
+                            $itemValue = $row[$itemName];
+                        }
+                    }
+
+                    if (isset($item['keyValues'])) {
+                        $keyValues = $item['keyValues'];
+                        if (is_callable($keyValues)) {
+                            $itemValue = $keyValues($itemValue);
+                        } else {
+                            if (isset($keyValues[$itemValue])) {
+                                $itemValue = $keyValues[$itemValue];
+                            } else {
+                                $itemValue = '';
+                            }
+                        }
+                    }
+
+                    $formattedRow[$itemName] = $itemValue;
+                }
+
+                foreach ($row as $k => $v) {
+                    if (isset($formattedRow[$k])) {
+                        continue;
+                    }
+
+                    if (isset($this->setting['lists']['field']['exclude']) &&
+                        is_array($this->setting['lists']['field']['exclude']) &&
+                        in_array($k, $this->setting['lists']['field']['exclude'])
+                    ) {
+                        continue;
+                    }
+
+                    $formattedRow[$k] = $v;
+                }
+                $formattedRows[] = $formattedRow;
+            }
+
+            Response::set('success', true);
+            Response::set('data', [
+                'total' => $total,
+                'rows' => $formattedRows,
+            ]);
+            Response::ajax();
+        } catch (\Exception $e) {
+            Response::set('success', false);
+            Response::set('message', $e->getMessage());
+            Response::ajax();
         }
 
-        $rows = $table->getYieldObjects();
 
-        $exporter = Be::getPlugin('Exporter');
-        $exporter->
+
 
 
         $setting = $this->setting['export'];
@@ -634,6 +727,16 @@ class Curd extends Plugin
         $lists = $table->getYieldArrays();
 
         $type = isset($setting['type']) ? $setting['type'] : 'csv';
+
+
+        $headers = [];
+        $rows = [];
+        Be::getPlugin('Exporter')->execute([
+            'type' => 'csv',
+            'headers' => $headers,
+            'rows' => $rows,
+        ]);
+
 
         $exporter = Exporter::newDriver($type);
         $exporter->config($setting);

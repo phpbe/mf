@@ -4,7 +4,7 @@ namespace Be\Plugin\Curd\OperationItem;
 
 
 /**
- * 搜索项 布尔值
+ * 操作项 按钮
  */
 class OperationItemButton extends OperationItem
 {

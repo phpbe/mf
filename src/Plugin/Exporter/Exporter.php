@@ -17,6 +17,23 @@ use Be\System\Exception\RuntimeException;
 class Exporter
 {
 
+    protected $setting = null;
+
+    public function execute($setting = [])
+    {
+        if (!isset($setting['db'])) {
+            $setting['db'] = 'master';
+        }
+
+        $this->setting = $setting;
+
+        $task = Request::request('task', 'lists');
+        if (isset($this->setting[$task]) && method_exists($this, $task)) {
+            $this->$task();
+        }
+    }
+
+
     public static function exportFromSql($config) {
 
         $dbName = 'master';

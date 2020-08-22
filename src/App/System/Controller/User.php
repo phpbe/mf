@@ -10,6 +10,7 @@ use Be\Plugin\Curd\OperationItem\OperationItemButton;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
+use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
@@ -147,6 +148,7 @@ class User extends Controller
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-user-plus',
+                                    'type' => 'success',
                                 ]
                             ]
                         ],
@@ -200,13 +202,35 @@ class User extends Controller
                         ],
                         [
                             'label' => '导出',
-                            'task' => 'export',
-                            'driver' => ToolbarItemButton::class,
-                            'target' => 'blank',
+                            'driver' => ToolbarItemButtonDropDown::class,
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-download',
                                 ]
+                            ],
+                            'menus' => [
+                                [
+                                    'label' => 'CSV',
+                                    'task' => 'export',
+                                    'postData' => [
+                                        'type' => 'csv',
+                                    ],
+                                    'target' => 'blank',
+                                    'ui' => [
+                                        'icon' => 'el-icon-fa fa-file-text-o',
+                                    ],
+                                ],
+                                [
+                                    'label' => 'EXCEL',
+                                    'task' => 'export',
+                                    'postData' => [
+                                        'type' => 'excel',
+                                    ],
+                                    'target' => 'blank',
+                                    'ui' => [
+                                        'icon' => 'el-icon-fa fa-file-excel-o',
+                                    ],
+                                ],
                             ]
                         ],
                     ]

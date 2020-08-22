@@ -176,8 +176,10 @@ class Request
             if ($format instanceof \Closure) {
                 $input = self::formatByClosure($input, $format);
             } else {
-                $fnFormat = 'format' . ucfirst($format);
-                $input = self::$fnFormat($input);
+                if ($format) {
+                    $fnFormat = 'format' . ucfirst($format);
+                    $input = self::$fnFormat($input);
+                }
             }
 
             return $input;
@@ -201,8 +203,12 @@ class Request
         if ($format instanceof \Closure) {
             return self::formatByClosure($value, $format);
         } else {
-            $fnFormat = 'format' . ucfirst($format);
-            return self::$fnFormat($value);
+            if ($format) {
+                $fnFormat = 'format' . ucfirst($format);
+                return self::$fnFormat($value);
+            } else {
+                return $value;
+            }
         }
     }
 
@@ -260,16 +266,6 @@ class Request
                 return 'invalid';
             }
         }
-    }
-
-    private static function format($value)
-    {
-        return $value;
-    }
-
-    private static function formatNull($value)
-    {
-        return $value;
     }
 
     private static function formatByClosure($value, \Closure $closure)

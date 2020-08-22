@@ -6,7 +6,7 @@ use Be\System\Be;
 
 
 /**
- * 工具栏 按钮
+ * 工具栏 下拉菜单
  */
 class ToolbarItemButtonDropDown extends ToolbarItem
 {
@@ -22,6 +22,14 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     {
         parent::__construct($params);
 
+        if (!isset($this->ui['dropdown']['@command'])) {
+            $this->ui['dropdown']['@command'] = 'toolbarButtonDropDownClick';
+        }
+
+        if (!isset($this->ui['dropdown-menu']['slot'])) {
+            $this->ui['dropdown-menu']['slot'] = 'dropdown';
+        }
+
         if (isset($params['menus'])) {
             $menus = $params['menus'];
 
@@ -33,62 +41,13 @@ class ToolbarItemButtonDropDown extends ToolbarItem
             }
 
             if (is_array($tmpMenus)) {
-                $this->menus = $tmpMenus;
-            }
-
-            foreach ($this->menus as &$m) {
-
-                if (isset($m['label'])) {
-                    $label = $m['label'];
-                    if (is_callable($label)) {
-                        $m['label'] = $label();
-                    }
+                $i = 0;
+                $newMenus = [];
+                foreach ($tmpMenus as $tmpMenu) {
+                    $tmpMenu['command'] = $this->name . '.' . $i++;
+                    $newMenus[] = new ToolbarItemButtonDropDownMenu($tmpMenu);
                 }
-
-                if (isset($m['value'])) {
-                    $value = $m['value'];
-                    if (is_callable($value)) {
-                        $m['value'] = $value();
-                    }
-                }
-
-                if (isset($m['url'])) {
-                    $url = $m['url'];
-                    if (is_callable($url)) {
-                        $m['url'] = $url();
-                    }
-                } else {
-                    if (isset($m['task'])) {
-                        $task = $m['task'];
-                        if (is_callable($task)) {
-                            $task = $task();
-                        }
-
-                        $runtime = Be::getRuntime();
-                        $m['url'] = beUrl($runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName(), ['task' => $task]);
-                    }
-                }
-
-                if (isset($m['ui'])) {
-                    $ui = $m['ui'];
-                    if (is_callable($ui)) {
-                        $m['ui'] = $ui();
-                    }
-                }
-
-                if (isset($m['option'])) {
-                    $option = $m['option'];
-                    if (is_callable($option)) {
-                        $m['option'] = $option();
-                    }
-                }
-
-                if (isset($m['data'])) {
-                    $data = $m['data'];
-                    if (is_callable($data)) {
-                        $m['data'] = $data();
-                    }
-                }
+                $this->menus = $newMenus;
             }
         }
     }
@@ -103,10 +62,6 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         $html = '<el-dropdown';
         if (isset($this->ui['dropdown'])) {
             foreach ($this->ui['dropdown'] as $k => $v) {
-                if ($k == 'icon') {
-                    continue;
-                }
-
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -116,36 +71,43 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         }
         $html .= '>';
 
-        if (count($this->menus)) {
-            $html .= '<el-menu slot="overlay" @click="toolbarButtonDropDownClick(\'' . $this->name . '\')">';
-            $i = 0;
-            foreach ($this->menus as $menu) {
-                $html .= '<el-menu-item key="' . $i . '">';
-
-                if (isset($menu['ui']['icon'])) {
-                    $html .= ' <el-icon type="' . $menu['ui']['icon'] . '"></el-icon>';
+        $html .= '<el-button';
+        if (isset($this->ui['button'])) {
+            foreach ($this->ui['button'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
                 }
-
-                $html .= $menu['value'];
-                $html .= '</el-menu-item>';
-
-                $i++;
             }
-            $html .= '</el-menu>';
+        }
+        $html .= '>';
+        $html .= $this->label;
+        $html .= '<i class="el-icon-arrow-down el-icon--right"></i>';
+        $html .= '</el-button>';
+
+        if (count($this->menus)) {
+            $html .= '<el-dropdown-menu';
+            if (isset($this->ui['dropdown-menu'])) {
+                foreach ($this->ui['dropdown-menu'] as $k => $v) {
+                    if ($v === null) {
+                        $html .= ' ' . $k;
+                    } else {
+                        $html .= ' ' . $k . '="' . $v . '"';
+                    }
+                }
+            }
+            $html .= '>';
+
+            foreach ($this->menus as $menu) {
+                $html .= $menu->getHtml();
+            }
+            $html .= '</el-dropdown-menu>';
         }
 
-        $html .= $this->value;
-        $html .= '<el-button> ' . $this->value . ' <el-icon type="down"></el-icon></el-button>';
-
         $html .= '</el-dropdown>';
-
-        $html .= '<el-drawer title="" :width="720" :visible="visible" :body-style="{paddingBottom:\'80px\'}" >';
-        $html .= '<iframe src="#" id="drawer-iframe"></iframe>';
-        $html .= '</el-drawer>';
-
         return $html;
     }
-
 
     /**
      * 获取 vue data
@@ -154,15 +116,33 @@ class ToolbarItemButtonDropDown extends ToolbarItem
      */
     public function getVueData()
     {
+        $menus = [];
+        foreach ($this->menus as $menu) {
+            $m = [
+                'url' => $menu->url,
+                'target' => $menu->target,
+                'postData' => $menu->postData,
+                'enable' => true,
+            ];
+
+            if ($menu->target == 'dialog') {
+                $m['dialog'] = $menu->dialog;
+            } elseif ($menu->target == 'drawer') {
+                $m['drawer'] = $menu->drawer;
+            }
+
+            $menus[] = $m;
+        }
+
         return [
             'toolbar' => [
                 $this->name => [
-                    'menus' => $this->menus,
+                    'menus' => $menus,
+                    'enable' => true,
                 ]
             ]
         ];
     }
-
 
     /**
      * 获取 vue 方法
@@ -172,9 +152,10 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     public function getVueMethods()
     {
         return [
-            'toolbarButtonDropDownClick' => 'function (name) {
-                var option = this.toolbar[name].menus[e.key];
-                this.toolbarAction(option);
+            'toolbarButtonDropDownClick' => 'function (command) {
+                var arr = command.split(".");
+                var option = this.toolbar[arr[0]].menus[arr[1]];
+                this.toolbarAction(arr[0], option);
             }',
         ];
     }

@@ -5,12 +5,13 @@ namespace Be\Plugin\Curd\OperationItem;
 use Be\System\Be;
 
 /**
- * 搜索项 布尔值
+ * 操作项 下拉菜单
  */
 class OperationItemButtonDropDown extends OperationItem
 {
 
     public $menus = []; // 下拉菜单
+
 
     /**
      * 构造函数
@@ -20,6 +21,14 @@ class OperationItemButtonDropDown extends OperationItem
     public function __construct($params = [])
     {
         parent::__construct($params);
+
+        if (!isset($this->ui['dropdown']['@command'])) {
+            $this->ui['dropdown']['@command'] = 'operationButtonDropDownClick';
+        }
+
+        if (!isset($this->ui['dropdown-menu']['slot'])) {
+            $this->ui['dropdown-menu']['slot'] = 'dropdown';
+        }
 
         if (isset($params['menus'])) {
             $menus = $params['menus'];
@@ -35,13 +44,14 @@ class OperationItemButtonDropDown extends OperationItem
                 $i = 0;
                 $newMenus = [];
                 foreach ($tmpMenus as $tmpMenu) {
-                    $tmpMenu['key'] = $i++;
-                    $newMenus[] = new OperationItemButtonDropDownItem($tmpMenu);
+                    $tmpMenu['command'] = $this->name . '.' . $i++;
+                    $newMenus[] = new OperationItemButtonDropDownMenu($tmpMenu);
                 }
                 $this->menus = $newMenus;
             }
         }
     }
+
 
     /**
      * 获取html内容
@@ -50,26 +60,9 @@ class OperationItemButtonDropDown extends OperationItem
      */
     public function getHtml()
     {
-        $html = '<el-table-column';
-        if (isset($this->ui['table-column'])) {
-            foreach ($this->ui['table-column'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
-            }
-        }
-        $html .= '>';
-        $html .= '<template slot-scope="scope">';
-
-        $html .= '<el-dropdown';
+        $html = '<el-dropdown';
         if (isset($this->ui['dropdown'])) {
             foreach ($this->ui['dropdown'] as $k => $v) {
-                if ($k == 'icon') {
-                    continue;
-                }
-
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -79,20 +72,41 @@ class OperationItemButtonDropDown extends OperationItem
         }
         $html .= '>';
 
+        $html .= '<el-button';
+        if (isset($this->ui['button'])) {
+            foreach ($this->ui['button'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
+            }
+        }
+        $html .= '>';
+        $html .= $this->label;
+        $html .= '<i class="el-icon-arrow-down el-icon--right"></i>';
+        $html .= '</el-button>';
+
         if (count($this->menus)) {
-            $html .= '<el-menu slot="overlay" @click="operationButtonDropDownClick(e, \'' . $this->name . '\')">';
+            $html .= '<el-dropdown-menu';
+            if (isset($this->ui['dropdown-menu'])) {
+                foreach ($this->ui['dropdown-menu'] as $k => $v) {
+                    if ($v === null) {
+                        $html .= ' ' . $k;
+                    } else {
+                        $html .= ' ' . $k . '="' . $v . '"';
+                    }
+                }
+            }
+            $html .= '>';
+
             foreach ($this->menus as $menu) {
                 $html .= $menu->getHtml();
             }
-            $html .= '</el-menu>';
+            $html .= '</el-dropdown-menu>';
         }
 
-        $html .= $this->label;
-        $html .= '<el-button> ' . $this->label . ' <el-icon type="down"></el-icon></el-button>';
         $html .= '</el-dropdown>';
-        $html .= '</template>';
-        $html .= '</el-table-column>';
-
         return $html;
     }
 
@@ -110,6 +124,7 @@ class OperationItemButtonDropDown extends OperationItem
                 'url' => $menu->url,
                 'target' => $menu->target,
                 'postData' => $menu->postData,
+                'enable' => true,
             ];
 
             if ($menu->target == 'dialog') {
@@ -125,11 +140,11 @@ class OperationItemButtonDropDown extends OperationItem
             'operation' => [
                 $this->name => [
                     'menus' => $menus,
+                    'enable' => true,
                 ]
             ]
         ];
     }
-
 
     /**
      * 获取 vue 方法
@@ -139,13 +154,13 @@ class OperationItemButtonDropDown extends OperationItem
     public function getVueMethods()
     {
         return [
-            'operationButtonDropDownClick' => 'function (e, name) {
-                var option = this.operation[name].menus[e.key];
-                this.operationAction(option);
+            'operationButtonDropDownClick' => 'function (command) {
+                var arr = command.split(".");
+                var option = this.toolbar[arr[0]].menus[arr[1]];
+                this.operationAction(arr[0], option);
             }',
         ];
     }
-
 
 
 }
