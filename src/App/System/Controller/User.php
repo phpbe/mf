@@ -7,6 +7,7 @@ use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
 use Be\Plugin\Curd\FieldItem\FieldItemSelection;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
+use Be\Plugin\Curd\OperationItem\OperationItemButtonDropDown;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
@@ -327,6 +328,7 @@ class User extends Controller
                             'label' => '编辑',
                             'driver' => OperationItemButton::class,
                             'task' => 'edit',
+                            'target' => 'drawer',
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-edit',

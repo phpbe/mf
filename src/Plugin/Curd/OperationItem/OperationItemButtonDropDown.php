@@ -26,6 +26,10 @@ class OperationItemButtonDropDown extends OperationItem
             $this->ui['dropdown']['@command'] = 'operationButtonDropDownClick';
         }
 
+        if (!isset($this->ui['button']['size'])) {
+            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        }
+
         if (!isset($this->ui['dropdown-menu']['slot'])) {
             $this->ui['dropdown-menu']['slot'] = 'dropdown';
         }
@@ -41,10 +45,11 @@ class OperationItemButtonDropDown extends OperationItem
             }
 
             if (is_array($tmpMenus)) {
-                $i = 0;
+                $index = 0;
                 $newMenus = [];
                 foreach ($tmpMenus as $tmpMenu) {
-                    $tmpMenu['command'] = $this->name . '.' . $i++;
+                    $tmpMenu['parentName'] = $this->name;
+                    $tmpMenu['index'] = $index++;
                     $newMenus[] = new OperationItemButtonDropDownMenu($tmpMenu);
                 }
                 $this->menus = $newMenus;
@@ -155,9 +160,11 @@ class OperationItemButtonDropDown extends OperationItem
     {
         return [
             'operationButtonDropDownClick' => 'function (command) {
-                var arr = command.split(".");
-                var option = this.toolbar[arr[0]].menus[arr[1]];
-                this.operationAction(arr[0], option);
+                var option = this.operation[command.name].menus[command.index];
+                this.operationAction(command.name, option, command.row);
+            }',
+            'operationButtonDropDownMenuCommand' => 'function (name, index, row) {
+                return {"name": name, "index": index, "row": row};
             }',
         ];
     }

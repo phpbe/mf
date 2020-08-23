@@ -44,7 +44,8 @@ class ToolbarItemButtonDropDown extends ToolbarItem
                 $i = 0;
                 $newMenus = [];
                 foreach ($tmpMenus as $tmpMenu) {
-                    $tmpMenu['command'] = $this->name . '.' . $i++;
+                    $tmpMenu['parentName'] = $this->name;
+                    $tmpMenu['index'] = $i++;
                     $newMenus[] = new ToolbarItemButtonDropDownMenu($tmpMenu);
                 }
                 $this->menus = $newMenus;
@@ -153,9 +154,11 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     {
         return [
             'toolbarButtonDropDownClick' => 'function (command) {
-                var arr = command.split(".");
-                var option = this.toolbar[arr[0]].menus[arr[1]];
-                this.toolbarAction(arr[0], option);
+                var option = this.toolbar[command.name].menus[command.index];
+                this.toolbarAction(command.name, option);
+            }',
+            'toolbarButtonDropDownMenuCommand' => 'function (name, index) {
+                return {"name": name, "index": index};
             }',
         ];
     }

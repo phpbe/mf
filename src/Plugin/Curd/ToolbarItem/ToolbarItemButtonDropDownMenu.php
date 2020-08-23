@@ -18,12 +18,7 @@ class ToolbarItemButtonDropDownMenu extends ToolbarItem
     public function __construct($params = [])
     {
         parent::__construct($params);
-
-        if (isset($params['command'])) {
-            if (!isset($this->ui['command'])) {
-                $this->ui['command'] = $params['command'];
-            }
-        }
+        $this->ui[':command'] = 'toolbarButtonDropDownMenuCommand(\''.$params['parentName'].'\','.$params['index'].')';
     }
 
     /**
