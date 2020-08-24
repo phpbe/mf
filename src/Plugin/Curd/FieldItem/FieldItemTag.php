@@ -18,6 +18,10 @@ class FieldItemTag extends FieldItem
     {
         parent::__construct($params);
 
+        if (!isset($this->ui['tag']['size'])) {
+            $this->ui['tag']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        }
+
         if ($this->url) {
             if (!isset($this->ui['tag']['@click'])) {
                 $this->ui['tag']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';

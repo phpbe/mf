@@ -19,6 +19,18 @@ class FieldItemButton extends FieldItem
     {
         parent::__construct($params);
 
+        if (!isset($this->ui['button']['size'])) {
+            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        }
+
+        if (!isset($this->ui['button']['type']) && isset($params['type'])) {
+            $this->ui['button']['type'] = $params['type'];
+        }
+
+        if (!isset($this->ui['button']['icon']) && isset($params['icon'])) {
+            $this->ui['button']['icon'] = $params['icon'];
+        }
+
         if ($this->url) {
             if (!isset($this->ui['button']['@click'])) {
                 $this->ui['button']['@click'] = 'fieldClick(\'' . $this->name . '\', scope.row)';
