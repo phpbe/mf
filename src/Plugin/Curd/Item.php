@@ -2,6 +2,7 @@
 
 namespace Be\Plugin\Curd;
 
+use Be\System\Be;
 use Be\System\Request;
 
 /**
@@ -31,7 +32,6 @@ abstract class Item
      * 构造函数
      *
      * @param array $params 参数
-
      */
     public function __construct($params = [])
     {
@@ -43,7 +43,7 @@ abstract class Item
                 $this->name = $name;
             }
         } else {
-            $this->name = 'n'.(self::$nameIndex++);
+            $this->name = 'n' . (self::$nameIndex++);
         }
 
         if (isset($params['label'])) {
@@ -103,6 +103,16 @@ abstract class Item
                 $url = Request::url();
                 $url .= (strpos($url, '?') === false ? '?' : '&') . 'task=' . $task;
                 $this->url = $url;
+            } elseif (isset($params['action'])) {
+                $action = $params['action'];
+                if (is_callable($action)) {
+                    $action = $action();
+                }
+
+                $runtime = Be::getRuntime();
+                $appName = $runtime->getAppName();
+                $controllerName = $runtime->getControllerName();
+                $this->url = beUrl($appName . '.' . $controllerName . '.' . $action);
             }
         }
 
@@ -123,7 +133,6 @@ abstract class Item
                 $this->postData = $postData;
             }
         }
-
 
         if (isset($params['target'])) {
             $target = $params['target'];

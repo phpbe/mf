@@ -109,10 +109,11 @@ body {background-color: #fff;}
 .el-menu .el-link{display: block !important;}
 
 .el-menu .el-link:hover{color: #333 !important;}
-.be-west .el-menu .el-link:hover{color: #ccc !important;}
+.be-west .el-menu .el-link:hover{color: #eee !important;}
+.be-west .el-menu .el-link{color: #ccc !important;}
 
 .el-menu .is-active .el-link:hover{color: #333 !important;}
-.be-west .el-menu .is-active .el-link:hover{color: #ccc !important;}
+.be-west .el-menu .is-active .el-link:hover{color: #eee !important;}
 
 /* 顶部菜单头 */
 .be-north .el-menu--horizontal>.el-submenu .el-submenu__title{

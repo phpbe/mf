@@ -13,6 +13,9 @@ CREATE TABLE `system_app` (
 CREATE TABLE `system_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
+  `app` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '应用名',
+  `controller` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '控制器名',
+  `action` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '动作名',
   `content` VARCHAR(240) NOT NULL DEFAULT '' COMMENT '内容',
   `details` text NOT NULL DEFAULT '' COMMENT '明细',
   `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'IP',

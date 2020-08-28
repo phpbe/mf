@@ -14,9 +14,13 @@ class SystemLog extends \Be\System\Service
      */
     public function addLog($content, $details = '')
     {
+        $runtime = Be::getRuntime();
         $my = Be::getUser();
         $tupleAdminLog = Be::newTuple('system_log');
         $tupleAdminLog->user_id = $my->id;
+        $tupleAdminLog->app = $runtime->getAppName();
+        $tupleAdminLog->controller = $runtime->getControllerName();
+        $tupleAdminLog->action = $runtime->getActionName();
         $tupleAdminLog->content = $content;
         $tupleAdminLog->details = json_encode($details);
         $tupleAdminLog->ip = Request::ip();

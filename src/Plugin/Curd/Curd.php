@@ -22,7 +22,7 @@ class Curd extends Plugin
     {
         $this->setting($setting);
         $task = Request::request('task', 'lists');
-        if (isset($this->setting[$task]) && method_exists($this, $task)) {
+        if (method_exists($this, $task)) {
             $this->$task();
         }
     }
