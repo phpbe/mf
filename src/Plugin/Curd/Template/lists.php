@@ -1,6 +1,7 @@
 <be-head>
     <style type="text/css">
         .el-table__row .el-divider__text, .el-link {font-size: 12px;}
+        .el-drawer__header span{outline: none;}
     </style>
 </be-head>
 

@@ -12,6 +12,8 @@ use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
+use Be\Plugin\Detail\Item\DetailItemAvatar;
+use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
@@ -320,6 +322,7 @@ class User extends Controller
                             'label' => '查看',
                             'driver' => OperationItemButton::class,
                             'task' => 'detail',
+                            'target' => 'drawer',
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-search',
@@ -358,6 +361,99 @@ class User extends Controller
                     ]
                 ],
 
+            ],
+
+            'detail' => [
+                'title' => '查看用户明细',
+                'field' => [
+                    'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                        ],
+                        [
+                            'name' => 'avatar_s',
+                            'label' => '头像',
+                            'driver' => DetailItemAvatar::class,
+                            'value' => function ($row) {
+                                if ($row['avatar_s'] == '') {
+                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
+                                } else {
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row['avatar_s'];
+                                }
+                            },
+                        ],
+                        [
+                            'name' => 'username',
+                            'label' => '用户名',
+                        ],
+                        [
+                            'name' => 'role_id',
+                            'label' => '角色',
+                            'value' => function ($row) use ($roleKeyValues) {
+                                $roleIds = Be::newTable('system_user_role')
+                                    ->where('user_id', $row['id'])
+                                    ->getArray('role_id');
+
+                                $roleNames = [];
+                                foreach ($roleIds as $roleId) {
+                                    if (isset($roleKeyValues[$roleId])) {
+                                        $roleNames[] = $roleKeyValues[$roleId];
+                                    }
+                                }
+                                return implode(', ', $roleNames);
+                            },
+                        ],
+                        [
+                            'name' => 'email',
+                            'label' => '邮箱',
+                        ],
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'gender',
+                            'label' => '性别',
+                            'value' => function ($row) {
+                                switch ($row['gender']) {
+                                    case '-1':
+                                        return '保密';
+                                    case '0':
+                                        return '女';
+                                    case '1':
+                                        return '男';
+                                }
+                                return '';
+                            },
+                        ],
+                        [
+                            'name' => 'phone',
+                            'label' => '电话',
+                        ],
+                        [
+                            'name' => 'mobile',
+                            'label' => '手机',
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'driver' => DetailItemSwitch::class,
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                        ],
+                        [
+                            'name' => 'last_login_time',
+                            'label' => '最后一次登陆时间',
+                        ],
+                        [
+                            'name' => 'last_login_ip',
+                            'label' => '最后一次登录的IP',
+                        ],
+                    ]
+                ],
             ],
 
             'create' => [

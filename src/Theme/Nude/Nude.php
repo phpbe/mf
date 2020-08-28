@@ -1,10 +1,4 @@
-<?php
-use Be\System\Be;
-?>
 <be-html>
-<?php
-$my = Be::getUser();
-?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,6 +14,27 @@ $my = Be::getUser();
 
     <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css">
     <script src="https://unpkg.com/element-ui@2.13.2/lib/index.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        body {background-color: #fff;}
+        ::-webkit-scrollbar {width: 8px;}
+        ::-webkit-scrollbar-thumb {background-color: #555;}
+        [v-cloak] {display: none;}
+        [class^="el-icon-fa"],
+        [class*="el-icon-fa"] {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            font-weight: normal;
+            font-family: FontAwesome!important;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+    </style>
 
     <be-head>
     </be-head>

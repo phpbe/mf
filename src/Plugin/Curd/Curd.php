@@ -2,7 +2,21 @@
 
 namespace Be\Plugin\Curd;
 
+use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
+use Be\Plugin\Curd\FieldItem\FieldItemCustom;
+use Be\Plugin\Curd\FieldItem\FieldItemImage;
+use Be\Plugin\Curd\FieldItem\FieldItemProgress;
+use Be\Plugin\Curd\FieldItem\FieldItemSelection;
+use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
+use Be\Plugin\Curd\FieldItem\FieldItemText;
+use Be\Plugin\Detail\Item\DetailItemAvatar;
+use Be\Plugin\Detail\Item\DetailItemCustom;
+use Be\Plugin\Detail\Item\DetailItemImage;
+use Be\Plugin\Detail\Item\DetailItemProgress;
+use Be\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Plugin\Detail\Item\DetailItemText;
 use Be\System\Be;
+use Be\System\Exception\PluginException;
 use Be\System\Plugin;
 use Be\System\Request;
 use Be\System\Response;
@@ -226,29 +240,104 @@ class Curd extends Plugin
      */
     public function detail()
     {
-        $setting = $this->setting['detail'];
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
 
-        $tuple = Be::newTuple($setting['table']);
+        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
 
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
+        try {
 
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
+            $primaryKey = $tuple->getPrimaryKey();
+
+            $primaryKeyValue = null;
+            if (is_array($primaryKey)) {
+                $primaryKeyValue = [];
+                foreach ($primaryKey as $pKey) {
+                    if (!isset($postData['row'][$pKey])) {
+                        throw new PluginException('主键（row.' . $pKey . '）缺失！');
+                    }
+
+                    $primaryKeyValue[$pKey] = $postData['row'][$pKey];
+                }
+            } else {
+                if (!isset($postData['row'][$primaryKey])) {
+                    throw new PluginException('主键（row.' . $primaryKey . '）缺失！');
+                }
+
+                $primaryKeyValue = $postData['row'][$primaryKey];
+            }
+
+            $tuple->load($primaryKeyValue);
+            $row = $tuple->toArray();
+
+            $fields = null;
+            if (isset($this->setting['detail']['field']['items'])) {
+                $fields = $this->setting['detail']['field']['items'];
+            } else {
+                $fields = [];
+
+                $listFields = $this->setting['lists']['field']['items'];
+                foreach ($listFields as &$item) {
+                    if (!isset($item['label'])) {
+                        continue;
+                    }
+
+                    if (isset($item['driver'])) {
+                        switch ($item['driver']) {
+                            case FieldItemAvatar::class:
+                                $item['driver'] = DetailItemAvatar::class;
+                                break;
+                            case FieldItemCustom::class:
+                                $item['driver'] = DetailItemCustom::class;
+                                break;
+                            case FieldItemImage::class:
+                                $item['driver'] = DetailItemImage::class;
+                                break;
+                            case FieldItemProgress::class:
+                                $item['driver'] = DetailItemProgress::class;
+                                break;
+                            case FieldItemSwitch::class:
+                                $item['driver'] = DetailItemSwitch::class;
+                                break;
+                            default:
+                                $item['driver'] = DetailItemText::class;
+                                break;
+                        }
+                    }
+
+                    $fields[] = $item;
+                }
+                unset($item);
+            }
+
+            foreach ($fields as &$item) {
+                $itemName = $item['name'];
+                $itemValue = '';
+                if (isset($item['value'])) {
+                    $value = $item['value'];
+                    if (is_callable($value)) {
+                        $itemValue = $value($row);
+                    } else {
+                        $itemValue = $value;
+                    }
+                } else {
+                    if (isset($row[$itemName])) {
+                        $itemValue = $row[$itemName];
+                    }
+                }
+
+                $item['value'] = $itemValue;
+            }
+            unset($item);
+
+            $setting = $this->setting['detail'];
+            $setting['field']['items'] = $fields;
+
+            Be::getPlugin('Detail')->execute($setting);
+
+        } catch (\Exception $e) {
+            Response::error($e->getMessage());
         }
-
-        $tuple->load($primaryKeyValue);
-        if (!$tuple->$primaryKey) {
-            Response::error('主键编号（' . $primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
-        }
-
-        $fields = $tuple->getFields();
-
-        Response::setTitle($setting['title']);
-        Response::set('row', $tuple);
-
-        $theme = isset($this->setting['detail']['theme']) ?? 'Nude';
-        Response::display('Plugin.Curd.detail', $theme);
     }
 
     /**
@@ -296,7 +385,7 @@ class Curd extends Plugin
             Response::setTitle($setting['title']);
             Response::set('row', $tuple);
 
-            $theme = isset($this->setting['create']['theme']) ?? 'Nude';
+            $theme = isset($this->setting['create']['theme']) ? $this->setting['create']['theme'] : 'Nude';
             Response::display('Plugin.Curd.create', $theme);
         }
     }
@@ -358,7 +447,7 @@ class Curd extends Plugin
             Response::setTitle($setting['title']);
             Response::set('tuple', $tuple);
 
-            $theme = isset($this->setting['edit']['theme']) ?? 'Nude';
+            $theme = isset($this->setting['edit']['theme']) ? $this->setting['edit']['theme'] : 'Nude';
             Response::display('Plugin.Curd.edit', $theme);
         }
     }
