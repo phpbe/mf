@@ -99,14 +99,14 @@ class SystemLog extends \Be\System\Controller
                             'align' => 'left',
                         ],
                         [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
-                            'width' => '150',
-                        ],
-                        [
                             'name' => 'ip',
                             'label' => 'IP地址',
                             'width' => '160',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
                         ],
                     ],
                 ],
@@ -130,7 +130,54 @@ class SystemLog extends \Be\System\Controller
 
             ],
 
-            'export' => [],
+            'detail' => [
+                'field' => [
+                    'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                        ],
+                        [
+                            'name' => 'user_id',
+                            'label' => '用户',
+                            'value' => function ($row) use ($userKeyValues) {
+                                if (isset($userKeyValues[$row['user_id']])) {
+                                    return $userKeyValues[$row['user_id']];
+                                }
+                                return '';
+                            },
+                        ],
+                        [
+                            'name' => 'app',
+                            'label' => '应用名',
+                        ],
+                        [
+                            'name' => 'controller',
+                            'label' => '控制器名',
+                        ],
+                        [
+                            'name' => 'action',
+                            'label' => '动作名',
+                        ],
+                        [
+                            'name' => 'content',
+                            'label' => '内容',
+                        ],
+                        [
+                            'name' => 'details',
+                            'label' => '明细',
+                        ],
+                        [
+                            'name' => 'ip',
+                            'label' => 'IP地址',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                        ],
+                    ]
+                ],
+            ],
         ]);
     }
 

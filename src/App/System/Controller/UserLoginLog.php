@@ -132,8 +132,6 @@ class UserLoginLog extends Controller
                     ],
                 ],
             ],
-
-            'export' => [],
         ]);
     }
 

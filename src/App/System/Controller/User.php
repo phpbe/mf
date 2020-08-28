@@ -364,7 +364,6 @@ class User extends Controller
             ],
 
             'detail' => [
-                'title' => '查看用户明细',
                 'field' => [
                     'items' => [
                         [

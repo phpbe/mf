@@ -797,28 +797,30 @@ class Curd extends Plugin
                         } else {
                             $itemValue = $value;
                         }
-                    } elseif (isset($item['value'])) {
-                        $value = $item['value'];
-                        if (is_callable($value)) {
-                            $itemValue = $value($row);
-                        } else {
-                            $itemValue = $value;
-                        }
                     } else {
-                        if (isset($row[$itemName])) {
-                            $itemValue = $row[$itemName];
-                        }
-                    }
-
-                    if (isset($item['keyValues'])) {
-                        $keyValues = $item['keyValues'];
-                        if (is_callable($keyValues)) {
-                            $itemValue = $keyValues($itemValue);
-                        } else {
-                            if (isset($keyValues[$itemValue])) {
-                                $itemValue = $keyValues[$itemValue];
+                        if (isset($item['value'])) {
+                            $value = $item['value'];
+                            if (is_callable($value)) {
+                                $itemValue = $value($row);
                             } else {
-                                $itemValue = '';
+                                $itemValue = $value;
+                            }
+                        } else {
+                            if (isset($row[$itemName])) {
+                                $itemValue = $row[$itemName];
+                            }
+                        }
+
+                        if (isset($item['keyValues'])) {
+                            $keyValues = $item['keyValues'];
+                            if (is_callable($keyValues)) {
+                                $itemValue = $keyValues($itemValue);
+                            } else {
+                                if (isset($keyValues[$itemValue])) {
+                                    $itemValue = $keyValues[$itemValue];
+                                } else {
+                                    $itemValue = '';
+                                }
                             }
                         }
                     }
