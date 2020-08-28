@@ -6,80 +6,141 @@ namespace Be\Plugin\Exporter;
 class Csv extends Driver
 {
 
+    private $started = false;
+
     private $handler = null;
     private $index = 0;
 
     /**
      * 准备导出
+     * @return Driver
      */
     public function start()
     {
-        session_write_close();
+        if (!$this->started) {
+            $this->started = true;
+            session_write_close();
+            set_time_limit($this->timeLimit);
+            ini_set('memory_limit', $this->memoryLimit);
 
-        if (isset($this->config['time_limit']) && is_numeric($this->config['time_limit'])) {
-            set_time_limit($this->config['time_limit']);
-        } else {
-            set_time_limit(3600);
+            if ($this->outputType == 'http') {
+                header('Content-Type: application/csv');
+                header('Content-Transfer-Encoding: binary');
+                if ($this->outputFileNameOrPath === null) {
+                    header('Content-Disposition: attachment; filename=' . date('YmdHis') . '.csv');
+                } else {
+                    header('Content-Disposition: attachment; filename=' . $this->outputFileNameOrPath);
+                }
+                header('Pragma:no-cache');
+            } else {
+                $this->handler = fopen($this->outputFileNameOrPath, 'w') or die('写入 ' . $this->outputFileNameOrPath . '失败');
+            }
         }
 
-        if (isset($this->config['memory_limit'])) {
-            ini_set('memory_limit', $this->config['memory_limit']);
-        } else {
-            ini_set('memory_limit', '1g');
-        }
-
-        header('Content-Type: application/csv');
-
-        if (isset($this->config['filename'])) {
-            header('Content-Disposition: attachment; filename=' . $this->config['filename']);
-        } else {
-            header('Content-Disposition: attachment; filename=' . date('YmdHis') . '.csv');
-        }
-
-        $this->handler = fopen('php://output', 'w') or die("can't open php://output");
-        fwrite($this->handler, pack('H*', 'FFFE')); // 写入 BOM 头 UTF-16
+        return $this;
     }
 
     /**
      * 设置表格头
      *
-     * @param array $header
+     * @param array $headers
+     * @return Driver
      */
-    public function setHeader($header = [])
+    public function setHeaders($headers = [])
     {
-        foreach ($header as &$x) {
-            $x = iconv('UTF-8', 'UTF-16LE//IGNORE', $x);
+        if (!$this->started) {
+            $this->start();
         }
 
-        fputcsv($this->handler, $header);
+        foreach ($headers as &$header) {
+            $header = iconv('UTF-8', 'GBK//IGNORE', $header);
+            if (strpos($header, '"') !== false) {
+                $header = str_replace('"', '""', $header);
+            }
+            $header = '"' . $header . '"';
+        }
+        unset($header);
+
+        $line = implode(',', $headers) . "\r\n";
+        if ($this->outputType == 'http') {
+            echo $line;
+        } else {
+            fwrite($this->handler, $line);
+        }
+
         $this->index++;
+
+        return $this;
     }
 
     /**
      * 添加一行数据
      *
      * @param array $row
+     * @return Driver
      */
     public function addRow($row = [])
     {
+        if (!$this->started) {
+            $this->start();
+        }
+
         foreach ($row as &$x) {
-            $x = iconv('UTF-8', 'UTF-16LE//IGNORE', $x);
+            if (is_numeric($x)) {
+                // 大数字防止展示成科学计数法
+                $len = strlen($x);
+                $dotPos = strpos($x, '.');
+                if ($dotPos === false) {
+                    if ($len >= 12) {
+                        $x .= "\t";
+                    }
+                } else {
+                    if ($len >= 16) {
+                        $x .= "\t";
+                    } else {
+                        if ($dotPos >= 12) {
+                            $x .= "\t";
+                        }
+                    }
+                }
+
+            } else {
+                $x = iconv('UTF-8', 'GBK//IGNORE', $x);
+                if (strpos($x, '"') !== false) {
+                    $x = str_replace('"', '""', $x);
+                }
+            }
+            $x = '"' . $x . '"';
+        }
+        unset($x);
+
+        $line = implode(',', $row) . "\r\n";
+        if ($this->outputType == 'http') {
+            echo $line;
+
+            $this->index++;
+            if ($this->index % 5000 == 0) {
+                ob_flush();
+                flush();
+            }
+        } else {
+            fwrite($this->handler, $line);
+            $this->index++;
         }
 
-        fputcsv($this->handler, $row);
-
-        $this->index++;
-        if ($this->index % 5000 == 0) {
-            ob_flush();
-            flush();
-        }
+        return $this;
     }
 
     /**
      * 结束输出，收尾
+     * @return Driver
      */
-    public function end() {
-        fclose($this->handler) or die("can't close php://output");
+    public function end()
+    {
+        if ($this->outputType == 'file' && is_resource($this->handler)) {
+            fclose($this->handler);
+        }
+        return $this;
     }
 
 }

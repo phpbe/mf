@@ -1,12 +1,8 @@
 <?php
 
-namespace Be\Plugin;
+namespace Be\Plugin\Exporter;
 
-
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
-use Be\System\Exception\RuntimeException;
+use Be\System\Exception\PluginException;
 
 /**
  * 导出器
@@ -17,85 +13,30 @@ use Be\System\Exception\RuntimeException;
 class Exporter
 {
 
-    protected $setting = null;
+    private $driver = null;
 
-    public function execute($setting = [])
+    public function setDriver($driverName){
+        switch ($driverName) {
+            case 'csv':
+                $this->driver = new \Be\Plugin\Exporter\Csv();
+                break;
+            case 'excel':
+                $this->driver = new \Be\Plugin\Exporter\Excel();
+                break;
+            default:
+                throw new PluginException('不支持的导出类型（可选值：csv/excel）！');
+        }
+
+        return $this->driver;
+    }
+
+    public function __call($name, $arguments)
     {
-        if (!isset($setting['db'])) {
-            $setting['db'] = 'master';
+        if ($this->driver === null) {
+            throw new PluginException('请先设置导出类型！');
         }
 
-        $this->setting = $setting;
-
-        $task = Request::request('task', 'lists');
-        if (isset($this->setting[$task]) && method_exists($this, $task)) {
-            $this->$task();
-        }
+        return call_user_func_array(array($this->driver, $name), $arguments);
     }
-
-
-    public static function exportFromSql($config) {
-
-        $dbName = 'master';
-        if (isset($config['db'])) {
-            $dbName = $config['db'];
-        }
-
-        Be::getDb($dbName)->startTransaction();
-        try {
-
-            $driver = null;
-            switch ($config['driver']) {
-                case 'csv':
-                    $driver = new \Be\Plugin\Exporter\Csv();
-                    break;
-                case 'excel':
-                    $driver = new \Be\Plugin\Exporter\Excel();
-                    break;
-                default:
-                    throw new RuntimeException('不支持的导出驱动程序！');
-            }
-
-            unset($config['driver']);
-
-            $driver->config($config);
-
-            Be::getDb($dbName)->commit();
-        } catch (\Exception $e) {
-            Be::getDb($dbName)->rollback();
-            Response::error($e->getMessage());
-        }
-
-    }
-
-
-    public static function exportFromArrays($config, $header, $arrays) {
-
-        try {
-            $driver = null;
-            switch ($config['driver']) {
-                case 'csv':
-                    $driver = new \Be\Plugin\Exporter\Csv();
-                    break;
-                case 'excel':
-                    $driver = new \Be\Plugin\Exporter\Excel();
-                    break;
-                default:
-                    throw new RuntimeException('不支持的导出驱动程序！');
-            }
-
-            unset($config['driver']);
-
-            $driver->config($config);
-
-            $driver->setHeader($header);
-            $driver->addRows($arrays);
-
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
-        }
-
-    }
-
 
 }

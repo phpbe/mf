@@ -214,7 +214,7 @@ class User extends Controller
                                     'label' => 'CSV',
                                     'task' => 'export',
                                     'postData' => [
-                                        'type' => 'csv',
+                                        'driver' => 'csv',
                                     ],
                                     'target' => 'blank',
                                     'ui' => [
@@ -225,7 +225,7 @@ class User extends Controller
                                     'label' => 'EXCEL',
                                     'task' => 'export',
                                     'postData' => [
-                                        'type' => 'excel',
+                                        'driver' => 'excel',
                                     ],
                                     'target' => 'blank',
                                     'ui' => [
@@ -304,6 +304,9 @@ class User extends Controller
                             'target' => 'ajax',
                             'task' => 'fieldEdit',
                             'width' => '90',
+                            'exportValue' => function ($row) {
+                                return $row['is_enable'] ? '启用' : '禁用';
+                            },
                         ],
                     ],
                     'exclude' => ['password', 'salt', 'remember_me_token']
@@ -447,7 +450,7 @@ class User extends Controller
 
             beSystemLog('删除管理员账号：#' . $id . ' 头像');
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
 
             Be::getDb()->rollback();
             Response::error($e->getMessage());

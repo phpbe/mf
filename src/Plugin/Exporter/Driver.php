@@ -3,34 +3,76 @@
 namespace Be\Plugin\Exporter;
 
 
+use Be\System\Exception\PluginException;
+
 abstract class Driver
 {
 
-    protected $config = null;
-
-    public function config($config)
-    {
-        $this->config = $config;
-    }
-
+    protected $timeLimit = 3600;
+    protected $outputType = 'http';
+    protected $outputFileNameOrPath = null;
+    protected $memoryLimit = '1g';
 
     /**
-     * 准备导出
+     * 设置执行超时时间
+     *
+     * @param int $timeLimit
+     * @return Driver
      */
-    abstract public function start();
+    public function setTimeLimit($timeLimit)
+    {
+        $this->timeLimit = $timeLimit;
+        return $this;
+    }
+
+    /**
+     * 设置输出
+     *
+     * @param string $outputType 类型：http - 保存到HTTP下载 / file - 保存到指定路径
+     * @param string $outputFileNameOrPath 文件名或或路径
+     * @throws PluginException
+     * @return Driver
+     */
+    public function setOutput($outputType, $outputFileNameOrPath = null)
+    {
+        if (!in_array($outputType, ['http', 'file'])) {
+            throw new PluginException('输出类型' . $outputType . '不支持！');
+        }
+
+        if ($outputType == 'file' && !$outputFileNameOrPath) {
+            throw new PluginException('输出类型为' . $outputType . '时必须设置输出路径！');
+        }
+
+        $this->outputType = $outputType;
+        $this->outputFileNameOrPath = $outputFileNameOrPath;
+        return $this;
+    }
+
+    /**
+     * 设置最大内存占用
+     *
+     * @param int $memoryLimit 最大内存占用
+     * @return Driver
+     */
+    public function setMemoryLimit($memoryLimit)
+    {
+        $this->memoryLimit = $memoryLimit;
+        return $this;
+    }
 
     /**
      * 设置表格头
      *
-     * @param array $header
+     * @param array $headers
+     * @return Driver
      */
-    abstract public function setHeader($header = []);
-
+    abstract public function setHeaders($headers = []);
 
     /**
      * 添加一行数据
      *
      * @param array $row
+     * @return Driver
      */
     abstract public function addRow($row = []);
 
@@ -38,18 +80,23 @@ abstract class Driver
      * 添加多行数据
      *
      * @param array $rows
+     * @return Driver
      */
     public function addRows($rows = [])
     {
         foreach ($rows as $row) {
             $this->addRow($row);
         }
+
+        return $this;
     }
 
     /**
      * 结束输出，收尾
+     * @return Driver
      */
-    public function end() {
-
+    public function end()
+    {
+        return $this;
     }
 }

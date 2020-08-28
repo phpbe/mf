@@ -20,16 +20,20 @@ class Curd extends Plugin
 
     public function execute($setting = [])
     {
+        $this->setting($setting);
+        $task = Request::request('task', 'lists');
+        if (isset($this->setting[$task]) && method_exists($this, $task)) {
+            $this->$task();
+        }
+    }
+
+
+    public function setting($setting) {
         if (!isset($setting['db'])) {
             $setting['db'] = 'master';
         }
 
         $this->setting = $setting;
-
-        $task = Request::request('task', 'lists');
-        if (isset($this->setting[$task]) && method_exists($this, $task)) {
-            $this->$task();
-        }
     }
 
     /**
@@ -51,7 +55,7 @@ class Curd extends Plugin
                 $postData = Request::json();
                 $formData = $postData['formData'];
                 if (isset($this->setting['lists']['tab'])) {
-                    if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                    if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
                         $buildSql = $item['buildSql'];
                         $sql = $buildSql($this->setting['db'], $formData);
                         if ($sql) {
@@ -70,7 +74,7 @@ class Curd extends Plugin
                 if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                     foreach ($this->setting['lists']['search']['items'] as $item) {
 
-                        if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                        if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
                             $buildSql = $item['buildSql'];
                             $sql = $buildSql($this->setting['db'], $formData);
                             if ($sql) {
@@ -604,7 +608,7 @@ class Curd extends Plugin
 
             $formData = $postData['formData'];
             if (isset($this->setting['lists']['tab'])) {
-                if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
                     $buildSql = $item['buildSql'];
                     $sql = $buildSql($this->setting['db'], $formData);
                     if ($sql) {
@@ -623,7 +627,7 @@ class Curd extends Plugin
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                 foreach ($this->setting['lists']['search']['items'] as $item) {
 
-                    if (isset($item['buildSql']) && is_callable($item['buildSql'])){
+                    if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
                         $buildSql = $item['buildSql'];
                         $sql = $buildSql($this->setting['db'], $formData);
                         if ($sql) {
@@ -648,16 +652,63 @@ class Curd extends Plugin
 
             $rows = $table->getYieldArrays();
 
+            $exporter = Be::getPlugin('Exporter');
 
+            $exportDriver = isset($postData['postData']['driver']) ? $postData['postData']['driver'] : 'csv';
 
-            $formattedRows = [];
+            $filename = null;
+            if (isset($this->setting['export']['title'])) {
+                $filename = $this->setting['export']['title'];
+            } elseif (isset($this->setting['lists']['title'])) {
+                $filename = $this->setting['lists']['title'];
+            }
+            $filename .= '（' . date('YmdHis') . '）';
+            $filename .= ($exportDriver == 'csv' ? '.csv' : '.xls');
+
+            $exporter->setDriver($exportDriver)->setOutput('http', $filename);
+
+            $fields = null;
+            if (isset($this->setting['export']['field']['items'])) {
+                $fields = $this->setting['export']['field']['items'];
+            } else {
+                $fields = $this->setting['lists']['field']['items'];
+            }
+
+            $headers = [];
+            foreach ($fields as $item) {
+                if (!isset($item['label'])) {
+                    continue;
+                }
+                $driver = null;
+                if (isset($item['driver'])) {
+                    $driverName = $item['driver'];
+                    $driver = new $driverName($item);
+                } else {
+                    $driver = new \Be\Plugin\Curd\FieldItem\FieldItemText($item);
+                }
+
+                $headers[] = $driver->label;
+            }
+            $exporter->setHeaders($headers);
+
             foreach ($rows as $row) {
                 $formattedRow = [];
 
-                foreach ($this->setting['lists']['field']['items'] as $item) {
+                foreach ($fields as $item) {
+                    if (!isset($item['label'])) {
+                        continue;
+                    }
+
                     $itemName = $item['name'];
                     $itemValue = '';
-                    if (isset($item['value'])) {
+                    if (isset($item['exportValue'])) {
+                        $value = $item['exportValue'];
+                        if (is_callable($value)) {
+                            $itemValue = $value($row);
+                        } else {
+                            $itemValue = $value;
+                        }
+                    } elseif (isset($item['value'])) {
                         $value = $item['value'];
                         if (is_callable($value)) {
                             $itemValue = $value($row);
@@ -686,79 +737,26 @@ class Curd extends Plugin
                     $formattedRow[$itemName] = $itemValue;
                 }
 
-                foreach ($row as $k => $v) {
-                    if (isset($formattedRow[$k])) {
-                        continue;
-                    }
-
-                    if (isset($this->setting['lists']['field']['exclude']) &&
-                        is_array($this->setting['lists']['field']['exclude']) &&
-                        in_array($k, $this->setting['lists']['field']['exclude'])
-                    ) {
-                        continue;
-                    }
-
-                    $formattedRow[$k] = $v;
-                }
-                $formattedRows[] = $formattedRow;
+                $exporter->addRow($formattedRow);
             }
 
-            Response::set('success', true);
-            Response::set('data', [
-                'total' => $total,
-                'rows' => $formattedRows,
-            ]);
-            Response::ajax();
+            $exporter->end();
+
+            $content = null;
+            if (isset($this->setting['export']['title'])) {
+                $content = $this->setting['export']['title'] . '（' . $exportDriver . '）';
+            } elseif (isset($this->setting['lists']['title'])) {
+                $content = '导出 ' . $this->setting['lists']['title'] . '（' . $exportDriver . '）';
+            } else {
+                $content = '导出 ' . $exportDriver;
+            }
+
+            beSystemLog($content, $formData);
+
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::ajax();
+            Response::error($e->getMessage());
         }
 
-
-
-
-
-        $setting = $this->setting['export'];
-
-        $table = Be::newTable($setting['table']);
-
-
-        $lists = $table->getYieldArrays();
-
-        $type = isset($setting['type']) ? $setting['type'] : 'csv';
-
-
-        $headers = [];
-        $rows = [];
-        Be::getPlugin('Exporter')->execute([
-            'type' => 'csv',
-            'headers' => $headers,
-            'rows' => $rows,
-        ]);
-
-
-        $exporter = Exporter::newDriver($type);
-        $exporter->config($setting);
-        $exporter->start();
-
-        $headers = array();
-        $fields = $table->getFields();
-        foreach ($fields as $field) {
-            if ($field['disable']) continue;
-
-            $headers[] = $field['name'];
-        }
-        $exporter->setHeader($headers);
-
-        $fields = $table->getFields();
-        foreach ($lists as &$x) {
-            self::formatField($x, $fields);
-            $exporter->addRow($x);
-        }
-        $exporter->end();
-
-        beSystemLog($setting['title']);
     }
 
 

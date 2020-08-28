@@ -74,7 +74,7 @@
                         }
                         ?>
                         <el-form-item>
-                            <el-button type="success" icon="el-icon-search" @click="search" v-loading="loading">查询</el-button>
+                            <el-button type="success" icon="el-icon-search" @click="search" :disabled="loading">查询</el-button>
                         </el-form-item>
                     </el-col>
                 </el-row>
