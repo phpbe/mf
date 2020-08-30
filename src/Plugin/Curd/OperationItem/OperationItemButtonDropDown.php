@@ -38,7 +38,7 @@ class OperationItemButtonDropDown extends OperationItem
             $menus = $params['menus'];
 
             $tmpMenus = null;
-            if (is_callable($menus)) {
+            if ($menus instanceof \Closure) {
                 $tmpMenus = $menus();
             } else {
                 $tmpMenus = $menus;

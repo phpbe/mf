@@ -186,7 +186,7 @@ class Csv extends Driver
                 }
 
                 foreach ($this->config['field']['items'] as $field) {
-                    if (isset($field['check']) && is_callable($field['check'])) {
+                    if (isset($field['check']) && $field['check'] instanceof \Closure) {
                         $fn = $field['check'];
                         $fn($formattedValues);
                     }

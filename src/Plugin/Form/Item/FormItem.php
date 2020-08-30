@@ -34,7 +34,7 @@ abstract class FormItem
         }
 
         $name = $params['name'];
-        if (is_callable($name)) {
+        if ($name  instanceof \Closure) {
             $this->name = $name();
         } else {
             $this->name = $name;
@@ -42,7 +42,7 @@ abstract class FormItem
 
         if (isset($params['label'])) {
             $label = $params['label'];
-            if (is_callable($label)) {
+            if ($label instanceof \Closure) {
                 $this->label = $label();
             } else {
                 $this->label = $label;
@@ -51,7 +51,7 @@ abstract class FormItem
 
         if (isset($params['value'])) {
             $value = $params['value'];
-            if (is_callable($value)) {
+            if ($value instanceof \Closure) {
                 $this->value = $value();
             } else {
                 $this->value = $value;
@@ -60,7 +60,7 @@ abstract class FormItem
 
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
-            if (is_callable($keyValues)) {
+            if ($keyValues instanceof \Closure) {
                 $this->keyValues = $keyValues();
             } else {
                 $this->keyValues = $keyValues;
@@ -68,7 +68,7 @@ abstract class FormItem
         } else {
             if (isset($params['values'])) {
                 $values = $params['values'];
-                if (is_callable($values)) {
+                if ($values instanceof \Closure) {
                     $values = $values();
                 }
 
@@ -82,11 +82,15 @@ abstract class FormItem
 
         if (isset($params['ui'])) {
             $ui = $params['ui'];
-            if (is_callable($ui)) {
+            if ($ui instanceof \Closure) {
                 $this->ui = $ui();
             } else {
                 $this->ui = $ui;
             }
+        }
+
+        if (!isset($this->ui['form-item']['prop'])) {
+            $this->ui['form-item']['prop'] = $name;
         }
 
         if (!isset($this->ui['form-item']['label'])) {

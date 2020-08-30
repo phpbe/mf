@@ -81,7 +81,7 @@ class Curd extends Plugin
                 $postData = Request::json();
                 $formData = $postData['formData'];
                 if (isset($this->setting['lists']['tab'])) {
-                    if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
+                    if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                         $buildSql = $item['buildSql'];
                         $sql = $buildSql($this->setting['db'], $formData);
                         if ($sql) {
@@ -100,7 +100,7 @@ class Curd extends Plugin
                 if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                     foreach ($this->setting['lists']['search']['items'] as $item) {
 
-                        if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
+                        if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                             $buildSql = $item['buildSql'];
                             $sql = $buildSql($this->setting['db'], $formData);
                             if ($sql) {
@@ -160,7 +160,7 @@ class Curd extends Plugin
                         $itemValue = '';
                         if (isset($item['value'])) {
                             $value = $item['value'];
-                            if (is_callable($value)) {
+                            if ($value instanceof \Closure) {
                                 $itemValue = $value($row);
                             } else {
                                 $itemValue = $value;
@@ -173,7 +173,7 @@ class Curd extends Plugin
 
                         if (isset($item['keyValues'])) {
                             $keyValues = $item['keyValues'];
-                            if (is_callable($keyValues)) {
+                            if ($keyValues instanceof \Closure) {
                                 $itemValue = $keyValues($itemValue);
                             } else {
                                 if (isset($keyValues[$itemValue])) {
@@ -327,7 +327,7 @@ class Curd extends Plugin
                 $itemValue = '';
                 if (isset($item['value'])) {
                     $value = $item['value'];
-                    if (is_callable($value)) {
+                    if ($value instanceof \Closure) {
                         $itemValue = $value($row);
                     } else {
                         $itemValue = $value;
@@ -345,7 +345,7 @@ class Curd extends Plugin
             $setting = $this->setting['detail'];
             $setting['field']['items'] = $fields;
 
-            Be::getPlugin('Detail')->execute($setting);
+            Be::getPlugin('Detail')->setting($setting)->display();
 
         } catch (\Exception $e) {
             Response::error($e->getMessage());
@@ -358,14 +358,96 @@ class Curd extends Plugin
      */
     public function create()
     {
+        $title = isset($this->setting['create']['title']) ? $this->setting['create']['title'] : '新建';
+
         if (Request::isAjax()) {
 
+            $postData = Request::json();
+            $formData = $postData['formData'];
+
+            $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+
+            if (isset($this->setting['create']['events']['BeforeCreate'])) {
+                $this->on('BeforeEdit', $this->setting['create']['events']['BeforeCreate']);
+            }
+
+            if (isset($this->setting['create']['events']['AfterCreate'])) {
+                $this->on('AfterCreate', $this->setting['create']['events']['AfterCreate']);
+            }
+
+            $db = Be::getDb($this->setting['db']);
+            $db->startTransaction();
+            try {
+
+                if (isset($this->setting['create']['form']['items']) && count($this->setting['create']['form']['items']) > 0) {
+                    foreach ($this->setting['create']['form']['items'] as $item) {
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Form\Item\FormItemInput($item);
+                        }
+                        $driver->submit($formData);
+                        $name = $driver->name;
+
+                        // 必填字段
+                        if ($driver->required) {
+                            if ($driver->newValue == '') {
+                                throw new PluginException($driver->label . ' 缺失！');
+                            }
+                        }
+
+                        // 检查唯一性
+                        if (isset($item['unique']) && $item['unique']) {
+                            if (Be::getTable($this->setting['table'], $this->setting['db'])
+                                ->where($name, $driver->value)
+                                ->count() > 0) {
+                                throw new PluginException($driver->label . ' 已存在 '.$driver->value.' 的记录！');
+                            }
+                        }
+
+                        $tuple->$name = $driver->newValue;
+                    }
+                }
+
+                $this->trigger('BeforeCreate', $tuple);
+                $tuple->save();
+                $this->trigger('AfterCreate', $tuple);
+
+                $primaryKey = $tuple->getPrimaryKey();
+
+                $strPrimaryKey = null;
+                $strPrimaryKeyValue = null;
+
+                if (is_array($primaryKey)) {
+                    $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+
+                    $primaryKeyValue = [];
+                    foreach ($primaryKey as $pKey) {
+                        $primaryKeyValue[] = $tuple->$pKey;
+                    }
+
+                    $strPrimaryKeyValue = '（' . implode(',', $primaryKeyValue) . '）';
+                } else {
+                    $strPrimaryKey = $primaryKey;
+                    $strPrimaryKeyValue = $tuple->$primaryKey;
+                }
+
+                beSystemLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+
+                $db->commit();
+            } catch (\Exception $e) {
+                $db->rollback();
+                Response::error($e->getMessage());
+            }
+
+            Response::success('新建成功！');
 
         } else {
-            $title = isset($this->setting['create']['title']) ? $this->setting['create']['title'] : '创建';
             Response::setTitle($title);
 
-            $setting = $this->setting['edit'];
+            $setting = $this->setting['create'];
             Be::getPlugin('Form')->setting($setting)->display();
         }
     }
@@ -378,42 +460,26 @@ class Curd extends Plugin
     {
         if (Request::isAjax()) {
 
+            $tuple = Be::newTuple($this->setting['table']);
 
-        } else {
-            $title = isset($this->setting['edit']['title']) ? $this->setting['edit']['title'] : '编辑';
-            Response::setTitle($title);
+            $primaryKey = $tuple->getPrimaryKey();
+            $primaryKeyValue = Request::get($primaryKey, null);
 
-            $setting = $this->setting['edit'];
-
-            Be::getPlugin('Form')->setting($setting)->display();
-        }
-
-
-
-        $setting = $this->setting['edit'];
-
-        $tuple = Be::newTuple($setting['table']);
-
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
-
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
-        }
-
-        $tuple->load($primaryKeyValue);
-        if (!$tuple->$primaryKey) {
-            Response::error('主键编号（' . $primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
-        }
-
-        if (Request::isPost()) {
-
-            if (isset($this->setting['edit']['BeforeEdit'])) {
-                $this->on('BeforeEdit', $this->setting['edit']['BeforeEdit']);
+            if (!$primaryKeyValue) {
+                Response::error('参数（' . $primaryKey . '）缺失！');
             }
 
-            if (isset($this->setting['edit']['AfterEdit'])) {
-                $this->on('AfterEdit', $this->setting['edit']['AfterEdit']);
+            $tuple->load($primaryKeyValue);
+            if (!$tuple->$primaryKey) {
+                Response::error('主键编号（' . $primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
+            }
+
+            if (isset($this->setting['edit']['events']['BeforeEdit'])) {
+                $this->on('BeforeEdit', $this->setting['edit']['events']['BeforeEdit']);
+            }
+
+            if (isset($this->setting['edit']['events']['AfterEdit'])) {
+                $this->on('AfterEdit', $this->setting['edit']['events']['AfterEdit']);
             }
 
             $db = Be::getDb($this->setting['db']);
@@ -435,14 +501,13 @@ class Curd extends Plugin
             }
 
             Response::success('修改成功！');
-
         } else {
+            $title = isset($this->setting['edit']['title']) ? $this->setting['edit']['title'] : '编辑';
+            Response::setTitle($title);
 
-            Response::setTitle($setting['title']);
-            Response::set('tuple', $tuple);
+            $setting = $this->setting['edit'];
 
-            $theme = isset($this->setting['edit']['theme']) ? $this->setting['edit']['theme'] : 'Nude';
-            Response::display('Plugin.Curd.edit', $theme);
+            Be::getPlugin('Form')->setting($setting)->display();
         }
     }
 
@@ -451,12 +516,12 @@ class Curd extends Plugin
      */
     public function fieldEdit()
     {
-        if (isset($this->setting['fieldEdit']['BeforeFieldEdit'])) {
-            $this->on('BeforeFieldEdit', $this->setting['fieldEdit']['BeforeFieldEdit']);
+        if (isset($this->setting['fieldEdit']['events']['BeforeFieldEdit'])) {
+            $this->on('BeforeFieldEdit', $this->setting['fieldEdit']['events']['BeforeFieldEdit']);
         }
 
-        if (isset($this->setting['fieldEdit']['AfterFieldEdit'])) {
-            $this->on('AfterFieldEdit', $this->setting['fieldEdit']['AfterFieldEdit']);
+        if (isset($this->setting['fieldEdit']['events']['AfterFieldEdit'])) {
+            $this->on('AfterFieldEdit', $this->setting['fieldEdit']['events']['AfterFieldEdit']);
         }
 
         $postData = Request::json();
@@ -691,7 +756,7 @@ class Curd extends Plugin
 
             $formData = $postData['formData'];
             if (isset($this->setting['lists']['tab'])) {
-                if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
+                if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                     $buildSql = $item['buildSql'];
                     $sql = $buildSql($this->setting['db'], $formData);
                     if ($sql) {
@@ -710,7 +775,7 @@ class Curd extends Plugin
             if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
                 foreach ($this->setting['lists']['search']['items'] as $item) {
 
-                    if (isset($item['buildSql']) && is_callable($item['buildSql'])) {
+                    if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                         $buildSql = $item['buildSql'];
                         $sql = $buildSql($this->setting['db'], $formData);
                         if ($sql) {
@@ -786,7 +851,7 @@ class Curd extends Plugin
                     $itemValue = '';
                     if (isset($item['exportValue'])) {
                         $value = $item['exportValue'];
-                        if (is_callable($value)) {
+                        if ($value instanceof \Closure) {
                             $itemValue = $value($row);
                         } else {
                             $itemValue = $value;
@@ -794,7 +859,7 @@ class Curd extends Plugin
                     } else {
                         if (isset($item['value'])) {
                             $value = $item['value'];
-                            if (is_callable($value)) {
+                            if ($value instanceof \Closure) {
                                 $itemValue = $value($row);
                             } else {
                                 $itemValue = $value;
@@ -807,7 +872,7 @@ class Curd extends Plugin
 
                         if (isset($item['keyValues'])) {
                             $keyValues = $item['keyValues'];
-                            if (is_callable($keyValues)) {
+                            if ($keyValues instanceof \Closure) {
                                 $itemValue = $keyValues($itemValue);
                             } else {
                                 if (isset($keyValues[$itemValue])) {

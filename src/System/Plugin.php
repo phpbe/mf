@@ -40,7 +40,7 @@ abstract class Plugin
     }
 
     /**
-     * 默认畀出方法
+     * 默认输出方法
      */
     public function display() {
 

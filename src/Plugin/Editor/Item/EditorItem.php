@@ -37,7 +37,7 @@ abstract class EditorItem
     {
         if (isset($params['name'])) {
             $name = $params['name'];
-            if (is_callable($name)) {
+            if ($name instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->name = $name($tuple);
                 } else {
@@ -52,7 +52,7 @@ abstract class EditorItem
 
         if (isset($params['label'])) {
             $label = $params['label'];
-            if (is_callable($label)) {
+            if ($label instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->label = $label($tuple);
                 } else {
@@ -65,7 +65,7 @@ abstract class EditorItem
 
         if (isset($params['value'])) {
             $value = $params['value'];
-            if (is_callable($value)) {
+            if ($value instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->value = $value($tuple);
                 } else {
@@ -78,7 +78,7 @@ abstract class EditorItem
 
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
-            if (is_callable($keyValues)) {
+            if ($keyValues instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->keyValues = $keyValues($tuple);
                 } else {
@@ -90,7 +90,7 @@ abstract class EditorItem
         } else {
             if (isset($params['values'])) {
                 $values = $params['values'];
-                if (is_callable($values)) {
+                if ($values instanceof \Closure) {
                     if ($tuple !== null) {
                         $values = $values($tuple);
                     } else {
@@ -108,7 +108,7 @@ abstract class EditorItem
 
         if (isset($params['url'])) {
             $url = $params['url'];
-            if (is_callable($url)) {
+            if ($url instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->url = $url($tuple);
                 } else {
@@ -120,7 +120,7 @@ abstract class EditorItem
         } else {
             if (isset($params['task'])) {
                 $task = $params['task'];
-                if (is_callable($task)) {
+                if ($task instanceof \Closure) {
                     if ($tuple !== null) {
                         $task = $task($tuple);
                     } else {
@@ -135,7 +135,7 @@ abstract class EditorItem
 
         if (isset($params['ui'])) {
             $ui = $params['ui'];
-            if (is_callable($ui)) {
+            if ($ui instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->ui = $ui($tuple);
                 } else {
@@ -160,7 +160,7 @@ abstract class EditorItem
 
         if (isset($params['option'])) {
             $option = $params['option'];
-            if (is_callable($option)) {
+            if ($option instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->option = $option($tuple);
                 } else {
@@ -173,7 +173,7 @@ abstract class EditorItem
 
         if (isset($params['data'])) {
             $data = $params['data'];
-            if (is_callable($data)) {
+            if ($data instanceof \Closure) {
                 if ($tuple !== null) {
                     $this->data = $data($tuple);
                 } else {

@@ -24,8 +24,6 @@ CREATE TABLE `system_log` (
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
-
-
 CREATE TABLE `system_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `name` varchar(60) NOT NULL DEFAULT '' COMMENT '角色名',
@@ -44,9 +42,8 @@ CREATE TABLE `system_user` (
   `password` char(40) NOT NULL DEFAULT '' COMMENT '密码',
   `salt` char(32) NOT NULL DEFAULT '' COMMENT '密码盐值',
   `remember_me_token` char(32) NOT NULL DEFAULT '' COMMENT '记住我 Token',
-  `avatar_s` varchar(60) NOT NULL DEFAULT '' COMMENT '大头像',
-  `avatar_m` varchar(60) NOT NULL DEFAULT '' COMMENT '中头像',
-  `avatar_l` varchar(60) NOT NULL DEFAULT '' COMMENT '小头像',
+  `role_id` INT NOT NULL DEFAULT '0' COMMENT '角色ID',
+  `avatar` varchar(60) NOT NULL DEFAULT '' COMMENT '头像',
   `email` varchar(120) NOT NULL DEFAULT '' COMMENT '邮箱',
   `name` varchar(120) NOT NULL DEFAULT '' COMMENT '名称',
   `gender` tinyint(3) NOT NULL DEFAULT '-1' COMMENT '性别（0：女/1：男/-1：保密）',
@@ -61,9 +58,8 @@ CREATE TABLE `system_user` (
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
-INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `avatar_s`, `avatar_m`, `avatar_l`, `email`, `name`, `gender`, `phone`, `mobile`, `block`, `create_time`, `last_login_time`) VALUES
-(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'L0IfMTHH1CziwVAb3w7m5Hoi3NMhNwMZ', '1_20140407160313_s.jpg', '1_20140407160313_m.jpg', '1_20140407160313_l.jpg', 'iua1024@gmail.com', '谁谁谁', 0, '', '', 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00');
-
+INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `last_login_ip`) VALUES
+(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 0, '', 'iua1024@gmail.com', '谁谁谁', 0, '', '', 1, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '172.24.0.254');
 
 CREATE TABLE `system_user_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
@@ -74,14 +70,3 @@ CREATE TABLE `system_user_log` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `system_user_role` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `user_id` int(11) NOT NULL COMMENT '后台管理员ID',
-  `role_id` int(11) NOT NULL COMMENT '后台角色ID',
-  PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-
-INSERT INTO `system_user_role` (`id`, `user_id`, `role_id`) VALUES
-(1, 1, 1);

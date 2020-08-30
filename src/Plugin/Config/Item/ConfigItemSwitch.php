@@ -23,6 +23,12 @@ class ConfigItemSwitch extends ConfigItem
     {
         parent::__construct($name, $value, $annotation);
 
+        if (!$this->value) {
+            $this->value = '0';
+        } else {
+            $this->value = (string)$this->value;
+        }
+
         if (!isset($this->ui['switch']['active-value'])) {
             $this->ui['switch']['active-value'] = '1';
         }

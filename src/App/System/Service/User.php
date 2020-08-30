@@ -310,17 +310,9 @@ class User extends \Be\System\Service
                     $imageType = $libImage->getType();
 
                     // 按配置文件里的尺寸大小生成新头像
-                    $libImage->resize($configUser->avatarLW, $configUser->avatarLH, 'north');
-                    $libImage->save($avatarDir . $tupleUser->id . '_' . $t . '_l.' . $imageType);
-                    $tupleUser->avatar_l = $tupleUser->id . '_' . $t . '_l.' . $imageType;
-
-                    $libImage->resize($configUser->avatarMW, $configUser->avatarMH, 'north');
-                    $libImage->save($avatarDir . $tupleUser->id . '_' . $t . '_m.' . $imageType);
-                    $tupleUser->avatar_m = $tupleUser->id . '_' . $t . '_m.' . $imageType;
-
-                    $libImage->resize($configUser->avatarSW, $configUser->avatarSH, 'north');
-                    $libImage->save($avatarDir . $tupleUser->id . '_' . $t . '_s.' . $imageType);
-                    $tupleUser->avatar_s = $tupleUser->id . '_' . $t . '_s.' . $imageType;
+                    $libImage->resize($configUser->avatarW, $configUser->avatarH, 'north');
+                    $libImage->save($avatarDir . $tupleUser->id . '_' . $t . '.' . $imageType);
+                    $tupleUser->avatar = $tupleUser->id . '_' . $t . '.' . $imageType;
 
                     $tupleUser->save();
                 }
@@ -364,14 +356,8 @@ class User extends \Be\System\Service
     public function deleteAvatarFile(&$tupleUser) {
         $files = [];
 
-        if ($tupleUser->avatar_s != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $tupleUser->avatar_s;
-        if ($tupleUser->avatar_m != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $tupleUser->avatar_m;
-        if ($tupleUser->avatar_l != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $tupleUser->avatar_l;
-
-        $tupleUser->avatar_s = '';
-        $tupleUser->avatar_m = '';
-        $tupleUser->avatar_l = '';
-
+        if ($tupleUser->avatar != '') $files[] = Be::getRuntime()->getDataPath() . '/System/User/Avatar/' . $tupleUser->avatar;
+        $tupleUser->avatar = '';
         foreach ($files as $file) {
             if (file_exists($file)) @unlink($file);
         }

@@ -27,7 +27,7 @@ abstract class FieldItem extends Item
 
         if (isset($params['export'])) {
             $export = $params['export'];
-            if (is_callable($export)) {
+            if ($export instanceof \Closure) {
                 $this->export = $export();
             } else {
                 $this->export = $export;
@@ -37,7 +37,7 @@ abstract class FieldItem extends Item
         /*
         if (isset($params['exportValue'])) {
             $exportValue = $params['exportValue'];
-            if (is_callable($exportValue)) {
+            if ($exportValue instanceof \Closure) {
                 $this->exportValue = $exportValue($tuple);
             } else {
                 $this->exportValue = $exportValue;

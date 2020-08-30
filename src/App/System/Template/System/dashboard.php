@@ -35,10 +35,10 @@ $configUser = Be::getConfig('System.User');
             <table style="width:100%;">
             <tr>
                 <td style="width:80px; text-align:left; "><img src="<?php
-                    if ($user->avatar_m == '') {
-                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar/medium.png';
+                    if ($user->avatar == '') {
+                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                     } else {
-                        echo Be::getRuntime()->getDataUrl().'/user/avatar/'.$user->avatar_m;
+                        echo Be::getRuntime()->getDataUrl().'/user/avatar/'.$user->avatar;
                     }
                     ?>" /></td>
                 <td valign="top">
@@ -103,7 +103,7 @@ $configUser = Be::getConfig('System.User');
                 </template>
             </el-table-column>
             <el-table-column
-                    prop="title"
+                    prop="content"
                     label="操作">
             </el-table-column>
             <el-table-column

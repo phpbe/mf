@@ -125,7 +125,10 @@
                 },
                 goto: function (tab) {
                     var arr = tab.name.split('-');
-                    window.location.href = '<?php echo beUrl('System.Config.dashboard'); ?>?appName=' + arr[0] + '&configName=' + arr[1];
+                    var sUrl = "<?php echo beUrl('System.Config.dashboard'); ?>";
+                    sUrl += sUrl.indexOf("?") >= 0 ? "&" : "?";
+                    sUrl += "appName=" + arr[0] + "&configName=" + arr[1];
+                    window.location.href = sUrl;
                 }
                 <?php
                 if ($vueMethods) {

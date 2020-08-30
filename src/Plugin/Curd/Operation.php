@@ -22,7 +22,7 @@ class Operation extends Item
 
         if (isset($params['position'])) {
             $position = $params['position'];
-            if (is_callable($position)) {
+            if ($position instanceof \Closure) {
                 $this->position = $position();
             } else {
                 $this->position = $position;

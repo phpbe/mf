@@ -29,10 +29,14 @@ class System extends \Be\System\Controller
         $userCount = $tableAdminUser->count();
         Response::set('userCount', $userCount);
 
-        $serviceSystemLog = Be::getService('System.SystemLog');
+        $recentLogs = Be::getTable('system_log')
+            ->where('user_id', $my->id)
+            ->limit(10)
+            ->getObjects();
         $serviceApp = Be::getService('System.App');
         $serviceTheme = Be::getService('System.Theme');
-        Response::set('recentLogs', $serviceSystemLog->getLogs(array('userId' => $my->id, 'offset' => 0, 'limit' => 10)));
+
+        Response::set('recentLogs', $recentLogs);
         Response::set('appCount', $serviceApp->getAppCount());
         Response::set('themeCount', $serviceTheme->getThemeCount());
 

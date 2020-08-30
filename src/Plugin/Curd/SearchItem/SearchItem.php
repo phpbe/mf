@@ -25,7 +25,7 @@ abstract class SearchItem extends Item
 
         if (isset($params['table'])) {
             $table = $params['table'];
-            if (is_callable($table)) {
+            if ($table instanceof \Closure) {
                 $this->table = $table();
             } else {
                 $this->table = $table;

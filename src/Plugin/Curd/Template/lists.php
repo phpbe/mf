@@ -512,5 +512,40 @@
             }
 
         });
+
+        function reload() {
+            vueCurdLists.loadData();
+        }
+
+        function close() {
+            vueCurdLists.drawer.visible = false;
+            vueCurdLists.dialog.visible = false;
+        }
+
+        function closeDrawer() {
+            vueCurdLists.drawer.visible = false;
+        }
+
+        function closeDialog() {
+            vueCurdLists.dialog.visible = false;
+        }
+
+        function closeAndReload() {
+            vueCurdLists.drawer.visible = false;
+            vueCurdLists.dialog.visible = false;
+            vueCurdLists.loadData();
+        }
+
+        function closeDrawerAndReload() {
+            vueCurdLists.drawer.visible = false;
+            vueCurdLists.loadData();
+        }
+
+        function closeDialogAndReload() {
+            vueCurdLists.dialog.visible = false;
+            vueCurdLists.loadData();
+        }
+
+
     </script>
 </be-center>

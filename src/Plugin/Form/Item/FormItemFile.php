@@ -36,27 +36,12 @@ class FormItemFile extends FormItem
             $this->description = $params['description'];
         }
 
-        $maxSize = null;
-        if (isset($params['maxSize'])) {
-            $maxSize = $params['maxSize'];
-        } else {
-            $maxSize = min(ini_get('upload_max_filesize'), ini_get('post_max_size'));
-        }
-
-        if (is_numeric($maxSize)) {
-            $this->maxSizeInt = $maxSize;
-            $this->maxSize = FileSize::int2String($maxSize);
-        } else {
-            $this->maxSizeInt = FileSize::string2Int($maxSize);
-            $this->maxSize = $maxSize;
-        }
+        $configSystem = Be::getConfig('System.System');
+        $this->maxSize = $configSystem->uploadMaxSize;
+        $this->maxSizeInt = FileSize::string2Int($this->maxSize);
 
         // 允许上传的文件类型
-        if (isset($params['allowUploadFileTypes']) && is_array($params['allowUploadFileTypes'])) {
-            $this->allowUploadFileTypes = $params['allowUploadFileTypes'];
-        } else {
-            $this->allowUploadFileTypes = Be::getConfig('System.System')->allowUploadFileTypes;
-        }
+        $this->allowUploadFileTypes = Be::getConfig('System.System')->allowUploadFileTypes;
 
         if (!$this->description) {
             $this->description = '格式：'. implode(', ', $this->allowUploadFileTypes) .'，小于 ' . $this->maxSize;
@@ -82,8 +67,8 @@ class FormItemFile extends FormItem
             $this->ui['upload'][':file-list'] = 'form.'.$this->name.'.fileList';
         }
 
-        if (!isset($this->ui['upload']['name'])) {
-            $this->ui['upload']['name'] = $this->name;
+        if (!isset($this->ui['upload'][':data'])) {
+            $this->ui['upload'][':data'] = 'form.'.$this->name.'.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -93,8 +78,6 @@ class FormItemFile extends FormItem
         $this->ui['upload']['v-model'] = 'formData.' . $this->name;
     }
 
-
-
     /**
      * 获取html内容
      *
@@ -103,7 +86,7 @@ class FormItemFile extends FormItem
     public function getHtml()
     {
         if (!isset($this->ui['upload']['action'])) {
-            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadFile');;
+            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadFile');
         }
 
         $html = '<el-form-item';
@@ -128,7 +111,7 @@ class FormItemFile extends FormItem
             }
         }
         $html .= '>';
-        $html .= '<el-button size="small" type="primary"><i class="el-icon-upload2"></i> 选择文件</el-button>';
+        $html .= '<el-button size="mini" type="primary"><i class="el-icon-upload2"></i> 选择文件</el-button>';
         $html .= '<div class="el-upload__tip" slot="tip">'.$this->description.'</div>';
         $html .= '</el-upload>';
         $html .= '</el-form-item>';
@@ -142,11 +125,20 @@ class FormItemFile extends FormItem
      */
     public function getVueData()
     {
+        $url = null;
+        if (strpos($this->value, '/') == false) {
+            $url = Be::getRuntime()->getDataUrl() . $this->path . $this->value;
+        } else {
+            $url = $this->value;
+        }
+
         return [
             'form' => [
                 $this->name => [
-                    'url' => Be::getRuntime()->getDataUrl() . $this->path . $this->value,
-                    'fileList' => []
+                    'url' => $url,
+                    'fileList' => [],
+                    'postData' => [
+                    ],
                 ]
             ]
         ];
@@ -196,9 +188,23 @@ class FormItemFile extends FormItem
             $newValue = $data[$this->name];
             $newValue = htmlspecialchars_decode($newValue);
 
-            if ($newValue != $this->value) {
+            if ($newValue != $this->value && $this->value != '') {
                 $lastPath = Be::getRuntime()->getDataPath() . $this->path . $this->value;
-                @unlink($lastPath);
+                if (file_exists($lastPath)) {
+                    @unlink($lastPath);
+                }
+            }
+
+            $pathDstDir = Be::getRuntime()->getDataPath() . $this->path;
+            if (!file_exists($pathDstDir)) {
+                mkdir($pathDstDir, 0755, true);
+            }
+
+            $pathSrc = Be::getRuntime()->getDataPath() . '/tmp/' . $newValue;
+            $pathDst = $pathDstDir . $newValue;
+            if (file_exists($pathSrc)) {
+                @copy($pathSrc, $pathDst);
+                @unlink($pathSrc);
             }
 
             $this->newValue = $newValue;

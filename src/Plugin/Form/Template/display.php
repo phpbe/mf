@@ -5,7 +5,7 @@
     $vueMethods = [];
     ?>
     <div id="app">
-        <el-form<?php
+        <el-form :model="formData" ref="form"<?php
             foreach ($this->setting['form']['ui'] as $k => $v) {
                 if ($v === null) {
                     echo ' '.$k;
@@ -40,6 +40,11 @@
                 }
             }
             ?>
+            <el-form-item>
+                <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
+                <el-button type="warning" @click="reset" :disabled="loading">重置</el-button>
+                <el-button @click="close" :disabled="loading">取消</el-button>
+            </el-form-item>
         </el-form>
     </div>
 
@@ -47,7 +52,8 @@
         var vueForm = new Vue({
             el: '#app',
             data: {
-                formData: <?php echo json_encode($formData); ?><?php
+                formData: <?php echo json_encode($formData); ?>,
+                loading: false<?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
@@ -57,30 +63,61 @@
             },
             methods: {
                 save: function () {
-                    this.loading = true;
                     var _this = this;
-                    _this.$http.post("<?php echo $this->setting['form']['action']; ?>", {
-                        formData: _this.formData
-                    }).then(function (response) {
-                        _this.loading = false;
-                        //console.log(response);
-                        if (response.status == 200) {
-                            var responseData = response.data;
-                            if (responseData.success) {
-                                if (responseData.message) {
-                                    _this.$message.success(responseData.message);
-                                }
-                            } else {
+                    this.$refs["form"].validate(function (valid) {
+                        if (valid) {
+                            _this.loading = true;
+                            _this.$http.post("<?php echo $this->setting['form']['action']; ?>", {
+                                formData: _this.formData
+                            }).then(function (response) {
+                                _this.loading = false;
+                                //console.log(response);
+                                if (response.status == 200) {
+                                    var responseData = response.data;
+                                    if (responseData.success) {
+                                        var message;
+                                        if (responseData.message) {
+                                            message = responseData.message;
+                                        } else {
+                                            message = '保存成功';
+                                        }
+                                        _this.$confirm(message, '保存成功', {
+                                            confirmButtonText: '确定',
+                                            type: 'success'
+                                        }).then(function () {
+                                            if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                                                parent.closeAndReload();
+                                            } else {
+                                                window.close();
+                                            }
+                                        });
 
-                                if (responseData.message) {
-                                    _this.$message.error(responseData.message);
+                                    } else {
+                                        if (responseData.message) {
+                                            _this.$message.error(responseData.message);
+                                        }
+                                    }
                                 }
-                            }
+                            }).catch(function (error) {
+                                _this.loading = false;
+                                _this.$message.error(error);
+                            });
+
+                        } else {
+                            console.log('error submit!!');
+                            return false;
                         }
-                    }).catch(function (error) {
-                        _this.loading = false;
-                        _this.$message.error(error);
                     });
+                },
+                reset: function () {
+                    this.$refs["form"].resetFields();
+                },
+                close: function () {
+                    if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                        parent.close();
+                    } else {
+                        window.close();
+                    }
                 }
                 <?php
                 if ($vueMethods) {

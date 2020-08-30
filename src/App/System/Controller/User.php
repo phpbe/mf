@@ -15,6 +15,7 @@ use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemAvatar;
 use Be\Plugin\Form\Item\FormItemImage;
+use Be\Plugin\Form\Item\FormItemInputPassword;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\System\Be;
@@ -87,7 +88,13 @@ class User extends Controller
      */
     public function users()
     {
+        $configUser = Be::getConfig('System.User');
         $roleKeyValues = Be::getService('System.Role')->getRoleKeyValues();
+        $genderKeyValues = [
+            '-1' => '保密',
+            '0' => '女',
+            '1' => '男',
+        ];
 
         Be::getPlugin('Curd')->setting([
 
@@ -108,12 +115,6 @@ class User extends Controller
                             'label' => '角色',
                             'driver' => SearchItemSelect::class,
                             'keyValues' => ['' => '所有角色'] + $roleKeyValues,
-                            'buildSql' => function($dbName, $formData) {
-                                if (isset($formData['role_id']) && $formData['role_id'] !='') {
-                                    return 'id IN(SELECT user_id FROM system_user_role WHERE role_id='.intval($formData['role_id']).')';
-                                }
-                                return false;
-                            }
                         ],
                         [
                             'name' => 'username',
@@ -148,10 +149,10 @@ class User extends Controller
 
                     'items' => [
                         [
-                            'label' => '新增用户',
+                            'label' => '新建用户',
                             'driver' => ToolbarItemButton::class,
                             'task' => 'create',
-                            'target' => 'blank', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
+                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-user-plus',
@@ -256,14 +257,14 @@ class User extends Controller
                             'width' => '80',
                         ],
                         [
-                            'name' => 'avatar_s',
+                            'name' => 'avatar',
                             'label' => '头像',
                             'driver' => FieldItemAvatar::class,
                             'value' => function ($row) {
-                                if ($row['avatar_s'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
+                                if ($row['avatar'] == '') {
+                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row['avatar_s'];
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                             'ui' => [
@@ -281,19 +282,7 @@ class User extends Controller
                         [
                             'name' => 'role_id',
                             'label' => '角色',
-                            'value' => function ($row) use ($roleKeyValues) {
-                                $roleIds = Be::newTable('system_user_role')
-                                    ->where('user_id', $row['id'])
-                                    ->getArray('role_id');
-
-                                $roleNames = [];
-                                foreach ($roleIds as $roleId) {
-                                    if (isset($roleKeyValues[$roleId])) {
-                                        $roleNames[] = $roleKeyValues[$roleId];
-                                    }
-                                }
-                                return implode(', ', $roleNames);
-                            },
+                            'keyValues' => $roleKeyValues,
                         ],
                         [
                             'name' => 'email',
@@ -375,14 +364,14 @@ class User extends Controller
                             'label' => 'ID',
                         ],
                         [
-                            'name' => 'avatar_s',
+                            'name' => 'avatar',
                             'label' => '头像',
                             'driver' => DetailItemAvatar::class,
                             'value' => function ($row) {
-                                if ($row['avatar_s'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
+                                if ($row['avatar'] == '') {
+                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar' . $row['avatar_s'];
+                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                         ],
@@ -393,19 +382,7 @@ class User extends Controller
                         [
                             'name' => 'role_id',
                             'label' => '角色',
-                            'value' => function ($row) use ($roleKeyValues) {
-                                $roleIds = Be::newTable('system_user_role')
-                                    ->where('user_id', $row['id'])
-                                    ->getArray('role_id');
-
-                                $roleNames = [];
-                                foreach ($roleIds as $roleId) {
-                                    if (isset($roleKeyValues[$roleId])) {
-                                        $roleNames[] = $roleKeyValues[$roleId];
-                                    }
-                                }
-                                return implode(', ', $roleNames);
-                            },
+                            'keyValues' => $roleKeyValues,
                         ],
                         [
                             'name' => 'email',
@@ -460,25 +437,27 @@ class User extends Controller
             ],
 
             'create' => [
-                'title' => '新增用户',
+                'title' => '新建用户',
                 'form' => [
                     'items' => [
                         [
-                            'name' => 'avatar_s',
+                            'name' => 'avatar',
                             'label' => '头像',
-                            'value' => function () {
-                                return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
-                            },
-                            'driver' => FormItemImage::class,
+                            'driver' => FormItemAvatar::class,
                             'path' => '/System/User/Avatar/',
+                            'required' => false,
+                            'maxWidth' => $configUser->avatarWidth,
+                            'maxHeight' => $configUser->avatarHeight,
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
+                            'unique' => true,
                         ],
                         [
                             'name' => 'password',
                             'label' => '密码',
+                            'driver' => FormItemInputPassword::class,
                         ],
                         [
                             'name' => 'role_id',
@@ -489,6 +468,7 @@ class User extends Controller
                         [
                             'name' => 'email',
                             'label' => '邮箱',
+                            'unique' => true,
                         ],
                         [
                             'name' => 'name',
@@ -497,6 +477,8 @@ class User extends Controller
                         [
                             'name' => 'gender',
                             'label' => '性别',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $genderKeyValues,
                         ],
                         [
                             'name' => 'phone',
@@ -516,11 +498,13 @@ class User extends Controller
                         ],
                     ]
                 ],
-                'BeforeCreate' => function (Tuple $tuple) {
-                    $salt = Random::complex(32);
-                    $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
-                    $tuple->create_time = date('Y-m-d H:i:s');
-                },
+                'events' => [
+                    'BeforeCreate' => function (Tuple $tuple) {
+                        $tuple->salt = Random::complex(32);
+                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $tuple->salt);
+                        $tuple->create_time = date('Y-m-d H:i:s');
+                    },
+                ],
             ],
 
             'edit' => [
@@ -528,14 +512,18 @@ class User extends Controller
                 'form' => [
                     'items' => [
                         [
-                            'name' => 'avatar_s',
+                            'name' => 'avatar',
                             'label' => '头像',
                             'driver' => FormItemAvatar::class,
                             'path' => '/System/User/Avatar/',
+                            'required' => false,
+                            'maxWidth' => $configUser->avatarWidth,
+                            'maxHeight' => $configUser->avatarHeight,
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
+                            'readonly' => true,
                         ],
                         [
                             'name' => 'password',
@@ -550,6 +538,7 @@ class User extends Controller
                         [
                             'name' => 'email',
                             'label' => '邮箱',
+                            'readonly' => true,
                         ],
                         [
                             'name' => 'name',
@@ -558,6 +547,8 @@ class User extends Controller
                         [
                             'name' => 'gender',
                             'label' => '性别',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $genderKeyValues,
                         ],
                         [
                             'name' => 'phone',
@@ -574,52 +565,56 @@ class User extends Controller
                         ],
                     ]
                 ],
-                'BeforeEdit' => function ($tuple) {
-                    if ($tuple->password != '') {
-                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
-                    } else {
-                        unset($tuple->password);
-                        unset($tuple->register_time);
-                        unset($tuple->last_login_time);
-                    }
-                },
-                'AfterEdit' => function ($tuple) {
-                    // 上传头像
-                    $avatar = Request::files('avatar');
-                    if ($avatar && $avatar['error'] == 0) {
-                        Be::getService('System.User')->uploadAvatar($tuple, $avatar);
-                    }
-                },
+                'events' => [
+                    'BeforeEdit' => function ($tuple) {
+                        if ($tuple->password != '') {
+                            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+                        } else {
+                            unset($tuple->password);
+                            unset($tuple->register_time);
+                            unset($tuple->last_login_time);
+                        }
+                    },
+                    'AfterEdit' => function ($tuple) {
+                        // 上传头像
+                        $avatar = Request::files('avatar');
+                        if ($avatar && $avatar['error'] == 0) {
+                            Be::getService('System.User')->uploadAvatar($tuple, $avatar);
+                        }
+                    },
+                ]
             ],
 
             'fieldEdit' => [
-                'BeforeFieldEdit' => function ($tuple) {
-                    $postData = Request::json();
-                    $field = $postData['postData']['field'];
-                    if ($field == 'is_enable') {
-                        if ($tuple->is_enable == 0) {
-                            if ($tuple->id == 1) {
-                                throw new PluginException('默认用户不能禁用');
-                            }
+                'events' => [
+                    'BeforeFieldEdit' => function ($tuple) {
+                        $postData = Request::json();
+                        $field = $postData['postData']['field'];
+                        if ($field == 'is_enable') {
+                            if ($tuple->is_enable == 0) {
+                                if ($tuple->id == 1) {
+                                    throw new PluginException('默认用户不能禁用');
+                                }
 
-                            $my = Be::getUser();
-                            if ($tuple->id == $my->id) {
-                                throw new PluginException('不能禁用自已的账号');
+                                $my = Be::getUser();
+                                if ($tuple->id == $my->id) {
+                                    throw new PluginException('不能禁用自已的账号');
+                                }
+                            }
+                        } elseif ($field == 'is_delete') {
+                            if ($tuple->is_delete == 1) {
+                                if ($tuple->id == 1) {
+                                    throw new PluginException('默认用户不能删除');
+                                }
+
+                                $my = Be::getUser();
+                                if ($tuple->id == $my->id) {
+                                    throw new PluginException('不能删除自已');
+                                }
                             }
                         }
-                    } elseif ($field == 'is_delete') {
-                        if ($tuple->is_delete == 1) {
-                            if ($tuple->id == 1) {
-                                throw new PluginException('默认用户不能删除');
-                            }
-
-                            $my = Be::getUser();
-                            if ($tuple->id == $my->id) {
-                                throw new PluginException('不能删除自已');
-                            }
-                        }
-                    }
-                },
+                    },
+                ],
             ],
 
             'export' => [],

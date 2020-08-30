@@ -39,21 +39,12 @@ class FormItemImage extends FormItem
             $this->description = $params['description'];
         }
 
-        $maxSize = null;
-        if (isset($params['maxSize'])) {
-            $maxSize = $params['maxSize'];
-        } else {
-            $maxSize = min(ini_get('upload_max_filesize'), ini_get('post_max_size'));
-        }
+        $configSystem = Be::getConfig('System.System');
+        $this->maxSize = $configSystem->uploadMaxSize;
+        $this->maxSizeInt = FileSize::string2Int($this->maxSize);
 
-        if (is_numeric($maxSize)) {
-            $this->maxSizeInt = $maxSize;
-            $this->maxSize = FileSize::int2String($maxSize);
-        } else {
-            $this->maxSizeInt = FileSize::string2Int($maxSize);
-            $this->maxSize = $maxSize;
-        }
-
+        // 允许上传的图像类型
+        $this->allowUploadImageTypes = Be::getConfig('System.System')->allowUploadImageTypes;
 
         // 最大宽度
         if (isset($params['maxWidth']) && is_numeric($params['maxWidth']) && $params['maxWidth'] > 0) {
@@ -63,13 +54,6 @@ class FormItemImage extends FormItem
         // 最大高度
         if (isset($params['maxHeight']) && is_numeric($params['maxHeight']) && $params['maxHeight'] > 0) {
             $this->maxHeight = $params['maxHeight'];
-        }
-
-        // 允许上传的图像类型
-        if (isset($params['allowUploadImageTypes']) && is_array($params['allowUploadImageTypes'])) {
-            $this->allowUploadImageTypes = $params['allowUploadImageTypes'];
-        } else {
-            $this->allowUploadImageTypes = Be::getConfig('System.System')->allowUploadImageTypes;
         }
 
         if (!$this->description) {
@@ -96,8 +80,8 @@ class FormItemImage extends FormItem
             $this->ui['upload'][':file-list'] = 'form.'.$this->name.'.fileList';
         }
 
-        if (!isset($this->ui['upload']['name'])) {
-            $this->ui['upload']['name'] = $this->name;
+        if (!isset($this->ui['upload'][':data'])) {
+            $this->ui['upload'][':data'] = 'form.'.$this->name.'.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -141,7 +125,7 @@ class FormItemImage extends FormItem
             }
         }
         $html .= '>';
-        $html .= '<el-button size="small" type="primary"><i class="el-icon-upload2"></i> 选择图像文件</el-button>';
+        $html .= '<el-button size="mini" type="primary"><i class="el-icon-upload2"></i> 选择图像文件</el-button>';
         $html .= '<div class="el-upload__tip" slot="tip">'.$this->description.'</div>';
         $html .= '</el-upload>';
         $html .= '</el-form-item>';
@@ -155,11 +139,22 @@ class FormItemImage extends FormItem
      */
     public function getVueData()
     {
+        $url = null;
+        if (strpos($this->value, '/') == false) {
+            $url = Be::getRuntime()->getDataUrl() . $this->path . $this->value;
+        } else {
+            $url = $this->value;
+        }
+
         return [
             'form' => [
                 $this->name => [
-                    'url' => Be::getRuntime()->getDataUrl() . $this->path . $this->value,
-                    'fileList' => []
+                    'url' => $url,
+                    'fileList' => [],
+                    'postData' => [
+                        'maxWidth' => $this->maxWidth,
+                        'maxHeight' => $this->maxHeight
+                    ],
                 ]
             ]
         ];
@@ -183,7 +178,6 @@ class FormItemImage extends FormItem
             }',
             'formItemImage_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
-                    this.$message.success(response.message);
                     this.form.'.$this->name.'.url = response.url;
                     this.formData.'.$this->name.' = response.newValue;
                 } else {
@@ -209,9 +203,23 @@ class FormItemImage extends FormItem
             $newValue = $data[$this->name];
             $newValue = htmlspecialchars_decode($newValue);
 
-            if ($newValue != $this->value) {
+            if ($newValue != $this->value && $this->value != '') {
                 $lastPath = Be::getRuntime()->getDataPath() . $this->path . $this->value;
-                @unlink($lastPath);
+                if (file_exists($lastPath)) {
+                    @unlink($lastPath);
+                }
+            }
+
+            $pathDstDir = Be::getRuntime()->getDataPath() . $this->path;
+            if (!file_exists($pathDstDir)) {
+                mkdir($pathDstDir, 0755, true);
+            }
+
+            $pathSrc = Be::getRuntime()->getDataPath() . '/tmp/' . $newValue;
+            $pathDst = $pathDstDir . $newValue;
+            if (file_exists($pathSrc)) {
+                @copy($pathSrc, $pathDst);
+                @unlink($pathSrc);
             }
 
             $this->newValue = $newValue;

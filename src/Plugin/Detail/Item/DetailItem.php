@@ -8,7 +8,7 @@ namespace Be\Plugin\Detail\Item;
 abstract class DetailItem
 {
 
-    public $name = null; // 键名
+    public $name = ''; // 键名
     public $label = ''; // 配置项中文名称
     public $value = ''; // 值
     public $ui = []; // UI界面参数
@@ -24,13 +24,11 @@ abstract class DetailItem
     {
         if (isset($params['name'])) {
             $this->name = $params['name'];
-        } else {
-            $this->name = 'n'.(self::$nameIndex++);
         }
 
         if (isset($params['label'])) {
             $label = $params['label'];
-            if (is_callable($label)) {
+            if ($label instanceof \Closure) {
                 $this->label = $label();
             } else {
                 $this->label = $label;
@@ -39,7 +37,7 @@ abstract class DetailItem
 
         if (isset($params['value'])) {
             $value = $params['value'];
-            if (is_callable($value)) {
+            if ($value instanceof \Closure) {
                 $this->value = $value();
             } else {
                 $this->value = $value;
@@ -48,7 +46,7 @@ abstract class DetailItem
 
         if (isset($params['ui'])) {
             $ui = $params['ui'];
-            if (is_callable($ui)) {
+            if ($ui instanceof \Closure) {
                 $this->ui = $ui();
             } else {
                 $this->ui = $ui;

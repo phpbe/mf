@@ -62,7 +62,7 @@ $configAdminUser = Be::getConfig('System.AdminUser');
 foreach ($users as $user) {
     $user->register_time =	date('Y-m-d H:i',$user->register_time);
     $user->last_login_time = date('Y-m-d H:i',$user->last_login_time);
-    $user->avatar = '<img src="'.Be::getRuntime()->getDataUrl().'/System/AdminUser/avatar/'.($user->avatar_s == ''?('default/'.$configAdminUser->defaultAvatarS):$user->avatarS).'" width="32" />';
+    $user->avatar = '<img src="'.Be::getRuntime()->getDataUrl().'/System/AdminUser/avatar/'.($user->avatar == ''?('default/'.$configAdminUser->defaultAvatarS):$user->avatarS).'" width="32" />';
     $user->role_name = '<span class="label label-info">'.$roleMap[$user->roleId].'</span>';
 }
 

@@ -3,12 +3,10 @@
 namespace Be\Plugin\Form\Item;
 
 /**
- * 表单项 开关
+ * 表单项 密码输入框
  */
-class FormItemSwitch extends FormItem
+class FormItemInputPassword extends FormItem
 {
-
-    public $valueType = 'int';
 
     /**
      * 构造函数
@@ -19,22 +17,17 @@ class FormItemSwitch extends FormItem
     {
         parent::__construct($params);
 
-        if (!$this->value) {
-            $this->value = '0';
-        } else {
-            $this->value = (string)$this->value;
+        if ($this->required) {
+            if (!isset($this->ui['form-item'][':rules'])) {
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请输入'.$this->label.'\', trigger: \'blur\' }]';
+            }
         }
 
-        if (!isset($this->ui['switch']['active-value'])) {
-            $this->ui['switch']['active-value'] = 1;
-        }
+        $this->ui['input']['show-password'] = null;
 
-        if (!isset($this->ui['switch']['inactive-value'])) {
-            $this->ui['switch']['inactive-value'] = 0;
-        }
-
-        $this->ui['switch']['v-model'] = 'formData.' . $this->name;
+        $this->ui['input']['v-model'] = 'formData.' . $this->name;
     }
+
 
     /**
      * 获取html内容ß
@@ -53,9 +46,9 @@ class FormItemSwitch extends FormItem
         }
         $html .= '>';
 
-        $html .= '<el-switch';
-        if (isset($this->ui['switch'])) {
-            foreach ($this->ui['switch'] as $k => $v) {
+        $html .= '<el-input';
+        if (isset($this->ui['input'])) {
+            foreach ($this->ui['input'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -64,7 +57,7 @@ class FormItemSwitch extends FormItem
             }
         }
         $html .= '>';
-        $html .= '</el-switch>';
+        $html .= '</el-input>';
 
         $html .= '</el-form-item>';
         return $html;

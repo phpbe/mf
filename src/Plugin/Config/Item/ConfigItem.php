@@ -139,7 +139,7 @@ abstract class ConfigItem
                         throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
                     $newValue = array_map('trim',$newValue);
-                    $this->newValue = $newValue;
+                    $this->newValue = array_values($newValue);
                     break;
                 case 'mixed':
                     $newValue = htmlspecialchars_decode($newValue);

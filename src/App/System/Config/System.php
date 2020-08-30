@@ -24,12 +24,17 @@ class System
     public $theme = 'Admin';
 
     /**
+     * @BeConfigItem("允许上传的文件大小", driver="ConfigItemInput")
+     */
+    public $uploadMaxSize = '1M';
+
+    /**
      * @BeConfigItem("允许上传的文件类型", driver="ConfigItemInputTextArea", valueType = "array(string)")
      */
     public $allowUploadFileTypes = ['jpg', 'jpeg', 'gif', 'png', 'txt', 'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'zip', 'rar'];
 
     /**
-     * @BeConfigItem("允许上传的图片类型", driver="ConfigItemInputTextArea")
+     * @BeConfigItem("允许上传的图片类型", driver="ConfigItemInputTextArea", valueType = "array(string)")
      */
     public $allowUploadImageTypes = ['jpg', 'jpeg', 'gif', 'png'];
 

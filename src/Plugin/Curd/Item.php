@@ -37,7 +37,7 @@ abstract class Item
     {
         if (isset($params['name'])) {
             $name = $params['name'];
-            if (is_callable($name)) {
+            if ($name instanceof \Closure) {
                 $this->name = $name();
             } else {
                 $this->name = $name;
@@ -48,7 +48,7 @@ abstract class Item
 
         if (isset($params['label'])) {
             $label = $params['label'];
-            if (is_callable($label)) {
+            if ($label instanceof \Closure) {
                 $this->label = $label();
             } else {
                 $this->label = $label;
@@ -57,7 +57,7 @@ abstract class Item
 
         if (isset($params['value'])) {
             $value = $params['value'];
-            if (is_callable($value)) {
+            if ($value instanceof \Closure) {
                 $this->value = $value();
             } else {
                 $this->value = $value;
@@ -66,7 +66,7 @@ abstract class Item
 
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
-            if (is_callable($keyValues)) {
+            if ($keyValues instanceof \Closure) {
                 $this->keyValues = $keyValues();
             } else {
                 $this->keyValues = $keyValues;
@@ -74,7 +74,7 @@ abstract class Item
         } else {
             if (isset($params['values'])) {
                 $values = $params['values'];
-                if (is_callable($values)) {
+                if ($values instanceof \Closure) {
                     $values = $values();
                 }
 
@@ -88,7 +88,7 @@ abstract class Item
 
         if (isset($params['url'])) {
             $url = $params['url'];
-            if (is_callable($url)) {
+            if ($url instanceof \Closure) {
                 $this->url = $url();
             } else {
                 $this->url = $url;
@@ -96,7 +96,7 @@ abstract class Item
         } else {
             if (isset($params['task'])) {
                 $task = $params['task'];
-                if (is_callable($task)) {
+                if ($task instanceof \Closure) {
                     $task = $task();
                 }
 
@@ -105,7 +105,7 @@ abstract class Item
                 $this->url = $url;
             } elseif (isset($params['action'])) {
                 $action = $params['action'];
-                if (is_callable($action)) {
+                if ($action instanceof \Closure) {
                     $action = $action();
                 }
 
@@ -118,7 +118,7 @@ abstract class Item
 
         if (isset($params['ui'])) {
             $ui = $params['ui'];
-            if (is_callable($ui)) {
+            if ($ui instanceof \Closure) {
                 $this->ui = $ui();
             } else {
                 $this->ui = $ui;
@@ -127,7 +127,7 @@ abstract class Item
 
         if (isset($params['postData'])) {
             $postData = $params['postData'];
-            if (is_callable($postData)) {
+            if ($postData instanceof \Closure) {
                 $this->postData = $postData();
             } else {
                 $this->postData = $postData;
@@ -136,7 +136,7 @@ abstract class Item
 
         if (isset($params['target'])) {
             $target = $params['target'];
-            if (is_callable($target)) {
+            if ($target instanceof \Closure) {
                 $this->target = $target();
             } else {
                 $this->target = $target;
@@ -146,7 +146,7 @@ abstract class Item
         if ($this->target == 'dialog') {
             if (isset($params['dialog'])) {
                 $dialog = $params['dialog'];
-                if (is_callable($dialog)) {
+                if ($dialog instanceof \Closure) {
                     $this->dialog = $dialog();
                 } else {
                     $this->dialog = $dialog;
@@ -159,7 +159,7 @@ abstract class Item
         } elseif ($this->target == 'drawer') {
             if (isset($params['drawer'])) {
                 $drawer = $params['drawer'];
-                if (is_callable($drawer)) {
+                if ($drawer instanceof \Closure) {
                     $this->drawer = $drawer();
                 } else {
                     $this->drawer = $drawer;

@@ -5,6 +5,7 @@ namespace Be\App\System\Controller;
 use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
+use Be\Util\FileSystem\FileSize;
 use Be\Util\Net\FileUpload;
 
 /**
@@ -18,20 +19,15 @@ class Plugin extends \Be\System\Controller
      */
     public function uploadFile()
     {
-        $appName = Request::get('appName');
-        $configName = Request::get('configName');
-        $itemName = Request::get('itemName');
-
-        $file = Request::files($itemName);
+        $file = Request::files('file');
         if ($file['error'] == 0) {
 
-            $service = Be::getService('System.Config');
-            $config = $service->getConfig($appName, $configName);
-            $configItemDriver = $config['items'][$itemName]['driver'];
-
-            if ($file['size'] > $configItemDriver->maxSizeInt) {
+            $configSystem = Be::getConfig('System.System');
+            $maxSize = $configSystem->uploadMaxSize;
+            $maxSizeInt = FileSize::string2Int($maxSize);
+            if ($file['size'] > $maxSizeInt) {
                 Response::set('success', false);
-                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $configItemDriver->maxSize . '！');
+                Response::set('message', '您上传的文件尺寸已超过最大限制：' . $maxSize . '！');
                 Response::ajax();
             }
 
@@ -40,14 +36,14 @@ class Plugin extends \Be\System\Controller
             if ($rPos !== false) {
                 $ext = substr($file['name'], $rPos + 1);
             }
-            if (!in_array($ext, $configItemDriver->allowUploadFileTypes)) {
+            if (!in_array($ext, $configSystem->allowUploadFileTypes)) {
                 Response::error('禁止上传的文件类型：' . $ext . '！');
             }
 
             $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
-            $newFilePath = Be::getRuntime()->getDataPath() . $configItemDriver->path . $newFileName;
+            $newFilePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newFileName;
             if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                $newFileUrl = Be::getRuntime()->getDataUrl() . $configItemDriver->path . $newFileName;
+                $newFileUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newFileName;
                 Response::set('newValue', $newFileName);
                 Response::set('url', $newFileUrl);
                 Response::set('success', true);
@@ -71,19 +67,15 @@ class Plugin extends \Be\System\Controller
      */
     public function uploadImage()
     {
-        $appName = Request::get('appName');
-        $configName = Request::get('configName');
-        $itemName = Request::get('itemName');
-
-        $file = Request::files($itemName);
+        $file = Request::files('file');
         if ($file['error'] == 0) {
-            $service = Be::getService('System.Config');
-            $config = $service->getConfig($appName, $configName);
-            $configItemDriver = $config['items'][$itemName]['driver'];
 
-            if ($file['size'] > $configItemDriver->maxSizeInt) {
+            $configSystem = Be::getConfig('System.System');
+            $maxSize = $configSystem->uploadMaxSize;
+            $maxSizeInt = FileSize::string2Int($maxSize);
+            if ($file['size'] > $maxSizeInt) {
                 Response::set('success', false);
-                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $configItemDriver->maxSize . '！');
+                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $maxSize . '！');
                 Response::ajax();
             }
 
@@ -92,7 +84,7 @@ class Plugin extends \Be\System\Controller
             if ($rPos !== false) {
                 $ext = substr($file['name'], $rPos + 1);
             }
-            if (!in_array($ext, $configItemDriver->allowUploadImageTypes)) {
+            if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
                 Response::error('禁止上传的图像类型：' . $ext . '！');
             }
 
@@ -100,16 +92,20 @@ class Plugin extends \Be\System\Controller
             $libImage = Be::getLib('Image');
             $libImage->open($file['tmp_name']);
             if ($libImage->isImage()) {
-                if ($configItemDriver->maxWidth > 0 && $configItemDriver->maxHeight> 0) {
-                    if ($libImage->getWidth() > $configItemDriver->maxWidth || $libImage->getheight() > $configItemDriver->maxHeight) {
-                        $libImage->resize($configItemDriver->maxWidth, $configItemDriver->maxHeight, 'scale');
+                $maxWidth = Request::post('maxWidth', 0, 'int');
+                $maxHeight = Request::post('maxHeight', 0, 'int');
+
+                if ($maxWidth > 0 && $maxHeight> 0) {
+                    if ($libImage->getWidth() > $maxWidth || $libImage->getheight() > $maxHeight) {
+                        $libImage->resize($maxWidth, $maxHeight, 'scale');
                     }
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . $configItemDriver->path . $newImageName;
+                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRuntime()->getDataUrl() . $configItemDriver->path . $newImageName;
+                    $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
                     Response::set('newValue', $newImageName);
                     Response::set('url', $newImageUrl);
                     Response::set('success', true);

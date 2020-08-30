@@ -15,53 +15,20 @@ class User
     public $ipLock = 1;
 
     /**
-     * @BeConfigItem("用户小头像宽度",
+     * @BeConfigItem("用户头像宽度",
      *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
-    public $avatarSW = 32;
+    public $avatarWidth = 96;
 
     /**
-     * @BeConfigItem("用户小头像高度",
-     *     driver="ConfigItemInputNumberInt",
-     *     description="单位：像素，修改后仅对此后上传的头像生效",
-     *     ui="return [':min' => 1];"
-     * )
-     */
-    public $avatarSH = 32;
-
-    /**
-     * @BeConfigItem("用户中头像宽度",
+     * @BeConfigItem("用户头像高度",
      *     driver="ConfigItemInputNumberInt",
      *     description="单位：像素，修改后仅对此后上传的头像生效",
      *     ui="return [':min' => 1];")
      */
-    public $avatarMW = 64;
-
-    /**
-     * @BeConfigItem("用户中头像高度",
-     *     driver="ConfigItemInputNumberInt",
-     *     description="单位：像素，修改后仅对此后上传的头像生效",
-     *     ui="return [':min' => 1];")
-     */
-    public $avatarMH = 64;
-
-    /**
-     * @BeConfigItem("用户大头像宽度",
-     *     driver="ConfigItemInputNumberInt",
-     *     description="单位：像素，修改后仅对此后上传的头像生效",
-     *     ui="return [':min' => 1];")
-     */
-    public $avatarLW = 96;
-
-    /**
-     * @BeConfigItem("用户大头像高度",
-     *     driver="ConfigItemInputNumberInt",
-     *     description="单位：像素，修改后仅对此后上传的头像生效",
-     *     ui="return [':min' => 1];")
-     */
-    public $avatarLH = 96;
+    public $avatarHeight = 96;
 
 
 }

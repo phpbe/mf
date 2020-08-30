@@ -177,14 +177,47 @@ class Config extends Service
         $code .= "{\n";
 
         foreach ($vars as $k => $v) {
-             if (isset($config['items'][$k])) {
+            if (isset($config['items'][$k])) {
                 $configItem = $config['items'][$k];
                 $driver = $configItem['driver'];
                 if (!isset($data[$k])) {
                     throw new ServiceException('参数 ' . $driver->label . ' (' . $k . ') 缺失！');
                 }
                 $driver->submit($data);
-                $code .= '  public $' . $k . ' = ' . var_export($driver->newValue, true) . ';' . "\n";
+
+                $newValue = null;
+                switch ($driver->valueType) {
+                    case 'array(int)':
+                    case 'array(float)':
+                        $newValue = '[' . implode(',', $driver->newValue) . ']';
+                        break;
+                    case 'array':
+                    case 'array(string)':
+                        $newValue = $driver->newValue;
+                        foreach ($newValue as &$x) {
+                            $x = str_replace('\'', '\\\'', $x);
+                        }
+                        unset($x);
+                        $newValue = '[\'' . implode('\',\'', $newValue) . '\']';
+                        break;
+                    case 'mixed':
+                        $newValue = var_export($driver->newValue, true);
+                        break;
+                    case 'bool':
+                        $newValue = $driver->newValue ? 'true' : 'false';
+                        break;
+                    case 'int':
+                    case 'float':
+                        $newValue = $driver->newValue;
+                        break;
+                    case 'string':
+                        $newValue = '\'' . str_replace('\'', '\\\'', $driver->newValue) . '\'';
+                        break;
+                    default:
+                        $newValue = var_export($driver->newValue, true);
+                }
+
+                $code .= '  public $' . $k . ' = ' . $newValue . ';' . "\n";
             } else {
                 $code .= '  public $' . $k . ' = ' . var_export($v, true) . ';' . "\n";
             }
@@ -212,6 +245,7 @@ class Config extends Service
 
 
     private $reflectionClass = [];
+
     private function getReflectionClass($className)
     {
         if (isset($this->reflectionClass[$className])) return $this->reflectionClass[$className];
