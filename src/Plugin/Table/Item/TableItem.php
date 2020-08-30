@@ -55,6 +55,7 @@ abstract class TableItem
             }
         }
 
+        /*
         if (isset($params['value'])) {
             $value = $params['value'];
             if ($value instanceof \Closure) {
@@ -63,6 +64,7 @@ abstract class TableItem
                 $this->value = $value;
             }
         }
+        */
 
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
@@ -85,6 +87,35 @@ abstract class TableItem
                 $this->keyValues = $keyValues;
             }
         }
+
+        if (isset($params['ui'])) {
+            $ui = $params['ui'];
+            if ($ui instanceof \Closure) {
+                $this->ui = $ui();
+            } else {
+                $this->ui = $ui;
+            }
+        }
+
+        /*
+        if (isset($params['export'])) {
+            $export = $params['export'];
+            if ($export instanceof \Closure) {
+                $this->export = $export();
+            } else {
+                $this->export = $export;
+            }
+        }
+
+        if (isset($params['exportValue'])) {
+            $exportValue = $params['exportValue'];
+            if ($exportValue instanceof \Closure) {
+                $this->exportValue = $exportValue($tuple);
+            } else {
+                $this->exportValue = $exportValue;
+            }
+        }
+        */
 
         if (isset($params['url'])) {
             $url = $params['url'];
@@ -113,15 +144,6 @@ abstract class TableItem
                 $appName = $runtime->getAppName();
                 $controllerName = $runtime->getControllerName();
                 $this->url = beUrl($appName . '.' . $controllerName . '.' . $action);
-            }
-        }
-
-        if (isset($params['ui'])) {
-            $ui = $params['ui'];
-            if ($ui instanceof \Closure) {
-                $this->ui = $ui();
-            } else {
-                $this->ui = $ui;
             }
         }
 
@@ -170,30 +192,6 @@ abstract class TableItem
                 $this->drawer['title'] = $this->label;
             }
         }
-
-
-
-        unset($params['value']);
-
-        if (isset($params['export'])) {
-            $export = $params['export'];
-            if ($export instanceof \Closure) {
-                $this->export = $export();
-            } else {
-                $this->export = $export;
-            }
-        }
-
-        /*
-        if (isset($params['exportValue'])) {
-            $exportValue = $params['exportValue'];
-            if ($exportValue instanceof \Closure) {
-                $this->exportValue = $exportValue($tuple);
-            } else {
-                $this->exportValue = $exportValue;
-            }
-        }
-        */
 
         if (!isset($this->ui['table-column']['prop'])) {
             $this->ui['table-column']['prop'] = $this->name;

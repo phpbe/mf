@@ -79,11 +79,11 @@ class FormItemImage extends FormItem
         }
 
         if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'form.'.$this->name.'.fileList';
+            $this->ui['upload'][':file-list'] = 'formItems.'.$this->name.'.fileList';
         }
 
         if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'form.'.$this->name.'.postData';
+            $this->ui['upload'][':data'] = 'formItems.'.$this->name.'.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -114,7 +114,7 @@ class FormItemImage extends FormItem
         }
         $html .= '>';
 
-        $html .= '<img v-if="formData.' . $this->name . '" :src="form.' . $this->name . '.url" alt="'.$this->label.'" style="max-width:120px;" />';
+        $html .= '<img v-if="formData.' . $this->name . '" :src="formItems.' . $this->name . '.url" alt="'.$this->label.'" style="max-width:120px;" />';
 
         $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
@@ -149,7 +149,7 @@ class FormItemImage extends FormItem
         }
 
         return [
-            'form' => [
+            'formItems' => [
                 $this->name => [
                     'url' => $url,
                     'fileList' => [],
@@ -180,12 +180,12 @@ class FormItemImage extends FormItem
             }',
             'formItemImage_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
-                    this.form.'.$this->name.'.url = response.url;
+                    this.formItems.'.$this->name.'.url = response.url;
                     this.formData.'.$this->name.' = response.newValue;
                 } else {
                     this.$message.error(response.message);
                 }
-                this.form.'.$this->name.'.fileList = [];
+                this.formItems.'.$this->name.'.fileList = [];
             }',
             'formItemImage_onError' => 'function(){
                 this.$message.error("上传失败，请重新上传");

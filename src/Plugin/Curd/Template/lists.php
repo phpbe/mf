@@ -121,7 +121,7 @@
             ?>
 
             <el-table
-                    :data="rows"
+                    :data="tableData"
                     ref="stageTable"
                     v-loading="loading"
                     size="mini"
@@ -178,13 +178,13 @@
                     }
                 }
 
-                foreach ($this->setting['lists']['field']['items'] as $item) {
+                foreach ($this->setting['lists']['table']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
                         $driver = new $driverName($item);
                     } else {
-                        $driver = new \Be\Plugin\Curd\FieldItem\FieldItemText($item);
+                        $driver = new \Be\Plugin\Table\Item\TableItemText($item);
                     }
                     echo $driver->getHtml();
 
@@ -254,13 +254,13 @@
             el: '#app',
             data: {
                 formData: <?php echo json_encode($formData); ?>,
+                tableData: [],
                 orderBy: "",
                 orderByDir: "",
                 pageSize: pageSize,
                 page: 1,
                 pages: 1,
                 total: 0,
-                rows: [],
                 selectedRows: [],
                 loading: false,
                 stageHeight: 500,
@@ -278,16 +278,16 @@
                 <?php
                 if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
                     echo 'var _this = this;';
-                    echo 'setInterval(function () {_this.reload();}, ' . $this->setting['lists']['reload'] . ');';
+                    echo 'setInterval(function () {_this.reloadTableData();}, ' . $this->setting['lists']['reload'] . ');';
                 }
                 ?>
             },
             methods: {
                 search: function () {
                     this.page = 1;
-                    this.loadData();
+                    this.loadTableData();
                 },
-                loadData: function () {
+                loadTableData: function () {
                     this.loading = true;
                     var _this = this;
                     _this.$http.post("<?php echo $this->url; ?>", {
@@ -303,11 +303,11 @@
                             var responseData = response.data;
                             if (responseData.success) {
                                 _this.total = parseInt(responseData.data.total);
-                                _this.rows = responseData.data.rows;
+                                _this.tableData = responseData.data.tableData;
                                 _this.pages = Math.floor(_this.total / _this.pageSize);
                             } else {
                                 _this.total = 0;
-                                _this.rows = [];
+                                _this.tableData = [];
                                 _this.page = 1;
                                 _this.pages = 1;
 
@@ -322,7 +322,7 @@
                         _this.$message.error(error);
                     });
                 },
-                reload: function () {
+                reloadTableData: function () {
                     var _this = this;
                     _this.$http.post("<?php echo $this->url; ?>", {
                         formData: _this.formData,
@@ -335,7 +335,7 @@
                             var responseData = response.data;
                             if (responseData.success) {
                                 _this.total = parseInt(responseData.data.total);
-                                _this.rows = responseData.data.rows;
+                                _this.tableData = responseData.data.tableData;
                                 _this.pages = Math.floor(_this.total / _this.pageSize);
                             }
                             _this.updateToolbars();
@@ -346,11 +346,11 @@
                     this.pageSize = pageSize;
                     this.page = 1;
                     localStorage.setItem(pageSizeKey, pageSize);
-                    this.loadData();
+                    this.loadTableData();
                 },
                 gotoPage: function (page) {
                     this.page = page;
-                    this.loadData();
+                    this.loadTableData();
                 },
                 sort: function (option) {
                     if (option.order == "ascending" || option.order == "descending") {
@@ -360,7 +360,7 @@
                         this.orderBy = "";
                         this.orderByDir = "";
                     }
-                    this.loadData();
+                    this.loadTableData();
                 },
                 toolbarAction: function (name, option) {
                     var data = {
@@ -375,7 +375,7 @@
                     data.selectedRows = this.selectedRows;
                     return this.action(option, data);
                 },
-                fieldAction: function (name, option, row) {
+                tableItemAction: function (name, option, row) {
                     switch (option.target) {
                         case "dialog":
                             option.dialog.title = row[name];
@@ -408,11 +408,11 @@
                                         _this.$message.error(response.data.message);
                                     }
                                 }
-                                _this.loadData();
+                                _this.loadTableData();
                             }
                         }).catch(function (error) {
                             _this.$message.error(error);
-                            _this.loadData();
+                            _this.loadTableData();
                         });
                     } else {
                         var eForm = document.createElement("form");
@@ -518,7 +518,7 @@
         });
 
         function reload() {
-            vueCurdLists.loadData();
+            vueCurdLists.loadTableData();
         }
 
         function close() {
@@ -537,17 +537,17 @@
         function closeAndReload() {
             vueCurdLists.drawer.visible = false;
             vueCurdLists.dialog.visible = false;
-            vueCurdLists.loadData();
+            vueCurdLists.loadTableData();
         }
 
         function closeDrawerAndReload() {
             vueCurdLists.drawer.visible = false;
-            vueCurdLists.loadData();
+            vueCurdLists.loadTableData();
         }
 
         function closeDialogAndReload() {
             vueCurdLists.dialog.visible = false;
-            vueCurdLists.loadData();
+            vueCurdLists.loadTableData();
         }
 
 

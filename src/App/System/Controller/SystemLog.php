@@ -77,7 +77,7 @@ class SystemLog extends \Be\System\Controller
                     ]
                 ],
 
-                'field' => [
+                'table' => [
                     'items' => [
                         [
                             'name' => 'id',

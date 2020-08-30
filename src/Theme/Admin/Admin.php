@@ -178,10 +178,10 @@ $my = Be::getUser();
                     ?>
                     您好：
                     <img src="<?php
-                    if ($my->avatar_s == '') {
-                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar/medium.png';
+                    if ($my->avatar == '') {
+                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                     } else {
-                        echo Be::getRuntime()->getDataUrl().'/user/avatar/'.$my->avatar_m;
+                        echo Be::getRuntime()->getDataUrl().'/System/User/Avatar/'.$my->avatar;
                     }
                     ?>" style="max-width:24px;max-height:24px;" />
                     <?php echo $my->name; ?>

@@ -1,12 +1,13 @@
 <?php
 
-namespace Be\Plugin\Curd\FieldItem;
+namespace Be\Plugin\Toolbar\Item;
 
+use Be\System\Be;
 
 /**
- * 字段 勾选框
+ * 工具栏 下拉菜单 其单项
  */
-class FieldItemSelection extends FieldItem
+class ToolbarItemButtonDropDownMenu extends ToolbarItem
 {
 
     /**
@@ -17,12 +18,7 @@ class FieldItemSelection extends FieldItem
     public function __construct($params = [])
     {
         parent::__construct($params);
-
-        $this->ui['table-column']['type'] = 'selection';
-
-        if (!isset($this->ui['table-column']['width'])) {
-            $this->ui['table-column']['width'] = '50';
-        }
+        $this->ui[':command'] = 'toolbarButtonDropDownMenuCommand(\''.$params['parentName'].'\','.$params['index'].')';
     }
 
     /**
@@ -32,9 +28,9 @@ class FieldItemSelection extends FieldItem
      */
     public function getHtml()
     {
-        $html = '<el-table-column';
-        if (isset($this->ui['table-column'])) {
-            foreach ($this->ui['table-column'] as $k => $v) {
+        $html = '<el-dropdown-item';
+        if (isset($this->ui)) {
+            foreach ($this->ui as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -43,8 +39,14 @@ class FieldItemSelection extends FieldItem
             }
         }
         $html .= '>';
-        $html .= '</el-table-column>';
+
+        $html .= $this->label;
+        $html .= '</el-dropdown-item>';
 
         return $html;
     }
+
+
 }
+
+

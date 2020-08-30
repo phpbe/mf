@@ -65,6 +65,69 @@ class Plugin extends \Be\System\Controller
     /**
      * @BePermission("*")
      */
+    public function uploadAvatar()
+    {
+        $file = Request::files('file');
+        if ($file['error'] == 0) {
+
+            $configSystem = Be::getConfig('System.System');
+            $maxSize = $configSystem->uploadMaxSize;
+            $maxSizeInt = FileSize::string2Int($maxSize);
+            if ($file['size'] > $maxSizeInt) {
+                Response::set('success', false);
+                Response::set('message', '您上传的头像尺寸已超过最大限制：' . $maxSize . '！');
+                Response::ajax();
+            }
+
+            $ext = '';
+            $rPos = strrpos($file['name'], '.');
+            if ($rPos !== false) {
+                $ext = substr($file['name'], $rPos + 1);
+            }
+            if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
+                Response::error('禁止上传的图像类型：' . $ext . '！');
+            }
+
+            ini_set('memory_limit', '-1');
+            $libImage = Be::getLib('Image');
+            $libImage->open($file['tmp_name']);
+            if ($libImage->isImage()) {
+                $maxWidth = Request::post('maxWidth', 0, 'int');
+                $maxHeight = Request::post('maxHeight', 0, 'int');
+
+                if ($maxWidth > 0 && $maxHeight> 0) {
+                    if ($libImage->getWidth() > $maxWidth || $libImage->getheight() > $maxHeight) {
+                        $libImage->resize($maxWidth, $maxHeight, 'center');
+                    }
+                }
+
+                $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
+                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+
+                if ($libImage->save($newImagePath)) {
+                    $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
+                    Response::set('newValue', $newImageName);
+                    Response::set('url', $newImageUrl);
+                    Response::set('success', true);
+                    Response::set('message', '上传成功！');
+                    Response::ajax();
+                }
+            } else {
+                Response::set('success', false);
+                Response::set('message', '您上传的不是有效的图像文件！');
+                Response::ajax();
+            }
+        } else {
+            $errorDesc = FileUpload::errorDescription($file['error']);
+            Response::set('success', false);
+            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
+            Response::ajax();
+        }
+    }
+
+    /**
+     * @BePermission("*")
+     */
     public function uploadImage()
     {
         $file = Request::files('file');

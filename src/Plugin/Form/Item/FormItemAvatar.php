@@ -31,6 +31,10 @@ class FormItemAvatar extends FormItem
     {
         parent::__construct($params);
 
+        if (isset($params['defaultValue'])) {
+            $this->defaultValue = $params['defaultValue'];
+        }
+
         if (!isset($params['path'])) {
             throw new PluginException('参数' . $this->label . ' ('.$this->name.') 须指定保存路径（path）');
         }
@@ -55,6 +59,9 @@ class FormItemAvatar extends FormItem
 
         if (!$this->description) {
             $this->description = '格式：'. implode(', ', $this->allowUploadImageTypes) .'，小于 ' . $this->maxSize;
+            if ($this->maxWidth > 0 && $this->maxHeight > 0) {
+                $this->description .= '，图像尺寸比例：' . $this->maxWidth . '像素 &times ' . $this->maxHeight . '像素';
+            }
         }
 
         if ($this->required) {
@@ -68,7 +75,7 @@ class FormItemAvatar extends FormItem
         }
 
         if (!isset($this->ui['avatar'][':src'])) {
-            $this->ui['avatar'][':src'] = 'form.' . $this->name . '.url';
+            $this->ui['avatar'][':src'] = 'formItems.' . $this->name . '.url';
         }
 
         if (!isset($this->ui['upload']['accept'])) {
@@ -88,11 +95,11 @@ class FormItemAvatar extends FormItem
         }
 
         if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'form.'.$this->name.'.fileList';
+            $this->ui['upload'][':file-list'] = 'formItems.'.$this->name.'.fileList';
         }
 
         if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'form.'.$this->name.'.postData';
+            $this->ui['upload'][':data'] = 'formItems.'.$this->name.'.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -110,7 +117,7 @@ class FormItemAvatar extends FormItem
     public function getHtml()
     {
         if (!isset($this->ui['upload']['action'])) {
-            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadImage');
+            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadAvatar');
         }
 
         $html = '<el-form-item';
@@ -123,7 +130,7 @@ class FormItemAvatar extends FormItem
         }
         $html .= '>';
 
-        $html .= '<el-avatar v-if="form.' . $this->name . '.url"';
+        $html .= '<el-avatar v-if="formItems.' . $this->name . '.url"';
         if (isset($this->ui['avatar'])) {
             foreach ($this->ui['avatar'] as $k => $v) {
                 if ($v === null) {
@@ -171,7 +178,7 @@ class FormItemAvatar extends FormItem
         }
 
         return [
-            'form' => [
+            'formItems' => [
                 $this->name => [
                     'url' => $url,
                     'fileList' => [],
@@ -202,12 +209,12 @@ class FormItemAvatar extends FormItem
             }',
             'formItemImage_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
-                    this.form.'.$this->name.'.url = response.url;
+                    this.formItems.'.$this->name.'.url = response.url;
                     this.formData.'.$this->name.' = response.newValue;
                 } else {
                     this.$message.error(response.message);
                 }
-                this.form.'.$this->name.'.fileList = [];
+                this.formItems.'.$this->name.'.fileList = [];
             }',
             'formItemImage_onError' => 'function(){
                 this.$message.error("上传失败，请重新上传");

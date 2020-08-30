@@ -8,8 +8,7 @@ class User
     public $id = 0;
     public $username = '';
     public $name = '';
-    public $roleIds = null;
-    public $_roles = null;
+    public $role = null;
 
     /**
      * User constructor.
@@ -26,59 +25,27 @@ class User
     }
 
     /**
-     * 获取用户角色ID列表
-     *
-     * @return array
-     */
-    public function getRoleIds()
-    {
-        if ($this->roleIds === null) {
-            if ($this->id == 0) {
-                $this->roleIds = [1];
-            } else {
-                $this->roleIds = Be::getTable('system_user')
-                    ->where('user_id', $this->id)
-                    ->getArray('role_id');
-            }
-        }
-
-        return $this->roleIds;
-    }
-
-    /**
      * 获取用户角色列表
      *
-     * @return array
+     * @return Role
      */
-    public function getRoles()
+    public function getRole()
     {
-        if ($this->_roles === null) {
-            $roles = [];
-            $roleIds = $this->getRoleIds();
-            foreach ($roleIds as $roleId) {
-                $roles[] = Be::getRole($roleId);
-            }
-
-            $this->_roles = $roles;
+        if ($this->role === null) {
+            $this->role = Be::getRole($this->role_id);
         }
 
-        return $this->_roles;
+        return $this->role;
     }
 
     /**
      * 获取用户角色名称
      *
-     * @return array
+     * @return string
      */
-    public function getRoleNames()
+    public function getRoleName()
     {
-        $roles = $this->getRoles();
-        $roleNames = [];
-        foreach ($roles as $role) {
-            $roleNames[] = $role->name;
-        }
-
-        return $roleNames;
+        return $this->getRole()->name;
     }
 
     /**
@@ -91,16 +58,10 @@ class User
      */
     public function hasPermission($app, $controller, $action)
     {
-        $permission = false;
-        $roles = $this->getRoles();
-        foreach ($roles as $role) {
-            if ($role->hasPermission($app, $controller, $action)) {
-                $permission = true;
-                break;
-            }
+        if ($this->getRole()->hasPermission($app, $controller, $action)) {
+            return true;
         }
-
-        return $permission;
+        return false;
     }
 
     /**

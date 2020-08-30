@@ -226,7 +226,7 @@ class Curd extends Plugin
                 foreach ($rows as $row) {
                     $formattedRow = [];
 
-                    foreach ($this->setting['lists']['field']['items'] as $item) {
+                    foreach ($this->setting['lists']['table']['items'] as $item) {
                         $itemName = $item['name'];
                         $itemValue = '';
                         if (isset($item['value'])) {
@@ -263,9 +263,9 @@ class Curd extends Plugin
                             continue;
                         }
 
-                        if (isset($this->setting['lists']['field']['exclude']) &&
-                            is_array($this->setting['lists']['field']['exclude']) &&
-                            in_array($k, $this->setting['lists']['field']['exclude'])
+                        if (isset($this->setting['lists']['table']['exclude']) &&
+                            is_array($this->setting['lists']['table']['exclude']) &&
+                            in_array($k, $this->setting['lists']['table']['exclude'])
                         ) {
                             continue;
                         }
@@ -278,7 +278,7 @@ class Curd extends Plugin
                 Response::set('success', true);
                 Response::set('data', [
                     'total' => $total,
-                    'rows' => $formattedRows,
+                    'tableData' => $formattedRows,
                 ]);
                 Response::ajax();
             } catch (\Exception $e) {
@@ -1066,10 +1066,10 @@ class Curd extends Plugin
             $exporter->setDriver($exportDriver)->setOutput('http', $filename);
 
             $fields = null;
-            if (isset($this->setting['export']['field']['items'])) {
-                $fields = $this->setting['export']['field']['items'];
+            if (isset($this->setting['export']['items'])) {
+                $fields = $this->setting['export']['items'];
             } else {
-                $fields = $this->setting['lists']['field']['items'];
+                $fields = $this->setting['lists']['table']['items'];
             }
 
             $headers = [];
@@ -1082,7 +1082,7 @@ class Curd extends Plugin
                     $driverName = $item['driver'];
                     $driver = new $driverName($item);
                 } else {
-                    $driver = new \Be\Plugin\Curd\FieldItem\FieldItemText($item);
+                    $driver = new \Be\Plugin\Table\Item\TableItemText($item);
                 }
 
                 $headers[] = $driver->label;

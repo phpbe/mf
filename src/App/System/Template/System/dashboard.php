@@ -11,135 +11,148 @@ use Be\System\Be;
 <?php
 $my = Be::getUser();
 $user = $this->user;
-$recentLogs = $this->recentLogs;
-$userCount = $this->userCount;
-$appCount = $this->appCount;
-$themeCount = $this->themeCount;
 
 $configUser = Be::getConfig('System.User');
 ?>
 <div id="app">
- <div class="row-fluid">
-    <div class="span6">
 
-        <div class="box">
-            <div class="box-title">
-                <table style="width:100%;">
-                <tr>
-                    <td style="text-align:left; "><i class="icon-user"></i> 管理员信息</td>
-                    <td style="text-align:right; padding-right:10px;"><a href="./?controller=user&action=edit&id=<?php echo $my->id; ?>" title="修改当前管理员用户资料" data-toggle="tooltip"><i class="icon-pencil"></i></a></td>
-                </tr>
-                </table>
-            </div>
-            <div class="box-body" style="height:80px;">
-            <table style="width:100%;">
-            <tr>
-                <td style="width:80px; text-align:left; "><img src="<?php
-                    if ($user->avatar == '') {
-                        echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
-                    } else {
-                        echo Be::getRuntime()->getDataUrl().'/user/avatar/'.$user->avatar;
-                    }
-                    ?>" /></td>
-                <td valign="top">
-                    <p>您好 <span style="font-weight:bold; color:red;"><?php echo $user->name; ?></span>(<?php echo implode(', ', $my->getRoleNames()); ?>), 欢迎回来。</p>
-                    <p class="muted">上次登陆时间：<?php echo date('Y-m-d H:i', $user->last_login_time); ?> [<a href="<?php echo beUrl('System.User.logs'); ?>" class="text-info">查看登陆日志</a>]</p>
-                </td>
-            </tr>
-            </table>
-            </div>
-        </div>
+    <el-row :gutter="20">
+        <el-col :span="12">
 
-    </div>
-    <div class="span6">
+            <el-card shadow="hover" style="height: 180px;">
+                <el-image src="<?php
+                if ($this->user->avatar == '') {
+                    echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
+                } else {
+                    echo Be::getRuntime()->getDataUrl().'/System/User/Avatar/'.$this->user->avatar;
+                }
+                ?>"></el-image>
 
-        <div class="box">
-            <div class="box-title">
-                <i class="icon-info-sign"></i>
-                <a href="http://www.phpbe.com/" target="Blank">BE</a>
-            </div>
-            <div class="box-body" style="height:80px;">
+                <div style="font-size:14px; font-weight: bold;"><?php echo $this->user->name; ?>（<?php echo $my->getRoleName(); ?>）</div>
+                <div style="color: #999;font-size: 12px;">上次登陆时间：<?php echo $this->user->last_login_time; ?></div>
+            </el-card>
 
-            <table style="width:100%;">
-            <tr>
-                <td style="width:33%; text-align:center; border-right:#ccc 1px solid; ">已安装的应用</td>
-                <td style="width:33%; text-align:center; border-right:#ccc 1px solid; ">已安装的主题</td>
-                <td style="width:33%; text-align:center; ">注册用户数</td>
-            </tr>
-            <tr>
-                <td style="width:33%; text-align:center; border-right:#ccc 1px solid; padding-top:10px; height:50px;">
-                    <a href="./?app=System&controller=System&action=apps" title="管理这 <?php echo $appCount; ?> 个应用" data-toggle="tooltip"  style="font-size:36px; " class="text-info">
-                    <?php echo $appCount; ?>
-                    </a>
-                </td>
-                <td style="width:33%; text-align:center; border-right:#ccc 1px solid;;padding-top:10px;">
-                    <a href="./?app=System&controller=System&action=themes" title="管理这 <?php echo $themeCount; ?> 个主题" data-toggle="tooltip"  style="font-size:36px; " class="text-info"><?php echo $themeCount; ?></a>
-                </td>
-                <td style="width:33%; text-align:center; font-size:36px;padding-top:10px;">
-                    <a href="./?controller=user&action=listing" title="管理这 <?php echo $userCount; ?> 个用户" data-toggle="tooltip"  style="font-size:36px; " class="text-info"><?php echo $userCount; ?></a>
-                </td>
-            </tr>
-            </table>
-            </div>
-        </div>
+        </el-col>
 
-    </div>
-</div>
+        <el-col :span="4">
+            <el-card shadow="hover" style="height: 180px;">
+                <div slot="header" class="clearfix">
+                    <span>应用数</span>
+                </div>
+
+                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                    <?php echo $this->appCount; ?>
+                </el-link>
+            </el-card>
+        </el-col>
 
 
-    <el-card class="box-card">
-        <div slot="header" class="clearfix">
-            <span>最近操作日志</span>
-            <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo beUrl('System.AdminLogs.logs')?>'">更多..</el-button>
-        </div>
+        <el-col :span="4">
+            <el-card shadow="hover" style="height: 180px;">
+                <div slot="header" class="clearfix">
+                    <span>主题数</span>
+                </div>
 
-        <el-table :data="recentLogs" stripe style="width: 100%;">
-            <el-table-column
-                    prop="create_time"
-                    label="时间"
-                    width="180">
-                <template slot-scope="scope">
-                    <div v-html="scope.row.create_time"></div>
-                </template>
-            </el-table-column>
-            <el-table-column
-                    prop="content"
-                    label="操作">
-            </el-table-column>
-            <el-table-column
-                    prop="ip"
-                    label="IP"
-                    width="180">
-            </el-table-column>
-            <el-table-column
-                    prop="address"
-                    label="地理位置">
-            </el-table-column>
-        </el-table>
+                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                    <?php echo $this->themeCount;; ?>
+                </el-link>
+            </el-card>
+        </el-col>
 
-    </el-card>
+
+        <el-col :span="4">
+            <el-card shadow="hover" style="height: 180px;">
+                <div slot="header" class="clearfix">
+                    <span>用户数</span>
+                </div>
+
+                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                    <?php echo $this->userCount; ?>
+                </el-link>
+            </el-card>
+        </el-col>
+
+    </el-row>
+
+
+
+
+    <el-row :gutter="20" style="margin-top: 20px;">
+        <el-col :span="12">
+
+            <el-card shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>最近操作日志</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo beUrl('System.SystemLog.logs')?>'">更多..</el-button>
+                </div>
+
+                <el-table :data="recentLogs" stripe size="mini">
+                    <el-table-column
+                            prop="create_time"
+                            label="时间"
+                            width="180"
+                            align="center">
+                        <template slot-scope="scope">
+                            <div v-html="scope.row.create_time"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="content"
+                            label="操作">
+                    </el-table-column>
+                </el-table>
+
+            </el-card>
+
+        </el-col>
+
+        <el-col :span="12">
+
+            <el-card shadow="hover">
+                <div slot="header" class="clearfix">
+                    <span>最近登录日志</span>
+                    <el-button style="float: right; padding: 3px 0" type="text" @click="window.location.href='<?php echo beUrl('System.UserLoginLog.logs')?>'">更多..</el-button>
+                </div>
+
+                <el-table :data="recentLoginLogs" stripe size="mini">
+                    <el-table-column
+                            prop="create_time"
+                            label="时间"
+                            width="180"
+                            align="center">
+                        <template slot-scope="scope">
+                            <div v-html="scope.row.create_time"></div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column
+                            prop="description"
+                            label="操作">
+                    </el-table-column>
+                </el-table>
+
+            </el-card>
+
+        </el-col>
+    </el-row>
+
 
 </div>
 
 <?php
-$libIp = Be::getLib('Ip');
-$date = '';
-foreach ($recentLogs as $log) {
-    $newDate = date('Y-m-d',$log->create_time);
-    if ($date == $newDate) {
-        $log->create_time = '<span style="visibility:hidden;">'. $newDate .' &nbsp;</span>'. date('H:i:s',$log->create_time);
-    } else {
-        $log->create_time = $newDate .' &nbsp;'. date('H:i:s',$log->create_time);
-        $date = $newDate;
-    }
-    $log->address = $libIp->convert($log->ip);
+foreach ($this->recentLogs as $log) {
+    $log->create_time = date('Y-m-d H:i', strtotime($log->create_time));
+}
+
+foreach ($this->recentLoginLogs as $log) {
+    $log->create_time = date('Y-m-d H:i', strtotime($log->create_time));
 }
 ?>
 <script>
     var vue = new Vue({
         el: '#app',
         data: {
-            recentLogs : <?php echo json_encode($recentLogs); ?>
+            recentLogs : <?php echo json_encode($this->recentLogs); ?>,
+            recentLoginLogs : <?php echo json_encode($this->recentLoginLogs); ?>
         },
         methods: {
         }

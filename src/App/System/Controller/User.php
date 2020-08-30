@@ -3,9 +3,7 @@
 namespace Be\App\System\Controller;
 
 
-use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
-use Be\Plugin\Curd\FieldItem\FieldItemSelection;
-use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
+
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
@@ -13,6 +11,9 @@ use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemAvatar;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
+use Be\Plugin\Table\Item\TableItemAvatar;
+use Be\Plugin\Table\Item\TableItemSelection;
+use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
@@ -42,8 +43,8 @@ class User extends Controller
             $password = Request::json('password', '');
             $ip = Request::ip();
             try {
-                $serviceAdminUser = Be::getService('System.User');
-                $serviceAdminUser->login($username, $password, $ip);
+                $serviceUser = Be::getService('System.User');
+                $serviceUser->login($username, $password, $ip);
                 Response::success('登录成功！');
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
@@ -236,12 +237,12 @@ class User extends Controller
                     ]
                 ],
 
-                'field' => [
+                'table' => [
 
                     // 未指定时取表的所有字段
                     'items' => [
                         [
-                            'driver' => FieldItemSelection::class,
+                            'driver' => TableItemSelection::class,
                             'width' => '50',
                         ],
                         [
@@ -252,7 +253,7 @@ class User extends Controller
                         [
                             'name' => 'avatar',
                             'label' => '头像',
-                            'driver' => FieldItemAvatar::class,
+                            'driver' => TableItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row['avatar'] == '') {
                                     return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
@@ -293,7 +294,7 @@ class User extends Controller
                         [
                             'name' => 'is_enable',
                             'label' => '启用/禁用',
-                            'driver' => FieldItemSwitch::class,
+                            'driver' => TableItemSwitch::class,
                             'target' => 'ajax',
                             'task' => 'fieldEdit',
                             'width' => '90',
@@ -612,30 +613,6 @@ class User extends Controller
             'export' => [],
 
         ])->execute();
-    }
-
-    /**
-     * 初始化头像
-     * @BePermission("编辑")
-     */
-    public function initAvatar()
-    {
-        Be::getDb()->startTransaction();
-        try {
-
-            $id = Request::get('id', 0, 'int');
-            Be::getService('System.User')->initAvatar($id);
-            Be::getDb()->commit();
-
-            beSystemLog('删除管理员账号：#' . $id . ' 头像');
-
-        } catch (\Exception $e) {
-
-            Be::getDb()->rollback();
-            Response::error($e->getMessage());
-        }
-
-        Response::success('删除头像成功！');
     }
 
 

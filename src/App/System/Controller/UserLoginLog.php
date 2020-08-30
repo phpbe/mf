@@ -2,9 +2,9 @@
 
 namespace Be\App\System\Controller;
 
-use Be\Plugin\Curd\FieldItem\FieldItemCustom;
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemSelect;
+use Be\Plugin\Table\Item\TableItemCustom;
 use Be\System\Be;
 use Be\System\Response;
 use Be\System\Controller;
@@ -85,7 +85,7 @@ class UserLoginLog extends Controller
                     ]
                 ],
 
-                'field' => [
+                'table' => [
 
                     'items' => [
                         [
@@ -101,7 +101,7 @@ class UserLoginLog extends Controller
                         [
                             'name' => 'success',
                             'label' => '登录结果',
-                            'driver' => FieldItemCustom::class,
+                            'driver' => TableItemCustom::class,
                             'width' => '150',
                             'keyValues' => [
                                 '0' => '<span class="el-tag el-tag--info el-tag--light">失败</span>',

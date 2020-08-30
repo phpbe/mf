@@ -66,11 +66,11 @@ class FormItemFile extends FormItem
         }
 
         if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'form.'.$this->name.'.fileList';
+            $this->ui['upload'][':file-list'] = 'formItems.'.$this->name.'.fileList';
         }
 
         if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'form.'.$this->name.'.postData';
+            $this->ui['upload'][':data'] = 'formItems.'.$this->name.'.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -101,7 +101,7 @@ class FormItemFile extends FormItem
         }
         $html .= '>';
 
-        $html .= '<a v-if="formData.' . $this->name . '" :href="form.' . $this->name . '.url" target="_blank">{{formData.' . $this->name . '}}</a>';
+        $html .= '<a v-if="formData.' . $this->name . '" :href="formItems.' . $this->name . '.url" target="_blank">{{formData.' . $this->name . '}}</a>';
         $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
             foreach ($this->ui['upload'] as $k => $v) {
@@ -135,7 +135,7 @@ class FormItemFile extends FormItem
         }
 
         return [
-            'form' => [
+            'formItems' => [
                 $this->name => [
                     'url' => $url,
                     'fileList' => [],
@@ -165,12 +165,12 @@ class FormItemFile extends FormItem
             'formItemFile_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
                     this.$message.success(response.message);
-                    this.form.'.$this->name.'.url = response.url;
+                    this.formItems.'.$this->name.'.url = response.url;
                     this.formData.'.$this->name.' = response.newValue;
                 } else {
                     this.$message.error(response.message);
                 }
-                this.form.'.$this->name.'.fileList = [];
+                this.formItems.'.$this->name.'.fileList = [];
             }',
             'formItemFile_onError' => 'function(){
                 this.$message.error("上传失败，请重新上传");

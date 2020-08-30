@@ -31,13 +31,22 @@ class System extends \Be\System\Controller
 
         $recentLogs = Be::getTable('system_log')
             ->where('user_id', $my->id)
-            ->limit(10)
+            ->orderBy('id', 'DESC')
+            ->limit(5)
             ->getObjects();
-        $serviceApp = Be::getService('System.App');
-        $serviceTheme = Be::getService('System.Theme');
-
         Response::set('recentLogs', $recentLogs);
+
+        $recentLoginLogs = Be::getTable('system_user_login_log')
+            ->where('username', $my->username)
+            ->orderBy('id', 'DESC')
+            ->limit(5)
+            ->getObjects();
+        Response::set('recentLoginLogs', $recentLoginLogs);
+
+        $serviceApp = Be::getService('System.App');
         Response::set('appCount', $serviceApp->getAppCount());
+
+        $serviceTheme = Be::getService('System.Theme');
         Response::set('themeCount', $serviceTheme->getThemeCount());
 
         Response::display();
