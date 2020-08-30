@@ -89,6 +89,15 @@ abstract class FormItem
             }
         }
 
+        if (isset($params['required'])) {
+            $required = $params['required'];
+            if ($required instanceof \Closure) {
+                $this->required = $required();
+            } else {
+                $this->required = $required;
+            }
+        }
+
         if (!isset($this->ui['form-item']['prop'])) {
             $this->ui['form-item']['prop'] = $name;
         }

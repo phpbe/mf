@@ -17,6 +17,12 @@ class FormItemTimePicker extends FormItem
     {
         parent::__construct($params);
 
+        if ($this->required) {
+            if (!isset($this->ui['form-item'][':rules'])) {
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择'.$this->label.'\', trigger: \'change\' }]';
+            }
+        }
+
         if (!isset($this->ui['time-picker']['placeholder'])) {
             $this->ui['time-picker']['placeholder'] = '选择时间';
         }

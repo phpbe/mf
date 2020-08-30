@@ -60,6 +60,12 @@ class FormItemAvatar extends FormItem
             $this->description = '格式：'. implode(', ', $this->allowUploadImageTypes) .'，小于 ' . $this->maxSize;
         }
 
+        if ($this->required) {
+            if (!isset($this->ui['form-item'][':rules'])) {
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请上传'.$this->label.'\', trigger: \'blur\' }]';
+            }
+        }
+
         if (!isset($this->ui['avatar']['shape'])) {
             $this->ui['avatar']['shape'] = 'square';
         }

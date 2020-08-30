@@ -139,7 +139,7 @@
                                 $driverName = $item['driver'];
                                 $driver = new $driverName($item);
                             } else {
-                                $driver = new \Be\Plugin\Curd\OperationItem\OperationItemButton($item);
+                                $driver = new \Be\Plugin\Curd\OperationItem\OperationItemLink($item);
                             }
                             $opHtml .= $driver->getHtml() . "\r\n";
 

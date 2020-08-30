@@ -46,6 +46,12 @@ class FormItemImage extends FormItem
         // 允许上传的图像类型
         $this->allowUploadImageTypes = Be::getConfig('System.System')->allowUploadImageTypes;
 
+        if ($this->required) {
+            if (!isset($this->ui['form-item'][':rules'])) {
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请上传'.$this->label.'\', trigger: \'blur\' }]';
+            }
+        }
+
         // 最大宽度
         if (isset($params['maxWidth']) && is_numeric($params['maxWidth']) && $params['maxWidth'] > 0) {
             $this->maxWidth = $params['maxWidth'];

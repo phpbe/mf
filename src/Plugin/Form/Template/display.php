@@ -81,16 +81,13 @@
                                         } else {
                                             message = '保存成功';
                                         }
-                                        _this.$confirm(message, '保存成功', {
-                                            confirmButtonText: '确定',
-                                            type: 'success'
-                                        }).then(function () {
-                                            if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
-                                                parent.closeAndReload();
-                                            } else {
-                                                window.close();
-                                            }
-                                        });
+
+                                        alert(message);
+                                        if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                                            parent.closeAndReload();
+                                        } else {
+                                            window.close();
+                                        }
 
                                     } else {
                                         if (responseData.message) {

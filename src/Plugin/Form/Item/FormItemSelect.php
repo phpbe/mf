@@ -17,10 +17,13 @@ class FormItemSelect extends FormItem
     {
         parent::__construct($params);
 
-
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
                 $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择'.$this->label.'\', trigger: \'change\' }]';
+            }
+        } else {
+            if (!isset($this->ui['select']['clearable'])) {
+                $this->ui['select']['clearable'] = null;
             }
         }
 
@@ -30,10 +33,6 @@ class FormItemSelect extends FormItem
 
         if (!isset($this->ui['select']['filterable'])) {
             $this->ui['select']['filterable'] = null;
-        }
-
-        if (!isset($this->ui['select']['clearable'])) {
-            $this->ui['select']['clearable'] = null;
         }
 
         $this->ui['select']['v-model'] = 'formData.' . $this->name;

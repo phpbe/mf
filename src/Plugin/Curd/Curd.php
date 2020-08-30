@@ -400,10 +400,9 @@ class Curd extends Plugin
 
                         // 检查唯一性
                         if (isset($item['unique']) && $item['unique']) {
-                            if (Be::getTable($this->setting['table'], $this->setting['db'])
-                                ->where($name, $driver->value)
-                                ->count() > 0) {
-                                throw new PluginException($driver->label . ' 已存在 '.$driver->value.' 的记录！');
+                            $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey($this->setting['table']) . ' WHERE ' . $db->quoteKey($name) . '=' . $db->quoteValue($driver->newValue);
+                            if ($db->getValue($sql) > 0) {
+                                throw new PluginException($driver->label . ' 已存在 ' . $driver->newValue . ' 的记录！');
                             }
                         }
 

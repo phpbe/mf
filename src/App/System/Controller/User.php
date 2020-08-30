@@ -309,35 +309,30 @@ class User extends Controller
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '280',
+                    'width' => '160',
                     'items' => [
                         [
                             'label' => '查看',
-                            'driver' => OperationItemButton::class,
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-search',
+                                'link' => [
                                     'type' => 'success'
                                 ]
                             ]
                         ],
                         [
                             'label' => '编辑',
-                            'driver' => OperationItemButton::class,
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-edit',
+                                'link' => [
                                     'type' => 'primary'
                                 ]
                             ]
                         ],
                         [
                             'label' => '删除',
-                            'driver' => OperationItemButton::class,
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
                             'postData' => [
@@ -345,8 +340,7 @@ class User extends Controller
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
+                                'link' => [
                                     'type' => 'danger'
                                 ]
                             ]
