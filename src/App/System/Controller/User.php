@@ -7,17 +7,19 @@ use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
 use Be\Plugin\Curd\FieldItem\FieldItemSelection;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
 use Be\Plugin\Curd\OperationItem\OperationItemButton;
-use Be\Plugin\Curd\OperationItem\OperationItemButtonDropDown;
 use Be\Plugin\Curd\SearchItem\SearchItemInput;
 use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Plugin\Form\Item\FormItemAvatar;
+use Be\Plugin\Form\Item\FormItemImage;
+use Be\Plugin\Form\Item\FormItemSelect;
+use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
-use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Controller;
@@ -32,11 +34,10 @@ use Be\Util\Random;
  */
 class User extends Controller
 {
-
     /**
      * 登陆页面
      *
-     * @throws RuntimeException
+     * @BePermission("*")
      */
     public function login()
     {
@@ -63,8 +64,11 @@ class User extends Controller
         }
     }
 
-
-    // 退出登陆
+    /**
+     * 退出登陆
+     *
+     * @BePermission("*")
+     */
     public function logout()
     {
         try {
@@ -85,7 +89,7 @@ class User extends Controller
     {
         $roleKeyValues = Be::getService('System.Role')->getRoleKeyValues();
 
-        Be::getPlugin('Curd')->execute([
+        Be::getPlugin('Curd')->setting([
 
             'label' => '用户管理',
             'table' => 'system_user',
@@ -147,7 +151,7 @@ class User extends Controller
                             'label' => '新增用户',
                             'driver' => ToolbarItemButton::class,
                             'task' => 'create',
-                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
+                            'target' => 'blank', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-user-plus',
@@ -456,25 +460,120 @@ class User extends Controller
             ],
 
             'create' => [
+                'title' => '新增用户',
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'avatar_s',
+                            'label' => '头像',
+                            'value' => function () {
+                                return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar/small.png';
+                            },
+                            'driver' => FormItemImage::class,
+                            'path' => '/System/User/Avatar/',
+                        ],
+                        [
+                            'name' => 'username',
+                            'label' => '用户名',
+                        ],
+                        [
+                            'name' => 'password',
+                            'label' => '密码',
+                        ],
+                        [
+                            'name' => 'role_id',
+                            'label' => '角色',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $roleKeyValues,
+                        ],
+                        [
+                            'name' => 'email',
+                            'label' => '邮箱',
+                        ],
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'gender',
+                            'label' => '性别',
+                        ],
+                        [
+                            'name' => 'phone',
+                            'label' => '电话',
+                            'required' => false,
+                        ],
+                        [
+                            'name' => 'mobile',
+                            'label' => '手机',
+                            'required' => false,
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'value' => 1,
+                            'driver' => FormItemSwitch::class,
+                        ],
+                    ]
+                ],
                 'BeforeCreate' => function (Tuple $tuple) {
                     $salt = Random::complex(32);
                     $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $salt);
-                    $tuple->register_time = time();
-                    $tuple->last_login_time = 0;
+                    $tuple->create_time = date('Y-m-d H:i:s');
                 },
-
-                'AfterCreate' => function (Tuple $tuple) {
-                    // 上传头像
-                    $avatar = Request::files('avatar');
-                    if ($avatar && $avatar['error'] == 0) {
-                        Be::getService('System.User')->uploadAvatar($tuple, $avatar);
-                    }
-                },
-
-                'title' => '新增用户'
             ],
 
             'edit' => [
+                'title' => '编辑用户',
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'avatar_s',
+                            'label' => '头像',
+                            'driver' => FormItemAvatar::class,
+                            'path' => '/System/User/Avatar/',
+                        ],
+                        [
+                            'name' => 'username',
+                            'label' => '用户名',
+                        ],
+                        [
+                            'name' => 'password',
+                            'label' => '密码',
+                        ],
+                        [
+                            'name' => 'role_id',
+                            'label' => '角色',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $roleKeyValues,
+                        ],
+                        [
+                            'name' => 'email',
+                            'label' => '邮箱',
+                        ],
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'gender',
+                            'label' => '性别',
+                        ],
+                        [
+                            'name' => 'phone',
+                            'label' => '电话',
+                        ],
+                        [
+                            'name' => 'mobile',
+                            'label' => '手机',
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'driver' => FormItemSwitch::class,
+                        ],
+                    ]
+                ],
                 'BeforeEdit' => function ($tuple) {
                     if ($tuple->password != '') {
                         $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
@@ -491,8 +590,6 @@ class User extends Controller
                         Be::getService('System.User')->uploadAvatar($tuple, $avatar);
                     }
                 },
-
-                'title' => '编辑用户'
             ],
 
             'fieldEdit' => [
@@ -527,7 +624,7 @@ class User extends Controller
 
             'export' => [],
 
-        ]);
+        ])->execute();
     }
 
     /**

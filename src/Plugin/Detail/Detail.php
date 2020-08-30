@@ -16,7 +16,7 @@ use Be\System\Response;
 class Detail extends Plugin
 {
 
-    public function execute($setting = [])
+    public function setting($setting = [])
     {
         if (!isset($setting['title'])) {
             $setting['title'] = '查看明细';
@@ -34,9 +34,15 @@ class Detail extends Plugin
             $setting['field']['ui']['form']['size'] = 'mini';
         }
 
-        Response::setTitle($setting['title']);
-        Response::set('setting', $setting);
-        Response::display('Plugin.detail.detail', $setting['theme']);
+        return parent::setting($setting);
+    }
+
+
+    public function display()
+    {
+        Response::setTitle($this->setting['title']);
+        Response::set('setting', $this->setting);
+        Response::display('Plugin.detail.detail', $this->setting['theme']);
     }
 
 }

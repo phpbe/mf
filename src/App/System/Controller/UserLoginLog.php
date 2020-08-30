@@ -24,8 +24,7 @@ class UserLoginLog extends Controller
      */
     public function logs()
     {
-
-        Be::getPlugin('Curd')->execute([
+        Be::getPlugin('Curd')->setting([
             'label' => '用户登录日志',
             'table' => 'system_user_login_log',
             'lists' => [
@@ -132,7 +131,7 @@ class UserLoginLog extends Controller
                     ],
                 ],
             ],
-        ]);
+        ])->execute();
     }
 
     /**

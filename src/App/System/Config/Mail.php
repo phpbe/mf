@@ -29,7 +29,7 @@ class Mail
     /**
      * @BeConfigItem("是否启用SMTP", driver="ConfigItemSwitch")
      */
-    public $smtp = false;
+    public $smtp = 0;
 
     /**
      * @BeConfigItem("SMTP地址",

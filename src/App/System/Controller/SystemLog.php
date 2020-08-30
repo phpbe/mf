@@ -25,7 +25,7 @@ class SystemLog extends \Be\System\Controller
     {
         $userKeyValues = Be::getDb()->getKeyValues('SELECT id, `name` FROM `system_user` WHERE is_delete=0');
 
-        Be::getPlugin('Curd')->execute([
+        Be::getPlugin('Curd')->setting([
             'label' => '操作日志',
             'table' => 'system_log',
             'lists' => [
@@ -178,7 +178,7 @@ class SystemLog extends \Be\System\Controller
                     ]
                 ],
             ],
-        ]);
+        ])->execute();
     }
 
     /**

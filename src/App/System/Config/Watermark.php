@@ -9,7 +9,7 @@ class Watermark
     /**
      * @BeConfigItem("是否启用", driver = "ConfigItemSwitch")
      */
-    public $enable = false;
+    public $enable = 0;
 
     /**
      * @BeConfigItem("类型",

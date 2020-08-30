@@ -30,24 +30,36 @@ use Be\System\Response;
 class Curd extends Plugin
 {
 
-    protected $setting = null;
-
-    public function execute($setting = [])
+    /**
+     * 配置项
+     *
+     * @param array $setting
+     * @return Plugin
+     */
+    public function setting($setting = [])
     {
-        $this->setting($setting);
-        $task = Request::request('task', 'lists');
-        if (method_exists($this, $task)) {
-            $this->$task();
-        }
-    }
-
-
-    public function setting($setting) {
         if (!isset($setting['db'])) {
             $setting['db'] = 'master';
         }
 
         $this->setting = $setting;
+        return $this;
+    }
+
+    /**
+     * 执行指定任务
+     *
+     * @param string $task
+     */
+    public function execute($task = null)
+    {
+        if ($task === null) {
+            $task = Request::request('task', 'lists');
+        }
+
+        if (method_exists($this, $task)) {
+            $this->$task();
+        }
     }
 
     /**
@@ -346,47 +358,15 @@ class Curd extends Plugin
      */
     public function create()
     {
-        $setting = $this->setting['create'];
+        if (Request::isAjax()) {
 
-        $tuple = Be::newTuple($setting['table']);
-
-        if (Request::isPost()) {
-
-            if (isset($this->setting['create']['BeforeCreate'])) {
-                $this->on('BeforeCreate', $this->setting['create']['BeforeCreate']);
-            }
-
-            if (isset($this->setting['create']['AfterCreate'])) {
-                $this->on('AfterCreate', $this->setting['create']['AfterCreate']);
-            }
-
-            $db = Be::getDb($this->setting['db']);
-            $db->startTransaction();
-            try {
-                $tuple->bind(Request::post());
-                $primaryKey = $tuple->getPrimaryKey();
-                unset($tuple->$primaryKey);
-                $this->trigger('BeforeCreate', $tuple);
-                $tuple->save();
-                $this->trigger('AfterCreate', $tuple);
-
-                beSystemLog($setting['title'] . '：创建' . $primaryKey . '为' . $tuple->$primaryKey . '的记录！');
-
-                $db->commit();
-            } catch (\Exception $e) {
-
-                $db->rollback();
-                Response::error($e->getMessage());
-            }
-
-            Response::success('创建成功！');
 
         } else {
-            Response::setTitle($setting['title']);
-            Response::set('row', $tuple);
+            $title = isset($this->setting['create']['title']) ? $this->setting['create']['title'] : '创建';
+            Response::setTitle($title);
 
-            $theme = isset($this->setting['create']['theme']) ? $this->setting['create']['theme'] : 'Nude';
-            Response::display('Plugin.Curd.create', $theme);
+            $setting = $this->setting['edit'];
+            Be::getPlugin('Form')->setting($setting)->display();
         }
     }
 
@@ -396,6 +376,20 @@ class Curd extends Plugin
      */
     public function edit()
     {
+        if (Request::isAjax()) {
+
+
+        } else {
+            $title = isset($this->setting['edit']['title']) ? $this->setting['edit']['title'] : '编辑';
+            Response::setTitle($title);
+
+            $setting = $this->setting['edit'];
+
+            Be::getPlugin('Form')->setting($setting)->display();
+        }
+
+
+
         $setting = $this->setting['edit'];
 
         $tuple = Be::newTuple($setting['table']);

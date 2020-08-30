@@ -12,7 +12,7 @@ class User
      *     driver="ConfigItemSwitch",
      *     description="启用锁定IP时，若用户IP变化，需重新登录。")
      */
-    public $ipLock = true;
+    public $ipLock = 1;
 
     /**
      * @BeConfigItem("用户小头像宽度",

@@ -10,18 +10,20 @@ use Be\System\Be;
 abstract class EditorItem
 {
 
-    protected $name = ''; // 键名
+    protected $name = null; // 键名
     protected $label = ''; // 配置项中文名称
     protected $value = ''; // 值
     protected $newValue = null; // 新值
 
     protected $keyValues = null; // 可选值键值对
 
-    protected $url = null; // 网址
-
-    protected $option = null; // 控制项
-    protected $data = null; // POST 到后端的数据
     protected $ui = []; // UI界面参数
+
+    protected $url = ''; // 网址
+    protected $postData = []; // 有后端请求时的附加上的数据
+
+
+
 
     protected static $nameIndex = 0;
 
@@ -186,7 +188,7 @@ abstract class EditorItem
     /**
      * 获取HTML内容
      *
-     * @return string | array
+     * @return string
      */
     public function getHtml()
     {
@@ -230,12 +232,8 @@ abstract class EditorItem
      */
     public function submit($data)
     {
-        if (isset($data[$this->field])) {
-            $newValue = $data[$this->field];
-            if (!is_array($newValue) && !is_object($newValue)) {
-                $newValue =  htmlspecialchars_decode($newValue);
-            }
-            $this->newValue = $newValue;
+        if (isset($data[$this->name]) && $data[$this->name] != '') {
+            $this->newValue = $data[$this->name];
         }
     }
 

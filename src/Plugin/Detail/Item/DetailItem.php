@@ -29,15 +29,30 @@ abstract class DetailItem
         }
 
         if (isset($params['label'])) {
-            $this->label = $params['label'];
+            $label = $params['label'];
+            if (is_callable($label)) {
+                $this->label = $label();
+            } else {
+                $this->label = $label;
+            }
         }
 
         if (isset($params['value'])) {
-            $this->value = $params['value'];
+            $value = $params['value'];
+            if (is_callable($value)) {
+                $this->value = $value();
+            } else {
+                $this->value = $value;
+            }
         }
 
         if (isset($params['ui'])) {
-            $this->ui = $params['ui'];
+            $ui = $params['ui'];
+            if (is_callable($ui)) {
+                $this->ui = $ui();
+            } else {
+                $this->ui = $ui;
+            }
         }
 
         if (!isset($this->ui['form-item']['label'])) {

@@ -1,13 +1,11 @@
 <?php
 
-namespace Be\Plugin\Config\Item;
-
-use Be\System\Annotation\BeConfigItem;
+namespace Be\Plugin\Form\Item;
 
 /**
- * 配置项 开关
+ * 表单项 开关
  */
-class ConfigItemSwitch extends ConfigItem
+class FormItemSwitch extends FormItem
 {
 
     public $valueType = 'int';
@@ -15,13 +13,15 @@ class ConfigItemSwitch extends ConfigItem
     /**
      * 构造函数
      *
-     * @param string $name 键名
-     * @param mixed $value 值
-     * @param BeConfigItem $annotation 注解参数
+     * @param array $params 参数
      */
-    public function __construct($name, $value, $annotation)
+    public function __construct($params = [])
     {
-        parent::__construct($name, $value, $annotation);
+        parent::__construct($params);
+
+        if (!$this->value) {
+            $this->value = 0;
+        }
 
         if (!isset($this->ui['switch']['active-value'])) {
             $this->ui['switch']['active-value'] = '1';
@@ -31,7 +31,7 @@ class ConfigItemSwitch extends ConfigItem
             $this->ui['switch']['inactive-value'] = '0';
         }
 
-        $this->ui['switch']['v-model'] = 'formData.' . $this->name;
+        $this->ui['select']['v-model'] = 'formData.' . $this->name;
     }
 
     /**
