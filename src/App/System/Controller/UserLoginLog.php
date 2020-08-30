@@ -3,8 +3,8 @@
 namespace Be\App\System\Controller;
 
 use Be\Plugin\Curd\FieldItem\FieldItemCustom;
-use Be\Plugin\Curd\SearchItem\SearchItemDatePickerRange;
-use Be\Plugin\Curd\SearchItem\SearchItemSelect;
+use Be\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Plugin\Form\Item\FormItemSelect;
 use Be\System\Be;
 use Be\System\Response;
 use Be\System\Controller;
@@ -31,17 +31,16 @@ class UserLoginLog extends Controller
                 'title' => '用户登录日志',
                 'orderBy' => 'create_time',
                 'orderByDir' => 'DESC',
-                'search' => [
+                'form' => [
                     'items' => [
                         [
                             'name' => 'username',
                             'label' => '用户名',
-                            'op' => '%LIKE%',
                         ],
                         [
                             'name' => 'success',
                             'label' => '登录结果',
-                            'driver' => SearchItemSelect::class,
+                            'driver' => FormItemSelect::class,
                             'keyValues' => [
                                 '' => '不限',
                                 '0' => '失败',
@@ -51,12 +50,11 @@ class UserLoginLog extends Controller
                         [
                             'name' => 'description',
                             'label' => '描述',
-                            'op' => '%LIKE%',
                         ],
                         [
                             'name' => 'create_time',
                             'label' => '创建时间',
-                            'driver' => SearchItemDatePickerRange::class,
+                            'driver' => FormItemDatePickerRange::class,
                         ],
                     ],
                 ],

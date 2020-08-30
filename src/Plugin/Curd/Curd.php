@@ -15,7 +15,11 @@ use Be\Plugin\Detail\Item\DetailItemImage;
 use Be\Plugin\Detail\Item\DetailItemProgress;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Detail\Item\DetailItemText;
+use Be\Plugin\Form\Item\FormItemDatePickerMonthRange;
+use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemHidden;
+use Be\Plugin\Form\Item\FormItemInput;
+use Be\Plugin\Form\Item\FormItemTimePickerRange;
 use Be\System\Be;
 use Be\System\Exception\PluginException;
 use Be\System\Plugin;
@@ -69,6 +73,7 @@ class Curd extends Plugin
      */
     public function lists()
     {
+        $db = Be::getDb($this->setting['db']);
         $table = Be::newTable($this->setting['table'], $this->setting['db']);
         if (Request::isAjax()) {
 
@@ -98,8 +103,21 @@ class Curd extends Plugin
                     }
                 }
 
-                if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
-                    foreach ($this->setting['lists']['search']['items'] as $item) {
+                if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
+                    foreach ($this->setting['lists']['form']['items'] as $item) {
+
+                        $driverName = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                        } else {
+                            $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
+                        }
+                        $driver = new $driverName($item);
+                        $driver->submit($formData);
+
+                        if ($driver->newValue === null) {
+                            continue;
+                        }
 
                         if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                             $buildSql = $item['buildSql'];
@@ -108,15 +126,67 @@ class Curd extends Plugin
                                 $table->where($sql);
                             }
                         } else {
-                            $driver = null;
-                            if (isset($item['driver'])) {
-                                $driverName = $item['driver'];
-                                $driver = new $driverName($item);
+
+                            $op = null;
+                            if (isset($item['op'])) {
+                                $op = strtoupper($item['op']);
                             } else {
-                                $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                                switch ($driverName) {
+                                    case FormItemDatePickerMonthRange::class:
+                                    case FormItemDatePickerRange::class:
+                                    case FormItemTimePickerRange::class:
+                                        $op = 'RANGE';
+                                        break;
+                                    case FormItemInput::class:
+                                        $op = '%LIKE%';
+                                        break;
+                                    default:
+                                        $op = '=';
+                                }
                             }
-                            $driver->submit($formData);
-                            $sql = $driver->buildSql($this->setting['db']);
+
+                            $sql = null;
+                            switch ($op) {
+                                case 'LIKE':
+                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue);
+                                    break;
+                                case '%LIKE%':
+                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue . '%');
+                                    break;
+                                case 'LIKE%':
+                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue . '%');
+                                    break;
+                                case '%LIKE':
+                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue);
+                                    break;
+                                case 'RANGE':
+                                    if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                        $sql = $db->quoteKey($driver->name) . ' >= ' . $db->quoteValue($driver->newValue[0]);
+                                        $sql .= ' AND ';
+                                        $sql .= $db->quoteKey($driver->name) . ' < ' . $db->quoteValue($driver->newValue[1]);
+                                    }
+                                    break;
+                                case 'BETWEEN':
+                                    if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                        $sql = $db->quoteKey($driver->name) . ' BETWEEN ' . $db->quoteValue($driver->newValue[0]);
+                                        $sql .= ' AND ';
+                                        $sql .= $db->quoteValue($driver->newValue[1]);
+                                    }
+                                    break;
+                                case 'IN':
+                                    if (is_array($driver->newValue)) {
+                                        $newValue = [];
+                                        foreach ($driver->newValue as $x) {
+                                            $newValue[] = $db->quoteValue($x);
+                                        }
+                                        $sql = $db->quoteKey($driver->name) . ' IN (' . implode(',', $newValue) . ')';
+                                    }
+                                    break;
+                                default:
+                                    $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                                    break;
+                            }
+
                             if ($sql) {
                                 $table->where($sql);
                             }
@@ -859,6 +929,7 @@ class Curd extends Plugin
         $postData = Request::post('data', '', '');
         $postData = json_decode($postData, true);
 
+        $db = Be::getDb($this->setting['db']);
         $table = Be::newTable($this->setting['table'], $this->setting['db']);
 
         try {
@@ -886,8 +957,21 @@ class Curd extends Plugin
                 }
             }
 
-            if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
-                foreach ($this->setting['lists']['search']['items'] as $item) {
+            if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
+                foreach ($this->setting['lists']['form']['items'] as $item) {
+
+                    $driverName = null;
+                    if (isset($item['driver'])) {
+                        $driverName = $item['driver'];
+                    } else {
+                        $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
+                    }
+                    $driver = new $driverName($item);
+                    $driver->submit($formData);
+
+                    if ($driver->newValue === null) {
+                        continue;
+                    }
 
                     if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
                         $buildSql = $item['buildSql'];
@@ -896,15 +980,67 @@ class Curd extends Plugin
                             $table->where($sql);
                         }
                     } else {
-                        $driver = null;
-                        if (isset($item['driver'])) {
-                            $driverName = $item['driver'];
-                            $driver = new $driverName($item);
+
+                        $op = null;
+                        if (isset($item['op'])) {
+                            $op = strtoupper($item['op']);
                         } else {
-                            $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                            switch ($driverName) {
+                                case FormItemDatePickerMonthRange::class:
+                                case FormItemDatePickerRange::class:
+                                case FormItemTimePickerRange::class:
+                                    $op = 'RANGE';
+                                    break;
+                                case FormItemInput::class:
+                                    $op = '%LIKE%';
+                                    break;
+                                default:
+                                    $op = '=';
+                            }
                         }
-                        $driver->submit($formData);
-                        $sql = $driver->buildSql($this->setting['db']);
+
+                        $sql = null;
+                        switch ($op) {
+                            case 'LIKE':
+                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue);
+                                break;
+                            case '%LIKE%':
+                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue . '%');
+                                break;
+                            case 'LIKE%':
+                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue . '%');
+                                break;
+                            case '%LIKE':
+                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue);
+                                break;
+                            case 'RANGE':
+                                if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                    $sql = $db->quoteKey($driver->name) . ' >= ' . $db->quoteValue($driver->newValue[0]);
+                                    $sql .= ' AND ';
+                                    $sql .= $db->quoteKey($driver->name) . ' < ' . $db->quoteValue($driver->newValue[1]);
+                                }
+                                break;
+                            case 'BETWEEN':
+                                if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                    $sql = $db->quoteKey($driver->name) . ' BETWEEN ' . $db->quoteValue($driver->newValue[0]);
+                                    $sql .= ' AND ';
+                                    $sql .= $db->quoteValue($driver->newValue[1]);
+                                }
+                                break;
+                            case 'IN':
+                                if (is_array($driver->newValue)) {
+                                    $newValue = [];
+                                    foreach ($driver->newValue as $x) {
+                                        $newValue[] = $db->quoteValue($x);
+                                    }
+                                    $sql = $db->quoteKey($driver->name) . ' IN (' . implode(',', $newValue) . ')';
+                                }
+                                break;
+                            default:
+                                $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                                break;
+                        }
+
                         if ($sql) {
                             $table->where($sql);
                         }

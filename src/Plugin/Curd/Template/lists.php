@@ -21,7 +21,7 @@
 
             <?php
             $tabHtml = '';
-            $tabPosition = 'BeforeSearch';
+            $tabPosition = 'beforeForm';
             if (isset($this->setting['lists']['tab'])) {
                 $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
                 $tabHtml = $driver->getHtml();
@@ -42,22 +42,22 @@
                 }
             }
 
-            if ($tabHtml && $tabPosition == 'BeforeSearch') {
+            if ($tabHtml && $tabPosition == 'beforeForm') {
                 echo $tabHtml;
             }
 
-            if (isset($this->setting['lists']['search']['items']) && count($this->setting['lists']['search']['items']) > 0) {
+            if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
                 ?>
                 <el-row>
                     <el-col :span="24">
                         <?php
-                        foreach ($this->setting['lists']['search']['items'] as $item) {
+                        foreach ($this->setting['lists']['form']['items'] as $item) {
                             $driver = null;
                             if (isset($item['driver'])) {
                                 $driverName = $item['driver'];
                                 $driver = new $driverName($item);
                             } else {
-                                $driver = new \Be\Plugin\Curd\SearchItem\SearchItemInput($item);
+                                $driver = new \Be\Plugin\Form\Item\FormItemInput($item);
                             }
                             echo $driver->getHtml();
 
@@ -80,6 +80,10 @@
                     </el-col>
                 </el-row>
                 <?php
+            }
+
+            if ($tabHtml && $tabPosition == 'beforeToolbar') {
+                echo $tabHtml;
             }
 
             if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
@@ -111,7 +115,7 @@
                 echo '</el-col></el-row>';
             }
 
-            if ($tabHtml && $tabPosition == 'BeforeStage') {
+            if ($tabHtml && $tabPosition == 'beforeTable') {
                 echo $tabHtml;
             }
             ?>

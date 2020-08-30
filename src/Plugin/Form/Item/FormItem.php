@@ -19,7 +19,7 @@ abstract class FormItem
     protected $description = ''; // 描述
     protected $ui = []; // UI界面参数
     protected $newValue = null; // 新值
-    protected $required = true; // 是否必填
+    protected $required = false; // 是否必填
     protected $disabled = false; // 是否不可编辑
 
     /**
@@ -87,6 +87,15 @@ abstract class FormItem
                 $this->ui = $ui();
             } else {
                 $this->ui = $ui;
+            }
+        }
+
+        if (isset($params['description'])) {
+            $description = $params['description'];
+            if ($description instanceof \Closure) {
+                $this->description = $description();
+            } else {
+                $this->description = $description;
             }
         }
 

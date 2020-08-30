@@ -6,16 +6,11 @@ namespace Be\App\System\Controller;
 use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
 use Be\Plugin\Curd\FieldItem\FieldItemSelection;
 use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
-use Be\Plugin\Curd\OperationItem\OperationItemButton;
-use Be\Plugin\Curd\SearchItem\SearchItemInput;
-use Be\Plugin\Curd\SearchItem\SearchItemSelect;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
 use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemAvatar;
-use Be\Plugin\Form\Item\FormItemImage;
-use Be\Plugin\Form\Item\FormItemInputPassword;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\System\Be;
@@ -108,33 +103,30 @@ class User extends Controller
                     ['is_delete', '=', '0'],
                 ],
 
-                'search' => [
+                'form' => [
                     'items' => [
                         [
                             'name' => 'role_id',
                             'label' => '角色',
-                            'driver' => SearchItemSelect::class,
+                            'driver' => FormItemSelect::class,
                             'keyValues' => ['' => '所有角色'] + $roleKeyValues,
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
-                            'driver' => SearchItemInput::class,
                         ],
                         [
                             'name' => 'name',
                             'label' => '名称',
-                            'driver' => SearchItemInput::class,
                         ],
                         [
                             'name' => 'email',
                             'label' => '邮箱',
-                            'driver' => SearchItemInput::class,
                         ],
                         [
                             'name' => 'is_enable',
                             'label' => '启用状态',
-                            'driver' => SearchItemSelect::class,
+                            'driver' => FormItemSelect::class,
                             'keyValues' => [
                                 '' => '不限',
                                 '1' => '启用',
@@ -445,49 +437,53 @@ class User extends Controller
                             'label' => '头像',
                             'driver' => FormItemAvatar::class,
                             'path' => '/System/User/Avatar/',
-                            'required' => false,
                             'maxWidth' => $configUser->avatarWidth,
                             'maxHeight' => $configUser->avatarHeight,
+                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
+                            'required' => true,
                             'unique' => true,
                         ],
                         [
                             'name' => 'password',
                             'label' => '密码',
+                            'required' => true,
                         ],
                         [
                             'name' => 'role_id',
                             'label' => '角色',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $roleKeyValues,
+                            'required' => true,
                         ],
                         [
                             'name' => 'email',
                             'label' => '邮箱',
                             'unique' => true,
+                            'required' => true,
                         ],
                         [
                             'name' => 'name',
                             'label' => '名称',
+                            'required' => true,
                         ],
                         [
                             'name' => 'gender',
                             'label' => '性别',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $genderKeyValues,
+                            'required' => true,
                         ],
                         [
                             'name' => 'phone',
                             'label' => '电话',
-                            'required' => false,
                         ],
                         [
                             'name' => 'mobile',
                             'label' => '手机',
-                            'required' => false,
                         ],
                         [
                             'name' => 'is_enable',
@@ -515,51 +511,53 @@ class User extends Controller
                             'label' => '头像',
                             'driver' => FormItemAvatar::class,
                             'path' => '/System/User/Avatar/',
-                            'required' => false,
                             'maxWidth' => $configUser->avatarWidth,
                             'maxHeight' => $configUser->avatarHeight,
+                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
                         ],
                         [
                             'name' => 'username',
                             'label' => '用户名',
                             'disabled' => true,
+                            'required' => true,
                         ],
                         [
                             'name' => 'password',
                             'label' => '密码',
                             'value' => '',
-                            'required' => false,
                         ],
                         [
                             'name' => 'role_id',
                             'label' => '角色',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $roleKeyValues,
+                            'required' => true,
                         ],
                         [
                             'name' => 'email',
                             'label' => '邮箱',
                             'disabled' => true,
+                            'required' => true,
                         ],
                         [
                             'name' => 'name',
                             'label' => '名称',
+                            'required' => true,
                         ],
                         [
                             'name' => 'gender',
                             'label' => '性别',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $genderKeyValues,
+                            'required' => true,
                         ],
                         [
                             'name' => 'phone',
                             'label' => '电话',
-                            'required' => false,
                         ],
                         [
                             'name' => 'mobile',
                             'label' => '手机',
-                            'required' => false,
                         ],
                         [
                             'name' => 'is_enable',

@@ -13,6 +13,7 @@ use Be\Util\FileSystem\FileSize;
 class FormItemAvatar extends FormItem
 {
 
+    public $defaultValue = ''; // 当value为空时的默认值
     public $path = ''; // 保存路径
     public $maxSizeInt = 0; // 最大尺寸（整型字节数）
     public $maxSize = ''; // 最大尺寸（字符类型）
@@ -34,10 +35,6 @@ class FormItemAvatar extends FormItem
             throw new PluginException('参数' . $this->label . ' ('.$this->name.') 须指定保存路径（path）');
         }
         $this->path = $params['path'];
-
-        if (isset($params['description'])) {
-            $this->description = $params['description'];
-        }
 
         $configSystem = Be::getConfig('System.System');
         $this->maxSize = $configSystem->uploadMaxSize;
@@ -126,7 +123,7 @@ class FormItemAvatar extends FormItem
         }
         $html .= '>';
 
-        $html .= '<el-avatar v-if="formData.' . $this->name . '"';
+        $html .= '<el-avatar v-if="form.' . $this->name . '.url"';
         if (isset($this->ui['avatar'])) {
             foreach ($this->ui['avatar'] as $k => $v) {
                 if ($v === null) {
@@ -164,11 +161,13 @@ class FormItemAvatar extends FormItem
      */
     public function getVueData()
     {
-        $url = null;
-        if (strpos($this->value, '/') == false) {
+        $url = '';
+        if ($this->value) {
             $url = Be::getRuntime()->getDataUrl() . $this->path . $this->value;
         } else {
-            $url = $this->value;
+            if ($this->defaultValue) {
+                $url = $this->defaultValue;
+            }
         }
 
         return [

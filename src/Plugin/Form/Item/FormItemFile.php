@@ -32,10 +32,6 @@ class FormItemFile extends FormItem
         }
         $this->path = $params['path'];
 
-        if (isset($params['description'])) {
-            $this->description = $params['description'];
-        }
-
         $configSystem = Be::getConfig('System.System');
         $this->maxSize = $configSystem->uploadMaxSize;
         $this->maxSizeInt = FileSize::string2Int($this->maxSize);

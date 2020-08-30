@@ -2,9 +2,8 @@
 
 namespace Be\App\System\Controller;
 
-use Be\Plugin\Curd\SearchItem\SearchItemDatePickerRange;
-use Be\Plugin\Curd\SearchItem\SearchItemInput;
-use Be\Plugin\Curd\SearchItem\SearchItemSelect;
+use Be\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Plugin\Form\Item\FormItemSelect;
 use Be\System\Be;
 use Be\System\Response;
 
@@ -32,24 +31,22 @@ class SystemLog extends \Be\System\Controller
                 'title' => '操作日志',
                 'orderBy' => 'create_time',
                 'orderByDir' => 'DESC',
-                'search' => [
+                'form' => [
                     'items' => [
                         [
                             'name' => 'user_id',
                             'label' => '用户',
-                            'driver' => SearchItemSelect::class,
+                            'driver' => FormItemSelect::class,
                             'keyValues' => $userKeyValues,
                         ],
                         [
                             'name' => 'content',
                             'label' => '内容',
-                            'driver' => SearchItemInput::class,
-                            'op' => '%LIKE%',
                         ],
                         [
                             'name' => 'create_time',
                             'label' => '创建时间',
-                            'driver' => SearchItemDatePickerRange::class,
+                            'driver' => FormItemDatePickerRange::class,
                         ],
                     ],
                 ],
