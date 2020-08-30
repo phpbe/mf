@@ -35,12 +35,12 @@ $configUser = Be::getConfig('System.User');
         </el-col>
 
         <el-col :span="4">
-            <el-card shadow="hover" style="height: 180px;">
+            <el-card shadow="hover" style="height: 180px; text-align:center;">
                 <div slot="header" class="clearfix">
                     <span>应用数</span>
                 </div>
 
-                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                <el-link href="<?php echo beUrl('System.App.apps'); ?>" style="font-size:36px; ">
                     <?php echo $this->appCount; ?>
                 </el-link>
             </el-card>
@@ -48,12 +48,12 @@ $configUser = Be::getConfig('System.User');
 
 
         <el-col :span="4">
-            <el-card shadow="hover" style="height: 180px;">
+            <el-card shadow="hover" style="height: 180px; text-align:center;">
                 <div slot="header" class="clearfix">
                     <span>主题数</span>
                 </div>
 
-                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                <el-link href="<?php echo beUrl('System.Theme.themes'); ?>" style="font-size:36px; ">
                     <?php echo $this->themeCount;; ?>
                 </el-link>
             </el-card>
@@ -61,12 +61,12 @@ $configUser = Be::getConfig('System.User');
 
 
         <el-col :span="4">
-            <el-card shadow="hover" style="height: 180px;">
+            <el-card shadow="hover" style="height: 180px; text-align:center;">
                 <div slot="header" class="clearfix">
                     <span>用户数</span>
                 </div>
 
-                <el-link href="https://element.eleme.io" style="font-size:36px; ">
+                <el-link href="<?php echo beUrl('System.User.users'); ?>" style="font-size:36px; ">
                     <?php echo $this->userCount; ?>
                 </el-link>
             </el-card>

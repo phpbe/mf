@@ -183,7 +183,7 @@ $my = Be::getUser();
                     } else {
                         echo Be::getRuntime()->getDataUrl().'/System/User/Avatar/'.$my->avatar;
                     }
-                    ?>" style="max-width:24px;max-height:24px;" />
+                    ?>" style="max-width:24px;max-height:24px; vertical-align: middle;" />
                     <?php echo $my->name; ?>
 
                     <el-button type="danger" icon="el-icon-star-off" onclick="window.location.href='<?php echo beUrl('System.User.logout')?>';" size="mini">退出</el-button>
