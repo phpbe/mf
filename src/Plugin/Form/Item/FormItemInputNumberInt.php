@@ -25,6 +25,12 @@ class FormItemInputNumberInt extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['input']['disabled'])) {
+                $this->ui['input']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['input-number'][':step'])) {
             $this->ui['input-number'][':step'] = '1';
         }

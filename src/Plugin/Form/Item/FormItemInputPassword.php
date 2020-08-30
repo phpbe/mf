@@ -23,6 +23,12 @@ class FormItemInputPassword extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['input']['disabled'])) {
+                $this->ui['input']['disabled'] = 'true';
+            }
+        }
+
         $this->ui['input']['show-password'] = null;
 
         $this->ui['input']['v-model'] = 'formData.' . $this->name;

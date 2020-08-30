@@ -23,6 +23,12 @@ class FormItemInputTextArea extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['input']['disabled'])) {
+                $this->ui['input']['disabled'] = 'true';
+            }
+        }
+
         $this->ui['input']['type'] = 'textarea';
 
         if (!isset($this->ui['input'][':autosize'])) {

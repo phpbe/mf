@@ -23,6 +23,12 @@ class FormItemDateTimePicker extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['date-picker']['disabled'])) {
+                $this->ui['date-picker']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['date-picker']['placeholder'])) {
             $this->ui['date-picker']['placeholder'] = '选择日期时间';
         }

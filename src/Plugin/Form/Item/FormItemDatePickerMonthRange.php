@@ -25,6 +25,12 @@ class FormItemDatePickerMonthRange extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['date-picker']['disabled'])) {
+                $this->ui['date-picker']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['date-picker']['range-separator'])) {
             $this->ui['date-picker']['range-separator'] = '至';
         }

@@ -18,8 +18,9 @@ abstract class FormItem
     protected $keyValues = null; // 可选值键值对
     protected $description = ''; // 描述
     protected $ui = []; // UI界面参数
-    protected $required = true; // 是否必填
     protected $newValue = null; // 新值
+    protected $required = true; // 是否必填
+    protected $disabled = false; // 是否不可编辑
 
     /**
      * 构造函数
@@ -98,6 +99,15 @@ abstract class FormItem
             }
         }
 
+        if (isset($params['disabled'])) {
+            $disabled = $params['disabled'];
+            if ($disabled instanceof \Closure) {
+                $this->disabled = $disabled();
+            } else {
+                $this->disabled = $disabled;
+            }
+        }
+
         if (!isset($this->ui['form-item']['prop'])) {
             $this->ui['form-item']['prop'] = $name;
         }
@@ -105,6 +115,7 @@ abstract class FormItem
         if (!isset($this->ui['form-item']['label'])) {
             $this->ui['form-item']['label'] = htmlspecialchars($this->label);
         }
+
     }
 
     /**

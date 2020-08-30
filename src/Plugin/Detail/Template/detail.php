@@ -37,6 +37,9 @@
                 }
             }
             ?>
+            <el-form-item>
+                <el-button @click="close">关闭</el-button>
+            </el-form-item>
         </el-form>
     </div>
 
@@ -52,6 +55,13 @@
                 ?>
             },
             methods: {
+                close: function () {
+                    if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                        parent.close();
+                    } else {
+                        window.close();
+                    }
+                }
                 <?php
                 if ($vueMethods) {
                     foreach ($vueMethods as $k => $v) {

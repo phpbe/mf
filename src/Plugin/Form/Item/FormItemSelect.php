@@ -27,6 +27,12 @@ class FormItemSelect extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['select']['disabled'])) {
+                $this->ui['select']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['select']['placeholder'])) {
             $this->ui['select']['placeholder'] = '请选择';
         }

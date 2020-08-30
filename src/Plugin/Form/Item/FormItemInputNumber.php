@@ -25,6 +25,12 @@ class FormItemInputNumber extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['input']['disabled'])) {
+                $this->ui['input']['disabled'] = 'true';
+            }
+        }
+
         $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
     }
 

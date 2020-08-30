@@ -15,6 +15,7 @@ use Be\Plugin\Detail\Item\DetailItemImage;
 use Be\Plugin\Detail\Item\DetailItemProgress;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Detail\Item\DetailItemText;
+use Be\Plugin\Form\Item\FormItemHidden;
 use Be\System\Be;
 use Be\System\Exception\PluginException;
 use Be\System\Plugin;
@@ -362,22 +363,22 @@ class Curd extends Plugin
 
         if (Request::isAjax()) {
 
-            $postData = Request::json();
-            $formData = $postData['formData'];
-
-            $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
-
-            if (isset($this->setting['create']['events']['BeforeCreate'])) {
-                $this->on('BeforeEdit', $this->setting['create']['events']['BeforeCreate']);
-            }
-
-            if (isset($this->setting['create']['events']['AfterCreate'])) {
-                $this->on('AfterCreate', $this->setting['create']['events']['AfterCreate']);
-            }
-
             $db = Be::getDb($this->setting['db']);
             $db->startTransaction();
             try {
+
+                $postData = Request::json();
+                $formData = $postData['formData'];
+
+                $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+
+                if (isset($this->setting['create']['events']['before'])) {
+                    $this->on('before', $this->setting['create']['events']['before']);
+                }
+
+                if (isset($this->setting['create']['events']['after'])) {
+                    $this->on('after', $this->setting['create']['events']['after']);
+                }
 
                 if (isset($this->setting['create']['form']['items']) && count($this->setting['create']['form']['items']) > 0) {
                     foreach ($this->setting['create']['form']['items'] as $item) {
@@ -393,7 +394,7 @@ class Curd extends Plugin
 
                         // 必填字段
                         if ($driver->required) {
-                            if ($driver->newValue == '') {
+                            if ($driver->newValue === '') {
                                 throw new PluginException($driver->label . ' 缺失！');
                             }
                         }
@@ -410,23 +411,20 @@ class Curd extends Plugin
                     }
                 }
 
-                $this->trigger('BeforeCreate', $tuple);
+                $this->trigger('before', $tuple);
                 $tuple->save();
-                $this->trigger('AfterCreate', $tuple);
+                $this->trigger('after', $tuple);
 
                 $primaryKey = $tuple->getPrimaryKey();
 
                 $strPrimaryKey = null;
                 $strPrimaryKeyValue = null;
-
                 if (is_array($primaryKey)) {
                     $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
-
                     $primaryKeyValue = [];
                     foreach ($primaryKey as $pKey) {
                         $primaryKeyValue[] = $tuple->$pKey;
                     }
-
                     $strPrimaryKeyValue = '（' . implode(',', $primaryKeyValue) . '）';
                 } else {
                     $strPrimaryKey = $primaryKey;
@@ -434,14 +432,13 @@ class Curd extends Plugin
                 }
 
                 beSystemLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
-
                 $db->commit();
+                Response::success($title . '：新建成功！');
+
             } catch (\Exception $e) {
                 $db->rollback();
                 Response::error($e->getMessage());
             }
-
-            Response::success('新建成功！');
 
         } else {
             Response::setTitle($title);
@@ -457,56 +454,174 @@ class Curd extends Plugin
      */
     public function edit()
     {
+        $title = isset($this->setting['edit']['title']) ? $this->setting['edit']['title'] : '编辑';
+
+        $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+
         if (Request::isAjax()) {
-
-            $tuple = Be::newTuple($this->setting['table']);
-
-            $primaryKey = $tuple->getPrimaryKey();
-            $primaryKeyValue = Request::get($primaryKey, null);
-
-            if (!$primaryKeyValue) {
-                Response::error('参数（' . $primaryKey . '）缺失！');
-            }
-
-            $tuple->load($primaryKeyValue);
-            if (!$tuple->$primaryKey) {
-                Response::error('主键编号（' . $primaryKey . '）为 ' . $primaryKeyValue . ' 的记录不存在！');
-            }
-
-            if (isset($this->setting['edit']['events']['BeforeEdit'])) {
-                $this->on('BeforeEdit', $this->setting['edit']['events']['BeforeEdit']);
-            }
-
-            if (isset($this->setting['edit']['events']['AfterEdit'])) {
-                $this->on('AfterEdit', $this->setting['edit']['events']['AfterEdit']);
-            }
 
             $db = Be::getDb($this->setting['db']);
             $db->startTransaction();
             try {
 
-                $tuple->bind(Request::post());
-                $this->trigger('BeforeEdit', $tuple);
+                $postData = Request::json();
+                $formData = $postData['formData'];
+
+                $primaryKey = $tuple->getPrimaryKey();
+                $primaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $primaryKeyValue = [];
+                    foreach ($primaryKey as $pKey) {
+                        if (!isset($formData[$pKey])) {
+                            Response::error('主键（' . $pKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue[$pKey] = $formData[$pKey];
+                    }
+                } else {
+                    if (!isset($formData[$primaryKey])) {
+                        Response::error('主键（' . $primaryKey . '）缺失！');
+                    }
+
+                    $primaryKeyValue = $formData[$primaryKey];
+                }
+                $tuple->load($primaryKeyValue);
+
+                if (isset($this->setting['edit']['events']['before'])) {
+                    $this->on('before', $this->setting['edit']['events']['before']);
+                }
+
+                if (isset($this->setting['edit']['events']['after'])) {
+                    $this->on('after', $this->setting['create']['events']['after']);
+                }
+
+                if (isset($this->setting['edit']['form']['items']) && count($this->setting['edit']['form']['items']) > 0) {
+                    foreach ($this->setting['edit']['form']['items'] as $item) {
+
+                        // 禁止编辑字段
+                        if (isset($item['disabled']) && $item['disabled']) {
+                            continue;
+                        }
+
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Form\Item\FormItemInput($item);
+                        }
+                        $driver->submit($formData);
+                        $name = $driver->name;
+
+                        // 必填字段
+                        if ($driver->required) {
+                            if ($driver->newValue === '') {
+                                throw new PluginException($driver->label . ' 缺失！');
+                            }
+                        }
+
+                        // 检查唯一性
+                        if (isset($item['unique']) && $item['unique']) {
+                            $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey($this->setting['table']) . ' WHERE ' . $db->quoteKey($name) . '=' . $db->quoteValue($driver->newValue);
+                            if (is_array($primaryKey)) {
+                                foreach ($primaryKey as $pKey) {
+                                    $sql .= ' AND ' . $db->quoteKey($pKey) . '!=' . $db->quoteValue($formData[$pKey]);
+                                }
+                            } else {
+                                $sql .= ' AND ' . $db->quoteKey($primaryKey) . '!=' . $db->quoteValue($formData[$primaryKey]);
+                            }
+
+                            if ($db->getValue($sql) > 0) {
+                                throw new PluginException($driver->label . ' 已存在 ' . $driver->newValue . ' 的记录！');
+                            }
+                        }
+
+                        $tuple->$name = $driver->newValue;
+                    }
+                }
+
+                $this->trigger('before', $tuple);
                 $tuple->save();
-                $this->trigger('AfterEdit', $tuple);
+                $this->trigger('after', $tuple);
 
-                beSystemLog($setting['title'] . '：编辑' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+                $strPrimaryKey = null;
+                $strPrimaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+                    $strPrimaryKeyValue = '（' . implode(',', array_values($primaryKeyValue)) . '）';
+                } else {
+                    $strPrimaryKey = $primaryKey;
+                    $strPrimaryKeyValue = $tuple->$primaryKey;
+                }
 
+                beSystemLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
                 $db->commit();
+                Response::success($title . '：编辑成功！');
             } catch (\Exception $e) {
-
                 $db->rollback();
                 Response::error($e->getMessage());
             }
 
-            Response::success('修改成功！');
         } else {
-            $title = isset($this->setting['edit']['title']) ? $this->setting['edit']['title'] : '编辑';
-            Response::setTitle($title);
 
-            $setting = $this->setting['edit'];
+            try {
 
-            Be::getPlugin('Form')->setting($setting)->display();
+                $postData = Request::post('data', '', '');
+                $postData = json_decode($postData, true);
+
+                $primaryKey = $tuple->getPrimaryKey();
+                $primaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $primaryKeyValue = [];
+                    foreach ($primaryKey as $pKey) {
+                        if (!isset($postData['row'][$pKey])) {
+                            throw new PluginException('主键（row.' . $pKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue[$pKey] = $postData['row'][$pKey];
+                    }
+                } else {
+                    if (!isset($postData['row'][$primaryKey])) {
+                        throw new PluginException('主键（row.' . $primaryKey . '）缺失！');
+                    }
+
+                    $primaryKeyValue = $postData['row'][$primaryKey];
+                }
+
+                $tuple->load($primaryKeyValue);
+
+                $setting = $this->setting['edit'];
+                if (isset($setting['form']['items']) && count($setting['form']['items']) > 0) {
+                    foreach ($setting['form']['items'] as &$item) {
+                        if (!isset($item['value'])) {
+                            $name = $item['name'];
+                            $item['value'] = (string)$tuple->$name;
+                        }
+                    }
+                    unset($item);
+                }
+
+                if (is_array($primaryKeyValue)) {
+                    foreach ($primaryKeyValue as $pKey => $pVal) {
+                        $setting['form']['items'][] = [
+                            'name' => $pKey,
+                            'value' => $pVal,
+                            'driver' => FormItemHidden::class,
+                        ];
+                    }
+                } else {
+                    $setting['form']['items'][] = [
+                        'name' => $primaryKey,
+                        'value' => $primaryKeyValue,
+                        'driver' => FormItemHidden::class,
+                    ];
+                }
+
+                Response::setTitle($title);
+                Be::getPlugin('Form')->setting($setting)->display();
+            } catch (\Exception $e) {
+                Response::error($e->getMessage());
+            }
         }
     }
 
@@ -515,12 +630,12 @@ class Curd extends Plugin
      */
     public function fieldEdit()
     {
-        if (isset($this->setting['fieldEdit']['events']['BeforeFieldEdit'])) {
-            $this->on('BeforeFieldEdit', $this->setting['fieldEdit']['events']['BeforeFieldEdit']);
+        if (isset($this->setting['fieldEdit']['events']['before'])) {
+            $this->on('before', $this->setting['fieldEdit']['events']['before']);
         }
 
-        if (isset($this->setting['fieldEdit']['events']['AfterFieldEdit'])) {
-            $this->on('AfterFieldEdit', $this->setting['fieldEdit']['events']['AfterFieldEdit']);
+        if (isset($this->setting['fieldEdit']['events']['after'])) {
+            $this->on('after', $this->setting['fieldEdit']['events']['after']);
         }
 
         $postData = Request::json();
@@ -587,9 +702,9 @@ class Curd extends Plugin
 
                     $tuple->load($primaryKeyValue);
                     $tuple->$field = $value;
-                    $this->trigger('BeforeFieldEdit', $tuple);
+                    $this->trigger('before', $tuple);
                     $tuple->save();
-                    $this->trigger('AfterFieldEdit', $tuple);
+                    $this->trigger('after', $tuple);
 
                     if ($strPrimaryKey === null) {
                         if (is_array($primaryKey)) {
@@ -656,9 +771,9 @@ class Curd extends Plugin
                 }
                 $tuple->load($primaryKeyValue);
                 $tuple->$field = $value;
-                $this->trigger('BeforeFieldEdit', $tuple);
+                $this->trigger('before', $tuple);
                 $tuple->save();
-                $this->trigger('AfterFieldEdit', $tuple);
+                $this->trigger('after', $tuple);
 
                 $strPrimaryKey = null;
                 $strPrimaryKeyValue = null;

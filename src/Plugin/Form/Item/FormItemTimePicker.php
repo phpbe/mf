@@ -23,6 +23,12 @@ class FormItemTimePicker extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['time-picker']['disabled'])) {
+                $this->ui['time-picker']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['time-picker']['placeholder'])) {
             $this->ui['time-picker']['placeholder'] = '选择时间';
         }

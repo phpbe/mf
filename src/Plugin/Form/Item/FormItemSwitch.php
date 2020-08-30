@@ -25,6 +25,12 @@ class FormItemSwitch extends FormItem
             $this->value = (string)$this->value;
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['switch']['disabled'])) {
+                $this->ui['switch']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['switch']['active-value'])) {
             $this->ui['switch']['active-value'] = 1;
         }

@@ -27,6 +27,12 @@ class FormItemInputNumberFloat extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['input']['disabled'])) {
+                $this->ui['input']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['input-number'][':precision'])) {
             $this->ui['input-number'][':precision'] = '2';
         }

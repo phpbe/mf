@@ -250,11 +250,12 @@ class User extends Controller
                     'items' => [
                         [
                             'driver' => FieldItemSelection::class,
+                            'width' => '50',
                         ],
                         [
                             'name' => 'id',
                             'label' => 'ID',
-                            'width' => '80',
+                            'width' => '60',
                         ],
                         [
                             'name' => 'avatar',
@@ -272,7 +273,7 @@ class User extends Controller
                                     ':size' => '32',
                                 ]
                             ],
-                            'width' => '60',
+                            'width' => '50',
                         ],
                         [
                             'name' => 'username',
@@ -293,6 +294,11 @@ class User extends Controller
                             'label' => '名称',
                         ],
                         [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
+                        ],
+                        [
                             'name' => 'is_enable',
                             'label' => '启用/禁用',
                             'driver' => FieldItemSwitch::class,
@@ -309,7 +315,7 @@ class User extends Controller
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '160',
+                    'width' => '120',
                     'items' => [
                         [
                             'label' => '查看',
@@ -451,7 +457,6 @@ class User extends Controller
                         [
                             'name' => 'password',
                             'label' => '密码',
-                            'driver' => FormItemInputPassword::class,
                         ],
                         [
                             'name' => 'role_id',
@@ -493,7 +498,7 @@ class User extends Controller
                     ]
                 ],
                 'events' => [
-                    'BeforeCreate' => function (Tuple $tuple) {
+                    'before' => function (Tuple &$tuple) {
                         $tuple->salt = Random::complex(32);
                         $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $tuple->salt);
                         $tuple->create_time = date('Y-m-d H:i:s');
@@ -517,11 +522,13 @@ class User extends Controller
                         [
                             'name' => 'username',
                             'label' => '用户名',
-                            'readonly' => true,
+                            'disabled' => true,
                         ],
                         [
                             'name' => 'password',
                             'label' => '密码',
+                            'value' => '',
+                            'required' => false,
                         ],
                         [
                             'name' => 'role_id',
@@ -532,7 +539,7 @@ class User extends Controller
                         [
                             'name' => 'email',
                             'label' => '邮箱',
-                            'readonly' => true,
+                            'disabled' => true,
                         ],
                         [
                             'name' => 'name',
@@ -547,10 +554,12 @@ class User extends Controller
                         [
                             'name' => 'phone',
                             'label' => '电话',
+                            'required' => false,
                         ],
                         [
                             'name' => 'mobile',
                             'label' => '手机',
+                            'required' => false,
                         ],
                         [
                             'name' => 'is_enable',
@@ -560,28 +569,19 @@ class User extends Controller
                     ]
                 ],
                 'events' => [
-                    'BeforeEdit' => function ($tuple) {
+                    'before' => function (Tuple &$tuple) {
                         if ($tuple->password != '') {
                             $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
                         } else {
                             unset($tuple->password);
-                            unset($tuple->register_time);
-                            unset($tuple->last_login_time);
                         }
-                    },
-                    'AfterEdit' => function ($tuple) {
-                        // 上传头像
-                        $avatar = Request::files('avatar');
-                        if ($avatar && $avatar['error'] == 0) {
-                            Be::getService('System.User')->uploadAvatar($tuple, $avatar);
-                        }
-                    },
+                    }
                 ]
             ],
 
             'fieldEdit' => [
                 'events' => [
-                    'BeforeFieldEdit' => function ($tuple) {
+                    'before' => function ($tuple) {
                         $postData = Request::json();
                         $field = $postData['postData']['field'];
                         if ($field == 'is_enable') {

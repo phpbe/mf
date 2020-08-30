@@ -25,6 +25,12 @@ class FormItemTimePickerRange extends FormItem
             }
         }
 
+        if ($this->disabled) {
+            if (!isset($this->ui['time-picker']['disabled'])) {
+                $this->ui['time-picker']['disabled'] = 'true';
+            }
+        }
+
         if (!isset($this->ui['time-picker']['range-separator'])) {
             $this->ui['time-picker']['range-separator'] = '至';
         }
