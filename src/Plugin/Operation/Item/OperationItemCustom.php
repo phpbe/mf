@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin\Curd\OperationItem;
+namespace Be\Plugin\Operation\Item;
 
 
 /**

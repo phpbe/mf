@@ -1,12 +1,13 @@
 <?php
 
-namespace Be\Plugin\Curd\OperationItem;
+namespace Be\Plugin\Operation\Item;
 
+use Be\System\Be;
 
 /**
- * 操作项 图标
+ * 操作项 下拉菜单 其单项
  */
-class OperationItemIcon extends OperationItem
+class OperationItemButtonDropDownMenu extends OperationItem
 {
 
     /**
@@ -17,22 +18,19 @@ class OperationItemIcon extends OperationItem
     public function __construct($params = [])
     {
         parent::__construct($params);
-
-        if (!isset($this->ui['icon']['@click'])) {
-            $this->ui['icon']['@click'] = 'operationClick(\'' . $this->name . '\', scope.row)';
-        }
+        $this->ui[':command'] = 'operationItemButtonDropDownMenuCommand(\''.$params['parentName'].'\','.$params['index'].', scope.row)';
     }
 
     /**
-     * 获取HTML内容
+     * 获取html内容
      *
      * @return string
      */
     public function getHtml()
     {
-        $html = '<el-icon';
-        if (isset($this->ui['icon'])) {
-            foreach ($this->ui['icon'] as $k => $v) {
+        $html = '<el-dropdown-item';
+        if (isset($this->ui)) {
+            foreach ($this->ui as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -41,8 +39,13 @@ class OperationItemIcon extends OperationItem
             }
         }
         $html .= '>';
-        $html .= '</el-icon>';
+
+        $html .= $this->label;
+        $html .= '</el-dropdown-item>';
 
         return $html;
     }
+
 }
+
+

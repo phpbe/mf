@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin\Curd\OperationItem;
+namespace Be\Plugin\Operation\Item;
 
 use Be\System\Be;
 
@@ -23,7 +23,7 @@ class OperationItemButtonDropDown extends OperationItem
         parent::__construct($params);
 
         if (!isset($this->ui['dropdown']['@command'])) {
-            $this->ui['dropdown']['@command'] = 'operationButtonDropDownClick';
+            $this->ui['dropdown']['@command'] = 'operationItemButtonDropDownClick';
         }
 
         if (!isset($this->ui['button']['size'])) {
@@ -142,7 +142,7 @@ class OperationItemButtonDropDown extends OperationItem
         }
 
         return [
-            'operation' => [
+            'operationItems' => [
                 $this->name => [
                     'menus' => $menus,
                     'enable' => true,
@@ -159,11 +159,11 @@ class OperationItemButtonDropDown extends OperationItem
     public function getVueMethods()
     {
         return [
-            'operationButtonDropDownClick' => 'function (command) {
-                var option = this.operation[command.name].menus[command.index];
-                this.operationAction(command.name, option, command.row);
+            'operationItemButtonDropDownClick' => 'function (command) {
+                var option = this.operationItems[command.name].menus[command.index];
+                this.operationItemAction(command.name, option, command.row);
             }',
-            'operationButtonDropDownMenuCommand' => 'function (name, index, row) {
+            'operationItemButtonDropDownMenuCommand' => 'function (name, index, row) {
                 return {"name": name, "index": index, "row": row};
             }',
         ];

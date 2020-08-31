@@ -23,7 +23,7 @@
             $tabHtml = '';
             $tabPosition = 'beforeForm';
             if (isset($this->setting['lists']['tab'])) {
-                $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+                $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
                 $tabHtml = $driver->getHtml();
                 if (isset($this->setting['lists']['tab']['position'])) {
                     $tabPosition = $this->setting['lists']['tab']['position'];
@@ -122,10 +122,10 @@
 
             <el-table
                     :data="tableData"
-                    ref="stageTable"
+                    ref="tableRef"
                     v-loading="loading"
                     size="mini"
-                    :height="stageHeight"
+                    :height="tableHeight"
                     :default-sort="{prop:orderBy,order:orderByDir}"
                     @sort-change="sort"
                     @selection-change="selectionChange">
@@ -133,7 +133,7 @@
                 $opPosition = 'right';
                 if (isset($this->setting['lists']['operation'])) {
 
-                    $operationDriver = new \Be\Plugin\Curd\Operation($this->setting['lists']['operation']);
+                    $operationDriver = new \Be\Plugin\Operation\Wrap($this->setting['lists']['operation']);
                     $opHtml = $operationDriver->getHtmlBefore();
 
                     if (isset($this->setting['lists']['operation']['items'])) {
@@ -143,7 +143,7 @@
                                 $driverName = $item['driver'];
                                 $driver = new $driverName($item);
                             } else {
-                                $driver = new \Be\Plugin\Curd\OperationItem\OperationItemLink($item);
+                                $driver = new \Be\Plugin\Operation\Item\OperationItemLink($item);
                             }
                             $opHtml .= $driver->getHtml() . "\r\n";
 
@@ -160,17 +160,6 @@
                     }
 
                     $opHtml .= $operationDriver->getHtmlAfter();
-
-                    $vueDataX = $operationDriver->getVueData();
-                    if ($vueDataX) {
-                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                    }
-
-                    $vueMethodsX = $operationDriver->getVueMethods();
-                    if ($vueMethodsX) {
-                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
-                    }
-
                     $opPosition = $operationDriver->position;
 
                     if ($opPosition == 'left') {
@@ -263,7 +252,7 @@
                 total: 0,
                 selectedRows: [],
                 loading: false,
-                stageHeight: 500,
+                tableHeight: 500,
                 dialog: {visible: false, width: "600px", height: "400px", title: ""},
                 drawer: {visible: false, width: "40%", title: ""}<?php
                 if ($vueData) {
@@ -390,7 +379,7 @@
                     data.row = row;
                     return this.action(option, data);
                 },
-                operationAction: function (name, option, row) {
+                operationItemAction: function (name, option, row) {
                     var data = {};
                     data.postData = option.postData;
                     data.row = row;
@@ -510,10 +499,10 @@
             },
             mounted: function () {
                 this.$nextTick(function () {
-                    this.stageHeight = document.documentElement.clientHeight - this.$refs.stageTable.$el.offsetTop - 50;
+                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 50;
                     var self = this;
                     window.onresize = function () {
-                        self.stageHeight = document.documentElement.clientHeight - self.$refs.stageTable.$el.offsetTop - 50
+                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 50
                     }
                 })
             }

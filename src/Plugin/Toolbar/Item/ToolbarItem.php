@@ -2,7 +2,6 @@
 
 namespace Be\Plugin\Toolbar\Item;
 
-use Be\Plugin\Curd\Item;
 use Be\System\Be;
 use Be\System\Request;
 

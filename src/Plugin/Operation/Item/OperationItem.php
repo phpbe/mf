@@ -1,30 +1,26 @@
 <?php
 
-namespace Be\Plugin\Curd;
+namespace Be\Plugin\Operation\Item;
 
 use Be\System\Be;
 use Be\System\Request;
 
 /**
- * 按钮
+ * 操作项 驱动
  */
-abstract class Item
+abstract class OperationItem
 {
 
     public $name = null; // 键名
     public $label = ''; // 配置项中文名称
     public $value = ''; // 值
-
-    public $keyValues = null; // 可选值键值对
-
-    public $url = ''; // 网址
-
     public $ui = []; // UI界面参数
 
+    public $url = ''; // 网址
     public $postData = []; // 有后端请求时的附加上的数据
     public $target = 'drawer';
-    public $dialog = ['width' => '600px', 'height' => '400px'];
-    public $drawer = ['width' => '40%'];
+    public $dialog = [];
+    public $drawer = [];
 
     protected static $nameIndex = 0;
 
@@ -61,28 +57,6 @@ abstract class Item
                 $this->value = $value();
             } else {
                 $this->value = $value;
-            }
-        }
-
-        if (isset($params['keyValues'])) {
-            $keyValues = $params['keyValues'];
-            if ($keyValues instanceof \Closure) {
-                $this->keyValues = $keyValues();
-            } else {
-                $this->keyValues = $keyValues;
-            }
-        } else {
-            if (isset($params['values'])) {
-                $values = $params['values'];
-                if ($values instanceof \Closure) {
-                    $values = $values();
-                }
-
-                $keyValues = [];
-                foreach ($values as $value) {
-                    $keyValues[$value] = $value;
-                }
-                $this->keyValues = $keyValues;
             }
         }
 
@@ -156,6 +130,15 @@ abstract class Item
             if (!isset($this->dialog['title'])) {
                 $this->dialog['title'] = $this->label;
             }
+
+            if (!isset($this->dialog['width'])) {
+                $this->dialog['width'] = '600px';
+            }
+
+            if (!isset($this->drawer['height'])) {
+                $this->dialog['height'] = '400px';
+            }
+
         } elseif ($this->target == 'drawer') {
             if (isset($params['drawer'])) {
                 $drawer = $params['drawer'];
@@ -168,6 +151,10 @@ abstract class Item
 
             if (!isset($this->drawer['title'])) {
                 $this->drawer['title'] = $this->label;
+            }
+
+            if (!isset($this->drawer['width'])) {
+                $this->drawer['width'] = '40%';
             }
         }
     }
@@ -189,8 +176,25 @@ abstract class Item
      */
     public function getVueData()
     {
-        return false;
+        $vueData = [
+            'operationItems' => [
+                $this->name => [
+                    'url' => $this->url,
+                    'target' => $this->target,
+                    'postData' => $this->postData,
+                ]
+            ]
+        ];
+
+        if ($this->target == 'dialog') {
+            $vueData['operationItems'][$this->name]['dialog'] = $this->dialog;
+        } elseif ($this->target == 'drawer') {
+            $vueData['operationItems'][$this->name]['drawer'] = $this->drawer;
+        }
+
+        return $vueData;
     }
+
 
     /**
      * 获取 vue 方法
@@ -199,7 +203,12 @@ abstract class Item
      */
     public function getVueMethods()
     {
-        return false;
+        return [
+            'operationItemClick' => 'function (name, row) {
+                var option = this.operationItems[name];
+                this.operationItemAction(name, option, row);
+            }'
+        ];
     }
 
 }

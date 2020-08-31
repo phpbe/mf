@@ -26,12 +26,12 @@ class Detail extends Plugin
             $setting['theme'] = 'Nude';
         }
 
-        if (!isset($setting['field']['ui']['form']['label-width'])) {
-            $setting['field']['ui']['form']['label-width'] = '150px';
+        if (!isset($setting['form']['ui']['label-width'])) {
+            $setting['form']['ui']['label-width'] = '150px';
         }
 
-        if (!isset($setting['field']['ui']['form']['size'])) {
-            $setting['field']['ui']['form']['size'] = 'mini';
+        if (!isset($setting['form']['ui']['size'])) {
+            $setting['form']['ui']['size'] = 'mini';
         }
 
         return parent::setting($setting);
@@ -42,7 +42,7 @@ class Detail extends Plugin
     {
         Response::setTitle($this->setting['title']);
         Response::set('setting', $this->setting);
-        Response::display('Plugin.detail.detail', $this->setting['theme']);
+        Response::display('Plugin.Detail.display', $this->setting['theme']);
     }
 
 }

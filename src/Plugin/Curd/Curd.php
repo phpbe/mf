@@ -101,6 +101,7 @@ class Curd extends Plugin
                     }
                 }
 
+                // 表单搜索
                 if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
                     foreach ($this->setting['lists']['form']['items'] as $item) {
 
@@ -352,12 +353,12 @@ class Curd extends Plugin
             $row = $tuple->toArray();
 
             $fields = null;
-            if (isset($this->setting['detail']['field']['items'])) {
-                $fields = $this->setting['detail']['field']['items'];
+            if (isset($this->setting['detail']['form']['items'])) {
+                $fields = $this->setting['detail']['form']['items'];
             } else {
                 $fields = [];
 
-                $listFields = $this->setting['lists']['field']['items'];
+                $listFields = $this->setting['lists']['form']['items'];
                 foreach ($listFields as &$item) {
                     if (!isset($item['label'])) {
                         continue;
@@ -412,7 +413,7 @@ class Curd extends Plugin
             unset($item);
 
             $setting = $this->setting['detail'];
-            $setting['field']['items'] = $fields;
+            $setting['form']['items'] = $fields;
 
             Be::getPlugin('Detail')->setting($setting)->display();
 
@@ -725,6 +726,7 @@ class Curd extends Plugin
         $title = null;
 
         $db = Be::getDb($this->setting['db']);
+
         if (isset($postData['selectedRows'])) {
             if (!is_array($postData['selectedRows']) || count($postData['selectedRows']) == 0) {
                 Response::error('你尚未选择要操作的数据！');
@@ -740,7 +742,7 @@ class Curd extends Plugin
                 $title = $this->setting['fieldEdit']['title'] . '（' . $title . '）';
             }
 
-            Be::getDb()->startTransaction();
+            $db->startTransaction();
             try {
                 $strPrimaryKey = null;
                 $primaryKeyValues = [];
@@ -794,11 +796,10 @@ class Curd extends Plugin
                 $strPrimaryKeyValue = implode(',', $primaryKeyValues);
 
                 beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
-
-                Be::getDb()->commit();
+                $db->commit();
             } catch (\Exception $e) {
 
-                Be::getDb()->rollback();
+                $db->rollback();
                 Response::error($e->getMessage());
             }
 
@@ -854,8 +855,8 @@ class Curd extends Plugin
                 }
 
                 beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
-
                 $db->commit();
+                Response::success($title . '，执行成功！');
             } catch (\Exception $e) {
                 $db->rollback();
                 Response::error($e->getMessage());
@@ -863,8 +864,6 @@ class Curd extends Plugin
         } else {
             Response::error('参数（rows或row）缺失！');
         }
-
-        Response::success($title . '，执行成功！');
     }
 
     /**
@@ -873,50 +872,131 @@ class Curd extends Plugin
      */
     public function delete()
     {
-        $setting = $this->setting['delete'];
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
 
-        $tuple = Be::newTuple($setting['table']);
-
-        $primaryKey = $tuple->getPrimaryKey();
-        $primaryKeyValue = Request::get($primaryKey, null);
-
-        if (!$primaryKeyValue) {
-            Response::error('参数（' . $primaryKey . '）缺失！');
+        $title = null;
+        if (isset($this->setting['delete']['title'])) {
+            $title = $this->setting['delete']['title'];
+        } else {
+            $title = '删除记录';
         }
 
-        Be::getDb()->startTransaction();
-        try {
+        $db = Be::getDb($this->setting['db']);
 
-            if (is_array($primaryKeyValue)) {
-                foreach ($primaryKeyValue as $x) {
-                    $tuple = Be::newTuple($setting['table']);
-                    $tuple->load($x);
-                    $this->trigger('BeforeDelete', $tuple);
-                    $tuple->delete();
-                    $this->trigger('AfterDelete', $tuple);
+        if (isset($postData['selectedRows'])) {
 
-                    beSystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $x . '的记录！');
-                }
-            } else {
-                $tuple = Be::newTuple($setting['table']);
-                $tuple->load($primaryKeyValue);
-                $this->trigger('BeforeDelete', $tuple);
-                $tuple->delete();
-                $this->trigger('AfterDelete', $tuple);
-
-                beSystemLog($setting['title'] . '：删除' . $primaryKey . '为' . $primaryKeyValue . '的记录！');
+            if (!is_array($postData['selectedRows']) || count($postData['selectedRows']) == 0) {
+                Response::error('你尚未选择要操作的数据！');
             }
 
-            Be::getDb()->commit();
-        } catch (\Exception $e) {
+            $db->startTransaction();
+            try {
+                $strPrimaryKey = null;
+                $primaryKeyValues = [];
 
-            Be::getDb()->rollback();
-            Response::error($e->getMessage());
+                $i = 0;
+                foreach ($postData['selectedRows'] as $row) {
+                    $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+                    $primaryKey = $tuple->getPrimaryKey();
+
+                    $primaryKeyValue = null;
+                    if (is_array($primaryKey)) {
+                        $primaryKeyValue = [];
+                        foreach ($primaryKey as $pKey) {
+                            if (!isset($row[$pKey])) {
+                                Response::error('主键（selectedRows[' . $i . '].' . $pKey . '）缺失！');
+                            }
+
+                            $primaryKeyValue[$pKey] = $row[$pKey];
+                        }
+                    } else {
+                        if (!isset($row[$primaryKey])) {
+                            Response::error('主键（selectedRows[' . $i . '].' . $primaryKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue = $row[$primaryKey];
+                    }
+
+                    $tuple->load($primaryKeyValue);
+                    $this->trigger('before', $tuple);
+                    $tuple->delete();
+                    $this->trigger('after', $tuple);
+
+                    if ($strPrimaryKey === null) {
+                        if (is_array($primaryKey)) {
+                            $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+                        } else {
+                            $strPrimaryKey = $primaryKey;
+                        }
+                    }
+
+                    if (is_array($primaryKeyValue)) {
+                        $primaryKeyValues[] = '（' . implode(',', $primaryKeyValue) . '）';
+                    } else {
+                        $primaryKeyValues[] = $primaryKeyValue;
+                    }
+
+                    $i++;
+                }
+
+                $strPrimaryKeyValue = implode(',', $primaryKeyValues);
+
+                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                $db->commit();
+                Response::success($title . '，执行成功！');
+            } catch (\Exception $e) {
+                $db->rollback();
+                Response::error($e->getMessage());
+            }
+
+        } elseif (isset($postData['row'])) {
+            $db->startTransaction();
+            try {
+                $tuple = Be::newTuple($this->setting['table'], $this->setting['db']);
+                $primaryKey = $tuple->getPrimaryKey();
+
+                $primaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $primaryKeyValue = [];
+                    foreach ($primaryKey as $pKey) {
+                        if (!isset($postData['row'][$pKey])) {
+                            Response::error('主键（row.' . $pKey . '）缺失！');
+                        }
+
+                        $primaryKeyValue[$pKey] = $postData['row'][$pKey];
+                    }
+                } else {
+                    if (!isset($postData['row'][$primaryKey])) {
+                        Response::error('主键（row.' . $primaryKey . '）缺失！');
+                    }
+
+                    $primaryKeyValue = $postData['row'][$primaryKey];
+                }
+                $tuple->load($primaryKeyValue);
+                $this->trigger('before', $tuple);
+                $tuple->delete();
+                $this->trigger('after', $tuple);
+
+                $strPrimaryKey = null;
+                $strPrimaryKeyValue = null;
+                if (is_array($primaryKey)) {
+                    $strPrimaryKey = '（' . implode(',', $primaryKey) . '）';
+                    $strPrimaryKeyValue = '（' . implode(',', $primaryKeyValue) . '）';
+                } else {
+                    $strPrimaryKey = $primaryKey;
+                    $strPrimaryKeyValue = $primaryKeyValue;
+                }
+
+                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                $db->commit();
+                Response::success($title . '，执行成功！');
+            } catch (\Exception $e) {
+                $db->rollback();
+                Response::error($e->getMessage());
+            }
         }
-
-        Response::success('删除成功！');
     }
-
 
     /*
      * 导出
@@ -946,12 +1026,10 @@ class Curd extends Plugin
                         $table->where($sql);
                     }
                 } else {
-                    $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+                    $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
                     $driver->submit($formData);
-                    $sql = $driver->buildSql($this->setting['db']);
-                    if ($sql) {
-                        $table->where($sql);
-                    }
+                    $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                    $table->where($sql);
                 }
             }
 

@@ -128,7 +128,7 @@ class SystemLog extends \Be\System\Controller
             ],
 
             'detail' => [
-                'field' => [
+                'form' => [
                     'items' => [
                         [
                             'name' => 'id',

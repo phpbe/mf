@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Plugin\Curd\OperationItem;
+namespace Be\Plugin\Operation\Item;
 
 
 /**
@@ -32,7 +32,7 @@ class OperationItemButton extends OperationItem
         }
 
         if (!isset($this->ui['button']['@click'])) {
-            $this->ui['button']['@click'] = 'operationClick(\'' . $this->name . '\', scope.row)';
+            $this->ui['button']['@click'] = 'operationItemClick(\'' . $this->name . '\', scope.row)';
         }
     }
 

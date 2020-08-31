@@ -343,7 +343,7 @@ class User extends Controller
             ],
 
             'detail' => [
-                'field' => [
+                'form' => [
                     'items' => [
                         [
                             'name' => 'id',

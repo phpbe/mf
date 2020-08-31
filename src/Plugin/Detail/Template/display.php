@@ -5,7 +5,7 @@
     ?>
     <div id="app">
         <el-form<?php
-            foreach ($this->setting['field']['ui']['form'] as $k => $v) {
+            foreach ($this->setting['form']['ui'] as $k => $v) {
                 if ($v === null) {
                     echo ' '.$k;
                 } else {
@@ -14,8 +14,8 @@
             }
             echo '>';
 
-            if (isset($this->setting['field']['items']) && count($this->setting['field']['items']) > 0) {
-                foreach ($this->setting['field']['items'] as $item) {
+            if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
+                foreach ($this->setting['form']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
