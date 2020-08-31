@@ -18,7 +18,7 @@ abstract class FormItem
     protected $keyValues = null; // 可选值键值对
     protected $description = ''; // 描述
     protected $ui = []; // UI界面参数
-    protected $newValue = null; // 新值
+    protected $newValue = ''; // 新值
     protected $required = false; // 是否必填
     protected $disabled = false; // 是否不可编辑
 

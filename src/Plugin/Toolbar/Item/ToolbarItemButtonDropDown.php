@@ -2,8 +2,6 @@
 
 namespace Be\Plugin\Toolbar\Item;
 
-use Be\System\Be;
-
 
 /**
  * 工具栏 下拉菜单
@@ -23,7 +21,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         parent::__construct($params);
 
         if (!isset($this->ui['dropdown']['@command'])) {
-            $this->ui['dropdown']['@command'] = 'toolbarButtonDropDownClick';
+            $this->ui['dropdown']['@command'] = 'toolbarItemButtonDropDownClick';
         }
 
         if (!isset($this->ui['dropdown-menu']['slot'])) {
@@ -136,7 +134,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         }
 
         return [
-            'toolbar' => [
+            'toolbarItems' => [
                 $this->name => [
                     'menus' => $menus,
                     'enable' => true,
@@ -153,11 +151,11 @@ class ToolbarItemButtonDropDown extends ToolbarItem
     public function getVueMethods()
     {
         return [
-            'toolbarButtonDropDownClick' => 'function (command) {
-                var option = this.toolbar[command.name].menus[command.index];
-                this.toolbarAction(command.name, option);
+            'toolbarItemButtonDropDownClick' => 'function (command) {
+                var option = this.toolbarItems[command.name].menus[command.index];
+                this.toolbarItemAction(command.name, option);
             }',
-            'toolbarButtonDropDownMenuCommand' => 'function (name, index) {
+            'toolbarItemButtonDropDownMenuCommand' => 'function (name, index) {
                 return {"name": name, "index": index};
             }',
         ];

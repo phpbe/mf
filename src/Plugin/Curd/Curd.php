@@ -113,7 +113,7 @@ class Curd extends Plugin
                         $driver = new $driverName($item);
                         $driver->submit($formData);
 
-                        if ($driver->newValue === null) {
+                        if ($driver->newValue === '') {
                             continue;
                         }
 
@@ -967,7 +967,7 @@ class Curd extends Plugin
                     $driver = new $driverName($item);
                     $driver->submit($formData);
 
-                    if ($driver->newValue === null) {
+                    if ($driver->newValue === '') {
                         continue;
                     }
 

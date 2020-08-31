@@ -36,7 +36,7 @@ class ToolbarItemLink extends ToolbarItem
         }
 
         if (!isset($this->ui['link']['@click'])) {
-            $this->ui['link']['@click'] = 'toolbarClick(\'' . $this->name . '\')';
+            $this->ui['link']['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
         }
     }
 

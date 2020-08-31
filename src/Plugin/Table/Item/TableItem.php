@@ -178,6 +178,15 @@ abstract class TableItem
             if (!isset($this->dialog['title'])) {
                 $this->dialog['title'] = $this->label;
             }
+
+            if (!isset($this->dialog['width'])) {
+                $this->dialog['width'] = '600px';
+            }
+
+            if (!isset($this->drawer['height'])) {
+                $this->dialog['height'] = '400px';
+            }
+
         } elseif ($this->target == 'drawer') {
             if (isset($params['drawer'])) {
                 $drawer = $params['drawer'];
@@ -190,6 +199,10 @@ abstract class TableItem
 
             if (!isset($this->drawer['title'])) {
                 $this->drawer['title'] = $this->label;
+            }
+
+            if (!isset($this->drawer['width'])) {
+                $this->drawer['width'] = '40%';
             }
         }
 

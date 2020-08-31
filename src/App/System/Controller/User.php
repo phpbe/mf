@@ -2,10 +2,7 @@
 
 namespace Be\App\System\Controller;
 
-
-
-use Be\Plugin\Curd\ToolbarItem\ToolbarItemButton;
-use Be\Plugin\Curd\ToolbarItem\ToolbarItemButtonDropDown;
+use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemAvatar;
@@ -143,7 +140,6 @@ class User extends Controller
                     'items' => [
                         [
                             'label' => '新建用户',
-                            'driver' => ToolbarItemButton::class,
                             'task' => 'create',
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
@@ -155,7 +151,6 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量启用',
-                            'driver' => ToolbarItemButton::class,
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -171,7 +166,6 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量禁用',
-                            'driver' => ToolbarItemButton::class,
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -187,7 +181,6 @@ class User extends Controller
                         ],
                         [
                             'label' => '批量删除',
-                            'driver' => ToolbarItemButton::class,
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
                             'postData' => [

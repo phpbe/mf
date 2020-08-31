@@ -26,11 +26,11 @@ class ToolbarItemButton extends ToolbarItem
         }
 
         if (!isset($this->ui['button']['@click'])) {
-            $this->ui['button']['@click'] = 'toolbarClick(\'' . $this->name . '\')';
+            $this->ui['button']['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
         }
 
         if (!isset($this->ui['button'][':disabled'])) {
-            $this->ui['button'][':disabled'] = '!toolbar.' . $this->name . '.enable';
+            $this->ui['button'][':disabled'] = '!toolbarItems.' . $this->name . '.enable';
         }
 
     }

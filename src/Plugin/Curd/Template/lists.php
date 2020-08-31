@@ -94,7 +94,7 @@
                         $driverName = $item['driver'];
                         $driver = new $driverName($item);
                     } else {
-                        $driver = new \Be\Plugin\Curd\ToolbarItem\ToolbarItemButton($item);
+                        $driver = new \Be\Plugin\Toolbar\Item\ToolbarItemButton($item);
                     }
                     $toolbarItemDriverNames[] = $driver->name;
 
@@ -362,7 +362,7 @@
                     }
                     this.loadTableData();
                 },
-                toolbarAction: function (name, option) {
+                toolbarItemAction: function (name, option) {
                     var data = {
                         formData: this.formData,
                         orderBy: this.orderBy,
@@ -429,11 +429,14 @@
                             case "dialog":
                                 eForm.target = "frame-dialog";
                                 this.dialog.title = option.dialog.title;
+                                this.dialog.width = option.dialog.width;
+                                this.dialog.height = option.dialog.height;
                                 this.dialog.visible = true;
                                 break;
                             case "drawer":
                                 eForm.target = "frame-drawer";
                                 this.drawer.title = option.drawer.title;
+                                this.drawer.width = option.drawer.width;
                                 this.drawer.visible = true;
                                 break;
                         }
@@ -489,7 +492,7 @@
                                 } else {
                                     toolbarEnable = false;
                                 }
-                                this.toolbar.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
+                                this.toolbarItems.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
                                 <?php
                             }
                             $i++;

@@ -23,8 +23,8 @@ abstract class Item
 
     public $postData = []; // 有后端请求时的附加上的数据
     public $target = 'drawer';
-    public $dialog = [];
-    public $drawer = [];
+    public $dialog = ['width' => '600px', 'height' => '400px'];
+    public $drawer = ['width' => '40%'];
 
     protected static $nameIndex = 0;
 

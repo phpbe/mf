@@ -2,7 +2,6 @@
 
 namespace Be\Plugin\Toolbar\Item;
 
-use Be\System\Be;
 
 /**
  * 工具栏 下拉菜单 其单项
@@ -18,7 +17,7 @@ class ToolbarItemButtonDropDownMenu extends ToolbarItem
     public function __construct($params = [])
     {
         parent::__construct($params);
-        $this->ui[':command'] = 'toolbarButtonDropDownMenuCommand(\''.$params['parentName'].'\','.$params['index'].')';
+        $this->ui[':command'] = 'toolbarItemButtonDropDownMenuCommand(\''.$params['parentName'].'\','.$params['index'].')';
     }
 
     /**
