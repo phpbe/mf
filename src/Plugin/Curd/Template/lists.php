@@ -17,7 +17,7 @@
     ?>
     <div id="app" v-cloak>
 
-        <el-form :inline="true" size="small">
+        <el-form :inline="true" size="mini">
 
             <?php
             $tabHtml = '';

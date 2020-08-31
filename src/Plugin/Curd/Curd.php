@@ -2,13 +2,6 @@
 
 namespace Be\Plugin\Curd;
 
-use Be\Plugin\Curd\FieldItem\FieldItemAvatar;
-use Be\Plugin\Curd\FieldItem\FieldItemCustom;
-use Be\Plugin\Curd\FieldItem\FieldItemImage;
-use Be\Plugin\Curd\FieldItem\FieldItemProgress;
-use Be\Plugin\Curd\FieldItem\FieldItemSelection;
-use Be\Plugin\Curd\FieldItem\FieldItemSwitch;
-use Be\Plugin\Curd\FieldItem\FieldItemText;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemCustom;
 use Be\Plugin\Detail\Item\DetailItemImage;
@@ -20,6 +13,11 @@ use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemHidden;
 use Be\Plugin\Form\Item\FormItemInput;
 use Be\Plugin\Form\Item\FormItemTimePickerRange;
+use Be\Plugin\Table\Item\TableItemAvatar;
+use Be\Plugin\Table\Item\TableItemCustom;
+use Be\Plugin\Table\Item\TableItemImage;
+use Be\Plugin\Table\Item\TableItemProgress;
+use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
 use Be\System\Exception\PluginException;
 use Be\System\Plugin;
@@ -367,19 +365,19 @@ class Curd extends Plugin
 
                     if (isset($item['driver'])) {
                         switch ($item['driver']) {
-                            case FieldItemAvatar::class:
+                            case TableItemAvatar::class:
                                 $item['driver'] = DetailItemAvatar::class;
                                 break;
-                            case FieldItemCustom::class:
+                            case TableItemCustom::class:
                                 $item['driver'] = DetailItemCustom::class;
                                 break;
-                            case FieldItemImage::class:
+                            case TableItemImage::class:
                                 $item['driver'] = DetailItemImage::class;
                                 break;
-                            case FieldItemProgress::class:
+                            case TableItemProgress::class:
                                 $item['driver'] = DetailItemProgress::class;
                                 break;
-                            case FieldItemSwitch::class:
+                            case TableItemSwitch::class:
                                 $item['driver'] = DetailItemSwitch::class;
                                 break;
                             default:
