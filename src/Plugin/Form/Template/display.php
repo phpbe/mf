@@ -5,7 +5,7 @@
     $vueMethods = [];
     ?>
     <div id="app">
-        <el-form :model="formData" ref="form"<?php
+        <el-form :model="formData" ref="formRef"<?php
             foreach ($this->setting['form']['ui'] as $k => $v) {
                 if ($v === null) {
                     echo ' '.$k;
@@ -64,7 +64,7 @@
             methods: {
                 save: function () {
                     var _this = this;
-                    this.$refs["form"].validate(function (valid) {
+                    this.$refs["formRef"].validate(function (valid) {
                         if (valid) {
                             _this.loading = true;
                             _this.$http.post("<?php echo $this->setting['form']['action']; ?>", {
@@ -101,13 +101,12 @@
                             });
 
                         } else {
-                            console.log('error submit!!');
                             return false;
                         }
                     });
                 },
                 reset: function () {
-                    this.$refs["form"].resetFields();
+                    this.$refs["formRef"].resetFields();
                 },
                 close: function () {
                     if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){

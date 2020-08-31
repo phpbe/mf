@@ -92,10 +92,10 @@ class Curd extends Plugin
                             $table->where($sql);
                         }
                     } else {
-                        $driver = new \Be\Plugin\Curd\Tab($this->setting['lists']['tab']);
+                        $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
                         $driver->submit($formData);
-                        $sql = $driver->buildSql($this->setting['db']);
-                        if ($sql) {
+                        if ($driver->newValue !== '') {
+                            $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
                             $table->where($sql);
                         }
                     }
@@ -1040,8 +1040,10 @@ class Curd extends Plugin
                 } else {
                     $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
                     $driver->submit($formData);
-                    $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
-                    $table->where($sql);
+                    if ($driver->newValue !== '') {
+                        $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                        $table->where($sql);
+                    }
                 }
             }
 
