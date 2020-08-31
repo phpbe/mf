@@ -500,7 +500,9 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $tuple->$primaryKey;
                 }
 
-                beSystemLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                }
                 $db->commit();
                 Response::success($title . '：新建成功！');
 
@@ -623,7 +625,9 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $tuple->$primaryKey;
                 }
 
-                beSystemLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                }
                 $db->commit();
                 Response::success($title . '：编辑成功！');
             } catch (\Exception $e) {
@@ -795,7 +799,9 @@ class Curd extends Plugin
 
                 $strPrimaryKeyValue = implode(',', $primaryKeyValues);
 
-                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                }
                 $db->commit();
             } catch (\Exception $e) {
 
@@ -854,7 +860,9 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $primaryKeyValue;
                 }
 
-                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                }
                 $db->commit();
                 Response::success($title . '，执行成功！');
             } catch (\Exception $e) {
@@ -942,7 +950,9 @@ class Curd extends Plugin
 
                 $strPrimaryKeyValue = implode(',', $primaryKeyValues);
 
-                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                }
                 $db->commit();
                 Response::success($title . '，执行成功！');
             } catch (\Exception $e) {
@@ -988,7 +998,9 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $primaryKeyValue;
                 }
 
-                beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                }
                 $db->commit();
                 Response::success($title . '，执行成功！');
             } catch (\Exception $e) {
@@ -1227,7 +1239,9 @@ class Curd extends Plugin
                 $content = '导出 ' . $exportDriver;
             }
 
-            beSystemLog($content, $formData);
+            if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                beSystemLog($content, $formData);
+            }
 
         } catch (\Exception $e) {
             Response::error($e->getMessage());
