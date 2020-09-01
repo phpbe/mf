@@ -12,7 +12,7 @@ class Date
      * @param string $date 日期 例：2000-01-31
      * @return string 日期 例：2000-02-29
      */
-    public function getNextMonth($date)
+    public static function getNextMonth($date)
     {
         return self::getNextNMonth($date, 1);
     }
@@ -24,7 +24,7 @@ class Date
      * @param int $n 月数
      * @return string 日期 例：2000-03-31
      */
-    public function getNextNMonth($date, $n = 1)
+    public static function getNextNMonth($date, $n = 1)
     {
         $t = strtotime($date);
         $year = date('Y', $t);

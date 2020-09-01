@@ -7,6 +7,7 @@ use Be\System\Session;
 <?php
 $config = Be::getConfig('System.System');
 $my = Be::getUser();
+$themeUrl = Be::getProperty('Theme.Admin')->getUrl();
 ?>
 <!DOCTYPE html>
 <html>
@@ -14,19 +15,19 @@ $my = Be::getUser();
     <meta charset="utf-8" />
     <title><?php echo $this->title; ?></title>
 
-    <script src="https://unpkg.com/vue@2.6.11/dist/vue.min.js"></script>
+    <script src="<?php echo $themeUrl; ?>/js/vue-2.6.11.min.js"></script>
 
-    <script src="https://unpkg.com/axios@0.19.0/dist/axios.min.js"></script>
+    <script src="<?php echo $themeUrl; ?>/js/axios-0.19.0.min.js"></script>
     <script>Vue.prototype.$http = axios;</script>
 
-    <script src="https://unpkg.com/vue-cookies@1.5.13/vue-cookies.js"></script>
+    <script src="<?php echo $themeUrl; ?>/js/vue-cookies-1.5.13.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.2/lib/theme-chalk/index.css">
-    <script src="https://unpkg.com/element-ui@2.13.2/lib/index.js"></script>
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/css/element-ui-2.13.2.css">
+    <script src="<?php echo $themeUrl; ?>/js/element-ui-2.13.2.js"></script>
 
-    <link rel="stylesheet" href="https://unpkg.com/font-awesome@4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/css/font-awesome-4.7.0.min.css" />
 
-    <link rel="stylesheet" href="<?php echo Be::getProperty('Theme.Admin')->getUrl(); ?>/css/theme.css" />
+    <link rel="stylesheet" href="<?php echo $themeUrl; ?>/css/theme.css" />
     <be-head>
     </be-head>
 </head>

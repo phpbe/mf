@@ -67,7 +67,7 @@ class Datetime
      * @param string $datetime 时间 例：2000-01-31 12:00:00
      * @return string 时间 例：2000-02-29 12:00:00
      */
-    public function getNextMonth($datetime)
+    public static function getNextMonth($datetime)
     {
         return self::getNextNMonth($datetime, 1);
     }
@@ -79,7 +79,7 @@ class Datetime
      * @param int $n 月数
      * @return string 时间 例：2000-02-29 12:00:00
      */
-    public function getNextNMonth($datetime, $n = 1)
+    public static function getNextNMonth($datetime, $n = 1)
     {
         $t = strtotime($datetime);
         $year = date('Y', $t);
