@@ -254,21 +254,33 @@ class Runtime
             $this->actionName = $actionName;
 
             $my = Be::getUser();
-            if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
+            if ($my->id == 0) {
+                Be::getService('System.User')->rememberMe();
+                $my = Be::getUser();
+            }
+
+            // 校验权限
+            $role0 = Be::getRole(0);
+            if (!$role0->hasPermission($appName, $controllerName, $actionName)) {
+                // 访问的不是公共内容，且未登录，跳转到登录页面
                 if ($my->id == 0) {
-                    Be::getService('System.User')->rememberMe();
-                    $my = Be::getUser();
-                    if ($my->id == 0) {
-                        $return = Request::get('return', base64_encode(Request::url()));
-                        Response::redirect(beUrl('System.User.login', ['return' => $return]));
+                    $return = Request::get('return', base64_encode(Request::url()));
+                    Response::redirect(beUrl('System.User.login', ['return' => $return]));
+                } else {
+                    if (!$my->hasPermission($appName, $controllerName, $actionName)) {
+                        Response::set('code', -1024);
+                        Response::error('您没有权限操作该功能！');
                     }
                 }
+            }
 
+            if ($my->id > 0) {
+                // 已登录用户，IP锁定功能校验
                 $configUser = Be::getConfig('System.User');
                 if ($configUser->ipLock) {
                     if ($my->last_login_ip != Request::ip()) {
                         Be::getService('System.User')->logout();
-                        Response::error('检测到您的账号使用另外的IP地址登录！', beUrl('System.User.login'));
+                        Response::error('检测到您的账号在其它地点登录！', beUrl('System.User.login'));
                     }
                 }
             }
@@ -281,18 +293,11 @@ class Runtime
 
             $instance = new $class();
             if (method_exists($instance, $actionName)) {
-                if ($appName != 'System' || $controllerName != 'User' || $actionName != 'login') {
-                    if (!$my->hasPermission($appName, $controllerName, $actionName)) {
-                        Response::set('code', -1024);
-                        Response::error('您没有权限操作该功能！');
-                    }
-                }
                 $instance->$actionName();
             } else {
                 Response::set('code', -404);
                 Response::error('未定义的任务：' . $actionName);
             }
-
 
         } catch (\Throwable $e) {
             $hash = md5(json_encode([

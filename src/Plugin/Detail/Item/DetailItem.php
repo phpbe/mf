@@ -8,10 +8,11 @@ namespace Be\Plugin\Detail\Item;
 abstract class DetailItem
 {
 
-    public $name = ''; // 键名
-    public $label = ''; // 配置项中文名称
-    public $value = ''; // 值
-    public $ui = []; // UI界面参数
+    protected $name = ''; // 键名
+    protected $label = ''; // 配置项中文名称
+    protected $value = ''; // 值
+    protected $keyValues = null; // 可选值键值对
+    protected $ui = []; // UI界面参数
 
     protected static $nameIndex = 0;
 
@@ -41,6 +42,15 @@ abstract class DetailItem
                 $this->value = $value();
             } else {
                 $this->value = $value;
+            }
+        }
+
+        if (isset($params['keyValues'])) {
+            $keyValues = $params['keyValues'];
+            if ($keyValues instanceof \Closure) {
+                $this->keyValues = $keyValues();
+            } else {
+                $this->keyValues = $keyValues;
             }
         }
 

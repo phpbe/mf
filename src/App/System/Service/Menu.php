@@ -5,7 +5,6 @@ namespace Be\App\System\Service;
 use Be\App\System\Helper\DocComment;
 use Be\System\Be;
 use Be\System\Service;
-use Be\System\Exception\ServiceException;
 
 class Menu extends Service
 {
@@ -24,8 +23,9 @@ class Menu extends Service
         $apps = Be::getService('System.App')->getApps();
         foreach ($apps as $app) {
 
+            $appProperty = Be::getProperty('App.'.$app->name);
             $appName = $app->name;
-            $controllerDir = Be::getRuntime()->getRootPath() . '/app/' . $appName . '/Controller';
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
 
             $controllers = scandir($controllerDir);

@@ -408,6 +408,19 @@ class Curd extends Plugin
                     }
                 }
 
+                if (isset($item['keyValues'])) {
+                    $keyValues = $item['keyValues'];
+                    if ($keyValues instanceof \Closure) {
+                        $itemValue = $keyValues($itemValue);
+                    } else {
+                        if (isset($keyValues[$itemValue])) {
+                            $itemValue = $keyValues[$itemValue];
+                        } else {
+                            $itemValue = '';
+                        }
+                    }
+                }
+
                 $item['value'] = $itemValue;
             }
             unset($item);
