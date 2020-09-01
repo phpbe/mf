@@ -19,7 +19,15 @@ class TableItemProgress extends TableItem
         parent::__construct($params);
 
         if (!isset($this->ui['progress'][':percentage'])) {
-            $this->ui['progress'][':percentage'] = 'scope.row.'.$this->name.'';
+            $this->ui['progress'][':percentage'] = 'scope.row.'.$this->name;
+        }
+
+        if (!isset($this->ui['progress'][':stroke-width'])) {
+            $this->ui['progress'][':stroke-width'] = '16';
+        }
+
+        if (!isset($this->ui['progress'][':text-inside'])) {
+            $this->ui['progress'][':text-inside'] = 'true';
         }
 
         if ($this->url) {

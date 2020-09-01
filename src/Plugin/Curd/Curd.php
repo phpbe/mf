@@ -392,43 +392,13 @@ class Curd extends Plugin
                 unset($item);
             }
 
-            foreach ($fields as &$item) {
-                $itemName = $item['name'];
-                $itemValue = '';
-                if (isset($item['value'])) {
-                    $value = $item['value'];
-                    if ($value instanceof \Closure) {
-                        $itemValue = $value($row);
-                    } else {
-                        $itemValue = $value;
-                    }
-                } else {
-                    if (isset($row[$itemName])) {
-                        $itemValue = $row[$itemName];
-                    }
-                }
-
-                if (isset($item['keyValues'])) {
-                    $keyValues = $item['keyValues'];
-                    if ($keyValues instanceof \Closure) {
-                        $itemValue = $keyValues($itemValue);
-                    } else {
-                        if (isset($keyValues[$itemValue])) {
-                            $itemValue = $keyValues[$itemValue];
-                        } else {
-                            $itemValue = '';
-                        }
-                    }
-                }
-
-                $item['value'] = $itemValue;
-            }
-            unset($item);
-
             $setting = $this->setting['detail'];
             $setting['form']['items'] = $fields;
 
-            Be::getPlugin('Detail')->setting($setting)->display();
+            Be::getPlugin('Detail')
+                ->setting($setting)
+                ->setValue($row)
+                ->display();
 
         } catch (\Exception $e) {
             Response::error($e->getMessage());
