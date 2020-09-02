@@ -24,8 +24,8 @@ class DetailItemText extends DetailItem
             }
         }
         $html .= '>';
-        $html .= '<div style="  word-wrap: break-word; word-break:break-all;">';
-        $html .= $this->value;
+        $html .= '<div style=" word-wrap: break-word; word-break:break-all;">';
+        $html .= nl2br($this->value);
         $html .= '</div>';
         $html .= '</el-form-item>';
         return $html;

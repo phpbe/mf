@@ -48,9 +48,9 @@ class Driver
         if (isset($params['value'])) {
             $value = $params['value'];
             if ($value instanceof \Closure) {
-                $this->value = $value();
+                $this->value = (string)$value();
             } else {
-                $this->value = $value;
+                $this->value = (string)$value;
             }
         }
 

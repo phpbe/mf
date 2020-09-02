@@ -152,8 +152,13 @@ class User extends \Be\System\Service
         if (cookie::has('_rememberMe')) {
             $rememberMe = cookie::get('_rememberMe', '');
             if ($rememberMe) {
+
                 $tupleUser = Be::newTuple('system_user');
-                $tupleUser->loadBy('remember_me_token', $rememberMe);
+                try {
+                    $tupleUser->loadBy('remember_me_token', $rememberMe);
+                } catch (\Exception $e) {
+
+                }
 
                 if ($tupleUser->id > 0 && $tupleUser->is_enable == 1 && $tupleUser->is_delete == 0) {
                     $this->makeLogin($tupleUser);

@@ -30,6 +30,10 @@ class TableItemProgress extends TableItem
             $this->ui['progress'][':text-inside'] = 'true';
         }
 
+        if (!isset($this->ui['progress'][':status'])) {
+            $this->ui['progress'][':status'] = 'scope.row.'.$this->name.'==100?\'success\':\'primary\'';
+        }
+
         if ($this->url) {
             if (!isset($this->ui['progress']['@click'])) {
                 $this->ui['progress']['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
