@@ -128,6 +128,27 @@ abstract class FormItem
     }
 
     /**
+     * 获取需要引入的 JS 文件
+     *
+     * @return false | array
+     */
+    public function getJs()
+    {
+        return false;
+    }
+
+
+    /**
+     * 获取需要引入的 CSS 文件
+     *
+     * @return false | array
+     */
+    public function getCss()
+    {
+        return false;
+    }
+
+    /**
      * 获取HTML内容
      *
      * @return string
@@ -153,6 +174,16 @@ abstract class FormItem
      * @return false | array
      */
     public function getVueMethods()
+    {
+        return false;
+    }
+
+    /**
+     * 获取 vue 钩子
+     *
+     * @return false | array
+     */
+    public function getVueHooks()
     {
         return false;
     }

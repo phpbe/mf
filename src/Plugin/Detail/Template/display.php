@@ -1,7 +1,11 @@
 <be-center>
     <?php
+    $js = [];
+    $css = [];
+    $formData = [];
     $vueData = [];
     $vueMethods = [];
+    $vueHooks = [];
     ?>
     <div id="app">
         <el-form<?php
@@ -25,6 +29,16 @@
                     }
                     echo $driver->getHtml();
 
+                    $jsX = $driver->getJs();
+                    if ($jsX) {
+                        $js = array_merge($js, $jsX);
+                    }
+
+                    $cssX = $driver->getCss();
+                    if ($cssX) {
+                        $css = array_merge($css, $cssX);
+                    }
+
                     $vueDataX = $driver->getVueData();
                     if ($vueDataX) {
                         $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
@@ -34,6 +48,18 @@
                     if ($vueMethodsX) {
                         $vueMethods = array_merge($vueMethods, $vueMethodsX);
                     }
+
+                    $vueHooksX = $driver->getVueHooks();
+                    if ($vueHooksX) {
+                        foreach ($vueHooksX as $k => $v) {
+                            if (isset($vueHooks[$k])) {
+                                $vueHooks[$k] .= "\r\n" . $v;
+                            } else {
+                                $vueHooks[$k] = $v;
+                            }
+                        }
+                    }
+
                 }
             }
             ?>
@@ -43,10 +69,28 @@
         </el-form>
     </div>
 
+    <?php
+    if (count($js) > 0) {
+        $js = array_unique($js);
+        foreach ($js as $x) {
+            echo '<script src="'.$x.'"></script>';
+        }
+    }
+
+    if (count($css) > 0) {
+        $css = array_unique($css);
+        foreach ($css as $x) {
+            echo '<link rel="stylesheet" href="'.$x.'">';
+        }
+    }
+    ?>
+
     <script>
         var vueDetail = new Vue({
             el: '#app',
-            data: {<?php
+            data: {
+                formData: {}
+                <?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
@@ -70,6 +114,40 @@
                 }
                 ?>
             }
+
+            <?php
+            if (isset($vueHooks['beforeCreate'])) {
+                echo ',beforeCreate: function () {'.$vueHooks['beforeCreate'].'}';
+            }
+
+            if (isset($vueHooks['created'])) {
+                echo ',created: function () {'.$vueHooks['created'].'}';
+            }
+
+            if (isset($vueHooks['beformMount'])) {
+                echo ',beformMount: function () {'.$vueHooks['beformMount'].'}';
+            }
+
+            if (isset($vueHooks['mounted'])) {
+                echo ',mounted: function () {'.$vueHooks['mounted'].'}';
+            }
+
+            if (isset($vueHooks['beforeUpdate'])) {
+                echo ',beforeUpdate: function () {'.$vueHooks['beforeUpdate'].'}';
+            }
+
+            if (isset($vueHooks['updated'])) {
+                echo ',updated: function () {'.$vueHooks['updated'].'}';
+            }
+
+            if (isset($vueHooks['beforeDestroy'])) {
+                echo ',beforeDestroy: function () {'.$vueHooks['beforeDestroy'].'}';
+            }
+
+            if (isset($vueHooks['destroyed'])) {
+                echo ',destroyed: function () {'.$vueHooks['destroyed'].'}';
+            }
+            ?>
         });
     </script>
 

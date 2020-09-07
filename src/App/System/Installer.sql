@@ -22,7 +22,7 @@ CREATE TABLE `system_log` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='系统操作日志';
 
 CREATE TABLE `system_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
@@ -32,9 +32,18 @@ CREATE TABLE `system_role` (
   `permissions` text NOT NULL COMMENT '权限明细',
   `ordering` int(11) NOT NULL COMMENT '排序（越小越靠前）',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户角色';
 INSERT INTO `system_role` (`id`, `name`, `note`, `permission`, `permissions`, `ordering`) VALUES
 (1, '超级管理员', '能执行所有操作', 1, '', 0);
+
+CREATE TABLE `system_task`(
+    `id` INT NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+    `driver` VARCHAR(240) NOT NULL DEFAULT '' COMMENT '驱动',
+    `schedule` VARCHAR(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
+    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY(`id`)
+) ENGINE = InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 CREATE TABLE `system_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增编号',
@@ -56,17 +65,18 @@ CREATE TABLE `system_user` (
   `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '最后一次登录的IP',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户';
 
 INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `last_login_ip`) VALUES
-(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 0, '', 'iua1024@gmail.com', '谁谁谁', 0, '', '', 1, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '172.24.0.254');
+(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'iua1024@gmail.com', '谁谁谁', 0, '', '', 1, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '172.24.0.254');
 
-CREATE TABLE `system_user_log` (
+CREATE TABLE `system_user_login_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
-  `username` varchar(120) NOT NULL DEFAULT '',
-  `success` tinyint(1) NOT NULL,
-  `description` varchar(240) NOT NULL DEFAULT '',
-  `ip` varchar(15) NOT NULL DEFAULT '',
+  `username` varchar(120) NOT NULL DEFAULT '' COMMENT '用户名',
+  `success` tinyint(1) NOT NULL COMMENT '是否登录成功（0-不成功/1-成功）',
+  `description` varchar(240) NOT NULL DEFAULT '' COMMENT '描述',
+  `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'IP',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户登录日志';
+

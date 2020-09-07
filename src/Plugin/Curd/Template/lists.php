@@ -9,9 +9,12 @@
     <?php
     $primaryKey = $this->table->getPrimaryKey();
 
+    $js = [];
+    $css = [];
     $formData = [];
     $vueData = [];
     $vueMethods = [];
+    $vueHooks = [];
 
     $toolbarItemDriverNames = [];
     ?>
@@ -63,6 +66,16 @@
 
                             $formData[$driver->name] = $driver->value;
 
+                            $jsX = $driver->getJs();
+                            if ($jsX) {
+                                $js = array_merge($js, $jsX);
+                            }
+
+                            $cssX = $driver->getCss();
+                            if ($cssX) {
+                                $css = array_merge($css, $cssX);
+                            }
+
                             $vueDataX = $driver->getVueData();
                             if ($vueDataX) {
                                 $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
@@ -71,6 +84,17 @@
                             $vueMethodsX = $driver->getVueMethods();
                             if ($vueMethodsX) {
                                 $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                            }
+
+                            $vueHooksX = $driver->getVueHooks();
+                            if ($vueHooksX) {
+                                foreach ($vueHooksX as $k => $v) {
+                                    if (isset($vueHooks[$k])) {
+                                        $vueHooks[$k] .= "\r\n" . $v;
+                                    } else {
+                                        $vueHooks[$k] = $v;
+                                    }
+                                }
                             }
                         }
                         ?>
@@ -230,6 +254,22 @@
 
     </div>
 
+    <?php
+    if (count($js) > 0) {
+        $js = array_unique($js);
+        foreach ($js as $x) {
+            echo '<script src="'.$x.'"></script>';
+        }
+    }
+
+    if (count($css) > 0) {
+        $css = array_unique($css);
+        foreach ($css as $x) {
+            echo '<link rel="stylesheet" href="'.$x.'">';
+        }
+    }
+    ?>
+
     <script>
         var pageSizeKey = "<?php echo $this->url; ?>:pageSize";
         var pageSize = localStorage.getItem(pageSizeKey);
@@ -259,15 +299,6 @@
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
                     }
-                }
-                ?>
-            },
-            created: function () {
-                this.search();
-                <?php
-                if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
-                    echo 'var _this = this;';
-                    echo 'setInterval(function () {_this.reloadTableData();}, ' . $this->setting['lists']['reload'] . ');';
                 }
                 ?>
             },
@@ -497,6 +528,19 @@
                 }
                 ?>
             },
+            created: function () {
+                this.search();
+                <?php
+                if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
+                    echo 'var _this = this;';
+                    echo 'setInterval(function () {_this.reloadTableData();}, ' . $this->setting['lists']['reload'] . ');';
+                }
+
+                if (isset($vueHooks['created'])) {
+                    echo $vueHooks['created'];
+                }
+                ?>
+            },
             mounted: function () {
                 this.$nextTick(function () {
                     this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 50;
@@ -504,9 +548,40 @@
                     window.onresize = function () {
                         self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 50
                     }
-                })
+                });
+
+                <?php
+                if (isset($vueHooks['mounted'])) {
+                    echo $vueHooks['mounted'];
+                }
+                ?>
             }
 
+            <?php
+            if (isset($vueHooks['beforeCreate'])) {
+                echo ',beforeCreate: function () {'.$vueHooks['beforeCreate'].'}';
+            }
+
+            if (isset($vueHooks['beformMount'])) {
+                echo ',beformMount: function () {'.$vueHooks['beformMount'].'}';
+            }
+
+            if (isset($vueHooks['beforeUpdate'])) {
+                echo ',beforeUpdate: function () {'.$vueHooks['beforeUpdate'].'}';
+            }
+
+            if (isset($vueHooks['updated'])) {
+                echo ',updated: function () {'.$vueHooks['updated'].'}';
+            }
+
+            if (isset($vueHooks['beforeDestroy'])) {
+                echo ',beforeDestroy: function () {'.$vueHooks['beforeDestroy'].'}';
+            }
+
+            if (isset($vueHooks['destroyed'])) {
+                echo ',destroyed: function () {'.$vueHooks['destroyed'].'}';
+            }
+            ?>
         });
 
         function reload() {
@@ -541,7 +616,6 @@
             vueCurdLists.dialog.visible = false;
             vueCurdLists.loadTableData();
         }
-
 
     </script>
 </be-center>
