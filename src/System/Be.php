@@ -74,8 +74,8 @@ abstract class Be
 
         $config = $config->$db;
 
-        $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';
-        if (!class_exists($class)) throw new \RuntimeException('数据库配置项（' . $db . '）指定的数据库驱动' . $config['driver'] . '不支持！');
+        $class = 'Be\\System\\Db\\Driver\\' . ucfirst($config['driver']) . 'Impl';
+        if (!class_exists($class)) throw new \RuntimeException('数据库配置项（' . $db . '）指定的数据库驱动' . ucfirst($config['driver']) . '不支持！');
 
         return new $class($config);
     }
