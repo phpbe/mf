@@ -76,7 +76,7 @@ CREATE TABLE `system_user_login_log` (
   `success` tinyint(1) NOT NULL COMMENT '是否登录成功（0-不成功/1-成功）',
   `description` varchar(240) NOT NULL DEFAULT '' COMMENT '描述',
   `ip` varchar(15) NOT NULL DEFAULT '' COMMENT 'IP',
-  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户登录日志';
 
