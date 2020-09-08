@@ -173,8 +173,8 @@
                 echo ',created: function () {'.$vueHooks['created'].'}';
             }
 
-            if (isset($vueHooks['beformMount'])) {
-                echo ',beformMount: function () {'.$vueHooks['beformMount'].'}';
+            if (isset($vueHooks['beforeMount'])) {
+                echo ',beforeMount: function () {'.$vueHooks['beforeMount'].'}';
             }
 
             if (isset($vueHooks['mounted'])) {

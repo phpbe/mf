@@ -8,7 +8,7 @@ class Db
 {
 
     /**
-     * @BeConfigItem("主库", driver="ConfigItemInputTextArea", valueType = "mixed")
+     * @BeConfigItem("主库", driver="FormItemCode", language="json", valueType = "mixed")
      */
     public $master = [
         'driver' => 'mysql',

@@ -563,7 +563,8 @@ class User extends Controller
                 'events' => [
                     'before' => function (Tuple &$tuple) {
                         if ($tuple->password != '') {
-                            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
+                            $tuple->salt = Random::complex(32);
+                            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $tuple->salt);
                         } else {
                             unset($tuple->password);
                         }

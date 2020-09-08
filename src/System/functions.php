@@ -17,15 +17,19 @@ function beSystemLog($content, $details = '') {
  * 处理网址
  * 启用 SEF 时生成伪静态页， 为空时返回网站网址
  *
- * @param null | string $action 动作名
+ * @param null | string $pathway 路径（应用名.控制器名.动作名）
  * @param null | array $params
  * @return string 生成的网址
  * @throws \Be\System\Exception\RuntimeException
  */
-function beUrl($action = null, $params = [])
+function beUrl($pathway = null, $params = [])
 {
-    if ($action === null) {
-        return Be::getRuntime()->getRootUrl();
+    if ($pathway === null) {
+        if (count($params) > 0) {
+            $pathway = Be::getRuntime()->getPathway();
+        } else {
+            return Be::getRuntime()->getRootUrl();
+        }
     }
 
     $configSystem = Be::getConfig('System.System');
@@ -36,8 +40,8 @@ function beUrl($action = null, $params = [])
                 $urlParams .= '/' . $key . '-' . $val;
             }
         }
-        return Be::getRuntime()->getRootUrl() . '/' . $action . $urlParams . $configSystem->urlSuffix;
+        return Be::getRuntime()->getRootUrl() . '/' . $pathway . $urlParams . $configSystem->urlSuffix;
     } else {
-        return Be::getRuntime()->getRootUrl() . '/?action=' . $action . (count($params) > 0 ? http_build_query($params) : '');
+        return Be::getRuntime()->getRootUrl() . '/?pathway=' . $pathway . (count($params) > 0 ? http_build_query($params) : '');
     }
 }

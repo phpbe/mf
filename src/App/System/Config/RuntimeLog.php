@@ -9,7 +9,7 @@ class RuntimeLog
 
     /**
      * @BeConfigItem("日志级别",
-     *     driver="ConfigItemSelect",
+     *     driver="FormItemSelect",
      *     values = "return ['debug','info','notice','warning','error','critical','alert','emergency'];")
      */
     public $level = 'debug';

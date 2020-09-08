@@ -23,6 +23,7 @@ class Runtime
     private $appName = null;
     private $controllerName = null;
     private $actionName = null;
+    private $pathway = null;
 
     public function __construct()
     {
@@ -151,6 +152,16 @@ class Runtime
         return $this->actionName;
     }
 
+    /**
+     * 获取当前执行的 路径（应用名.控制器名.动作名）
+     *
+     * @return null | string
+     */
+    public function getPathway()
+    {
+        return $this->pathway;
+    }
+
     public function execute()
     {
         try {
@@ -163,8 +174,8 @@ class Runtime
             // 启动 session
             Session::start();
 
-            // 从网址中提取出 action
-            $action = null;
+            // 从网址中提取出 路径
+            $pathway = null;
             if ($configSystem->urlRewrite) {
 
                 //print_r($_SERVER);
@@ -206,7 +217,7 @@ class Runtime
                 $uris = explode('/', $uri);
                 $len = count($uris);
                 if ($len > 1) {
-                    $action = $uris[1];
+                    $pathway = $uris[1];
                 }
 
                 if ($len > 2) {
@@ -227,18 +238,18 @@ class Runtime
                 }
 
             } else {
-                $action = Request::request('action', '');
+                $pathway = Request::request('pathway', '');
             }
 
             $appName = null;
             $controllerName = null;
             $actionName = null;
-            if ($action) {
-                $actions = explode('.', $action);
-                if (count($actions) == 3) {
-                    $appName = $actions[0];
-                    $controllerName = $actions[1];
-                    $actionName = $actions[2];
+            if ($pathway) {
+                $pathways = explode('.', $pathway);
+                if (count($pathways) == 3) {
+                    $appName = $pathways[0];
+                    $controllerName = $pathways[1];
+                    $actionName = $pathways[2];
                 }
             }
 
@@ -252,6 +263,7 @@ class Runtime
             $this->appName = $appName;
             $this->controllerName = $controllerName;
             $this->actionName = $actionName;
+            $this->pathway = $appName . '.' . $controllerName . '.' . $actionName;
 
             $my = Be::getUser();
             if ($my->id == 0) {

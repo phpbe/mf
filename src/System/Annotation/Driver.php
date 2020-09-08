@@ -45,4 +45,26 @@ class Driver
         }
         return null;
     }
+
+    /**
+     * 转成简单数组
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        $array = get_object_vars($this);
+        return $array;
+    }
+
+    /**
+     * 转成简单对象
+     *
+     * @return Object
+     */
+    public function toObject()
+    {
+        return (Object)$this->toArray();
+    }
+
 }

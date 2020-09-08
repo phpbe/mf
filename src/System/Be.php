@@ -237,7 +237,7 @@ abstract class Be
         $appName = $parts[0];
         $configName = $parts[1];
 
-        $class = 'Be\\Data\\System\\Config\\' . $appName . '\\' . $configName;
+        $class = 'Be\\Data\\' . $appName . '\\Config\\' . $configName;
         if (class_exists($class)) {
             return new $class();
         }

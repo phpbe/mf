@@ -59,6 +59,15 @@ abstract class FormItem
             }
         }
 
+        if (isset($params['valueType'])) {
+            $valueType = $params['valueType'];
+            if ($valueType instanceof \Closure) {
+                $this->valueType = $valueType();
+            } else {
+                $this->valueType = $valueType;
+            }
+        }
+
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
             if ($keyValues instanceof \Closure) {
@@ -197,6 +206,32 @@ abstract class FormItem
         }
     }
 
+    /**
+     * 获取值的字符形式
+     *
+     * @return string
+     */
+    public function getValueString()
+    {
+        if (is_array($this->value) || is_object($this->value)) {
+            return json_encode($this->value);
+        }
+        return $this->value;
+    }
+
+    /**
+     * 获取新值的字符形式
+     *
+     * @return string
+     */
+    public function getNewValueString()
+    {
+        if (is_array($this->newValue) || is_object($this->newValue)) {
+            return json_encode($this->newValue);
+        }
+        return $this->newValue;
+    }
+    
     /**
      * 提交处理
      *

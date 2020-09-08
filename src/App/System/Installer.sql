@@ -10,6 +10,9 @@ CREATE TABLE `system_app` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用';
 
+INSERT INTO `system_app` (`id`, `name`, `label`, `icon`, `install_time`) VALUES
+(1, 'System', '系统', 'el-icon-s-tools', CURRENT_TIMESTAMP);
+
 CREATE TABLE `system_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
@@ -68,7 +71,7 @@ CREATE TABLE `system_user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户';
 
 INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `last_login_ip`) VALUES
-(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'iua1024@gmail.com', '谁谁谁', 0, '', '', 1, 0, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '172.24.0.254');
+(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'be@phpbe.com', '管理员', 0, '', '', 1, 0, CURRENT_TIMESTAMP, '0000-00-00 00:00:00', '127.0.0.1');
 
 CREATE TABLE `system_user_login_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
