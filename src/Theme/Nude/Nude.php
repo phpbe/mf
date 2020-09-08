@@ -40,6 +40,13 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
+        .CodeMirror{
+            font-size : 13px;
+            line-height : 150%;
+            border: 1px solid #eee;
+            min-height: 60px;
+            height: auto !important;
+        }
     </style>
 
     <be-head>

@@ -156,3 +156,11 @@ body {background-color: #fff;}
 .el-menu {
     border-right: none;
 }
+
+.CodeMirror{
+    font-size : 13px;
+    line-height : 150%;
+    border: 1px solid #eee;
+    min-height: 60px;
+    height: auto !important;
+}
