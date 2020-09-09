@@ -1,6 +1,6 @@
 <be-head>
     <style type="text/css">
-        .el-table__row .el-divider__text, .el-link {font-size: 12px;}
+        .el-table__row .el-divider__text, .el-link {font-size: 12px; margin-left: 4px; margin-right: 4px;}
         .el-drawer__header span{outline: none;}
     </style>
 </be-head>
@@ -169,7 +169,7 @@
                             } else {
                                 $driver = new \Be\Plugin\Operation\Item\OperationItemLink($item);
                             }
-                            $opHtml .= $driver->getHtml() . "\r\n";
+                            $opHtml .= $driver->getHtml();
 
                             $vueDataX = $driver->getVueData();
                             if ($vueDataX) {
@@ -543,10 +543,10 @@
             },
             mounted: function () {
                 this.$nextTick(function () {
-                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 50;
+                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 55;
                     var self = this;
                     window.onresize = function () {
-                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 50
+                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 55
                     }
                 });
 

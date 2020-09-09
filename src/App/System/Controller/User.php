@@ -2,6 +2,7 @@
 
 namespace Be\App\System\Controller;
 
+use Be\Plugin\Table\Item\TableItemLink;
 use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemAvatar;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
@@ -264,6 +265,9 @@ class User extends Controller
                         [
                             'name' => 'username',
                             'label' => '用户名',
+                            'driver' => TableItemLink::class,
+                            'task' => 'detail',
+                            'target' => 'drawer',
                             'width' => '120',
                         ],
                         [
@@ -303,16 +307,6 @@ class User extends Controller
                     'label' => '操作',
                     'width' => '120',
                     'items' => [
-                        [
-                            'label' => '查看',
-                            'task' => 'detail',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
-                            ]
-                        ],
                         [
                             'label' => '编辑',
                             'task' => 'edit',
