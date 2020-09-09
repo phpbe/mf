@@ -20,19 +20,20 @@ class Mail extends \Be\System\Controller
      */
     public function test()
     {
-        if (Request::post()) {
-            $toEmail = Request::post('toEmail', '');
-            $subject = Request::post('subject', '');
-            $body = Request::post('body', '', 'html');
+        if (Request::isAjax()) {
+
+            $toEmail = Request::json('formData.toEmail', '');
+            $subject = Request::json('formData.subject', '');
+            $body = Request::json('formData.body', '', 'html');
 
             try {
-                $serviceMail = Be::getService('System.Mail');
-                $serviceMail->subject($subject);
-                $serviceMail->body($body);
-                $serviceMail->to($toEmail);
-                $serviceMail->send();
+                Be::getService('System.Mail')
+                    ->subject($subject)
+                    ->body($body)
+                    ->to($toEmail)
+                    ->send();
 
-                beSystemLog('发送测试邮件到 ' . $toEmail . ' -成功');
+                beSystemLog('发送测试邮件到 ' . $toEmail . ' -成功',  Request::json('formData'));
                 Response::success('发送邮件成功！', beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             } catch (\Exception $e) {
                 beSystemLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
@@ -67,18 +68,7 @@ class Mail extends \Be\System\Controller
                 ],
                 'theme' => 'Admin',
             ])->execute();
-
         }
-
-
-        if (Request::isPost()) {
-
-
-        } else {
-            Response::setTitle('发送邮件测试');
-            Response::display();
-        }
-
     }
 
 

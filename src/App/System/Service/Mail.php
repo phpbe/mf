@@ -24,7 +24,6 @@ class Mail extends \Be\System\Service
         if ($config->charset) $this->mailer->CharSet = $config->charset;
         if ($config->encoding) $this->mailer->Encoding = $config->encoding;
 
-
         if ($config->smtp == 1) {
             $this->mailer->IsSMTP();
             $this->mailer->Host = $config->smtpHost; // smtp 主机地址
@@ -34,7 +33,7 @@ class Mail extends \Be\System\Service
             $this->mailer->Password = $config->smtpPass; // smtp 用户密码
             $this->mailer->Timeout = $config->smtpTimeout; // smtp 超时时间 秒
 
-            if ($config->smtp_secure != '0') $this->mailer->SMTPSecure = $config->smtpSecure; // smtp 加密 'ssl' 或 'tls'
+            if ($config->smtpSecure != '0') $this->mailer->SMTPSecure = $config->smtpSecure; // smtp 加密 'ssl' 或 'tls'
         }
     }
 
@@ -48,12 +47,14 @@ class Mail extends \Be\System\Service
     public function from($fromMail, $fromName = '')
     {
         $this->mailer->SetFrom($fromMail, $fromName);
+        return $this;
     }
 
 
     public function replyTo($replyToMail, $replyToName = '')
     {
         $this->mailer->AddReplyTo($replyToMail, $replyToName);
+        return $this;
     }
 
 
@@ -63,6 +64,7 @@ class Mail extends \Be\System\Service
         if (!$this->mailer->AddAddress($email, $name)) {
             throw new \Exception($this->mailer->ErrorInfo);
         }
+        return $this;
     }
 
 
@@ -72,6 +74,7 @@ class Mail extends \Be\System\Service
         if (!$this->mailer->AddCC($email, $name)) {
             throw new ServiceException($this->mailer->ErrorInfo);
         }
+        return $this;
     }
 
 
@@ -81,6 +84,7 @@ class Mail extends \Be\System\Service
         if (!$this->mailer->AddBCC($email, $name)) {
             throw new ServiceException($this->mailer->ErrorInfo);
         }
+        return $this;
     }
 
 
@@ -89,22 +93,26 @@ class Mail extends \Be\System\Service
         if (!$this->mailer->AddAttachment($path)) {
             throw new ServiceException($this->mailer->ErrorInfo);
         }
+        return $this;
     }
 
     public function subject($subject = '')
     {
         $this->mailer->Subject = $subject;
+        return $this;
     }
 
     public function body($body = '')
     {
         $this->mailer->Body = $body;
+        return $this;
     }
 
     // 设置不支持 html 的客户端显示的主体内容
     public function altBody($altNody = '')
     {
         $this->mailer->AltBody = $altNody;
+        return $this;
     }
 
     // 占位符格式化

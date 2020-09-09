@@ -190,12 +190,11 @@ class Request
             if (!isset($input[$name])) return $default;
             $value = $input[$name];
         } else {
-            $tmpInput = $input;
-            $tmpValue = null;
+            $tmpValue = $input;
             $names = explode('.', $name);
             foreach ($names as $x) {
-                if (!isset($tmpInput[$x])) return $default;
-                $tmpValue = $tmpInput[$x];
+                if (!isset($tmpValue[$x])) return $default;
+                $tmpValue = $tmpValue[$x];
             }
             $value = $tmpValue;
         }
