@@ -117,8 +117,9 @@
                 saveConfig: function () {
                     this.loading = true;
                     var _this = this;
-                    _this.$http.post("<?php echo beUrl(null, ['task' => 'saveConfig', 'configName' => $this->configName]); ?>",_this.formData)
-                        .then(function (response) {
+                    _this.$http.post("<?php echo beUrl(null, ['task' => 'saveConfig', 'configName' => $this->configName]); ?>", {
+                        formData: _this.formData
+                    }).then(function (response) {
                             _this.loading = false;
                             if (response.status == 200) {
                                 if (response.data.success) {

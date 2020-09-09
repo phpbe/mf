@@ -7,8 +7,8 @@ use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("配置中心")
- * @BePermissionGroup("配置中心")
+ * @BeMenuGroup("系统配置")
+ * @BePermissionGroup("系统配置")
  */
 class Watermark extends \Be\System\Controller
 {

@@ -116,6 +116,7 @@ class Config extends Plugin
             }
 
             $postData = Request::json();
+            $formData = $postData['formData'];
 
             $code = "<?php\n";
             $code .= 'namespace Be\\Data\\' . $appName . '\\Config;' . "\n\n";
@@ -132,7 +133,7 @@ class Config extends Plugin
             $properties = $reflection->getProperties(\ReflectionMethod::IS_PUBLIC);
             foreach ($properties as $property) {
                 $itemName = $property->getName();
-                if (!isset($postData[$itemName])) {
+                if (!isset($formData[$itemName])) {
                     throw new PluginException('参数 (' . $itemName . ') 缺失！');
                 }
 
@@ -160,7 +161,7 @@ class Config extends Plugin
                         $driverClass = \Be\Plugin\Form\Item\FormItemInput::class;
                     }
                     $driver = new $driverClass($configItem);
-                    $driver->submit($postData);
+                    $driver->submit($formData);
 
                     $newValue = null;
                     switch ($driver->valueType) {

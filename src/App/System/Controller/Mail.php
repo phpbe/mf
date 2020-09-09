@@ -2,13 +2,14 @@
 
 namespace Be\App\System\Controller;
 
+use Be\Plugin\Form\Item\FormItemInputTextArea;
 use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("配置中心", icon="el-icon-setting")
- * @BePermissionGroup("配置中心")
+ * @BeMenuGroup("系统配置", icon="el-icon-setting")
+ * @BePermissionGroup("系统配置")
  */
 class Mail extends \Be\System\Controller
 {
@@ -19,7 +20,7 @@ class Mail extends \Be\System\Controller
      */
     public function test()
     {
-        if (Request::isPost()) {
+        if (Request::post()) {
             $toEmail = Request::post('toEmail', '');
             $subject = Request::post('subject', '');
             $body = Request::post('body', '', 'html');
@@ -37,6 +38,41 @@ class Mail extends \Be\System\Controller
                 beSystemLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
                 Response::error('发送邮件失败：' . $e->getMessage(), beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             }
+
+        } else {
+            Be::getPlugin('Form')->setting([
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'toEmail',
+                            'label' => '收件邮箱',
+                            'required' => true,
+                        ],
+                        [
+                            'name' => 'subject',
+                            'label' => '标题',
+                            'value' => '系统邮件测试',
+                            'required' => true,
+                        ],
+                        [
+                            'name' => 'body',
+                            'label' => '内容',
+                            'driver' => FormItemInputTextArea::class,
+                            'value' => '这是一封测试邮件。',
+                        ],
+                    ],
+                    'ui' => [
+                        'style' => 'max-width: 800px;'
+                    ]
+                ],
+                'theme' => 'Admin',
+            ])->execute();
+
+        }
+
+
+        if (Request::isPost()) {
+
 
         } else {
             Response::setTitle('发送邮件测试');
