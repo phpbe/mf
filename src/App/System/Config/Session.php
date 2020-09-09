@@ -26,16 +26,16 @@ class Session
      * @BeConfigItem("SESSION 驱动",
      *     driver="FormItemSelect",
      *     description = "SESSION 驱动 Default：系统默认/Redis"
-     *     values = "return ['Default','Redis'];")
+     *     keyValues = "return ['default' => 'PHP原生','redis' => 'Redis'];")
      */
-    public $driver = 'Default';
+    public $driver = 'default';
 
     /**
      * @BeConfigItem("REDIS设置项",
      *     driver="FormItemCode",
      *     language="json",
      *     valueType = "mixed",
-     *     ui="return ['form-item' => ['v-if' => 'formData.driver==\'Redis\'']];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.driver==\'redis\'']];")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

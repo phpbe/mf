@@ -341,7 +341,6 @@ class DetailItemCode extends DetailItem
         ];
     }
 
-
     /**
      * 获取 vue 钩子
      *
@@ -350,8 +349,11 @@ class DetailItemCode extends DetailItem
     public function getVueHooks()
     {
         $this->option['readOnly'] = true;
+        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');';
+        $updatedCode = 'this.formItems.' . $this->name . '.codeMirror && this.formItems.' . $this->name . '.codeMirror.refresh();';
         return [
-            'mounted' => 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');',
+            'mounted' => $mountedCode,
+            'updated' => $updatedCode,
         ];
     }
 

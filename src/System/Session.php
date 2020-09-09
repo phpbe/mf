@@ -28,8 +28,8 @@ class Session
         session_name($configSession->name);
 
         $driver = $configSession->driver;
-        if ($driver != 'Default') {
-            $className = 'Be\\System\\Session\\Driver\\' . $driver . 'Impl';
+        if ($driver != 'default') {
+            $className = 'Be\\System\\Session\\Driver\\' . ucfirst($driver) . 'Impl';
             $handler = new $className($configSession);
             session_set_save_handler($handler);
             register_shutdown_function('session_write_close');

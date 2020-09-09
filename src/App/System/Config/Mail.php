@@ -34,28 +34,28 @@ class Mail
     /**
      * @BeConfigItem("SMTP地址",
      *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp']];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
      */
     public $smtpHost = '';
 
     /**
      * @BeConfigItem("SMTP端口号",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp'], 'input-number' => [':min' => 1]];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], 'input-number' => [':min' => 1]];")
      */
     public $smtpPort = 25;
 
     /**
      * @BeConfigItem("SMTP用户名",
      *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp']];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
      */
     public $smtpUser = '';
 
     /**
      * @BeConfigItem("SMTP密码",
      *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp']];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
      */
     public $smtpPass = '';
 
@@ -63,14 +63,14 @@ class Mail
      * @BeConfigItem("SMTP安全连接",
      *     driver="FormItemSelect",
      *     keyValues="return ['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS'];",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp']];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
      */
     public $smtpSecure = '0';
 
     /**
      * @BeConfigItem("SMTP超时时间",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-if' => 'formData.smtp'], 'input-number' => [':min' => 1]];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], 'input-number' => [':min' => 1]];")
      */
     public $smtpTimeout = 10;
 }

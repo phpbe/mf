@@ -43,7 +43,7 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
         .CodeMirror{
             font-size : 13px;
             line-height : 150%;
-            border: 1px solid #eee;
+            border: 1px solid #DCDFE6;
             min-height: 60px;
             height: auto !important;
         }

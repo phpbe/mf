@@ -8,12 +8,16 @@ namespace Be\App\System\Config;
 class Cache
 {
     /**
-     * @BeConfigItem("缓存类型", driver="FormItemSelect", values="return ['File','Redis'];")
+     * @BeConfigItem("缓存类型", driver="FormItemSelect", keyValues="return ['file' => '文件','redis' => 'Redis'];")
      */
     public $driver = 'File';
 
     /**
-     * @BeConfigItem("REDIS设置项", driver="FormItemCode", language="json", valueType = "mixed")
+     * @BeConfigItem("REDIS设置项",
+     *     driver="FormItemCode",
+     *     language="json",
+     *     valueType = "mixed",
+     *     ui="return ['form-item' => ['v-show' => 'formData.driver==\'redis\'']];")
      */
     public $redis = [
         'host' => '127.0.0.1', // 主机名

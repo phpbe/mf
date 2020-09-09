@@ -354,8 +354,11 @@ class FormItemCode extends FormItem
      */
     public function getVueHooks()
     {
+        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');';
+        $updatedCode = 'this.formItems.' . $this->name . '.codeMirror && this.formItems.' . $this->name . '.codeMirror.refresh();';
         return [
-            'mounted' => 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');',
+            'mounted' => $mountedCode,
+            'updated' => $updatedCode,
         ];
     }
 
