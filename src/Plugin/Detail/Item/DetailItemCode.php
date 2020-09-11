@@ -334,8 +334,9 @@ class DetailItemCode extends DetailItem
     public function getVueData()
     {
         return [
-            'formItems' => [
+            'detailItems' => [
                 $this->name => [
+                    'value' => $this->value,
                     'codeMirror' => false,
                 ]
             ]
@@ -350,8 +351,8 @@ class DetailItemCode extends DetailItem
     public function getVueHooks()
     {
         $this->option['readOnly'] = true;
-        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');';
-        $updatedCode = 'this.formItems.' . $this->name . '.codeMirror && this.formItems.' . $this->name . '.codeMirror.refresh();';
+        $mountedCode = 'this.detailItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');';
+        $updatedCode = 'this.detailItems.' . $this->name . '.codeMirror && this.detailItems.' . $this->name . '.codeMirror.refresh();';
         return [
             'mounted' => $mountedCode,
             'updated' => $updatedCode,

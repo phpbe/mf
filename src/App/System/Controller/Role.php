@@ -275,7 +275,7 @@ class Role extends Controller
                             'driver' => DetailItemTree::class,
                             'ui' => [
                                 'form-item' => [
-                                    'v-show' => 'formData.permission == \'自定义\'',
+                                    'v-show' => 'formData.permission == \'-1\'',
                                 ]
                             ],
                             'value' => function ($row) {

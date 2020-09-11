@@ -37,7 +37,7 @@ class DetailItemTree extends DetailItem
         $this->ui['tree'][':data'] = 'detailItems.' . $this->name . '.treeData';
         $this->ui['tree']['show-checkbox'] = null;
         $this->ui['tree']['default-expand-all'] = null;
-        $this->ui['tree'][':default-checked-keys'] = 'detailItems.' . $this->name . '.defaultCheckedKeys';
+        $this->ui['tree'][':default-checked-keys'] = 'detailItems.' . $this->name . '.value';
     }
 
 
@@ -97,8 +97,8 @@ class DetailItemTree extends DetailItem
         return [
             'detailItems' => [
                 $this->name => [
+                    'value' => $this->value,
                     'treeData' => $this->treeData,
-                    'defaultCheckedKeys' => $this->value,
                 ]
             ]
         ];

@@ -107,7 +107,22 @@ abstract class DetailItem
      */
     public function getVueData()
     {
-        return false;
+        $value = $this->value;
+        if ($this->keyValues !== null && is_array($this->keyValues)) {
+            if (isset($keyValues[$value])) {
+                $value = $keyValues[$value];
+            } else {
+                $value = '';
+            }
+        }
+
+        return [
+            'detailItems' => [
+                $this->name => [
+                    'value' => $value,
+                ]
+            ]
+        ];
     }
 
     /**
