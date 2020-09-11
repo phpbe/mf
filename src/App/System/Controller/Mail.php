@@ -15,8 +15,8 @@ class Mail extends \Be\System\Controller
 {
 
     /**
-     * @BeMenu("发送邮件测试", icon="el-icon-fa fa-envelope-o")
-     * @BePermission("发送邮件测试")
+     * @BeMenu("发送邮件测试", icon="el-icon-fa fa-envelope-o", ordering="20.1")
+     * @BePermission("发送邮件测试", ordering="20.1")
      */
     public function test()
     {

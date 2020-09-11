@@ -29,8 +29,8 @@ class Role extends Controller
 {
 
     /**
-     * @BeMenu("角色管理", icon="el-icon-fa fa-user-secret")
-     * @BePermission("角色管理")
+     * @BeMenu("角色管理", icon="el-icon-fa fa-user-secret", ordering="10.10")
+     * @BePermission("角色管理", ordering="10.10")
      */
     public function roles()
     {

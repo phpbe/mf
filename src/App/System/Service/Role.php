@@ -195,11 +195,15 @@ class Role extends \Be\System\Service
 
                 $childKey = null;
                 $childLabel = null;
+                $childOrdering = null;
                 foreach ($parseClassComments as $key => $val) {
                     if ($key == 'BePermissionGroup') {
                         if (is_array($val[0]) && isset($val[0]['value']) && $val[0]['value'] != '*') {
                             $childKey = $appName . '.' . $controller;
                             $childLabel = $val[0]['value'];
+                            if (isset($val[0]['ordering'])) {
+                                $childOrdering = $val[0]['ordering'];
+                            }
                             break;
                         }
                     }
@@ -209,13 +213,16 @@ class Role extends \Be\System\Service
                     continue;
                 }
 
-
                 if (!isset($children[$childLabel])) {
                     $children[$childLabel] = [
                         'key' => $childKey,
                         'label' => $childLabel,
                         'children' => [],
                     ];
+                }
+
+                if ($childOrdering !== null) {
+                    $children[$childLabel]['ordering'] = $childOrdering;
                 }
 
                 $subChildren = [];
@@ -230,6 +237,7 @@ class Role extends \Be\System\Service
                                 $subChildren[] = [
                                     'key' => $appName . '.' . $controller . '.' . $methodName,
                                     'label' => $val[0]['value'],
+                                    'ordering' => isset($val[0]['ordering']) ? $val[0]['ordering'] : 1000000,
                                 ];
                             }
                             break;
@@ -246,6 +254,9 @@ class Role extends \Be\System\Service
                 $filteredChildren = [];
                 foreach ($children as $key => $val) {
                     if (count($val['children']) > 0) {
+                        if (!isset($val['ordering'])) {
+                            $val['ordering'] = 1000000;
+                        }
                         $filteredChildren[] = $val;
                     }
                 }
@@ -254,11 +265,28 @@ class Role extends \Be\System\Service
                     $treeData[] = [
                         'key' => $app->name,
                         'label' => $app->label,
+                        'ordering' => $app->ordering,
                         'children' => $filteredChildren,
                     ];
                 }
             }
         }
+
+        // 排序
+        foreach ($treeData as $k => &$v) {
+            foreach ($v['children'] as $key => &$val) {
+                $orderings = array_column($val['children'],'ordering');
+                array_multisort($val['children'],SORT_ASC, SORT_NUMERIC,$orderings);
+            }
+            unset($val);
+
+            $orderings = array_column($v['children'],'ordering');
+            array_multisort($v['children'],SORT_ASC, SORT_NUMERIC,$orderings);
+        }
+        unset($v);
+
+        $orderings = array_column($treeData,'ordering');
+        array_multisort($treeData,SORT_ASC, SORT_NUMERIC,$orderings);
 
         return $treeData;
     }

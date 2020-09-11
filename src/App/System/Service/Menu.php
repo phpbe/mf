@@ -97,13 +97,18 @@ class Menu extends Service
 
                     $app->key = $appName;
                     $menuGroup['key'] = $appName . '.' . $controller;
+
                     $menu['key'] = $appName . '.' . $controller . '.' . $methodName;
                     $menu['url'] = 'beUrl(\'' . $appName . '.' . $controller . '.' . $methodName . '\')';
+                    if (!isset($menu['ordering'])) {
+                        $menu['ordering'] = 1000000;
+                    }
 
                     if (!isset($menus[$appName])) {
                         $menus[$appName] = [
                             'app' => $app,
-                            'groups' => []
+                            'groups' => [],
+                            'ordering' => $app->ordering,
                         ];
                     }
 
@@ -112,15 +117,45 @@ class Menu extends Service
                             'group' => $menuGroup,
                             'menus' => [
                                 $menu
-                            ]
+                            ],
                         ];
                     } else {
                         $menus[$appName]['groups'][$menuGroup['label']]['group'] = array_merge($menus[$appName]['groups'][$menuGroup['label']]['group'], $menuGroup);
                         $menus[$appName]['groups'][$menuGroup['label']]['menus'][] = $menu;
                     }
+
+                    if (isset($menuGroup['ordering'])) {
+                        $menus[$appName]['groups'][$menuGroup['label']]['ordering'] = $menuGroup['ordering'];
+                    }
                 }
             }
+
+            if (isset($menus[$appName]['groups']) && is_array($menus[$appName]['groups']) && count($menus[$appName]['groups']) > 0) {
+                foreach ($menus[$appName]['groups'] as &$group) {
+                    if (!isset($group['group']['ordering'])) {
+                        $group['group']['ordering'] = 1000000;
+                    }
+                    $group['ordering'] = $group['group']['ordering'];
+                }
+                unset($group);
+            }
         }
+
+        // 排序
+        foreach ($menus as $k => &$v) {
+            foreach ($v['groups'] as $key => &$val) {
+                $orderings = array_column($val['menus'],'ordering');
+                array_multisort($val['menus'],SORT_ASC, SORT_NUMERIC,$orderings);
+            }
+            unset($val);
+
+            $orderings = array_column($v['groups'],'ordering');
+            array_multisort($v['groups'],SORT_ASC, SORT_NUMERIC,$orderings);
+        }
+        unset($v);
+
+        $orderings = array_column($menus,'ordering');
+        array_multisort($menus,SORT_ASC, SORT_NUMERIC,$orderings);
 
         $this->menus = $menus;
         return $menus;

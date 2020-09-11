@@ -10,8 +10,8 @@ use Be\System\Response;
 use Be\System\Controller;
 
 /**
- * @BeMenuGroup("日志", icon="el-icon-info")
- * @BePermissionGroup("日志")
+ * @BeMenuGroup("用户")
+ * @BePermissionGroup("用户")
  */
 class UserLoginLog extends Controller
 {
@@ -19,8 +19,8 @@ class UserLoginLog extends Controller
     /**
      * 系统日志
      *
-     * @BeMenu("用户登录日志", icon="el-icon-finished")
-     * @BePermission("查看用户登录日志")
+     * @BeMenu("用户登录日志", icon="el-icon-finished", ordering="10.2")
+     * @BePermission("查看用户登录日志", ordering="10.2")
      */
     public function logs()
     {
@@ -135,7 +135,7 @@ class UserLoginLog extends Controller
     /**
      * 删除用户登录日志
      *
-     * @BePermission("删除用户登录日志")
+     * @BePermission("删除用户登录日志", ordering="10.21")
      */
     public function deleteLogs()
     {

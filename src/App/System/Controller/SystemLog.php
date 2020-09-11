@@ -8,8 +8,8 @@ use Be\System\Be;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("日志", icon="el-icon-info")
- * @BePermissionGroup("日志")
+ * @BeMenuGroup("用户")
+ * @BePermissionGroup("用户")
  */
 class SystemLog extends \Be\System\Controller
 {
@@ -17,8 +17,8 @@ class SystemLog extends \Be\System\Controller
     /**
      * 系统日志
      *
-     * @BeMenu("操作日志", icon="el-icon-finished")
-     * @BePermission("查看操作日志")
+     * @BeMenu("操作日志", icon="el-icon-finished", ordering="10.3")
+     * @BePermission("查看操作日志", ordering="10.3")
      */
     public function logs()
     {
@@ -94,6 +94,14 @@ class SystemLog extends \Be\System\Controller
                             'name' => 'content',
                             'label' => '内容',
                             'align' => 'left',
+                        ],
+                        [
+                            'name' => 'pathway',
+                            'label' => '访问路径',
+                            'value' => function($row) {
+                                return $row['app'] . '.' .$row['controller'] . '.' .$row['action'];
+                            },
+                            'width' => '240'
                         ],
                         [
                             'name' => 'ip',
@@ -181,7 +189,7 @@ class SystemLog extends \Be\System\Controller
     /**
      * 删除操作日志
      *
-     * @BePermission("删除操作日志")
+     * @BePermission("删除操作日志", ordering="10.31")
      */
     public function deleteLogs()
     {

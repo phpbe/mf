@@ -24,8 +24,8 @@ use Be\Util\Random;
  * Class User
  * @package App\System\Controller
  *
- * @BeMenuGroup("用户", icon="el-icon-fa fa-user")
- * @BePermissionGroup("用户")
+ * @BeMenuGroup("用户", icon="el-icon-fa fa-user", ordering="10")
+ * @BePermissionGroup("用户", ordering="10")
  */
 class User extends Controller
 {
@@ -77,8 +77,8 @@ class User extends Controller
     /**
      * 用户管理
      *
-     * @BeMenu("用户管理", icon="el-icon-fa fa-users")
-     * @BePermission("用户管理")
+     * @BeMenu("用户管理", icon="el-icon-fa fa-users", ordering="10")
+     * @BePermission("用户管理", ordering="10")
      */
     public function users()
     {

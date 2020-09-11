@@ -2,9 +2,13 @@
 namespace Be\App\System\Controller;
 
 use Be\System\Be;
-use Be\System\Request;
 use Be\System\Response;
 
+/**
+ * Class System
+ * @package Be\App\System\Controller
+ * @BePermissionGroup("*")
+ */
 class System extends \Be\System\Controller
 {
 

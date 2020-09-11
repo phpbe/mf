@@ -5,17 +5,19 @@ CREATE TABLE `system_app` (
   `name` varchar(60) NOT NULL DEFAULT '' COMMENT '应用名',
   `label` varchar(60) NOT NULL DEFAULT '' COMMENT '应用中文标识',
   `icon` varchar(60) NOT NULL DEFAULT '' COMMENT '应用图标',
+  `ordering` INT(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `install_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '安装时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用';
 
-INSERT INTO `system_app` (`id`, `name`, `label`, `icon`, `install_time`) VALUES
-(1, 'System', '系统', 'el-icon-s-tools', CURRENT_TIMESTAMP);
+INSERT INTO `system_app` (`id`, `name`, `label`, `icon`, `ordering`, `install_time`) VALUES
+(1, 'System', '系统', 'el-icon-s-tools', 0, CURRENT_TIMESTAMP);
+
 
 CREATE TABLE `system_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
-  `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
+  `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
   `app` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '应用名',
   `controller` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '控制器名',
   `action` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '动作名',

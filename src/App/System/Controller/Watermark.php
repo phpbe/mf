@@ -13,10 +13,9 @@ use Be\System\Response;
 class Watermark extends \Be\System\Controller
 {
 
-
     /**
-     * @BeMenu("水印测试", icon = "el-icon-fa fa-image")
-     * @BePermission("水印测试")
+     * @BeMenu("水印测试", icon = "el-icon-fa fa-image", ordering="20.2")
+     * @BePermission("水印测试", ordering="20.2")
      */
     public function test()
     {

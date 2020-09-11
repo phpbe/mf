@@ -5,15 +5,15 @@ namespace Be\App\System\Controller;
 use Be\System\Be;
 
 /**
- * @BeMenuGroup("系统配置")
- * @BePermissionGroup("系统配置")
+ * @BeMenuGroup("系统配置", ordering="20")
+ * @BePermissionGroup("系统配置", ordering="20")
  */
 class Config extends \Be\System\Controller
 {
 
     /**
-     * @BeMenu("配置中心", icon="el-icon-setting")
-     * @BePermission("配置中心")
+     * @BeMenu("配置中心", icon="el-icon-setting", ordering="20")
+     * @BePermission("配置中心", ordering="20")
      */
     public function dashboard()
     {

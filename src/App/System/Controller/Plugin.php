@@ -14,9 +14,6 @@ use Be\Util\Net\FileUpload;
 class Plugin extends \Be\System\Controller
 {
 
-    /**
-     * @BePermission("*")
-     */
     public function uploadFile()
     {
         $file = Request::files('file');
@@ -62,9 +59,6 @@ class Plugin extends \Be\System\Controller
         }
     }
 
-    /**
-     * @BePermission("*")
-     */
     public function uploadAvatar()
     {
         $file = Request::files('file');
@@ -125,9 +119,6 @@ class Plugin extends \Be\System\Controller
         }
     }
 
-    /**
-     * @BePermission("*")
-     */
     public function uploadImage()
     {
         $file = Request::files('file');
