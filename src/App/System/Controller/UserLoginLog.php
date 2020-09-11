@@ -19,7 +19,7 @@ class UserLoginLog extends Controller
     /**
      * 系统日志
      *
-     * @BeMenu("用户登录日志", icon="el-icon-finished", ordering="10.2")
+     * @BeMenu("用户登录日志", icon="el-icon-fa fa-user-circle", ordering="10.2")
      * @BePermission("查看用户登录日志", ordering="10.2")
      */
     public function logs()

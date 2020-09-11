@@ -12,8 +12,8 @@ class Config extends \Be\System\Controller
 {
 
     /**
-     * @BeMenu("配置中心", icon="el-icon-setting", ordering="20")
-     * @BePermission("配置中心", ordering="20")
+     * @BeMenu("系统配置", icon="el-icon-setting", ordering="20")
+     * @BePermission("系统配置", ordering="20")
      */
     public function dashboard()
     {

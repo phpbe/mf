@@ -17,7 +17,7 @@ class SystemLog extends \Be\System\Controller
     /**
      * 系统日志
      *
-     * @BeMenu("操作日志", icon="el-icon-finished", ordering="10.3")
+     * @BeMenu("操作日志", icon="el-icon-fa fa-video-camera", ordering="10.3")
      * @BePermission("查看操作日志", ordering="10.3")
      */
     public function logs()
