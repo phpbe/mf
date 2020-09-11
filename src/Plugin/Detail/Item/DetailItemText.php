@@ -39,26 +39,31 @@ class DetailItemText extends DetailItem
      */
     public function getVueData()
     {
-        $value = $this->value;
         if ($this->keyValues !== null && is_array($this->keyValues)) {
+            $value = $this->value;
             $keyValues = $this->keyValues;
             if (isset($keyValues[$value])) {
                 $value = $keyValues[$value];
             } else {
                 $value = '';
             }
-        }
-
-        $value = nl2br($value);
-
-        return [
-            'detailItems' => [
-                $this->name => [
-                    'value' => $value,
-                    'keyValues' => $this->keyValues,
+            return [
+                'detailItems' => [
+                    $this->name => [
+                        'value' => nl2br($value),
+                        'keyValues' => $keyValues,
+                    ]
                 ]
-            ]
-        ];
+            ];
+        } else {
+            return [
+                'detailItems' => [
+                    $this->name => [
+                        'value' => nl2br($this->value),
+                    ]
+                ]
+            ];
+        }
     }
 
 }
