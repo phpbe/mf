@@ -50,7 +50,7 @@ class FormItemTimePickerRange extends FormItem
 
         $this->ui['time-picker']['is-range'] = null;
         $this->ui['date-picker']['@change'] = 'formItemTimePickerRange_' . $this->name.'_change';
-        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.range';
+        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.value';
     }
 
     /**
@@ -96,7 +96,7 @@ class FormItemTimePickerRange extends FormItem
         return [
             'formItems' => [
                 $this->name => [
-                    'range' => $this->value,
+                    'value' => $this->value,
                 ]
             ]
         ];

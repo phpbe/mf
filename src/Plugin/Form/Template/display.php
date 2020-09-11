@@ -29,7 +29,7 @@
                     }
                     echo $driver->getHtml();
 
-                    $formData[$driver->name] = $driver->value;
+                    $formData[$driver->name] = $driver->getValueString();
 
                     $jsX = $driver->getJs();
                     if ($jsX) {

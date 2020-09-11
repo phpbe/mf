@@ -43,6 +43,7 @@ body {background-color: #fff;}
     overflow-x: hidden;
     overflow-y: auto;
     height: 100%;
+    padding-top: 5px;
     padding-bottom: 30px;
 }
 

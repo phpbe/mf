@@ -50,7 +50,7 @@ class FormItemDatePickerRange extends FormItem
 
         $this->ui['date-picker']['type'] = 'daterange';
         $this->ui['date-picker']['@change'] = 'formItemDatePickerRange_' . $this->name.'_change';
-        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.range';
+        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.value';
     }
 
     /**
@@ -96,7 +96,7 @@ class FormItemDatePickerRange extends FormItem
         return [
             'formItems' => [
                 $this->name => [
-                    'range' => $this->value,
+                    'value' => $this->value,
                 ]
             ]
         ];

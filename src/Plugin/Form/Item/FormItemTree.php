@@ -47,8 +47,8 @@ class FormItemTree extends FormItem
         }
 
         $this->ui['tree'][':data'] = 'formItems.' . $this->name . '.treeData';
+        $this->ui['tree'][':default-checked-keys'] = 'formItems.' . $this->name . '.value';
         $this->ui['tree']['show-checkbox'] = null;
-        $this->ui['tree'][':default-checked-keys'] = 'formItems.' . $this->name . '.defaultCheckedKeys';
         $this->ui['tree']['@check'] = 'formItemTree_' . $this->name.'_check';
     }
 
@@ -109,8 +109,8 @@ class FormItemTree extends FormItem
         return [
             'formItems' => [
                 $this->name => [
+                    'value' => $this->value,
                     'treeData' => $this->treeData,
-                    'defaultCheckedKeys' => $this->value,
                 ]
             ]
         ];
