@@ -18,15 +18,16 @@ class DetailItemCode extends DetailItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
-        parent::__construct($params);
+        parent::__construct($params, $row);
 
         if (isset($params['language'])) {
             $language = $params['language'];
             if ($language instanceof \Closure) {
-                $language = $language();
+                $language = $language($row);
             }
 
             switch ($language) {
@@ -202,7 +203,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['js'])) {
                 $js = $params['js'];
                 if ($js instanceof \Closure) {
-                    $js = $js();
+                    $js = $js($row);
                 }
 
                 if (is_array($js)) {
@@ -213,7 +214,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['css'])) {
                 $css = $params['css'];
                 if ($css instanceof \Closure) {
-                    $css = $css();
+                    $css = $css($row);
                 }
 
                 if (is_array($css)) {
@@ -224,7 +225,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['option'])) {
                 $option = $params['option'];
                 if ($option instanceof \Closure) {
-                    $option = $option();
+                    $option = $option($row);
                 }
 
                 if (is_array($option)) {
@@ -237,7 +238,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['js'])) {
                 $js = $params['js'];
                 if ($js instanceof \Closure) {
-                    $js = $js();
+                    $js = $js($row);
                 }
                 if (is_array($js)) {
                     $this->js = $js;
@@ -247,7 +248,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['css'])) {
                 $css = $params['css'];
                 if ($css instanceof \Closure) {
-                    $css = $css();
+                    $css = $css($row);
                 }
 
                 if (is_array($css)) {
@@ -258,7 +259,7 @@ class DetailItemCode extends DetailItem
             if (isset($params['option'])) {
                 $option = $params['option'];
                 if ($option instanceof \Closure) {
-                    $option = $option();
+                    $option = $option($row);
                 }
 
                 if (is_array($option)) {

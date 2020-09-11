@@ -4,6 +4,7 @@ namespace Be\App\System\Controller;
 
 
 use Be\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Plugin\Detail\Item\DetailItemTree;
 use Be\Plugin\Form\Item\FormItemRadioGroupButton;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
@@ -269,6 +270,22 @@ class Role extends Controller
                             ],
                         ],
                         [
+                            'name' => 'permissions',
+                            'label' => '自定义权限',
+                            'driver' => DetailItemTree::class,
+                            'ui' => [
+                                'form-item' => [
+                                    'v-show' => 'formData.permission == \'自定义\'',
+                                ]
+                            ],
+                            'value' => function ($row) {
+                                return explode(',', $row['permissions']);
+                            },
+                            'treeData' => function () {
+                                return Be::getService('System.Role')->getPermissionTree();
+                            },
+                        ],
+                        [
                             'name' => 'remark',
                             'label' => '备注',
                         ],
@@ -379,7 +396,6 @@ class Role extends Controller
                                 '1' => '所有权限',
                                 '-1' => '自定义',
                             ],
-                            'value' => '-1',
                         ],
                         [
                             'name' => 'permissions',

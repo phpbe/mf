@@ -36,6 +36,31 @@ class Form extends Plugin
         return parent::setting($setting);
     }
 
+    public function setValue($row)
+    {
+        if (is_object($row)) {
+            $row = get_object_vars($row);
+        }
+
+        foreach ($this->setting['form']['items'] as &$item) {
+            if (isset($item['value'])) {
+                $value = $item['value'];
+                if ($value instanceof \Closure) {
+                    $item['value'] = $value($row);
+                }
+            } else {
+                $name = $item['name'];
+                if (isset($row[$name])) {
+                    $item['value'] = (string) $row[$name];
+                }
+            }
+        }
+        unset($item);
+
+        return $this;
+    }
+
+
     public function display()
     {
         Response::set('setting', $this->setting);

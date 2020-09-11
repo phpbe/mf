@@ -29,6 +29,8 @@
                     }
                     echo $driver->getHtml();
 
+                    $formData[$driver->name] = $driver->value;
+
                     $jsX = $driver->getJs();
                     if ($jsX) {
                         $js = array_merge($js, $jsX);
@@ -89,7 +91,7 @@
         var vueDetail = new Vue({
             el: '#app',
             data: {
-                formData: {}
+                formData: <?php echo json_encode($formData); ?>
                 <?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {

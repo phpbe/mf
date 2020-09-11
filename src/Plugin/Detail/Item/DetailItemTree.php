@@ -1,17 +1,15 @@
 <?php
 
-namespace Be\Plugin\Form\Item;
+namespace Be\Plugin\Detail\Item;
+
 
 /**
- * 表单项 树
+ * 明细 树
  */
-class FormItemTree extends FormItem
+class DetailItemTree extends DetailItem
 {
 
-    protected $valueType = 'array(string)';
-
     protected $treeData = [];
-
 
     /**
      * 构造函数
@@ -28,28 +26,18 @@ class FormItemTree extends FormItem
             if ($treeData instanceof \Closure) {
                 $treeData = $treeData($row);
             }
-
+            $treeData = $this->treeDataDisabled($treeData);
             $this->treeData = $treeData;
-        }
-
-        if ($this->required) {
-            if (!isset($this->ui['form-item'][':rules'])) {
-                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择' . $this->label . '\', trigger: \'change\' }]';
-            }
-        }
-
-        if ($this->disabled) {
-            $this->treeData = $this->treeDataDisabled($this->treeData);
         }
 
         if (!isset($this->ui['tree']['node-key'])) {
             $this->ui['tree']['node-key'] = 'key';
         }
 
-        $this->ui['tree'][':data'] = 'formItems.' . $this->name . '.treeData';
+        $this->ui['tree'][':data'] = 'detailItems.' . $this->name . '.treeData';
         $this->ui['tree']['show-checkbox'] = null;
-        $this->ui['tree'][':default-checked-keys'] = 'formItems.' . $this->name . '.defaultCheckedKeys';
-        $this->ui['tree']['@check'] = 'formItemTree_' . $this->name.'_check';
+        $this->ui['tree']['default-expand-all'] = null;
+        $this->ui['tree'][':default-checked-keys'] = 'detailItems.' . $this->name . '.defaultCheckedKeys';
     }
 
 
@@ -107,7 +95,7 @@ class FormItemTree extends FormItem
     public function getVueData()
     {
         return [
-            'formItems' => [
+            'detailItems' => [
                 $this->name => [
                     'treeData' => $this->treeData,
                     'defaultCheckedKeys' => $this->value,
@@ -116,19 +104,5 @@ class FormItemTree extends FormItem
         ];
     }
 
-    /**
-     * 获取 vue 方法
-     *
-     * @return false | array
-     */
-    public function getVueMethods()
-    {
-        return [
-            'formItemTree_' . $this->name . '_check' => 'function(node, data) {
-                this.formData.' . $this->name . ' = JSON.stringify(data.checkedKeys);
-            }',
-        ];
-    }
 
 }
-

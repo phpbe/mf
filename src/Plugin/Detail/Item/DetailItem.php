@@ -20,8 +20,9 @@ abstract class DetailItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
         if (isset($params['name'])) {
             $this->name = $params['name'];
@@ -30,7 +31,7 @@ abstract class DetailItem
         if (isset($params['label'])) {
             $label = $params['label'];
             if ($label instanceof \Closure) {
-                $this->label = $label();
+                $this->label = $label($row);
             } else {
                 $this->label = $label;
             }
@@ -39,7 +40,7 @@ abstract class DetailItem
         if (isset($params['value'])) {
             $value = $params['value'];
             if ($value instanceof \Closure) {
-                $this->value = $value();
+                $this->value = $value($row);
             } else {
                 $this->value = $value;
             }
@@ -48,7 +49,7 @@ abstract class DetailItem
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
             if ($keyValues instanceof \Closure) {
-                $this->keyValues = $keyValues();
+                $this->keyValues = $keyValues($row);
             } else {
                 $this->keyValues = $keyValues;
             }
@@ -57,7 +58,7 @@ abstract class DetailItem
         if (isset($params['ui'])) {
             $ui = $params['ui'];
             if ($ui instanceof \Closure) {
-                $this->ui = $ui();
+                $this->ui = $ui($row);
             } else {
                 $this->ui = $ui;
             }
@@ -127,6 +128,41 @@ abstract class DetailItem
     public function getVueHooks()
     {
         return false;
+    }
+
+    public function __get($property)
+    {
+        if (isset($this->$property)) {
+            return ($this->$property);
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * 获取值的字符形式
+     *
+     * @return string
+     */
+    public function getValueString()
+    {
+        if (is_array($this->value) || is_object($this->value)) {
+            return json_encode($this->value);
+        }
+        return $this->value;
+    }
+
+    /**
+     * 获取新值的字符形式
+     *
+     * @return string
+     */
+    public function getNewValueString()
+    {
+        if (is_array($this->newValue) || is_object($this->newValue)) {
+            return json_encode($this->newValue);
+        }
+        return $this->newValue;
     }
 
 }

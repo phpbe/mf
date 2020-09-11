@@ -648,23 +648,6 @@ class Curd extends Plugin
 
                 $setting = $this->setting['edit'];
 
-                $row = $tuple->toArray();
-                foreach ($setting['form']['items'] as &$item) {
-                    if (isset($item['value'])) {
-                        $value = $item['value'];
-                        if ($value instanceof \Closure) {
-                            $item['value'] = $value($row);
-                        } else {
-                            $item['value'] = $value;
-                        }
-                    } else {
-                        $name = $item['name'];
-                        if (isset($row[$name])) {
-                            $item['value'] = (string) $row[$name];
-                        }
-                    }
-                }
-
                 if (is_array($primaryKeyValue)) {
                     foreach ($primaryKeyValue as $pKey => $pVal) {
                         $setting['form']['items'][] = [
@@ -682,7 +665,11 @@ class Curd extends Plugin
                 }
 
                 Response::setTitle($title);
-                Be::getPlugin('Form')->setting($setting)->display();
+                Be::getPlugin('Form')
+                    ->setting($setting)
+                    ->setValue($tuple->toArray())
+                    ->display();
+
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
             }
