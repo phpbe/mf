@@ -3,9 +3,9 @@
 namespace Be\Plugin\Form\Item;
 
 /**
- * 表单项 月份选择器
+ * 表单项 单选框
  */
-class FormItemDatePickerMonth extends FormItem
+class FormItemRadioGroup extends FormItem
 {
 
     /**
@@ -25,21 +25,12 @@ class FormItemDatePickerMonth extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['date-picker']['disabled'])) {
-                $this->ui['date-picker']['disabled'] = 'true';
+            if (!isset($this->ui['radio-group']['disabled'])) {
+                $this->ui['radio-group']['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['date-picker']['placeholder'])) {
-            $this->ui['date-picker']['placeholder'] = '选择月';
-        }
-
-        if (!isset($this->ui['date-picker']['value-format'])) {
-            $this->ui['date-picker']['value-format'] = 'yyyy-MM';
-        }
-
-        $this->ui['date-picker']['type'] = 'month';
-        $this->ui['date-picker']['v-model'] = 'formData.' . $this->name;
+        $this->ui['radio-group']['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -59,9 +50,9 @@ class FormItemDatePickerMonth extends FormItem
         }
         $html .= '>';
 
-        $html .= '<el-date-picker';
-        if (isset($this->ui['date-picker'])) {
-            foreach ($this->ui['date-picker'] as $k => $v) {
+        $html .= '<el-radio-group';
+        if (isset($this->ui['radio-group'])) {
+            foreach ($this->ui['radio-group'] as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {
@@ -70,10 +61,30 @@ class FormItemDatePickerMonth extends FormItem
             }
         }
         $html .= '>';
-        $html .= '</el-date-picker>';
+
+        foreach ($this->keyValues as $key => $val) {
+            $html .= '<el-radio';
+            if (isset($this->ui['radio'])) {
+                foreach ($this->ui['radio'] as $k => $v) {
+                    if ($v === null) {
+                        $html .= ' ' . $k;
+                    } else {
+                        $html .= ' ' . $k . '="' . $v . '"';
+                    }
+                }
+            }
+
+            $html .= ' label="'. $key .'"';
+            $html .= '>';
+            $html .= $val;
+            $html .= '</el-radio>';
+        }
+
+        $html .= '</el-radio-group>';
+
         $html .= '</el-form-item>';
         return $html;
     }
 
-
 }
+

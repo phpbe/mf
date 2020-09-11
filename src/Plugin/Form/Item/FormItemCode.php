@@ -19,11 +19,12 @@ class FormItemCode extends FormItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      * @throws PluginException
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
-        parent::__construct($params);
+        parent::__construct($params, $row);
 
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
@@ -34,7 +35,7 @@ class FormItemCode extends FormItem
         if (isset($params['language'])) {
             $language = $params['language'];
             if ($language instanceof \Closure) {
-                $language = $language();
+                $language = $language($row);
             }
 
             switch ($language) {
@@ -210,7 +211,7 @@ class FormItemCode extends FormItem
             if (isset($params['js'])) {
                 $js = $params['js'];
                 if ($js instanceof \Closure) {
-                    $js = $js();
+                    $js = $js($row);
                 }
 
                 if (is_array($js)) {
@@ -221,7 +222,7 @@ class FormItemCode extends FormItem
             if (isset($params['css'])) {
                 $css = $params['css'];
                 if ($css instanceof \Closure) {
-                    $css = $css();
+                    $css = $css($row);
                 }
 
                 if (is_array($css)) {
@@ -232,7 +233,7 @@ class FormItemCode extends FormItem
             if (isset($params['option'])) {
                 $option = $params['option'];
                 if ($option instanceof \Closure) {
-                    $option = $option();
+                    $option = $option($row);
                 }
 
                 if (is_array($option)) {
@@ -245,7 +246,7 @@ class FormItemCode extends FormItem
             if (isset($params['js'])) {
                 $js = $params['js'];
                 if ($js instanceof \Closure) {
-                    $js = $js();
+                    $js = $js($row);
                 }
                 if (is_array($js)) {
                     $this->js = $js;
@@ -255,7 +256,7 @@ class FormItemCode extends FormItem
             if (isset($params['css'])) {
                 $css = $params['css'];
                 if ($css instanceof \Closure) {
-                    $css = $css();
+                    $css = $css($row);
                 }
 
                 if (is_array($css)) {
@@ -266,7 +267,7 @@ class FormItemCode extends FormItem
             if (isset($params['option'])) {
                 $option = $params['option'];
                 if ($option instanceof \Closure) {
-                    $option = $option();
+                    $option = $option($row);
                 }
 
                 if (is_array($option)) {
@@ -325,7 +326,7 @@ class FormItemCode extends FormItem
         }
         $html .= '>';
 
-        $html .= '<textarea ref="codeMirror_' . $this->name . '" v-model="formData.' . $this->name . '"></textarea>';
+        $html .= '<textarea ref="refFormItemCode_' . $this->name . '" v-model="formData.' . $this->name . '"></textarea>';
 
         $html .= '</el-form-item>';
         return $html;
@@ -354,7 +355,7 @@ class FormItemCode extends FormItem
      */
     public function getVueHooks()
     {
-        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.codeMirror_' . $this->name . ',' . json_encode($this->option) . ');';
+        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.refFormItemCode_' . $this->name . ',' . json_encode($this->option) . ');';
 
         $updatedCode = 'this.formItems.' . $this->name . '.codeMirror && this.formItems.' . $this->name . '.codeMirror.refresh();';
         $updatedCode .= 'this.formData.' . $this->name . ' = this.formItems.' . $this->name . '.codeMirror.getValue();';

@@ -25,11 +25,12 @@ class FormItemAvatar extends FormItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      * @throws PluginException
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
-        parent::__construct($params);
+        parent::__construct($params, $row);
 
         if (isset($params['defaultValue'])) {
             $this->defaultValue = $params['defaultValue'];

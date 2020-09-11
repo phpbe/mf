@@ -14,10 +14,11 @@ class FormItemTimePickerRange extends FormItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
-        parent::__construct($params);
+        parent::__construct($params, $row);
 
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
@@ -48,7 +49,8 @@ class FormItemTimePickerRange extends FormItem
         }
 
         $this->ui['time-picker']['is-range'] = null;
-        $this->ui['time-picker']['v-model'] = 'formData.' . $this->name;
+        $this->ui['date-picker']['@change'] = 'formItemTimePickerRange_' . $this->name.'_change';
+        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.range';
     }
 
     /**
@@ -82,6 +84,36 @@ class FormItemTimePickerRange extends FormItem
         $html .= '</el-time-picker>';
         $html .= '</el-form-item>';
         return $html;
+    }
+
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        return [
+            'formItems' => [
+                $this->name => [
+                    'range' => $this->value,
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'formItemTimePickerRange_' . $this->name . '_change' => 'function(value) {
+                this.formData.' . $this->name . ' = JSON.stringify(value);
+            }',
+        ];
     }
 
 }

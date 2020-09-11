@@ -170,4 +170,97 @@ class Role extends \Be\System\Service
         chmod($path, 0755);
     }
 
+
+    public function getPermissionTree() {
+        $treeData = [];
+        $apps = Be::getService('System.App')->getApps();
+        foreach ($apps as $app) {
+            $appName = $app->name;
+
+            $children = [];
+            $appProperty = Be::getProperty('App.'.$appName);
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
+            if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
+            $controllers = scandir($controllerDir);
+            foreach ($controllers as $controller) {
+                if ($controller == '.' || $controller == '..' || is_dir($controllerDir . '/' . $controller)) continue;
+
+                $controller = substr($controller, 0, -4);
+                $className = 'Be\\App\\' . $appName . '\\Controller\\' . $controller;
+                if (!class_exists($className)) continue;
+
+                $reflection = new \ReflectionClass($className);
+                $classComment = $reflection->getDocComment();
+                $parseClassComments = DocComment::parse($classComment);
+
+                $childKey = null;
+                $childLabel = null;
+                foreach ($parseClassComments as $key => $val) {
+                    if ($key == 'BePermissionGroup') {
+                        if (is_array($val[0]) && isset($val[0]['value']) && $val[0]['value'] != '*') {
+                            $childKey = $appName . '.' . $controller;
+                            $childLabel = $val[0]['value'];
+                            break;
+                        }
+                    }
+                }
+
+                if ($childKey === null) {
+                    continue;
+                }
+
+
+                if (!isset($children[$childLabel])) {
+                    $children[$childLabel] = [
+                        'key' => $childKey,
+                        'label' => $childLabel,
+                        'children' => [],
+                    ];
+                }
+
+                $subChildren = [];
+                $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
+                foreach ($methods as &$method) {
+                    $methodName = $method->getName();
+                    $methodComment = $method->getDocComment();
+                    $methodComments = DocComment::parse($methodComment);
+                    foreach ($methodComments as $key => $val) {
+                        if ($key == 'BePermission') {
+                            if (is_array($val[0]) && isset($val[0]['value']) && $val[0]['value'] != '*') {
+                                $subChildren[] = [
+                                    'key' => $appName . '.' . $controller . '.' . $methodName,
+                                    'label' => $val[0]['value'],
+                                ];
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                if (count($subChildren) > 0) {
+                    $children[$childLabel]['children'] = array_merge($children[$childLabel]['children'],$subChildren);
+                }
+            }
+
+            if (count($children) > 0) {
+                $filteredChildren = [];
+                foreach ($children as $key => $val) {
+                    if (count($val['children']) > 0) {
+                        $filteredChildren[] = $val;
+                    }
+                }
+
+                if (count($filteredChildren) > 0) {
+                    $treeData[] = [
+                        'key' => $app->name,
+                        'label' => $app->label,
+                        'children' => $filteredChildren,
+                    ];
+                }
+            }
+        }
+
+        return $treeData;
+    }
+
 }

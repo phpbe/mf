@@ -30,14 +30,19 @@ CREATE TABLE `system_log` (
 CREATE TABLE `system_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `name` varchar(60) NOT NULL DEFAULT '' COMMENT '角色名',
-  `note` varchar(120) NOT NULL DEFAULT '' COMMENT '备注',
-  `permission` tinyint(4) NOT NULL COMMENT '权限',
-  `permissions` text NOT NULL COMMENT '权限明细',
+  `remark` varchar(200) NOT NULL DEFAULT '' COMMENT '备注',
+  `permission` tinyint(4) NOT NULL COMMENT '权限（0: 无权限/1: 所有权限/-1: 自定义权限）',
+  `permissions` text NOT NULL COMMENT '自定义权限',
+  `is_enable` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否可用',
+  `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `ordering` int(11) NOT NULL COMMENT '排序（越小越靠前）',
+  `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户角色';
-INSERT INTO `system_role` (`id`, `name`, `note`, `permission`, `permissions`, `ordering`) VALUES
-(1, '超级管理员', '能执行所有操作', 1, '', 0);
+
+INSERT INTO `system_role` (`id`, `name`, `remark`, `permission`, `permissions`, `is_enable`, `is_delete`, `ordering`, `create_time`, `update_time`) VALUES
+(1, '超级管理员', '能执行所有操作', 1, '', 1, 0, 0, '2020-09-10 00:43:01', '2020-09-10 00:43:01');
 
 CREATE TABLE `system_task`(
     `id` INT NOT NULL AUTO_INCREMENT COMMENT '自增ID',

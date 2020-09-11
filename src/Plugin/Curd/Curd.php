@@ -647,14 +647,22 @@ class Curd extends Plugin
                 $tuple->load($primaryKeyValue);
 
                 $setting = $this->setting['edit'];
-                if (isset($setting['form']['items']) && count($setting['form']['items']) > 0) {
-                    foreach ($setting['form']['items'] as &$item) {
-                        if (!isset($item['value'])) {
-                            $name = $item['name'];
-                            $item['value'] = (string)$tuple->$name;
+
+                $row = $tuple->toArray();
+                foreach ($setting['form']['items'] as &$item) {
+                    if (isset($item['value'])) {
+                        $value = $item['value'];
+                        if ($value instanceof \Closure) {
+                            $item['value'] = $value($row);
+                        } else {
+                            $item['value'] = $value;
+                        }
+                    } else {
+                        $name = $item['name'];
+                        if (isset($row[$name])) {
+                            $item['value'] = (string) $row[$name];
                         }
                     }
-                    unset($item);
                 }
 
                 if (is_array($primaryKeyValue)) {

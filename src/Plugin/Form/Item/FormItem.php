@@ -26,17 +26,18 @@ abstract class FormItem
      * 构造函数
      *
      * @param array $params 参数
+     * @param array $row 数据对象
      * @throws PluginException
      */
-    public function __construct($params = [])
+    public function __construct($params = [], $row = [])
     {
         if (!isset($params['name'])) {
             throw new PluginException('表单项参数 name 缺失');
         }
 
         $name = $params['name'];
-        if ($name  instanceof \Closure) {
-            $this->name = $name();
+        if ($name instanceof \Closure) {
+            $this->name = $name($row);
         } else {
             $this->name = $name;
         }
@@ -44,7 +45,7 @@ abstract class FormItem
         if (isset($params['label'])) {
             $label = $params['label'];
             if ($label instanceof \Closure) {
-                $this->label = $label();
+                $this->label = $label($row);
             } else {
                 $this->label = $label;
             }
@@ -53,7 +54,7 @@ abstract class FormItem
         if (isset($params['value'])) {
             $value = $params['value'];
             if ($value instanceof \Closure) {
-                $this->value = $value();
+                $this->value = $value($row);
             } else {
                 $this->value = $value;
             }
@@ -62,7 +63,7 @@ abstract class FormItem
         if (isset($params['valueType'])) {
             $valueType = $params['valueType'];
             if ($valueType instanceof \Closure) {
-                $this->valueType = $valueType();
+                $this->valueType = $valueType($row);
             } else {
                 $this->valueType = $valueType;
             }
@@ -71,7 +72,7 @@ abstract class FormItem
         if (isset($params['keyValues'])) {
             $keyValues = $params['keyValues'];
             if ($keyValues instanceof \Closure) {
-                $this->keyValues = $keyValues();
+                $this->keyValues = $keyValues($row);
             } else {
                 $this->keyValues = $keyValues;
             }
@@ -79,7 +80,7 @@ abstract class FormItem
             if (isset($params['values'])) {
                 $values = $params['values'];
                 if ($values instanceof \Closure) {
-                    $values = $values();
+                    $values = $values($row);
                 }
 
                 $keyValues = [];
@@ -93,7 +94,7 @@ abstract class FormItem
         if (isset($params['ui'])) {
             $ui = $params['ui'];
             if ($ui instanceof \Closure) {
-                $this->ui = $ui();
+                $this->ui = $ui($row);
             } else {
                 $this->ui = $ui;
             }
@@ -111,7 +112,7 @@ abstract class FormItem
         if (isset($params['required'])) {
             $required = $params['required'];
             if ($required instanceof \Closure) {
-                $this->required = $required();
+                $this->required = $required($row);
             } else {
                 $this->required = $required;
             }
@@ -120,7 +121,7 @@ abstract class FormItem
         if (isset($params['disabled'])) {
             $disabled = $params['disabled'];
             if ($disabled instanceof \Closure) {
-                $this->disabled = $disabled();
+                $this->disabled = $disabled($row);
             } else {
                 $this->disabled = $disabled;
             }
@@ -231,7 +232,7 @@ abstract class FormItem
         }
         return $this->newValue;
     }
-    
+
     /**
      * 提交处理
      *
@@ -244,21 +245,21 @@ abstract class FormItem
             $newValue = $data[$this->name];
             switch ($this->valueType) {
                 case 'array(int)':
-                    $newValue =  htmlspecialchars_decode($newValue);
+                    $newValue = htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
                         throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_map('intval',$newValue);
+                    $newValue = array_map('intval', $newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'array(float)':
-                    $newValue =  htmlspecialchars_decode($newValue);
+                    $newValue = htmlspecialchars_decode($newValue);
                     $newValue = json_decode($newValue, true);
                     if (NULL === $newValue) {
                         throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_map('floatval',$newValue);
+                    $newValue = array_map('floatval', $newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'array':
@@ -268,7 +269,7 @@ abstract class FormItem
                     if (NULL === $newValue) {
                         throw new PluginException('参数 ' . $this->label . ' (' . $this->name . ') 数据格式非有效的 JSON！');
                     }
-                    $newValue = array_map('trim',$newValue);
+                    $newValue = array_map('trim', $newValue);
                     $this->newValue = $newValue;
                     break;
                 case 'mixed':
