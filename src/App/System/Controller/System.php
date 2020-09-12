@@ -21,6 +21,9 @@ class System extends \Be\System\Controller
     public function dashboard()
     {
         $my = Be::getUser();
+        if ($my->id == 0) {
+            Response::redirect(beUrl('System.User.login'));
+        }
 
         Response::setTitle('后台首页');
 
