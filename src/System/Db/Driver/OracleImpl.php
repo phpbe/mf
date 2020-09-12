@@ -44,7 +44,7 @@ class OracleImpl extends Driver
             }
 
             $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
-            if (!$connection) throw new DbException('连接 数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
+            if (!$connection) throw new DbException('连接Oracle数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
             $this->connection = $connection;
         }
@@ -1035,7 +1035,7 @@ class OracleImpl extends Driver
 
     /**
      * 处理插入数据库的字符串值，防注入, 仅处理敏感字符，不加外层引号，
-     * 与 quote 方法的区别可以理解为 quote 比 escape 多了最外层的引号
+     * 与 quote 方法的区别可以理解为 quoteValue 比 escape 多了最外层的引号
      *
      * @param string $value
      * @return string
