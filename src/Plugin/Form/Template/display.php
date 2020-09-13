@@ -83,7 +83,7 @@
     if (count($css) > 0) {
         $css = array_unique($css);
         foreach ($css as $x) {
-            echo '<link rel="stylesheet" href="'.$x.'">';
+            echo '<link rel="stylesheet" type="text/css" href="'.$x.'" />';
         }
     }
     ?>
