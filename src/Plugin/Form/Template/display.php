@@ -7,7 +7,7 @@
     $vueMethods = [];
     $vueHooks = [];
     ?>
-    <div id="app">
+    <div id="app" v-cloak>
         <el-form :model="formData" ref="formRef"<?php
             foreach ($this->setting['form']['ui'] as $k => $v) {
                 if ($v === null) {
