@@ -25,7 +25,7 @@ class Plugin extends \Be\System\Controller
             if ($file['size'] > $maxSizeInt) {
                 Response::set('success', false);
                 Response::set('message', '您上传的文件尺寸已超过最大限制：' . $maxSize . '！');
-                Response::ajax();
+                Response::json();
             }
 
             $ext = '';
@@ -45,17 +45,17 @@ class Plugin extends \Be\System\Controller
                 Response::set('url', $newFileUrl);
                 Response::set('success', true);
                 Response::set('message', '上传成功！');
-                Response::ajax();
+                Response::json();
             } else {
                 Response::set('success', false);
                 Response::set('message', '服务器处理上传文件出错！');
-                Response::ajax();
+                Response::json();
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
             Response::set('success', false);
             Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::ajax();
+            Response::json();
         }
     }
 
@@ -70,7 +70,7 @@ class Plugin extends \Be\System\Controller
             if ($file['size'] > $maxSizeInt) {
                 Response::set('success', false);
                 Response::set('message', '您上传的头像尺寸已超过最大限制：' . $maxSize . '！');
-                Response::ajax();
+                Response::json();
             }
 
             $ext = '';
@@ -104,18 +104,18 @@ class Plugin extends \Be\System\Controller
                     Response::set('url', $newImageUrl);
                     Response::set('success', true);
                     Response::set('message', '上传成功！');
-                    Response::ajax();
+                    Response::json();
                 }
             } else {
                 Response::set('success', false);
                 Response::set('message', '您上传的不是有效的图像文件！');
-                Response::ajax();
+                Response::json();
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
             Response::set('success', false);
             Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::ajax();
+            Response::json();
         }
     }
 
@@ -130,7 +130,7 @@ class Plugin extends \Be\System\Controller
             if ($file['size'] > $maxSizeInt) {
                 Response::set('success', false);
                 Response::set('message', '您上传的图像尺寸已超过最大限制：' . $maxSize . '！');
-                Response::ajax();
+                Response::json();
             }
 
             $ext = '';
@@ -164,18 +164,18 @@ class Plugin extends \Be\System\Controller
                     Response::set('url', $newImageUrl);
                     Response::set('success', true);
                     Response::set('message', '上传成功！');
-                    Response::ajax();
+                    Response::json();
                 }
             } else {
                 Response::set('success', false);
                 Response::set('message', '您上传的不是有效的图像文件！');
-                Response::ajax();
+                Response::json();
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
             Response::set('success', false);
             Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::ajax();
+            Response::json();
         }
     }
 

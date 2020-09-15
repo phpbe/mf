@@ -90,6 +90,14 @@ class Response
      */
     public static function ajax()
     {
+        self::json();
+    }
+
+    /**
+     * 以 JSON 输出暂存数据
+     */
+    public static function json()
+    {
         header('Content-type: application/json');
         echo json_encode(self::$data);
         exit();
@@ -113,7 +121,7 @@ class Response
         }
 
         if (Request::isAjax()) {
-            self::ajax();
+            self::json();
         } else {
             self::display('App.System.System.success');
             exit;
@@ -138,7 +146,7 @@ class Response
         }
 
         if (Request::isAjax()) {
-            self::ajax();
+            self::json();
         } else {
             self::display('App.System.System.error');
             exit;
@@ -157,7 +165,7 @@ class Response
             self::set('success', false);
             self::set('message', $e->getMessage());
             self::set('code', $e->getCode());
-            self::ajax();
+            self::json();
         } else {
             self::set('e', $e);
             self::display('App.System.System.exception');

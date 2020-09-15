@@ -34,7 +34,7 @@ class App extends \Be\System\Controller
         if (!$appName) {
             Response::set('error', 1);
             Response::set('message', '参数(appName)缺失！');
-            Response::ajax();
+            Response::json();
         }
 
         try {
@@ -54,7 +54,7 @@ class App extends \Be\System\Controller
         if ($appName == '') {
             Response::set('error', 1);
             Response::set('message', '参数(appName)缺失！');
-            Response::ajax();
+            Response::json();
         }
 
         $adminServiceSystem = Be::getService('System.Admin');
@@ -68,7 +68,7 @@ class App extends \Be\System\Controller
             Response::set('message', $adminServiceSystem->getError());
         }
 
-        Response::ajax();
+        Response::json();
     }
 
 

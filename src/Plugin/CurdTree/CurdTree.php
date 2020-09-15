@@ -115,7 +115,7 @@ trait CurdTree
 
             Response::set('total', $total);
             Response::set('rows', $lists);
-            Response::ajax();
+            Response::json();
         }
 
         Response::setTitle($this->config['name'] . '：列表');

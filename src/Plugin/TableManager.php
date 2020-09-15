@@ -112,7 +112,7 @@ trait TableManager
 
             Response::set('total', $total);
             Response::set('rows', $lists);
-            Response::ajax();
+            Response::json();
         }
 
         Response::setTitle($this->config['base']['name'] . ' - 列表');
@@ -311,7 +311,7 @@ trait TableManager
             Response::set('success', true);
             Response::set('message', '');
             Response::set('data', $tasks);
-            Response::ajax();
+            Response::json();
         } else {
             Response::setTitle($this->config['base']['name'] . ' - 导出任务列表');
 
@@ -371,7 +371,7 @@ trait TableManager
             Response::set('success', true);
             Response::set('message', '');
             Response::set('data', $task);
-            Response::ajax();
+            Response::json();
         } else {
             Response::setTitle($this->config['base']['name'] . ' - 导出任务明细（#' . $taskId . '）');
             Response::set('task', $task);
@@ -430,7 +430,7 @@ trait TableManager
             Response::set('success', false);
             Response::set('message', '删除失败：' . $e->getMessage());
         }
-        Response::ajax();
+        Response::json();
     }
 
 
