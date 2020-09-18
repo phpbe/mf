@@ -12,7 +12,7 @@ namespace Be\System;
  */
 class Response
 {
-    private static $data = array(); // 暂存数据
+    private static $data = []; // 暂存数据
 
 
     /**
@@ -96,10 +96,14 @@ class Response
     /**
      * 以 JSON 输出暂存数据
      */
-    public static function json()
+    public static function json($data = null)
     {
         header('Content-type: application/json');
-        echo json_encode(self::$data);
+        if ($data === null) {
+            echo json_encode(self::$data);
+        } else {
+            echo json_encode(array_merge(self::$data, $data));
+        }
         exit();
     }
 
@@ -153,7 +157,6 @@ class Response
         }
     }
 
-
     /**
      * 系统异常
      *
@@ -172,7 +175,6 @@ class Response
             exit;
         }
     }
-
 
     /**
      * 记录历史节点
