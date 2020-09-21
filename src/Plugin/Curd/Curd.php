@@ -858,8 +858,7 @@ class Curd extends Plugin
      */
     public function delete()
     {
-        $postData = Request::post('data', '', '');
-        $postData = json_decode($postData, true);
+        $postData = Request::json();
 
         $title = null;
         if (isset($this->setting['delete']['title'])) {

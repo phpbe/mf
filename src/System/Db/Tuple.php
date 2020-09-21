@@ -237,7 +237,8 @@ abstract class Tuple
                     $primaryKeyValue[$primaryKey] = $this->$primaryKey;
                 }
             } else {
-                $primaryKeyValue = $this->_primaryKey;
+                $primaryKey = $this->_primaryKey;
+                $primaryKeyValue = $this->$primaryKey;
             }
         } else {
             if (is_array($this->_primaryKey)) {
