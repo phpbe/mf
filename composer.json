@@ -27,7 +27,8 @@
             "Be\\App\\System\\": "src/App/System",
             "Be\\App\\Dev\\": "src/App/Dev",
             "Be\\Theme\\Admin\\": "src/Theme/Admin",
-            "Be\\Theme\\Nude\\": "src/Theme/Nude"
+            "Be\\Theme\\Nude\\": "src/Theme/Nude",
+            "Be\\Theme\\Blank\\": "src/Theme/Blank"
         },
         "files": [
             "src/System/functions.php"
