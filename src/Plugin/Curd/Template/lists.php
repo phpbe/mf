@@ -533,7 +533,7 @@
                 <?php
                 if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
                     echo 'var _this = this;';
-                    echo 'setInterval(function () {_this.reloadTableData();}, ' . $this->setting['lists']['reload'] . ');';
+                    echo 'setInterval(function () {_this.reloadTableData();}, ' . ($this->setting['lists']['reload'] * 1000) . ');';
                 }
 
                 if (isset($vueHooks['created'])) {
