@@ -169,7 +169,68 @@ abstract class Tuple
     }
 
     /**
+     * 插入数据到数据库
+     *
+     * @return Tuple
+     */
+    public function insert()
+    {
+        $db = Be::getDb($this->_dbName);
+        if (is_array($this->_primaryKey)) {
+            $db->insert($this->_tableName, $this);
+            $tableProperty = Be::getTableProperty($this->_tableName);
+            foreach ($this->_primaryKey as $primaryKey) {
+                $field = $tableProperty->getField($primaryKey);
+                if (isset($field['autoIncrement']) && $field['autoIncrement']) {
+                    $this->$primaryKey = $db->getLastInsertId();
+                    break;
+                }
+            }
+        } else {
+            $primaryKey = $this->_primaryKey;
+            $db->insert($this->_tableName, $this);
+            $tableProperty = Be::getTableProperty($this->_tableName);
+            $field = $tableProperty->getField($primaryKey);
+            if (isset($field['autoIncrement']) && $field['autoIncrement']) {
+                $this->$primaryKey = $db->getLastInsertId();
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * 更新数据到数据库
+     *
+     * @return Tuple
+     * @throws TupleException
+     */
+    public function update()
+    {
+        if ($this->_primaryKey === null) {
+            throw new TupleException('表 ' . $this->_tableName . ' 无主键, 不支持按主键更新！');
+        }
+
+        if (is_array($this->_primaryKey)) {
+            $update = true;
+            foreach ($this->_primaryKey as $primaryKey) {
+                if (!$this->$primaryKey) {
+                    throw new TupleException('表 ' . $this->_tableName . ' 主键 ' . $primaryKey . ' 未指定值, 不支持按主键更新！');
+                }
+            }
+        } else {
+            $primaryKey = $this->_primaryKey;
+            if (!$this->$primaryKey) {
+                throw new TupleException('表 ' . $this->_tableName . ' 主键 ' . $primaryKey . ' 未指定值, 不支持按主键更新！');
+            }
+        }
+
+        Be::getDb($this->_dbName)->update($this->_tableName, $this, $this->_primaryKey);
+        return $this;
+    }
+
+    /**
      * 保存数据到数据库
+     * 跟据主键是否有值自动识别插入或更新
      *
      * @return Tuple
      */
