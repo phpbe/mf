@@ -229,6 +229,19 @@ abstract class Tuple
     }
 
     /**
+     * 替换数据到数据库
+     * 仅支持 MYSQL，底层用 replace into 实现
+     *
+     * @return Tuple
+     * @throws TupleException
+     */
+    public function replace()
+    {
+        Be::getDb($this->_dbName)->replace($this->_tableName, $this);
+        return $this;
+    }
+
+    /**
      * 保存数据到数据库
      * 跟据主键是否有值自动识别插入或更新
      *
