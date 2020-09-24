@@ -125,6 +125,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return string
+     * @throws DbException
      */
     public function getValue($sql, array $bind = null)
     {
@@ -141,6 +142,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return array
+     * @throws DbException
      */
     public function getValues($sql, array $bind = null)
     {
@@ -166,6 +168,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return array
+     * @throws DbException
      */
     public function getKeyValues($sql, array $bind = null)
     {
@@ -181,6 +184,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return array
+     * @throws DbException
      */
     public function getArray($sql, array $bind = null)
     {
@@ -196,6 +200,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return array
+     * @throws DbException
      */
     public function getArrays($sql, array $bind = null)
     {
@@ -221,6 +226,7 @@ abstract class Driver
      * @param null | array $bind 参数
      * @param null | string $key 作为下标索引的字段名
      * @return array
+     * @throws DbException
      */
     public function getKeyArrays($sql, array $bind = null, $key = null)
     {
@@ -248,6 +254,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return object
+     * @throws DbException
      */
     public function getObject($sql, array $bind = null)
     {
@@ -263,6 +270,7 @@ abstract class Driver
      * @param string $sql 查询语句
      * @param array $bind 参数
      * @return array(object)
+     * @throws DbException
      */
     public function getObjects($sql, array $bind = null)
     {
@@ -288,6 +296,7 @@ abstract class Driver
      * @param null | array $bind 参数
      * @param null | string $key 作为下标索引的字段名
      * @return array(object)
+     * @throws DbException
      */
     public function getKeyObjects($sql, array $bind = null, $key = null)
     {
@@ -987,15 +996,22 @@ abstract class Driver
      */
     public abstract function dropTable($table);
 
+
     /**
      * 开启事务处理
      *
+     * @throws DbException
      */
     public function startTransaction()
     {
         $this->beginTransaction();
     }
 
+    /**
+     * 开启事务处理
+     *
+     * @throws DbException
+     */
     public function beginTransaction()
     {
         if ($this->connection === null) $this->connect();
@@ -1008,6 +1024,8 @@ abstract class Driver
 
     /**
      * 事务回滚
+     *
+     * @throws DbException
      */
     public function rollback()
     {
@@ -1020,6 +1038,8 @@ abstract class Driver
 
     /**
      * 事务提交
+     * 
+     * @throws DbException
      */
     public function commit()
     {
@@ -1035,6 +1055,7 @@ abstract class Driver
      * 是否在事务中
      *
      * @return bool
+     * @throws DbException
      */
     public function inTransaction()
     {
@@ -1046,6 +1067,7 @@ abstract class Driver
      * 获取数据库连接对象
      *
      * @return \PDO
+     * @throws DbException
      */
     public function getConnection()
     {
@@ -1057,6 +1079,7 @@ abstract class Driver
      * 获取 版本号
      *
      * @return string
+     * @throws DbException
      */
     public function getVersion()
     {
@@ -1106,6 +1129,7 @@ abstract class Driver
      *
      * @param string $value
      * @return string
+     * @throws DbException
      */
     public function quoteValue($value)
     {
@@ -1118,6 +1142,7 @@ abstract class Driver
      *
      * @param array $values
      * @return array
+     * @throws DbException
      */
     public function quoteValues($values)
     {
