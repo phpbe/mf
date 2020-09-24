@@ -50,353 +50,66 @@ class MssqlImpl extends Driver
     }
 
     /**
-     * 插入一个对象到数据库
+     * 返回一个跌代器数组
      *
-     * @param string $table 表名
-     * @param array | object $object 要插入数据库的对象或对象数组，对象属性需要和该表字段一致
-     * @return int 插入的主键ID
-     * @throws DbException
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
      */
-    public function insert($table, $object)
+    public function getYieldValues($sql, array $bind = null)
     {
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('插入的数据格式须为对象或数组');
-        }
-
-        $fields = [];
-        foreach (array_keys($vars) as $field) {
-            $fields[] = $this->quoteKey($field);
-        }
-
-        $sql = 'INSERT INTO ' . $this->quoteKey($table) . '(' . implode(',', $fields) . ') VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-        $statement = $this->execute($sql, array_values($vars));
-        $statement->closeCursor();
-        return $this->getLastInsertId();
-    }
-
-    /**
-     * 批量插入多个对象到数据库
-     *
-     * @param string $table 表名
-     * @param array $objects 要插入数据库的对象数组，对象属性需要和该表字段一致
-     * @return array 批量插入的ID列表
-     * @throws DbException
-     */
-    public function insertMany($table, $objects)
-    {
-        if (!is_array($objects) || count($objects) == 0) return [];
-
-        $ids = [];
-        reset($objects);
-        $object = current($objects);
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('批量插入的数据格式须为对象或数组');
-        }
-        ksort($vars);
-
-        $fields = [];
-        foreach (array_keys($vars) as $field) {
-            $fields[] = $this->quoteKey($field);
-        }
-
-        $sql = 'INSERT INTO ' . $this->quoteKey($table) . '(' . implode(',', $fields) . ') VALUES(' . implode(',', array_fill(0, count($vars), '?')) . ')';
-        $statement = $this->prepare($sql);
-        foreach ($objects as $o) {
-            $vars = null;
-            if (is_array($o)) {
-                $vars = $o;
-            } elseif (is_object($o)) {
-                $vars = get_object_vars($o);
-            } else {
-                throw new DbException('批量插入的数据格式须为对象或数组');
-            }
-            ksort($vars);
-            $statement->execute(array_values($vars));
-            $ids[] = $this->getLastInsertId();
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($tuple = $statement->fetch(\PDO::FETCH_NUM)) {
+            yield $tuple[0];
         }
         $statement->closeCursor();
-
-        return $ids;
+        $connection = null;
     }
 
     /**
-     * 快速插入一个对象到数据库
+     * 返回一个跌代器二维数组
      *
-     * @param string $table 表名
-     * @param array | object $object 要插入数据库的对象，对象属性需要和该表字段一致
-     * @return int 插入的主键ID
-     * @throws DbException
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
      */
-    public function quickInsert($table, $object)
+    public function getYieldArrays($sql, array $bind = null)
     {
-        $effectLines = null;
-
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('快速插入的数据格式须为对象或数组');
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($result = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            yield $result;
         }
-
-        $fields = [];
-        foreach (array_keys($vars) as $field) {
-            $fields[] = $this->quoteKey($field);
-        }
-
-        $sql = 'INSERT INTO ' . $this->quoteKey($table) . '(' . implode(',', $fields) . ') VALUES';
-        $values = array_values($vars);
-        foreach ($values as &$value) {
-            if ($value !== null) {
-                $value = $this->quoteValue($value);
-            } else {
-                $value = 'null';
-            }
-        }
-        $sql .= '(' . implode(',', $values) . ')';
-        $statement = $this->execute($sql);
         $statement->closeCursor();
-
-        return $this->getLastInsertId();
+        $connection = null;
     }
 
     /**
-     * 快速批量插入多个对象到数据库
+     * 返回一个跌代器对象数组
      *
-     * @param string $table 表名
-     * @param array $objects 要插入数据库的对象数组，对象属性需要和该表字段一致
-     * @return int 影响的行数
-     * @throws DbException
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
      */
-    public function quickInsertMany($table, $objects)
+    public function getYieldObjects($sql, array $bind = null)
     {
-        if (!is_array($objects) || count($objects) == 0) return 0;
-
-        reset($objects);
-        $object = current($objects);
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('快速批量插入的数据格式须为对象或数组');
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($result = $statement->fetchObject()) {
+            yield $result;
         }
-        ksort($vars);
-
-
-        $fields = [];
-        foreach (array_keys($vars) as $field) {
-            $fields[] = $this->quoteKey($field);
-        }
-
-        $sql = 'INSERT INTO ' . $this->quoteKey($table) . '(' . implode(',', $fields) . ') VALUES';
-        foreach ($objects as $o) {
-            $vars = null;
-            if (is_array($o)) {
-                $vars = $o;
-            } elseif (is_object($o)) {
-                $vars = get_object_vars($o);
-            } else {
-                throw new DbException('快速批量插入的数据格式须为对象或数组');
-            }
-            ksort($vars);
-            $values = array_values($vars);
-            foreach ($values as &$value) {
-                if ($value !== null) {
-                    $value = $this->quoteValue($value);
-                } else {
-                    $value = 'null';
-                }
-            }
-            $sql .= '(' . implode(',', $values) . '),';
-        }
-        $sql = substr($sql, 0, -1);
-        $statement = $this->execute($sql);
-        $effectLines = $statement->rowCount();
         $statement->closeCursor();
-
-        return $effectLines;
-    }
-
-
-    /**
-     * 更新一个对象到数据库
-     *
-     * @param string $table 表名
-     * @param array | object $object 要插入数据库的对象，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键
-     * @return int 影响的行数
-     * @throws DbException
-     */
-    public function update($table, $object, $primaryKey = null)
-    {
-        $fields = [];
-        $fieldValues = [];
-
-        $where = [];
-        $whereValue = [];
-
-        if ($primaryKey === null) {
-            $primaryKey = $this->getTablePrimaryKey($table);
-            if ($primaryKey === null) {
-                throw new DbException('新数据表' . $table . '无主键，不支持按主键更新！');
-            }
-        }
-
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('更新的数据格式须为对象或数组');
-        }
-
-        foreach ($vars as $key => $value) {
-            if (is_array($value) || is_object($value)) {
-                continue;
-            }
-
-            if (is_array($primaryKey)) {
-
-                if (in_array($key, $primaryKey)) {
-                    $where[] = $this->quoteKey($key) . '=?';
-                    $whereValue[] = $value;
-                    continue;
-                }
-
-            } else {
-
-                // 主键不更新
-                if ($key == $primaryKey) {
-                    $where[] = $this->quoteKey($key) . '=?';
-                    $whereValue[] = $value;
-                    continue;
-                }
-            }
-
-            $fields[] = $this->quoteKey($key) . '=?';
-            $fieldValues[] = $value;
-        }
-
-        if (!$where) {
-            throw new DbException('更新数据时未指定条件！');
-        }
-
-        $sql = 'UPDATE ' . $this->quoteKey($table) . ' SET ' . implode(',', $fields) . ' WHERE ' . implode(' AND ', $where);
-        $fieldValues = array_merge($fieldValues, $whereValue);
-
-        $statement = $this->execute($sql, $fieldValues);
-        $effectLines = $statement->rowCount();
-        $statement->closeCursor();
-
-        return $effectLines;
-    }
-
-    /**
-     * 快速更新一个对象到数据库
-     *
-     * @param string $table 表名
-     * @param array | object $object 要插入数据库的对象，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键
-     * @return int 影响的行数
-     * @throws DbException
-     */
-    public function quickUpdate($table, $object, $primaryKey = null)
-    {
-        $where = [];
-        $fields = [];
-
-        if ($primaryKey === null) {
-            $primaryKey = $this->getTablePrimaryKey($table);
-            if ($primaryKey === null) {
-                throw new DbException('新数据表' . $table . '无主键，不支持按主键更新！');
-            }
-        }
-
-        $vars = null;
-        if (is_array($object)) {
-            $vars = $object;
-        } elseif (is_object($object)) {
-            $vars = get_object_vars($object);
-        } else {
-            throw new DbException('更新的数据格式须为对象或数组');
-        }
-
-        foreach ($vars as $key => $value) {
-            if (is_array($value) || is_object($value)) {
-                continue;
-            }
-
-            if (is_array($primaryKey)) {
-
-                if (in_array($key, $primaryKey)) {
-                    $where[] = $this->quoteKey($key) . '=' . $this->quoteValue($value);
-                    continue;
-                }
-
-            } else {
-
-                // 主键不更新
-                if ($key == $primaryKey) {
-                    $where[] = $this->quoteKey($key) . '=' . $this->quoteValue($value);
-                    continue;
-                }
-            }
-
-            $fields[] = $this->quoteKey($key) . '=' . $this->quoteValue($value);
-        }
-
-        if (!$where) {
-            throw new DbException('更新数据时未指定条件！');
-        }
-
-        $sql = 'UPDATE ' . $this->quoteKey($table) . ' SET ' . implode(',', $fields) . ' WHERE ' . implode(' AND ', $where);
-        $statement = $this->execute($sql);
-        $effectLines = $statement->rowCount();
-        $statement->closeCursor();
-
-        return $effectLines;
-    }
-
-    /**
-     * 批量更新多个对象到数据库
-     *
-     * @param string $table 表名
-     * @param array $objects $object 要更新的对象数组，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
-     * @return int 影响的行数
-     * @throws DbException
-     */
-    public function updateMany($table, $objects, $primaryKey = null)
-    {
-        return 0;
-    }
-
-    /**
-     * 快速批量更新多个对象到数据库
-     *
-     * @param string $table 表名
-     * @param array $objects 要快速批量更新的对象数组，对象属性需要和该表字段一致
-     * @param null | string | array $primaryKey 主键或指定键名更新，未指定时自动取表的主键
-     * @return int 影响的行数
-     * @throws DbException
-     */
-    public function quickUpdateMany($table, $objects, $primaryKey = null)
-    {
-        return 0;
+        $connection = null;
     }
 
     /**

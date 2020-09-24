@@ -53,6 +53,69 @@ class OracleImpl extends Driver
     }
 
     /**
+     * 返回一个跌代器数组
+     *
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
+     */
+    public function getYieldValues($sql, array $bind = null)
+    {
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($tuple = $statement->fetch(\PDO::FETCH_NUM)) {
+            yield $tuple[0];
+        }
+        $statement->closeCursor();
+        $connection = null;
+    }
+
+    /**
+     * 返回一个跌代器二维数组
+     *
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
+     */
+    public function getYieldArrays($sql, array $bind = null)
+    {
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($result = $statement->fetch(\PDO::FETCH_ASSOC)) {
+            yield $result;
+        }
+        $statement->closeCursor();
+        $connection = null;
+    }
+
+    /**
+     * 返回一个跌代器对象数组
+     *
+     * @param string $sql 查询语句
+     * @param array $bind 参数
+     * @return \Generator
+     */
+    public function getYieldObjects($sql, array $bind = null)
+    {
+        $connection = $this->connection;
+        $this->connection = null;
+        $this->connect();
+        $statement = $this->execute($sql, $bind);
+        $this->connection = $connection;
+        while ($result = $statement->fetchObject()) {
+            yield $result;
+        }
+        $statement->closeCursor();
+        $connection = null;
+    }
+
+    /**
      * 插入一个对象到数据库
      *
      * @param string $table 表名
