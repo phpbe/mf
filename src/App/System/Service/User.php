@@ -166,7 +166,7 @@ class User extends \Be\System\Service
                     $db->beginTransaction();
                     try {
 
-                        $tupleUser->last_login_time = time();
+                        $tupleUser->last_login_time = date('Y-m-d H:i:s');
                         $tupleUser->save();
 
                         $db->commit();
