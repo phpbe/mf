@@ -64,15 +64,110 @@
                 }
             }
             ?>
+
             <el-form-item>
-                <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
-                <el-button type="warning" @click="reset" :disabled="loading">重置</el-button>
-                <el-button @click="close" :disabled="loading">取消</el-button>
+                <?php
+                if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
+                    foreach ($this->setting['form']['actions'] as $action) {
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
+                        }
+                        echo $driver->getHtml();
+
+                        $jsX = $driver->getJs();
+                        if ($jsX) {
+                            $js = array_merge($js, $jsX);
+                        }
+
+                        $cssX = $driver->getCss();
+                        if ($cssX) {
+                            $css = array_merge($css, $cssX);
+                        }
+
+                        $vueDataX = $driver->getVueData();
+                        if ($vueDataX) {
+                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        }
+
+                        $vueMethodsX = $driver->getVueMethods();
+                        if ($vueMethodsX) {
+                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                        }
+
+                        $vueHooksX = $driver->getVueHooks();
+                        if ($vueHooksX) {
+                            foreach ($vueHooksX as $k => $v) {
+                                if (isset($vueHooks[$k])) {
+                                    $vueHooks[$k] .= "\r\n" . $v;
+                                } else {
+                                    $vueHooks[$k] = $v;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    ?>
+                    <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
+                    <el-button type="warning" @click="reset" :disabled="loading">重置</el-button>
+                    <el-button @click="close" :disabled="loading">取消</el-button>
+                    <?php
+                }
+                ?>
             </el-form-item>
         </el-form>
+
+        <el-dialog
+                :title="dialog.title"
+                :visible.sync="dialog.visible"
+                :width="dialog.width"
+                :close-on-click-modal="false"
+                :destroy-on-close="true">
+            <iframe id="frame-dialog" name="frame-dialog" src="about:blank"
+                    :style="{width:'100%',height:dialog.height,border:0}"></iframe>
+        </el-dialog>
+
+        <el-drawer
+                :visible.sync="drawer.visible"
+                :size="drawer.width"
+                :title="drawer.title"
+                :wrapper-closable="false"
+                :destroy-on-close="true">
+            <iframe id="frame-drawer" name="frame-drawer" src="about:blank"
+                    style="width:100%;height:100%;border:0;"></iframe>
+        </el-drawer>
     </div>
 
     <?php
+    if (isset($this->setting['js'])) {
+        $js = array_merge($js, $this->setting['js']);
+    }
+
+    if (isset($this->setting['css'])) {
+        $css = array_merge($css, $this->setting['css']);
+    }
+
+    if (isset($this->setting['vueData'])) {
+        $vueData = \Be\Util\Arr::merge($vueData, $this->setting['vueData']);
+    }
+
+    if (isset($this->setting['vueMethods'])) {
+        $vueMethods = \Be\Util\Arr::merge($vueMethods, $this->setting['vueMethods']);
+    }
+
+    if (isset($this->setting['vueHooks'])) {
+        foreach ($this->setting['vueHooks'] as $k => $v) {
+            if (isset($vueHooks[$k])) {
+                $vueHooks[$k] .= "\r\n" . $v;
+            } else {
+                $vueHooks[$k] = $v;
+            }
+        }
+    }
+
     if (count($js) > 0) {
         $js = array_unique($js);
         foreach ($js as $x) {
@@ -93,7 +188,9 @@
             el: '#app',
             data: {
                 formData: <?php echo json_encode($formData); ?>,
-                loading: false<?php
+                loading: false,
+                dialog: {visible: false, width: "600px", height: "400px", title: ""},
+                drawer: {visible: false, width: "40%", title: ""}<?php
                 if ($vueData) {
                     foreach ($vueData as $k => $v) {
                         echo ',' . $k . ':' . json_encode($v);
@@ -144,6 +241,82 @@
                             return false;
                         }
                     });
+                },
+                formAction: function (name, option) {
+                    var data = {};
+                    data.postData = option.postData;
+                    return this.action(option, data);
+                },
+                action: function (option, data) {
+                    if (option.target == 'ajax') {
+                        var _this = this;
+                        this.$http.post(option.url, data).then(function (response) {
+                            if (response.status == 200) {
+                                if (response.data.success) {
+                                    _this.$message.success(response.data.message);
+                                } else {
+                                    if (response.data.message) {
+                                        _this.$message.error(response.data.message);
+                                    }
+                                }
+                                _this.loadTableData();
+                            }
+                        }).catch(function (error) {
+                            _this.$message.error(error);
+                            _this.loadTableData();
+                        });
+                    } else {
+                        var eForm = document.createElement("form");
+                        eForm.action = option.url;
+                        switch (option.target) {
+                            case "self":
+                            case "_self":
+                                eForm.target = "_self";
+                                break;
+                            case "blank":
+                            case "_blank":
+                                eForm.target = "_blank";
+                                break;
+                            case "dialog":
+                                eForm.target = "frame-dialog";
+                                this.dialog.title = option.dialog.title;
+                                this.dialog.width = option.dialog.width;
+                                this.dialog.height = option.dialog.height;
+                                this.dialog.visible = true;
+                                break;
+                            case "drawer":
+                                eForm.target = "frame-drawer";
+                                this.drawer.title = option.drawer.title;
+                                this.drawer.width = option.drawer.width;
+                                this.drawer.visible = true;
+                                break;
+                        }
+                        eForm.method = "post";
+                        eForm.style.display = "none";
+
+                        var e = document.createElement("textarea");
+                        e.name = 'data';
+                        e.value = JSON.stringify(data);
+                        eForm.appendChild(e);
+
+                        document.body.appendChild(eForm);
+
+                        setTimeout(function () {
+                            eForm.submit();
+                        }, 50);
+
+                        setTimeout(function () {
+                            document.body.removeChild(eForm);
+                        }, 3000);
+                    }
+
+                    return false;
+                },
+                hideDialog: function () {
+                    this.dialog.visible = false;
+                },
+                hideDrawer: function () {
+                    this.drawer.visible = false;
                 },
                 reset: function () {
                     this.$refs["formRef"].resetFields();
@@ -198,6 +371,20 @@
             }
             ?>
         });
+
+        function close() {
+            vueForm.drawer.visible = false;
+            vueForm.dialog.visible = false;
+        }
+
+        function closeDrawer() {
+            vueForm.drawer.visible = false;
+        }
+
+        function closeDialog() {
+            vueForm.dialog.visible = false;
+        }
+
     </script>
 
 </be-center>

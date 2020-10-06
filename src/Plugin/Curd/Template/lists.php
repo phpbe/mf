@@ -255,6 +255,32 @@
     </div>
 
     <?php
+    if (isset($this->setting['lists']['js'])) {
+        $js = array_merge($js, $this->setting['js']);
+    }
+
+    if (isset($this->setting['lists']['css'])) {
+        $css = array_merge($css, $this->setting['css']);
+    }
+
+    if (isset($this->setting['lists']['vueData'])) {
+        $vueData = \Be\Util\Arr::merge($vueData, $this->setting['vueData']);
+    }
+
+    if (isset($this->setting['lists']['vueMethods'])) {
+        $vueMethods = \Be\Util\Arr::merge($vueMethods, $this->setting['vueMethods']);
+    }
+
+    if (isset($this->setting['lists']['vueHooks'])) {
+        foreach ($this->setting['lists']['vueHooks'] as $k => $v) {
+            if (isset($vueHooks[$k])) {
+                $vueHooks[$k] .= "\r\n" . $v;
+            } else {
+                $vueHooks[$k] = $v;
+            }
+        }
+    }
+
     if (count($js) > 0) {
         $js = array_unique($js);
         foreach ($js as $x) {
