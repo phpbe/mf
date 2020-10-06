@@ -205,6 +205,26 @@ class MssqlImpl extends Driver
     }
 
     /**
+     * 获取当前连接的所有库信息
+     *
+     * @return array
+     */
+    public function getDatabases()
+    {
+        return $this->getObjects('SELECT * FROM master..sysdatabasesWHERE [name]!=\'master\'');
+    }
+
+    /**
+     * 获取当前连接的所有库名
+     *
+     * @return array
+     */
+    public function getDatabaseNames()
+    {
+        return $this->getValues('SELECT [name] FROM master..sysdatabasesWHERE [name]!=\'master\'');
+    }
+
+    /**
      * 获取一个表的字段列表
      *
      * @param string $table 表名

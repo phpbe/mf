@@ -489,6 +489,26 @@ class MysqlImpl extends Driver
     }
 
     /**
+     * 获取当前连接的所有库信息
+     *
+     * @return array
+     */
+    public function getDatabases()
+    {
+        return $this->getObjects('SELECT * FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'');
+    }
+
+    /**
+     * 获取当前连接的所有库名
+     *
+     * @return array
+     */
+    public function getDatabaseNames()
+    {
+        return $this->getValues('SELECT `SCHEMA_NAME` FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'');
+    }
+
+    /**
      * 获取一个表的字段列表
      *
      * @param string $table 表名

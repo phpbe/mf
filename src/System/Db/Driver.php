@@ -963,6 +963,20 @@ abstract class Driver
     public abstract function getTableNames();
 
     /**
+     * 获取当前连接的所有库信息
+     *
+     * @return array
+     */
+    public abstract function getDatabases();
+
+    /**
+     * 获取当前连接的所有库名
+     *
+     * @return array
+     */
+    public abstract function getDatabaseNames();
+
+    /**
      * 获取一个表的字段列表
      *
      * @param string $table 表名
