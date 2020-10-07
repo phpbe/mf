@@ -10,8 +10,38 @@ class Random
      * @param int $n 长度
      * @return string
      */
-    public static function number($n = 8) {
+    public static function numbers($n = 8) {
         return self::create($n, '0123456789');
+    }
+
+    /**
+     * 英文大写
+     *
+     * @param int $n 长度
+     * @return string
+     */
+    public static function uppercaseLetters($n = 8) {
+        return self::create($n, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    }
+
+    /**
+     * 英文小写
+     *
+     * @param int $n 长度
+     * @return string
+     */
+    public static function lowercaseLetters($n = 8) {
+        return self::create($n, 'abcdefghijklmnopqrstuvwxyz');
+    }
+
+    /**
+     * 英文大小写
+     *
+     * @param int $n 长度
+     * @return string
+     */
+    public static function letters($n = 8) {
+        return self::create($n, 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz');
     }
 
     /**
