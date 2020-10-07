@@ -9,7 +9,8 @@ use Be\System\Be;
  * @param mixed $details 日志明细
  * @throws \Exception
  */
-function beSystemLog($content, $details = '') {
+function beSystemLog($content, $details = '')
+{
     Be::getService('System.SystemLog')->addLog($content, $details);
 }
 
@@ -42,6 +43,6 @@ function beUrl($pathway = null, $params = [])
         }
         return Be::getRuntime()->getRootUrl() . '/' . $pathway . $urlParams . $configSystem->urlSuffix;
     } else {
-        return Be::getRuntime()->getRootUrl() . '/?pathway=' . $pathway . (count($params) > 0 ? http_build_query($params) : '');
+        return Be::getRuntime()->getRootUrl() . '/?pathway=' . $pathway . (count($params) > 0 ? '&' . http_build_query($params) : '');
     }
 }
