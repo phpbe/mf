@@ -25,6 +25,8 @@ class OracleImpl extends Driver
             $options = array(
                 \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
             );
+
+            // 设置默认编码为 UTF-8
             if (isset($config['options'])) {
                 $options = $config['options'] + $options;
             }
