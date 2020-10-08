@@ -31,7 +31,7 @@ class MysqlImpl extends Driver
             }
 
             // 设置默认编码为 UTF-8
-            if (!isset($config['charset'])) {
+            if (empty($config['charset'])) {
                 $config['charset'] = 'UTF8';
             }
 

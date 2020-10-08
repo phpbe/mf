@@ -33,16 +33,11 @@ class OracleImpl extends Driver
             if (isset($config['dsn']) && $config['dsn']) {
                 $dsn = $config['dsn'];
             } else {
-                $dsn = 'oci:dbname=';
-                if (!empty($config['host'])) {
-                    $dsn .= '//' . $config['host'] . ($config['port'] ? ':' . $config['port'] : '') . '/';
-                }
-
-                $dsn .= $config['name'];
-                if (!isset($config['charset'])) {
+                if (empty($config['charset'])) {
                     $config['charset'] = 'UTF8';
                 }
-                $dsn .= ';charset=' . $config['charset'];
+
+                $dsn = 'oci:dbname=//' . $config['host'] . ($config['port'] ? ':' . $config['port'] : '') . '/' . $config['name'] . ';charset=' . $config['charset'];
             }
 
             $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
