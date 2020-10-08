@@ -20,7 +20,7 @@ class FormItemSelect extends FormItem
 
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
-                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择'.$this->label.'\', trigger: \'change\' }]';
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择' . $this->label . '\', trigger: \'change\' }]';
             }
         } else {
             if (!isset($this->ui['select']['clearable'])) {
@@ -55,9 +55,9 @@ class FormItemSelect extends FormItem
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
             if ($v === null) {
-                $html .= ' '.$k;
+                $html .= ' ' . $k;
             } else {
-                $html .= ' '.$k.'="' . $v . '"';
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';
@@ -72,19 +72,26 @@ class FormItemSelect extends FormItem
                 }
             }
         }
-
         $html .= '>';
-        foreach ($this->keyValues as $k => $v) {
-            $html .= '<el-option';
-            $html .= ' value="' . $k . '"';
-            $html .= ' label="' . $v . '"';
-            $html .= '>';
-            $html .= '</el-option>';
-        }
-        $html .= '</el-select>';
-
+        $html .= '<el-option v-for="(v, k) in formItems.' . $this->name . '.keyValues" :key="k" :label="v" :value="k"></el-option>';
         $html .= '</el-form-item>';
         return $html;
+    }
+
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        return [
+            'formItems' => [
+                $this->name => [
+                    'keyValues' => $this->keyValues,
+                ]
+            ]
+        ];
     }
 
 }
