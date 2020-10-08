@@ -30,18 +30,22 @@ class MysqlImpl extends Driver
                 $options = $config['options'] + $options;
             }
 
+            // 设置默认编码为 UTF-8
+            if (!isset($config['charset'])) {
+                $config['charset'] = 'UTF8';
+            }
+
             $dsn = null;
             if (isset($config['dsn']) && $config['dsn']) {
                 $dsn = $config['dsn'];
             } else {
-                $dsn = 'mysql:dbname=' . $config['name'] . ';host=' . $config['host'] . ';port=' . $config['port'] . ';charset=utf8';
+                $dsn = 'mysql:dbname=' . $config['name'] . ';host=' . $config['host'] . ';port=' . $config['port'] . ';charset=' . $config['charset'];
             }
 
             $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
             if (!$connection) throw new DbException('连接MySQL数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
-            // 设置默认编码为 UTF-8 ，UTF-8 为 PHPBE 默认字符集编码
-            $connection->query('SET NAMES utf8');
+            $connection->query('SET NAMES ' . $config['charset']);
 
             $this->connection = $connection;
         }
