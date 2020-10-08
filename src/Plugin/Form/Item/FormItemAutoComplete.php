@@ -1,0 +1,148 @@
+<?php
+
+namespace Be\Plugin\Form\Item;
+
+/**
+ * 表单项 自动完成
+ */
+class FormItemAutoComplete extends FormItem
+{
+
+    public $suggestions = [];
+    public $remote = null;
+
+    /**
+     * 构造函数
+     *
+     * @param array $params 参数
+     * @param array $row 数据对象
+     */
+    public function __construct($params = [], $row = [])
+    {
+        parent::__construct($params, $row);
+
+        if (isset($params['suggestions'])) {
+            $suggestions = $params['suggestions'];
+            if ($suggestions instanceof \Closure) {
+                $this->suggestions = $suggestions($row);
+            } else {
+                $this->suggestions = $suggestions;
+            }
+        } elseif (isset($this->keyValues)) {
+            $suggestions = [];
+            foreach ($this->keyValues as $value) {
+                $suggestions[] = ['value' => $value];
+            }
+            $this->suggestions = $suggestions;
+        }
+
+        if (isset($params['remote'])) {
+            $remote = $params['remote'];
+            if ($remote instanceof \Closure) {
+                $this->remote = $remote($row);
+            } else {
+                $this->remote = $remote;
+            }
+        }
+
+        if ($this->required) {
+            if (!isset($this->ui['form-item'][':rules'])) {
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请输入'.$this->label.'\', trigger: \'blur\' }]';
+            }
+        }
+
+        if ($this->disabled) {
+            if (!isset($this->ui['autocomplete']['disabled'])) {
+                $this->ui['autocomplete']['disabled'] = 'true';
+            }
+        }
+
+        if (!isset($this->ui['autocomplete']['clearable'])) {
+            $this->ui['autocomplete']['clearable'] = null;
+        }
+
+        if (!isset($this->ui['autocomplete'][':fetch-suggestions'])) {
+            $this->ui['autocomplete'][':fetch-suggestions'] = 'formItemAutoComplete_' . $this->name . '_fetchSuggestions';
+        }
+
+        $this->ui['autocomplete']['v-model'] = 'formData.' . $this->name;
+    }
+
+
+    /**
+     * 获取html内容ß
+     *
+     * @return string
+     */
+    public function getHtml()
+    {
+        $html = '<el-form-item';
+        foreach ($this->ui['form-item'] as $k => $v) {
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
+            }
+        }
+        $html .= '>';
+
+        $html .= '<el-autocomplete';
+        if (isset($this->ui['autocomplete'])) {
+            foreach ($this->ui['autocomplete'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
+            }
+        }
+        $html .= '>';
+        $html .= '</el-autocomplete>';
+        $html .= '</el-form-item>';
+        return $html;
+    }
+
+
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        return [
+            'formItems' => [
+                $this->name => [
+                    'suggestions' => $this->suggestions,
+                ]
+            ]
+        ];
+    }
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
+                if (keywrods) {
+                    var results = [];
+                    var suggestion;
+                    for(var x in this.formItems.' . $this->name . '.suggestions) {
+                        suggestion = this.formItems.' . $this->name . '.suggestions[x];
+                        if (suggestion.value.toLowerCase().indexOf(keywrods.toLowerCase()) != -1) {
+                            results.push(suggestion);
+                        }
+                    }
+                    cb(results);
+                } else {
+                    cb(this.formItems.' . $this->name . '.suggestions);
+                }
+            }',
+        ];
+    }
+
+}
