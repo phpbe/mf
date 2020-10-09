@@ -128,13 +128,13 @@ class FormItemAutoComplete extends FormItem
     {
         if ($this->remote === null) {
             return [
-                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
-                    if (keywrods) {
+                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywords, cb) {
+                    if (keywords) {
                         var results = [];
                         var suggestion;
                         for(var x in this.formItems.' . $this->name . '.suggestions) {
                             suggestion = this.formItems.' . $this->name . '.suggestions[x];
-                            if (suggestion.value.toLowerCase().indexOf(keywrods.toLowerCase()) != -1) {
+                            if (suggestion.value.toLowerCase().indexOf(keywords.toLowerCase()) != -1) {
                                 results.push(suggestion);
                             }
                         }
@@ -146,9 +146,9 @@ class FormItemAutoComplete extends FormItem
             ];
         } else {
             return [
-                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
+                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywords, cb) {
                     var _this = this;
-                    this.$http.post('.$this->remote.', {keywrods: keywrods}).then(function (response) {
+                    this.$http.post('.$this->remote.', {keywords: keywords}).then(function (response) {
                         if (response.status == 200) {
                             var responseData = response.data;
                             if (responseData.success) {
