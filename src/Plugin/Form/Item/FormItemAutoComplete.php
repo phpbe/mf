@@ -126,23 +126,59 @@ class FormItemAutoComplete extends FormItem
      */
     public function getVueMethods()
     {
-        return [
-            'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
-                if (keywrods) {
-                    var results = [];
-                    var suggestion;
-                    for(var x in this.formItems.' . $this->name . '.suggestions) {
-                        suggestion = this.formItems.' . $this->name . '.suggestions[x];
-                        if (suggestion.value.toLowerCase().indexOf(keywrods.toLowerCase()) != -1) {
-                            results.push(suggestion);
+        if ($this->remote === null) {
+            return [
+                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
+                    if (keywrods) {
+                        var results = [];
+                        var suggestion;
+                        for(var x in this.formItems.' . $this->name . '.suggestions) {
+                            suggestion = this.formItems.' . $this->name . '.suggestions[x];
+                            if (suggestion.value.toLowerCase().indexOf(keywrods.toLowerCase()) != -1) {
+                                results.push(suggestion);
+                            }
                         }
+                        cb(results);
+                    } else {
+                        cb(this.formItems.' . $this->name . '.suggestions);
                     }
-                    cb(results);
-                } else {
-                    cb(this.formItems.' . $this->name . '.suggestions);
-                }
-            }',
-        ];
+                }',
+            ];
+        } else {
+            return [
+                'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywrods, cb) {
+                    var _this = this;
+                    this.$http.post('.$this->remote.', {keywrods: keywrods}).then(function (response) {
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                 if (responseData.data.suggestions) {
+                                    cb(responseData.data.suggestions);
+                                } elseif (responseData.data.values) {
+                                    var suggestions = [];
+                                    for(var x in responseData.data.values) {
+                                        suggestions.push({
+                                            "value" : responseData.data.values[x]
+                                        });
+                                    }
+                                    cb(suggestions);
+                                } else {
+                                    cb([]);
+                                }
+                            } else {
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                                cb([]);
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.$message.error(error);
+                        cb([]);
+                    });
+                }',
+            ];
+        }
     }
 
 }
