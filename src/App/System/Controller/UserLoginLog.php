@@ -64,6 +64,7 @@ class UserLoginLog extends Controller
                         [
                             'label' => '删除三个月前系统日志',
                             'url' => beUrl('System.UserLoginLog.deleteLogs'),
+                            'confirm' => '确认要删除么？',
                             "target" => 'ajax',
                             'ui' => [
                                 'button' => [

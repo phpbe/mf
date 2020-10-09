@@ -21,6 +21,7 @@ abstract class TableItem
 
     public $url = ''; // 网址
     public $postData = []; // 有后端请求时的附加上的数据
+    public $confirm = null; // 操作前确认
     public $target = 'drawer';
     public $dialog = [];
     public $drawer = [];
@@ -156,6 +157,15 @@ abstract class TableItem
             }
         }
 
+        if (isset($params['confirm'])) {
+            $confirm = $params['confirm'];
+            if ($confirm instanceof \Closure) {
+                $this->confirm = $confirm();
+            } else {
+                $this->confirm = $confirm;
+            }
+        }
+
         if (isset($params['target'])) {
             $target = $params['target'];
             if ($target instanceof \Closure) {
@@ -254,6 +264,7 @@ abstract class TableItem
             'tableItems' => [
                 $this->name => [
                     'url' => $this->url,
+                    'confirm' => $this->confirm === null ? '' : $this->confirm,
                     'target' => $this->target,
                     'postData' => $this->postData,
                 ]
@@ -269,7 +280,6 @@ abstract class TableItem
         return $vueData;
     }
 
-
     /**
      * 获取 vue 方法
      *
@@ -280,7 +290,18 @@ abstract class TableItem
         return [
             'tableItemClick' => 'function (name, row) {
                 var option = this.tableItems[name];
-                this.tableItemAction(name, option, row);
+                if (option.confirm) {
+                    var _this = this;
+                    this.$confirm(option.confirm, \'操作确认\', {
+                      confirmButtonText: \'确定\',
+                      cancelButtonText: \'取消\',
+                      type: \'warning\'
+                    }).then(function(){
+                        _this.tableItemAction(name, option, row);
+                    }).catch(function(){});
+                } else {
+                    this.tableItemAction(name, option, row);
+                }
             }'
         ];
     }

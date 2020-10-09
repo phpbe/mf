@@ -56,6 +56,7 @@ class SystemLog extends \Be\System\Controller
                         [
                             'label' => '删除三个月前系统日志',
                             'url' => beUrl('System.SystemLog.deleteLogs'),
+                            'confirm' => '确认要删除么？',
                             "target" => 'ajax',
                             'ui' => [
                                 'button' => [

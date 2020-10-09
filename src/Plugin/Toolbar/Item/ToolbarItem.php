@@ -17,6 +17,7 @@ abstract class ToolbarItem
 
     public $url = ''; // 网址
     public $postData = []; // 有后端请求时的附加上的数据
+    public $confirm = null; // 操作前确认
     public $target = 'drawer';
     public $dialog = [];
     public $drawer = [];
@@ -107,6 +108,15 @@ abstract class ToolbarItem
             }
         }
 
+        if (isset($params['confirm'])) {
+            $confirm = $params['confirm'];
+            if ($confirm instanceof \Closure) {
+                $this->confirm = $confirm();
+            } else {
+                $this->confirm = $confirm;
+            }
+        }
+
         if (isset($params['target'])) {
             $target = $params['target'];
             if ($target instanceof \Closure) {
@@ -180,6 +190,7 @@ abstract class ToolbarItem
             'toolbarItems' => [
                 $this->name => [
                     'url' => $this->url,
+                    'confirm' => $this->confirm === null ? '' : $this->confirm,
                     'target' => $this->target,
                     'postData' => $this->postData,
                     'enable' => true,
@@ -196,6 +207,8 @@ abstract class ToolbarItem
         return $vueData;
     }
 
+
+
     /**
      * 获取 vue 方法
      *
@@ -206,10 +219,20 @@ abstract class ToolbarItem
         return [
             'toolbarItemClick' => 'function (name) {
                 var option = this.toolbarItems[name];
-                this.toolbarItemAction(name, option);
+                if (option.confirm) {
+                    var _this = this;
+                    this.$confirm(option.confirm, \'操作确认\', {
+                      confirmButtonText: \'确定\',
+                      cancelButtonText: \'取消\',
+                      type: \'warning\'
+                    }).then(function(){
+                        _this.toolbarItemAction(name, option);
+                    }).catch(function(){});
+                } else {
+                    this.toolbarItemAction(name, option);
+                }
             }'
         ];
     }
-
 
 }

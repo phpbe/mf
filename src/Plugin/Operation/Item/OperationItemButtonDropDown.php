@@ -127,6 +127,7 @@ class OperationItemButtonDropDown extends OperationItem
         foreach ($this->menus as $menu) {
             $m = [
                 'url' => $menu->url,
+                'confirm' => $menu->confirm === null ? '' : $menu->confirm,
                 'target' => $menu->target,
                 'postData' => $menu->postData,
                 'enable' => true,
@@ -161,7 +162,19 @@ class OperationItemButtonDropDown extends OperationItem
         return [
             'operationItemButtonDropDownClick' => 'function (command) {
                 var option = this.operationItems[command.name].menus[command.index];
-                this.operationItemAction(command.name, option, command.row);
+                if (option.confirm) {
+                    var _this = this;
+                    this.$confirm(option.confirm, \'操作确认\', {
+                      confirmButtonText: \'确定\',
+                      cancelButtonText: \'取消\',
+                      type: \'warning\'
+                    }).then(function(){
+                        _this.operationItemAction(command.name, option, command.row);
+                    }).catch(function(){});
+                } else {
+                    this.operationItemAction(command.name, option, command.row);
+                }
+                
             }',
             'operationItemButtonDropDownMenuCommand' => 'function (name, index, row) {
                 return {"name": name, "index": index, "row": row};

@@ -119,6 +119,7 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         foreach ($this->menus as $menu) {
             $m = [
                 'url' => $menu->url,
+                'confirm' => $menu->confirm === null ? '' : $menu->confirm,
                 'target' => $menu->target,
                 'postData' => $menu->postData,
                 'enable' => true,
@@ -153,7 +154,18 @@ class ToolbarItemButtonDropDown extends ToolbarItem
         return [
             'toolbarItemButtonDropDownClick' => 'function (command) {
                 var option = this.toolbarItems[command.name].menus[command.index];
-                this.toolbarItemAction(command.name, option);
+                if (option.confirm) {
+                    var _this = this;
+                    this.$confirm(option.confirm, \'操作确认\', {
+                      confirmButtonText: \'确定\',
+                      cancelButtonText: \'取消\',
+                      type: \'warning\'
+                    }).then(function(){
+                        _this.toolbarItemAction(command.name, option);
+                    }).catch(function(){});
+                } else {
+                    this.toolbarItemAction(command.name, option);
+                }
             }',
             'toolbarItemButtonDropDownMenuCommand' => 'function (name, index) {
                 return {"name": name, "index": index};

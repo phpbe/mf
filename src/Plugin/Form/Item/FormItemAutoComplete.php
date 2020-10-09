@@ -148,7 +148,7 @@ class FormItemAutoComplete extends FormItem
             return [
                 'formItemAutoComplete_' . $this->name . '_fetchSuggestions' => 'function(keywords, cb) {
                     var _this = this;
-                    this.$http.post('.$this->remote.', {keywords: keywords}).then(function (response) {
+                    this.$http.post('.$this->remote.', {"keywords": keywords}).then(function (response) {
                         if (response.status == 200) {
                             var responseData = response.data;
                             if (responseData.success) {
