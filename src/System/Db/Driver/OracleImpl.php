@@ -42,7 +42,7 @@ class OracleImpl extends Driver
                 $dsn = 'oci:dbname=//' . $config['host'] . ($config['port'] ? ':' . $config['port'] : '') . '/' . $config['name'] . ';charset=' . $config['charset'];
             }
 
-            $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
+            $connection = new \PDO($dsn, $config['username'], $config['password'], $options);
             if (!$connection) throw new DbException('连接Oracle数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
             $this->connection = $connection;

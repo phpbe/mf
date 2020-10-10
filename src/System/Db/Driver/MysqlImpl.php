@@ -42,7 +42,7 @@ class MysqlImpl extends Driver
                 $dsn = 'mysql:dbname=' . $config['name'] . ';host=' . $config['host'] . ';port=' . $config['port'] . ';charset=' . $config['charset'];
             }
 
-            $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
+            $connection = new \PDO($dsn, $config['username'], $config['password'], $options);
             if (!$connection) throw new DbException('连接MySQL数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
             $connection->query('SET NAMES ' . $config['charset']);

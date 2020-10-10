@@ -40,7 +40,7 @@ class MssqlImpl extends Driver
                 }
             }
 
-            $connection = new \PDO($dsn, $config['user'], $config['pass'], $options);
+            $connection = new \PDO($dsn, $config['username'], $config['password'], $options);
             if (!$connection) throw new DbException('连接MSSQL数据库' . $config['name'] . '（' . $config['host'] . '） 失败！');
 
             $this->connection = $connection;
