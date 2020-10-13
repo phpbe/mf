@@ -244,6 +244,28 @@ class FormItemCron extends FormItem
                 } else {
                     $parsed = false;
                 }
+
+                if ($parts[3] != "*") {
+                    $per = "per_year";
+                } else {
+                    if ($parts[4] != "*") {
+                        $per = "per_week";
+                    } else {
+                        if ($parts[2] != "*") {
+                            $per = "per_month";
+                        } else {
+                            if ($parts[1] != "*") {
+                                $per = "per_day";
+                            } else {
+                                if ($parts[0] != "*") {
+                                    $per = "per_hour";
+                                } else {
+                                    $per = "per_minute";
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             $type = $parsed ? 'picker' : 'custom';
