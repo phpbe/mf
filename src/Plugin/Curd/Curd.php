@@ -112,11 +112,12 @@ class Curd extends Plugin
                             $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
                         }
 
+                        $driver = new $driverName($item);
+
                         if ($driver->name == null) {
                             continue;
                         }
 
-                        $driver = new $driverName($item);
                         $driver->submit($formData);
 
                         if ($driver->newValue === '') {
@@ -1049,11 +1050,12 @@ class Curd extends Plugin
                         $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
                     }
 
+                    $driver = new $driverName($item);
+
                     if ($driver->name == null) {
                         continue;
                     }
 
-                    $driver = new $driverName($item);
                     $driver->submit($formData);
 
                     if ($driver->newValue === '') {

@@ -111,7 +111,11 @@ class FormItemDatePickerMonthRange extends FormItem
     {
         return [
             'formItemDatePickerMonthRange_' . $this->name . '_change' => 'function(value) {
-                this.formData.' . $this->name . ' = JSON.stringify(value);
+                if (value) {
+                    this.formData.' . $this->name . ' = JSON.stringify(value);
+                } else {
+                    this.formData.' . $this->name . ' = "";
+                }
             }',
         ];
     }
