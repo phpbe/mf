@@ -11,7 +11,7 @@ use Be\System\Exception\PluginException;
 abstract class FormItem
 {
 
-    protected $name = ''; // 键名
+    protected $name = null; // 键名
     protected $label = ''; // 配置项中文名称
     protected $value = ''; // 值
     protected $valueType = 'string'; // 值类型
@@ -31,15 +31,13 @@ abstract class FormItem
      */
     public function __construct($params = [], $row = [])
     {
-        if (!isset($params['name'])) {
-            throw new PluginException('表单项参数 name 缺失');
-        }
-
-        $name = $params['name'];
-        if ($name instanceof \Closure) {
-            $this->name = $name($row);
-        } else {
-            $this->name = $name;
+        if (isset($params['name'])) {
+            $name = $params['name'];
+            if ($name instanceof \Closure) {
+                $this->name = $name($row);
+            } else {
+                $this->name = $name;
+            }
         }
 
         if (isset($params['label'])) {
