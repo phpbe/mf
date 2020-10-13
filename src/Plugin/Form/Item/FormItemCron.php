@@ -53,7 +53,7 @@ class FormItemCron extends FormItem
 
         $html .= '<div v-show="formItems.' . $this->name . '.type==\'picker\'" style="padding-top:5px;">';
 
-        $html .= '<span style="color:#999;">每</span> ';
+        $html .= '<span style="color:#999;">每</span>&nbsp;';
         $html .= '<el-select v-model="formItems.' . $this->name . '.per" @change="formItemCron_pickerChange(\'' . $this->name . '\')" style="width:70px;">';
         $html .= '<el-option label="分钟" value="per_minute"></el-option>';
         $html .= '<el-option label="小时" value="per_hour"></el-option>';
@@ -64,7 +64,7 @@ class FormItemCron extends FormItem
         $html .= '</el-select>';
 
         $html .= '<span v-show="formItems.' . $this->name . '.per==\'per_year\'">';
-        $html .= ' <span style="color:#999;">的</span> <el-select v-model="formItems.' . $this->name . '.month" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
+        $html .= '&nbsp;<span style="color:#999;">的</span>&nbsp;<el-select v-model="formItems.' . $this->name . '.month" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
         $html .= '<el-option label="每月" value="*"></el-option>';
         for ($i = 1; $i <= 12; $i++) {
             $html .= '<el-option label="' . $i . '月" value="' . $i . '"></el-option>';
@@ -73,7 +73,7 @@ class FormItemCron extends FormItem
         $html .= '</span>';
 
         $html .= '<span v-show="formItems.' . $this->name . '.per==\'per_year\' || formItems.' . $this->name . '.per==\'per_month\'">';
-        $html .= ' <span style="color:#999;">的</span> <el-select v-model="formItems.' . $this->name . '.day" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
+        $html .= '&nbsp;<span style="color:#999;">的</span>&nbsp;<el-select v-model="formItems.' . $this->name . '.day" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
         $html .= '<el-option label="每天" value="*"></el-option>';
         for ($i = 1; $i <= 31; $i++) {
             $html .= '<el-option label="' . $i . '日" value="' . $i . '"></el-option>';
@@ -82,7 +82,7 @@ class FormItemCron extends FormItem
         $html .= '</span>';
 
         $html .= '<span v-show="formItems.' . $this->name . '.per==\'per_week\'">';
-        $html .= ' <span style="color:#999;">的</span> <el-select v-model="formItems.' . $this->name . '.week" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
+        $html .= '&nbsp;<span style="color:#999;">的</span>&nbsp;<el-select v-model="formItems.' . $this->name . '.week" @change="formItemCron_pickerChange(\'' . $this->name . '\')" multiple collapse-tags style="width:130px;">';
         $html .= '<el-option label="每天" value="*"></el-option>';
         $html .= '<el-option label="周一" value="1"></el-option>';
         $html .= '<el-option label="周二" value="2"></el-option>';
