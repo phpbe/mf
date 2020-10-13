@@ -111,6 +111,11 @@ class Curd extends Plugin
                         } else {
                             $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
                         }
+
+                        if ($driver->name == null) {
+                            continue;
+                        }
+
                         $driver = new $driverName($item);
                         $driver->submit($formData);
 
@@ -441,6 +446,11 @@ class Curd extends Plugin
                         } else {
                             $driver = new \Be\Plugin\Form\Item\FormItemInput($item);
                         }
+
+                        if ($driver->name == null) {
+                            continue;
+                        }
+
                         $driver->submit($formData);
                         $name = $driver->name;
 
@@ -564,6 +574,11 @@ class Curd extends Plugin
                         } else {
                             $driver = new \Be\Plugin\Form\Item\FormItemInput($item);
                         }
+
+                        if ($driver->name == null) {
+                            continue;
+                        }
+
                         $driver->submit($formData);
                         $name = $driver->name;
 
@@ -1033,6 +1048,11 @@ class Curd extends Plugin
                     } else {
                         $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
                     }
+
+                    if ($driver->name == null) {
+                        continue;
+                    }
+
                     $driver = new $driverName($item);
                     $driver->submit($formData);
 
