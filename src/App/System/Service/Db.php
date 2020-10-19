@@ -77,7 +77,6 @@ class Db extends \Be\System\Service
         $path = Be::getRuntime()->getCachePath() . '/System/TableProperty/' . $dbName . '/' . $tableName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
-
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
 
@@ -154,7 +153,6 @@ class Db extends \Be\System\Service
         $path = Be::getRuntime()->getCachePath() . '/System/Tuple/' . $dbName . '/' . $tableName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
-
         file_put_contents($path, $code, LOCK_EX);
         chmod($path, 0755);
 

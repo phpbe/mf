@@ -212,7 +212,10 @@ class Config extends Plugin
             $code .= "}\n";
 
             $path = Be::getRuntime()->getDataPath() . '/' . $appName . '/Config/' . $configName . '.php';
+            $dir = dirname($path);
+            if (!is_dir($dir)) mkdir($dir, 0755, true);
             file_put_contents($path, $code, LOCK_EX);
+            chmod($path, 0755);
 
             Response::success('保存成功！');
         } catch (\Exception $e) {
