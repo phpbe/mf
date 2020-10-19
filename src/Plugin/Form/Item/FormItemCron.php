@@ -495,6 +495,7 @@ class FormItemCron extends FormItem
                     this.formItems[name].week = ["*"];
                 } else if (this.formItems[name].per == "per_week") {
                     this.formItems[name].month = ["*"];
+                    this.formItems[name].day = ["*"];
                 } else if (this.formItems[name].per == "per_year") {
                     this.formItems[name].week = ["*"];
                 }
