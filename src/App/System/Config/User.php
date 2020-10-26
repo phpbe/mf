@@ -30,5 +30,25 @@ class User
      */
     public $avatarHeight = 96;
 
+    /**
+     * @BeConfigItem("启用LDAP单点登录",
+     *     driver="FormItemSwitch",
+     *     description="启用锁定IP时，若用户IP变化，需重新登录。")
+     */
+    public $ldap = 0;
+
+    /**
+     * @BeConfigItem("LDAP服务器地址",
+     *     driver="FormItemInput"
+     *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
+     */
+    public $ldap_host = '';
+
+    /**
+     * @BeConfigItem("LDAP服务器参数",
+     *     driver="FormItemInput"
+     *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
+     */
+    public $ldap_option = '';
 
 }
