@@ -14,6 +14,7 @@ class DocComment
     public static function parse($docComment)
     {
         $result = [];
+        if (!$docComment) return $result;
         if (preg_match('#^/\*\*(.*)\*/#s', $docComment, $comment) === false) return [];
         $comment = trim($comment[1]);
 

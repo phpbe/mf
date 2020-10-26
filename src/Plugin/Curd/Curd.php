@@ -232,6 +232,9 @@ class Curd extends Plugin
                     $formattedRow = [];
 
                     foreach ($this->setting['lists']['table']['items'] as $item) {
+                        if (!isset($item['name'])) {
+                            continue;
+                        }
                         $itemName = $item['name'];
                         $itemValue = '';
                         if (isset($item['value'])) {
