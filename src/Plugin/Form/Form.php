@@ -49,9 +49,11 @@ class Form extends Plugin
                     $item['value'] = $value($row);
                 }
             } else {
-                $name = $item['name'];
-                if (isset($row[$name])) {
-                    $item['value'] = (string) $row[$name];
+                if (isset($item['name'])) {
+                    $name = $item['name'];
+                    if (isset($row[$name])) {
+                        $item['value'] = (string) $row[$name];
+                    }
                 }
             }
         }
