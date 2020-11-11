@@ -296,29 +296,12 @@ class Curd extends Plugin
             }
 
         } else {
+            $setting = $this->setting['lists'];
 
-            $pageSize = null;
-            if (isset($this->setting['lists']['pageSize']) &&
-                is_numeric($this->setting['lists']['pageSize']) &&
-                $this->setting['lists']['pageSize'] > 0
-            ) {
-                $pageSize = $this->setting['lists']['pageSize'];
-            } else {
-                $pageSize = Be::getConfig('System.System')->pageSize;;
-            }
+            Be::getPlugin('Lists')
+                ->setting($setting)
+                ->display();
 
-            Response::setTitle($this->setting['lists']['title']);
-
-            Response::set('url', Request::url());
-            Response::set('setting', $this->setting);
-            Response::set('table', $table);
-            Response::set('pageSize', $pageSize);
-
-            $theme = null;
-            if (isset($this->setting['lists']['theme'])) {
-                $theme = $this->setting['lists']['theme'];
-            }
-            Response::display('Plugin.Curd.lists', $theme);
             Response::createHistory();
         }
 

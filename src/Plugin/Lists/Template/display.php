@@ -7,8 +7,6 @@
 
 <be-center>
     <?php
-    $primaryKey = $this->table->getPrimaryKey();
-
     $js = [];
     $css = [];
     $formData = [];
@@ -25,11 +23,11 @@
             <?php
             $tabHtml = '';
             $tabPosition = 'beforeForm';
-            if (isset($this->setting['lists']['tab'])) {
-                $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
+            if (isset($this->setting['tab'])) {
+                $driver = new \Be\Plugin\Tab\Driver($this->setting['tab']);
                 $tabHtml = $driver->getHtml();
-                if (isset($this->setting['lists']['tab']['position'])) {
-                    $tabPosition = $this->setting['lists']['tab']['position'];
+                if (isset($this->setting['tab']['position'])) {
+                    $tabPosition = $this->setting['tab']['position'];
                 }
 
                 $formData[$driver->name] = $driver->value;
@@ -49,12 +47,12 @@
                 echo $tabHtml;
             }
 
-            if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
+            if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
                 ?>
                 <el-row>
                     <el-col :span="24">
                         <?php
-                        foreach ($this->setting['lists']['form']['items'] as $item) {
+                        foreach ($this->setting['form']['items'] as $item) {
                             $driver = null;
                             if (isset($item['driver'])) {
                                 $driverName = $item['driver'];
@@ -112,9 +110,9 @@
                 echo $tabHtml;
             }
 
-            if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
+            if (isset($this->setting['toolbar']['items']) && count($this->setting['toolbar']['items']) > 0) {
                 echo '<el-row><el-col :span="24">';
-                foreach ($this->setting['lists']['toolbar']['items'] as $item) {
+                foreach ($this->setting['toolbar']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
@@ -157,13 +155,13 @@
                     @selection-change="selectionChange">
                 <?php
                 $opPosition = 'right';
-                if (isset($this->setting['lists']['operation'])) {
+                if (isset($this->setting['operation'])) {
 
-                    $operationDriver = new \Be\Plugin\Operation\Wrap($this->setting['lists']['operation']);
+                    $operationDriver = new \Be\Plugin\Operation\Wrap($this->setting['operation']);
                     $opHtml = $operationDriver->getHtmlBefore();
 
-                    if (isset($this->setting['lists']['operation']['items'])) {
-                        foreach ($this->setting['lists']['operation']['items'] as $item) {
+                    if (isset($this->setting['operation']['items'])) {
+                        foreach ($this->setting['operation']['items'] as $item) {
                             $driver = null;
                             if (isset($item['driver'])) {
                                 $driverName = $item['driver'];
@@ -193,7 +191,7 @@
                     }
                 }
 
-                foreach ($this->setting['lists']['table']['items'] as $item) {
+                foreach ($this->setting['table']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
@@ -214,7 +212,7 @@
                     }
                 }
 
-                if (isset($this->setting['lists']['operation']) && $opPosition == 'right') {
+                if (isset($this->setting['operation']) && $opPosition == 'right') {
                     echo $opHtml;
                 }
                 ?>
@@ -257,24 +255,24 @@
     </div>
 
     <?php
-    if (isset($this->setting['lists']['js'])) {
+    if (isset($this->setting['js'])) {
         $js = array_merge($js, $this->setting['js']);
     }
 
-    if (isset($this->setting['lists']['css'])) {
+    if (isset($this->setting['css'])) {
         $css = array_merge($css, $this->setting['css']);
     }
 
-    if (isset($this->setting['lists']['vueData'])) {
+    if (isset($this->setting['vueData'])) {
         $vueData = \Be\Util\Arr::merge($vueData, $this->setting['vueData']);
     }
 
-    if (isset($this->setting['lists']['vueMethods'])) {
+    if (isset($this->setting['vueMethods'])) {
         $vueMethods = \Be\Util\Arr::merge($vueMethods, $this->setting['vueMethods']);
     }
 
-    if (isset($this->setting['lists']['vueHooks'])) {
-        foreach ($this->setting['lists']['vueHooks'] as $k => $v) {
+    if (isset($this->setting['vueHooks'])) {
+        foreach ($this->setting['vueHooks'] as $k => $v) {
             if (isset($vueHooks[$k])) {
                 $vueHooks[$k] .= "\r\n" . $v;
             } else {
@@ -338,7 +336,7 @@
                 loadTableData: function () {
                     this.loading = true;
                     var _this = this;
-                    _this.$http.post("<?php echo $this->url; ?>", {
+                    _this.$http.post("<?php echo $this->setting['form']['action']; ?>", {
                         formData: _this.formData,
                         orderBy: _this.orderBy,
                         orderByDir: _this.orderByDir,
@@ -372,7 +370,7 @@
                 },
                 reloadTableData: function () {
                     var _this = this;
-                    _this.$http.post("<?php echo $this->url; ?>", {
+                    _this.$http.post("<?php echo $this->setting['form']['action']; ?>", {
                         formData: _this.formData,
                         orderBy: _this.orderBy,
                         orderByDir: _this.orderByDir,
@@ -522,9 +520,9 @@
                 updateToolbars: function() {
                     var toolbarEnable;
                     <?php
-                    if (isset($this->setting['lists']['toolbar']['items']) && count($this->setting['lists']['toolbar']['items']) > 0) {
+                    if (isset($this->setting['toolbar']['items']) && count($this->setting['toolbar']['items']) > 0) {
                         $i = 0;
-                        foreach ($this->setting['lists']['toolbar']['items'] as $item) {
+                        foreach ($this->setting['toolbar']['items'] as $item) {
                             if (isset($item['task']) &&
                                 $item['task'] == 'fieldEdit' &&
                                 isset($item['postData']['field']) &&
@@ -559,9 +557,9 @@
             created: function () {
                 this.search();
                 <?php
-                if (isset($this->setting['lists']['reload']) && is_numeric($this->setting['lists']['reload'])) {
+                if (isset($this->setting['reload']) && is_numeric($this->setting['reload'])) {
                     echo 'var _this = this;';
-                    echo 'setInterval(function () {_this.reloadTableData();}, ' . ($this->setting['lists']['reload'] * 1000) . ');';
+                    echo 'setInterval(function () {_this.reloadTableData();}, ' . ($this->setting['reload'] * 1000) . ');';
                 }
 
                 if (isset($vueHooks['created'])) {
