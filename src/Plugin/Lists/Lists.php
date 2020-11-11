@@ -48,7 +48,7 @@ class Lists extends Plugin
         if (isset($this->setting['theme'])) {
             $theme = $this->setting['theme'];
         }
-        Response::display('Plugin.lists.display', $theme);
+        Response::display('Plugin.Lists.display', $theme);
         Response::createHistory();
     }
 
