@@ -18,8 +18,23 @@
     ?>
     <div id="app" v-cloak>
 
-        <el-form :inline="true" size="mini">
+        <el-form<?php
+            $formUi = [
+                ':inline' => 'true',
+                'size' => 'mini',
+            ];
+            if (isset($this->setting['form']['ui'])) {
+                $tableUi = array_merge($formUi, $this->setting['form']['ui']);
+            }
 
+            foreach ($formUi as $k => $v) {
+                if ($v === null) {
+                    echo ' ' . $k;
+                } else {
+                    echo ' ' . $k . '="' . $v . '"';
+                }
+            }
+            ?>>
             <?php
             $tabHtml = '';
             $tabPosition = 'beforeForm';
@@ -144,15 +159,29 @@
             }
             ?>
 
-            <el-table
-                    :data="tableData"
-                    ref="tableRef"
-                    v-loading="loading"
-                    size="mini"
-                    :height="tableHeight"
-                    :default-sort="{prop:orderBy,order:orderByDir}"
-                    @sort-change="sort"
-                    @selection-change="selectionChange">
+            <el-table<?php
+                $tableUi = [
+                    ':data' => 'tableData',
+                    'ref' => 'tableRef',
+                    'v-loading' => 'loading',
+                    'size' => 'mini',
+                    ':height' => 'tableHeight',
+                    ':default-sort' => '{prop:orderBy,order:orderByDir}',
+                    '@sort-change' => 'sort',
+                    '@selection-change' => 'selectionChange',
+                ];
+                if (isset($this->setting['table']['ui'])) {
+                    $tableUi = array_merge($tableUi, $this->setting['table']['ui']);
+                }
+
+                foreach ($tableUi as $k => $v) {
+                    if ($v === null) {
+                        echo ' ' . $k;
+                    } else {
+                        echo ' ' . $k . '="' . $v . '"';
+                    }
+                }
+                ?>>
                 <?php
                 $opPosition = 'right';
                 if (isset($this->setting['operation'])) {

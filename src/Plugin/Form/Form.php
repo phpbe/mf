@@ -21,14 +21,6 @@ class Form extends Plugin
             $setting['theme'] = 'Nude';
         }
 
-        if (!isset($setting['form']['ui']['label-width'])) {
-            $setting['form']['ui']['label-width'] = '150px';
-        }
-
-        if (!isset($setting['form']['ui']['size'])) {
-            $setting['form']['ui']['size'] = 'mini';
-        }
-
         if (!isset($setting['form']['action'])) {
             $setting['form']['action'] = Request::url();
         }

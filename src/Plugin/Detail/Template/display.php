@@ -8,16 +8,27 @@
     $vueHooks = [];
     ?>
     <div id="app" v-cloak>
+
         <el-form<?php
-            foreach ($this->setting['form']['ui'] as $k => $v) {
+            $formUi = [
+                'ref' => 'formRef',
+                'size' => 'mini',
+                'label-width' => '150px',
+            ];
+
+            if (isset($this->setting['form']['ui'])) {
+                $tableUi = array_merge($formUi, $this->setting['form']['ui']);
+            }
+
+            foreach ($formUi as $k => $v) {
                 if ($v === null) {
-                    echo ' '.$k;
+                    echo ' ' . $k;
                 } else {
-                    echo ' '.$k.'="' . $v . '"';
+                    echo ' ' . $k . '="' . $v . '"';
                 }
             }
-            echo '>';
-
+            ?>>
+            <?php
             if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
                 foreach ($this->setting['form']['items'] as $item) {
                     $driver = null;
