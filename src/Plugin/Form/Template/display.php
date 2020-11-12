@@ -18,7 +18,7 @@
             ];
 
             if (isset($this->setting['form']['ui'])) {
-                $tableUi = array_merge($formUi, $this->setting['form']['ui']);
+                $formUi = array_merge($formUi, $this->setting['form']['ui']);
             }
 
             foreach ($formUi as $k => $v) {
