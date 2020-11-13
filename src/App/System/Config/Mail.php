@@ -17,16 +17,6 @@ class Mail
     public $fromName = 'BE';
 
     /**
-     * @BeConfigItem("默认字符编码", driver="FormItemInput")
-     */
-    public $charset = 'utf-8';
-
-    /**
-     * @BeConfigItem("默认字符编码", driver="FormItemInput")
-     */
-    public $encoding = 'base64';
-
-    /**
      * @BeConfigItem("是否启用SMTP", driver="FormItemSwitch")
      */
     public $smtp = 0;

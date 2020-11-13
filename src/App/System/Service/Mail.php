@@ -20,9 +20,8 @@ class Mail extends \Be\System\Service
         if ($config->fromName) $this->mailer->FromName = $config->fromName;
 
         $this->mailer->IsHTML(true);
-
-        if ($config->charset) $this->mailer->CharSet = $config->charset;
-        if ($config->encoding) $this->mailer->Encoding = $config->encoding;
+        $this->mailer->CharSet = 'utf-8';
+        $this->mailer->Encoding = 'base64';
 
         if ($config->smtp == 1) {
             $this->mailer->IsSMTP();
