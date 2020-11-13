@@ -334,7 +334,7 @@
             pageSize = Number(pageSize);
         }
 
-        var vueCurdLists = new Vue({
+        var vueLists = new Vue({
             el: '#app',
             data: {
                 formData: <?php echo json_encode($formData); ?>,
@@ -574,6 +574,9 @@
                         }
                     }
                     ?>
+                },
+                resize: function() {
+                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 55;
                 }
                 <?php
                 if ($vueMethods) {
@@ -640,36 +643,36 @@
         });
 
         function reload() {
-            vueCurdLists.loadTableData();
+            vueLists.loadTableData();
         }
 
         function close() {
-            vueCurdLists.drawer.visible = false;
-            vueCurdLists.dialog.visible = false;
+            vueLists.drawer.visible = false;
+            vueLists.dialog.visible = false;
         }
 
         function closeDrawer() {
-            vueCurdLists.drawer.visible = false;
+            vueLists.drawer.visible = false;
         }
 
         function closeDialog() {
-            vueCurdLists.dialog.visible = false;
+            vueLists.dialog.visible = false;
         }
 
         function closeAndReload() {
-            vueCurdLists.drawer.visible = false;
-            vueCurdLists.dialog.visible = false;
-            vueCurdLists.loadTableData();
+            vueLists.drawer.visible = false;
+            vueLists.dialog.visible = false;
+            vueLists.loadTableData();
         }
 
         function closeDrawerAndReload() {
-            vueCurdLists.drawer.visible = false;
-            vueCurdLists.loadTableData();
+            vueLists.drawer.visible = false;
+            vueLists.loadTableData();
         }
 
         function closeDialogAndReload() {
-            vueCurdLists.dialog.visible = false;
-            vueCurdLists.loadTableData();
+            vueLists.dialog.visible = false;
+            vueLists.loadTableData();
         }
 
     </script>
