@@ -330,4 +330,72 @@ class Runtime
             Response::exception($e);
         }
     }
+
+    /**
+     * 命令行模式
+     */
+    public function exec($argv)
+    {
+        try {
+            // 检查网站配置， 是否暂停服务
+            $configSystem = Be::getConfig('System.System');
+
+            // 默认时区
+            date_default_timezone_set($configSystem->timezone);
+
+            if (!isset($argv[1])) {
+                echo '参数项（pathway）缺失（示例：php be System.Task.run）！';
+                exit;
+            }
+
+            array_shift($argv);
+            $pathway = array_shift($argv);
+            $pathways = explode('.', $pathway);
+            if (count($pathways) < 3) {
+                echo '参数项（pathway）错误（示例：php be System.Task.run）！';
+                exit;
+            }
+
+            $appName = $pathways[0];
+            $controllerName = $pathways[1];
+            $actionName = $pathways[2];
+
+            $this->appName = $appName;
+            $this->controllerName = $controllerName;
+            $this->actionName = $actionName;
+            $this->pathway = $appName . '.' . $controllerName . '.' . $actionName;
+
+            $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
+            if (!class_exists($class)) {
+                echo '控制器  ' . $appName . '/' . $controllerName . ' 不存在！';
+                exit;
+            }
+
+            $instance = new $class();
+            if (method_exists($instance, $actionName)) {
+                $instance->$actionName(...$argv);
+            } else {
+                echo '控制器 ' . $appName . '/' . $controllerName. ' 中不存在方法：' . $actionName . '！';
+                exit;
+            }
+
+        } catch (\Throwable $e) {
+            $hash = md5(json_encode([
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'message' => $e->getMessage()
+            ]));
+
+            RuntimeLog::emergency($e->getMessage(), [
+                'hash' => $hash,
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTrace()
+            ]);
+
+            echo '#' . $hash . '：' . $e->getMessage();
+            exit;
+        }
+    }
 }

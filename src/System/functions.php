@@ -46,3 +46,23 @@ function beUrl($pathway = null, $params = [])
         return Be::getRuntime()->getRootUrl() . '/?pathway=' . $pathway . (count($params) > 0 ? '&' . http_build_query($params) : '');
     }
 }
+
+/**
+ * 命令行方式访问指定方法
+ *
+ * @param null | string $pathway 路径（应用名.控制器名.动作名）
+ * @param null | array $params
+ */
+function beExec($pathway = null, $params = [])
+{
+    $cmd = 'php ' . Be::getRuntime()->getRootPath() . '/be ' . $pathway;
+    if ($params) {
+        $cmd .= ' ' . implode(' ', $params);
+    }
+
+    if (strtoupper(substr(PHP_OS,0,3))==='WIN') {
+        pclose(popen("start /B " . $cmd, "r"));
+    } else {
+        exec($cmd . " > /dev/null &");
+    }
+}
