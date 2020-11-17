@@ -64,7 +64,7 @@
 
             if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
                 ?>
-                <el-row>
+                <el-row id="form-items" ref="formItemsRef">
                     <el-col :span="24">
                         <?php
                         foreach ($this->setting['form']['items'] as $item) {
@@ -126,7 +126,7 @@
             }
 
             if (isset($this->setting['toolbar']['items']) && count($this->setting['toolbar']['items']) > 0) {
-                echo '<el-row><el-col :span="24">';
+                echo '<el-row id="toolbar-items" ref="toolbarItemsRef"><el-col :span="24">';
                 foreach ($this->setting['toolbar']['items'] as $item) {
                     $driver = null;
                     if (isset($item['driver'])) {
