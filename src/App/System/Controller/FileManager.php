@@ -5,10 +5,9 @@ use Be\System\Be;
 use Be\System\Request;
 use Be\System\Response;
 use Be\System\Session;
-use Be\System\Controller;
 
 // 文件管理器
-class FileManager extends Controller
+class FileManager
 {
 
     public function browser()

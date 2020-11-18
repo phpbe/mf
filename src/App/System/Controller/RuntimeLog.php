@@ -9,7 +9,7 @@ use Be\System\Response;
  * @BeMenuGroup("日志")
  * @BePermissionGroup("运行日志")
  */
-class RuntimeLog extends \Be\System\Controller
+class RuntimeLog
 {
 
 

@@ -11,7 +11,7 @@ use Be\System\Response;
  * @BeMenuGroup("系统配置", icon="el-icon-setting")
  * @BePermissionGroup("系统配置")
  */
-class Mail extends \Be\System\Controller
+class Mail
 {
 
     /**

@@ -11,7 +11,7 @@ use Be\System\Response;
  * @BeMenuGroup("扩展", icon="el-icon-fa fa-cube")
  * @BePermissionGroup("扩展")
  */
-class App extends \Be\System\Controller
+class App
 {
 
     /**

@@ -10,7 +10,7 @@ use Be\System\Response;
  * @BeMenuGroup("系统配置")
  * @BePermissionGroup("系统配置")
  */
-class Watermark extends \Be\System\Controller
+class Watermark
 {
 
     /**

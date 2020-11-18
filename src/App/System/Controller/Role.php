@@ -17,7 +17,7 @@ use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
 use Be\System\Request;
-use Be\System\Controller;
+
 
 /**
  * Class Role
@@ -25,7 +25,7 @@ use Be\System\Controller;
  * @BeMenuGroup("用户")
  * @BePermissionGroup("用户")
  */
-class Role extends Controller
+class Role
 {
 
     /**

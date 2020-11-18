@@ -9,7 +9,7 @@ use Be\System\Response;
  * @package Be\App\System\Controller
  * @BePermissionGroup("*")
  */
-class System extends \Be\System\Controller
+class System
 {
 
     /**

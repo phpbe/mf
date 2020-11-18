@@ -10,7 +10,7 @@ use Be\System\Response;
  * @BeMenuGroup("缓存管理", icon = "el-icon-fa fa-database")
  * @BePermissionGroup("缓存管理")
  */
-class Cache extends \Be\System\Controller
+class Cache
 {
 
 

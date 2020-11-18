@@ -8,7 +8,7 @@ use Be\System\Be;
  * @BeMenuGroup("系统配置", ordering="20")
  * @BePermissionGroup("系统配置", ordering="20")
  */
-class Config extends \Be\System\Controller
+class Config
 {
 
     /**

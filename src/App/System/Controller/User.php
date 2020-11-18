@@ -17,7 +17,7 @@ use Be\System\Db\Tuple;
 use Be\System\Exception\PluginException;
 use Be\System\Request;
 use Be\System\Response;
-use Be\System\Controller;
+
 use Be\Util\Random;
 
 /**
@@ -27,7 +27,7 @@ use Be\Util\Random;
  * @BeMenuGroup("用户", icon="el-icon-fa fa-user", ordering="10")
  * @BePermissionGroup("用户", ordering="10")
  */
-class User extends Controller
+class User
 {
     /**
      * 登陆页面

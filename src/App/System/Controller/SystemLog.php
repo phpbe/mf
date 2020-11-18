@@ -11,7 +11,7 @@ use Be\System\Response;
  * @BeMenuGroup("用户")
  * @BePermissionGroup("用户")
  */
-class SystemLog extends \Be\System\Controller
+class SystemLog
 {
 
     /**

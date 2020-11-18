@@ -11,7 +11,7 @@ use Be\Util\Net\FileUpload;
 /**
  * @BePermissionGroup("*")
  */
-class Plugin extends \Be\System\Controller
+class Plugin
 {
 
     public function uploadFile()

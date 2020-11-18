@@ -7,13 +7,13 @@ use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Table\Item\TableItemCustom;
 use Be\System\Be;
 use Be\System\Response;
-use Be\System\Controller;
+
 
 /**
  * @BeMenuGroup("用户")
  * @BePermissionGroup("用户")
  */
-class UserLoginLog extends Controller
+class UserLoginLog
 {
 
     /**
