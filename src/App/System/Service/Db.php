@@ -6,7 +6,7 @@ use Be\System\Exception\ServiceException;
 use Be\System\Be;
 use Be\Util\Str;
 
-class Db extends \Be\System\Service
+class Db
 {
 
     /**

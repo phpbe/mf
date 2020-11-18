@@ -1,7 +1,7 @@
 <?php
 namespace Be\App\System\Service;
 
-class Theme extends \Be\System\Service
+class Theme
 {
 
     private $theme = null;

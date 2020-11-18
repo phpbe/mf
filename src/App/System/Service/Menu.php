@@ -4,9 +4,8 @@ namespace Be\App\System\Service;
 
 use Be\App\System\Helper\DocComment;
 use Be\System\Be;
-use Be\System\Service;
 
-class Menu extends Service
+class Menu
 {
 
     private $menus = null;

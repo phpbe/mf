@@ -13,7 +13,7 @@ use Be\System\Cookie;
 use Be\System\Session;
 use PHPMailer\PHPMailer\Exception;
 
-class User extends \Be\System\Service
+class User
 {
 
     /**

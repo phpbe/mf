@@ -2,7 +2,7 @@
 namespace Be\System\Traits;
 
 /**
- * 扩展基类
+ * 事件
  */
 Trait Event
 {

@@ -5,7 +5,7 @@ use Be\System\Be;
 use Be\System\Exception\ServiceException;
 use PHPMailer\PHPMailer\PHPMailer;
 
-class Mail extends \Be\System\Service
+class Mail
 {
     private $mailer = null;
 

@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Exception\ServiceException;
 
-class RuntimeLog extends \Be\System\Service
+class RuntimeLog
 {
 
     /**

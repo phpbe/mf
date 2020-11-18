@@ -8,7 +8,7 @@ use Be\System\Db\Tuple;
 use Be\System\Exception\ServiceException;
 use Be\System\Be;
 
-class Role extends \Be\System\Service
+class Role
 {
 
     /**

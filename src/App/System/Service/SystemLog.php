@@ -5,7 +5,7 @@ use Be\System\Be;
 use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 
-class SystemLog extends \Be\System\Service
+class SystemLog
 {
     /**
      * @param $content

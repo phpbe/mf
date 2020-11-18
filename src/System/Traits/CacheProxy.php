@@ -1,11 +1,10 @@
 <?php
-namespace Be\System;
+namespace Be\System\Traits;
 
 /**
- * 服务基类
- * 服务用于实于业务逻辑，提供服务，供控制器(controller)或其它服务(service)调用
+ * 缓存代理
  */
-abstract class Service
+abstract class CacheProxy
 {
     /**
      * 启动缓存代理

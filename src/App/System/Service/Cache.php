@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 
 use Be\System\Be;
 
-class Cache extends \Be\System\Service
+class Cache
 {
 
     /**

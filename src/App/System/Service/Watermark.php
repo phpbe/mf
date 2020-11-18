@@ -5,7 +5,7 @@ use Be\System\Be;
 use Be\System\Exception\ServiceException;
 use Be\System\RuntimeException;
 
-class Watermark extends \Be\System\Service
+class Watermark
 {
 
     public function mark($image)

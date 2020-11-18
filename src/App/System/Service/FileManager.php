@@ -3,12 +3,11 @@ namespace Be\App\System\Service;
 
 use Be\System\Be;
 use Be\System\Session;
-use Be\System\Service;
 use Be\System\Exception\ServiceException;
 
 /**
  */
-class FileManager extends Service
+class FileManager
 {
 
     public function getFiles($option = array())
