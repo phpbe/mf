@@ -141,6 +141,7 @@ class Report extends Plugin
 
                 $total = $db->getValue($sqlCount);
 
+                $posOrderBy = strpos($sqlData, '{orderBy}');
                 $orderBy = isset($postData['orderBy']) ? $postData['orderBy'] : '';
                 if ($orderBy) {
                     $orderByDir = isset($postData['orderByDir']) ? strtoupper($postData['orderByDir']) : '';
@@ -148,22 +149,45 @@ class Report extends Plugin
                         $orderByDir = 'DESC';
                     }
 
-                    $sqlData .= ' ORDER BY ' . $orderBy . ' ' . $orderByDir;
+                    $orderBySql = 'ORDER BY ' . $orderBy . ' ' . $orderByDir;
+
+                    if ($posOrderBy !== false) {
+                        $sqlData = str_replace('{orderBy}', $orderBySql, $sqlData);
+                    } else {
+                        $sqlData .= ' ' . $orderBySql;
+                    }
                 } else {
                     if (isset($this->setting['lists']['orderBy'])) {
                         $orderBy = $this->setting['lists']['orderBy'];
                         if (isset($this->setting['lists']['orderByDir'])) {
                             $orderByDir = $this->setting['lists']['orderByDir'];
-                            $sqlData .= ' ORDER BY ' . $orderBy . ' ' . $orderByDir;
+                            $orderBySql = ' ORDER BY ' . $orderBy . ' ' . $orderByDir;
                         } else {
-                            $sqlData .= ' ORDER BY ' . $orderBy;
+                            $orderBySql = ' ORDER BY ' . $orderBy;
+                        }
+
+                        if ($posOrderBy !== false) {
+                            $sqlData = str_replace('{orderBy}', $orderBySql, $sqlData);
+                        } else {
+                            $sqlData .= $orderBySql;
+                        }
+                    } else {
+                        if ($posOrderBy !== false) {
+                            $sqlData = str_replace('{orderBy}', '', $sqlData);
                         }
                     }
                 }
 
                 $page = $postData['page'];
                 $pageSize = $postData['pageSize'];
-                $sqlData .= ' LIMIT ' . (($page - 1) * $pageSize) . ', ' . $pageSize;
+                $limitSql = 'LIMIT ' . (($page - 1) * $pageSize) . ', ' . $pageSize;
+
+                $posLimit = strpos($sqlData, '{limit}');
+                if ($posLimit !== false) {
+                    $sqlData = str_replace('{limit}', $limitSql, $sqlData);
+                } else {
+                    $sqlData .= ' ' . $limitSql;
+                }
 
                 $rows = $db->getArrays($sqlData);
 
