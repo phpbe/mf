@@ -19,6 +19,7 @@ use Be\Plugin\Table\Item\TableItemImage;
 use Be\Plugin\Table\Item\TableItemProgress;
 use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
+use Be\System\Db\Table;
 use Be\System\Exception\PluginException;
 use Be\System\Plugin;
 use Be\System\Request;
@@ -71,133 +72,11 @@ class Curd extends Plugin
      */
     public function lists()
     {
-        $db = Be::getDb($this->setting['db']);
-        $table = Be::newTable($this->setting['table'], $this->setting['db']);
         if (Request::isAjax()) {
-
             try {
-                if (isset($this->setting['lists']['filter']) && count($this->setting['lists']['filter']) > 0) {
-                    foreach ($this->setting['lists']['filter'] as $filter) {
-                        $table->where($filter);
-                    }
-                }
-
                 $postData = Request::json();
                 $formData = $postData['formData'];
-                if (isset($this->setting['lists']['tab'])) {
-                    if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
-                        $buildSql = $item['buildSql'];
-                        $sql = $buildSql($this->setting['db'], $formData);
-                        if ($sql) {
-                            $table->where($sql);
-                        }
-                    } else {
-                        $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
-                        $driver->submit($formData);
-                        if ($driver->newValue !== '') {
-                            $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
-                            $table->where($sql);
-                        }
-                    }
-                }
-
-                // 表单搜索
-                if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
-                    foreach ($this->setting['lists']['form']['items'] as $item) {
-
-                        $driverName = null;
-                        if (isset($item['driver'])) {
-                            $driverName = $item['driver'];
-                        } else {
-                            $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
-                        }
-
-                        $driver = new $driverName($item);
-
-                        if ($driver->name == null) {
-                            continue;
-                        }
-
-                        $driver->submit($formData);
-
-                        if ($driver->newValue === '') {
-                            continue;
-                        }
-
-                        if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
-                            $buildSql = $item['buildSql'];
-                            $sql = $buildSql($this->setting['db'], $formData);
-                            if ($sql) {
-                                $table->where($sql);
-                            }
-                        } else {
-
-                            $op = null;
-                            if (isset($item['op'])) {
-                                $op = strtoupper($item['op']);
-                            } else {
-                                switch ($driverName) {
-                                    case FormItemDatePickerMonthRange::class:
-                                    case FormItemDatePickerRange::class:
-                                    case FormItemTimePickerRange::class:
-                                        $op = 'RANGE';
-                                        break;
-                                    case FormItemInput::class:
-                                        $op = '%LIKE%';
-                                        break;
-                                    default:
-                                        $op = '=';
-                                }
-                            }
-
-                            $sql = null;
-                            switch ($op) {
-                                case 'LIKE':
-                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue);
-                                    break;
-                                case '%LIKE%':
-                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue . '%');
-                                    break;
-                                case 'LIKE%':
-                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue . '%');
-                                    break;
-                                case '%LIKE':
-                                    $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue);
-                                    break;
-                                case 'RANGE':
-                                    if (is_array($driver->newValue) && count($driver->newValue) == 2) {
-                                        $sql = $db->quoteKey($driver->name) . ' >= ' . $db->quoteValue($driver->newValue[0]);
-                                        $sql .= ' AND ';
-                                        $sql .= $db->quoteKey($driver->name) . ' < ' . $db->quoteValue($driver->newValue[1]);
-                                    }
-                                    break;
-                                case 'BETWEEN':
-                                    if (is_array($driver->newValue) && count($driver->newValue) == 2) {
-                                        $sql = $db->quoteKey($driver->name) . ' BETWEEN ' . $db->quoteValue($driver->newValue[0]);
-                                        $sql .= ' AND ';
-                                        $sql .= $db->quoteValue($driver->newValue[1]);
-                                    }
-                                    break;
-                                case 'IN':
-                                    if (is_array($driver->newValue)) {
-                                        $newValue = [];
-                                        foreach ($driver->newValue as $x) {
-                                            $newValue[] = $db->quoteValue($x);
-                                        }
-                                        $sql = $db->quoteKey($driver->name) . ' IN (' . implode(',', $newValue) . ')';
-                                    }
-                                    break;
-                                default:
-                                    $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
-                                    break;
-                            }
-
-                            if ($sql) {
-                                $table->where($sql);
-                            }
-                        }
-                    }
-                }
+                $table = $this->getTable($formData);
 
                 $total = $table->count();
 
@@ -305,6 +184,263 @@ class Curd extends Plugin
             Response::createHistory();
         }
 
+    }
+
+    /*
+     * 导出
+     *
+     */
+    public function export()
+    {
+        try {
+            $postData = Request::post('data', '', '');
+            $postData = json_decode($postData, true);
+            $formData = $postData['formData'];
+
+            $table = $this->getTable($formData);
+            $rows = $table->getYieldArrays();
+
+            $exporter = Be::getPlugin('Exporter');
+
+            $exportDriver = isset($postData['postData']['driver']) ? $postData['postData']['driver'] : 'csv';
+
+            $filename = null;
+            if (isset($this->setting['export']['title'])) {
+                $filename = $this->setting['export']['title'];
+            } elseif (isset($this->setting['lists']['title'])) {
+                $filename = $this->setting['lists']['title'];
+            }
+            $filename .= '（' . date('YmdHis') . '）';
+            $filename .= ($exportDriver == 'csv' ? '.csv' : '.xls');
+
+            $exporter->setDriver($exportDriver)->setOutput('http', $filename);
+
+            $fields = null;
+            if (isset($this->setting['export']['items'])) {
+                $fields = $this->setting['export']['items'];
+            } else {
+                $fields = $this->setting['lists']['table']['items'];
+            }
+
+            $headers = [];
+            foreach ($fields as $item) {
+                if (!isset($item['label'])) {
+                    continue;
+                }
+                $driver = null;
+                if (isset($item['driver'])) {
+                    $driverName = $item['driver'];
+                    $driver = new $driverName($item);
+                } else {
+                    $driver = new \Be\Plugin\Table\Item\TableItemText($item);
+                }
+
+                $headers[] = $driver->label;
+            }
+            $exporter->setHeaders($headers);
+
+            foreach ($rows as $row) {
+                $formattedRow = [];
+
+                foreach ($fields as $item) {
+                    if (!isset($item['label'])) {
+                        continue;
+                    }
+
+                    $itemName = $item['name'];
+                    $itemValue = '';
+                    if (isset($item['exportValue'])) {
+                        $value = $item['exportValue'];
+                        if ($value instanceof \Closure) {
+                            $itemValue = $value($row);
+                        } else {
+                            $itemValue = $value;
+                        }
+                    } else {
+                        if (isset($item['value'])) {
+                            $value = $item['value'];
+                            if ($value instanceof \Closure) {
+                                $itemValue = $value($row);
+                            } else {
+                                $itemValue = $value;
+                            }
+                        } else {
+                            if (isset($row[$itemName])) {
+                                $itemValue = $row[$itemName];
+                            }
+                        }
+
+                        if (isset($item['keyValues'])) {
+                            $keyValues = $item['keyValues'];
+                            if ($keyValues instanceof \Closure) {
+                                $itemValue = $keyValues($itemValue);
+                            } else {
+                                if (isset($keyValues[$itemValue])) {
+                                    $itemValue = $keyValues[$itemValue];
+                                } else {
+                                    $itemValue = '';
+                                }
+                            }
+                        }
+                    }
+
+                    $formattedRow[$itemName] = $itemValue;
+                }
+
+                $exporter->addRow($formattedRow);
+            }
+
+            $exporter->end();
+
+            $content = null;
+            if (isset($this->setting['export']['title'])) {
+                $content = $this->setting['export']['title'] . '（' . $exportDriver . '）';
+            } elseif (isset($this->setting['lists']['title'])) {
+                $content = '导出 ' . $this->setting['lists']['title'] . '（' . $exportDriver . '）';
+            } else {
+                $content = '导出 ' . $exportDriver;
+            }
+
+            if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+                beSystemLog($content, $formData);
+            }
+
+        } catch (\Exception $e) {
+            Response::error($e->getMessage());
+        }
+    }
+
+    /**
+     * 获取Table
+     *
+     * @param array $formData 查询条件
+     * @return Table
+     */
+    private function getTable($formData)
+    {
+        $db = Be::getDb($this->setting['db']);
+        $table = Be::newTable($this->setting['table'], $this->setting['db']);
+
+        if (isset($this->setting['lists']['filter']) && count($this->setting['lists']['filter']) > 0) {
+            foreach ($this->setting['lists']['filter'] as $filter) {
+                $table->where($filter);
+            }
+        }
+
+        if (isset($this->setting['lists']['tab'])) {
+            if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
+                $buildSql = $item['buildSql'];
+                $sql = $buildSql($this->setting['db'], $formData);
+                if ($sql) {
+                    $table->where($sql);
+                }
+            } else {
+                $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
+                $driver->submit($formData);
+                if ($driver->newValue !== '') {
+                    $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                    $table->where($sql);
+                }
+            }
+        }
+
+        if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
+            foreach ($this->setting['lists']['form']['items'] as $item) {
+
+                $driverName = null;
+                if (isset($item['driver'])) {
+                    $driverName = $item['driver'];
+                } else {
+                    $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
+                }
+
+                $driver = new $driverName($item);
+
+                if ($driver->name == null) {
+                    continue;
+                }
+
+                $driver->submit($formData);
+
+                if ($driver->newValue === '') {
+                    continue;
+                }
+
+                if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
+                    $buildSql = $item['buildSql'];
+                    $sql = $buildSql($this->setting['db'], $formData);
+                    if ($sql) {
+                        $table->where($sql);
+                    }
+                } else {
+
+                    $op = null;
+                    if (isset($item['op'])) {
+                        $op = strtoupper($item['op']);
+                    } else {
+                        switch ($driverName) {
+                            case FormItemDatePickerMonthRange::class:
+                            case FormItemDatePickerRange::class:
+                            case FormItemTimePickerRange::class:
+                                $op = 'RANGE';
+                                break;
+                            case FormItemInput::class:
+                                $op = '%LIKE%';
+                                break;
+                            default:
+                                $op = '=';
+                        }
+                    }
+
+                    $sql = null;
+                    switch ($op) {
+                        case 'LIKE':
+                            $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue);
+                            break;
+                        case '%LIKE%':
+                            $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue . '%');
+                            break;
+                        case 'LIKE%':
+                            $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue . '%');
+                            break;
+                        case '%LIKE':
+                            $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue);
+                            break;
+                        case 'RANGE':
+                            if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                $sql = $db->quoteKey($driver->name) . ' >= ' . $db->quoteValue($driver->newValue[0]);
+                                $sql .= ' AND ';
+                                $sql .= $db->quoteKey($driver->name) . ' < ' . $db->quoteValue($driver->newValue[1]);
+                            }
+                            break;
+                        case 'BETWEEN':
+                            if (is_array($driver->newValue) && count($driver->newValue) == 2) {
+                                $sql = $db->quoteKey($driver->name) . ' BETWEEN ' . $db->quoteValue($driver->newValue[0]);
+                                $sql .= ' AND ';
+                                $sql .= $db->quoteValue($driver->newValue[1]);
+                            }
+                            break;
+                        case 'IN':
+                            if (is_array($driver->newValue)) {
+                                $newValue = [];
+                                foreach ($driver->newValue as $x) {
+                                    $newValue[] = $db->quoteValue($x);
+                                }
+                                $sql = $db->quoteKey($driver->name) . ' IN (' . implode(',', $newValue) . ')';
+                            }
+                            break;
+                        default:
+                            $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
+                            break;
+                    }
+
+                    if ($sql) {
+                        $table->where($sql);
+                    }
+                }
+            }
+        }
+        return $table;
     }
 
     /**
@@ -987,253 +1123,6 @@ class Curd extends Plugin
                 Response::error($e->getMessage());
             }
         }
-    }
-
-    /*
-     * 导出
-     *
-     */
-    public function export()
-    {
-        $postData = Request::post('data', '', '');
-        $postData = json_decode($postData, true);
-
-        $db = Be::getDb($this->setting['db']);
-        $table = Be::newTable($this->setting['table'], $this->setting['db']);
-
-        try {
-            if (isset($this->setting['lists']['filter']) && count($this->setting['lists']['filter']) > 0) {
-                foreach ($this->setting['lists']['filter'] as $filter) {
-                    $table->where($filter);
-                }
-            }
-
-            $formData = $postData['formData'];
-            if (isset($this->setting['lists']['tab'])) {
-                if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
-                    $buildSql = $item['buildSql'];
-                    $sql = $buildSql($this->setting['db'], $formData);
-                    if ($sql) {
-                        $table->where($sql);
-                    }
-                } else {
-                    $driver = new \Be\Plugin\Tab\Driver($this->setting['lists']['tab']);
-                    $driver->submit($formData);
-                    if ($driver->newValue !== '') {
-                        $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
-                        $table->where($sql);
-                    }
-                }
-            }
-
-            if (isset($this->setting['lists']['form']['items']) && count($this->setting['lists']['form']['items']) > 0) {
-                foreach ($this->setting['lists']['form']['items'] as $item) {
-
-                    $driverName = null;
-                    if (isset($item['driver'])) {
-                        $driverName = $item['driver'];
-                    } else {
-                        $driverName = \Be\Plugin\Form\Item\FormItemInput::class;
-                    }
-
-                    $driver = new $driverName($item);
-
-                    if ($driver->name == null) {
-                        continue;
-                    }
-
-                    $driver->submit($formData);
-
-                    if ($driver->newValue === '') {
-                        continue;
-                    }
-
-                    if (isset($item['buildSql']) && $item['buildSql'] instanceof \Closure) {
-                        $buildSql = $item['buildSql'];
-                        $sql = $buildSql($this->setting['db'], $formData);
-                        if ($sql) {
-                            $table->where($sql);
-                        }
-                    } else {
-
-                        $op = null;
-                        if (isset($item['op'])) {
-                            $op = strtoupper($item['op']);
-                        } else {
-                            switch ($driverName) {
-                                case FormItemDatePickerMonthRange::class:
-                                case FormItemDatePickerRange::class:
-                                case FormItemTimePickerRange::class:
-                                    $op = 'RANGE';
-                                    break;
-                                case FormItemInput::class:
-                                    $op = '%LIKE%';
-                                    break;
-                                default:
-                                    $op = '=';
-                            }
-                        }
-
-                        $sql = null;
-                        switch ($op) {
-                            case 'LIKE':
-                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue);
-                                break;
-                            case '%LIKE%':
-                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue . '%');
-                                break;
-                            case 'LIKE%':
-                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue($driver->newValue . '%');
-                                break;
-                            case '%LIKE':
-                                $sql = $db->quoteKey($driver->name) . ' LIKE ' . $db->quoteValue('%' . $driver->newValue);
-                                break;
-                            case 'RANGE':
-                                if (is_array($driver->newValue) && count($driver->newValue) == 2) {
-                                    $sql = $db->quoteKey($driver->name) . ' >= ' . $db->quoteValue($driver->newValue[0]);
-                                    $sql .= ' AND ';
-                                    $sql .= $db->quoteKey($driver->name) . ' < ' . $db->quoteValue($driver->newValue[1]);
-                                }
-                                break;
-                            case 'BETWEEN':
-                                if (is_array($driver->newValue) && count($driver->newValue) == 2) {
-                                    $sql = $db->quoteKey($driver->name) . ' BETWEEN ' . $db->quoteValue($driver->newValue[0]);
-                                    $sql .= ' AND ';
-                                    $sql .= $db->quoteValue($driver->newValue[1]);
-                                }
-                                break;
-                            case 'IN':
-                                if (is_array($driver->newValue)) {
-                                    $newValue = [];
-                                    foreach ($driver->newValue as $x) {
-                                        $newValue[] = $db->quoteValue($x);
-                                    }
-                                    $sql = $db->quoteKey($driver->name) . ' IN (' . implode(',', $newValue) . ')';
-                                }
-                                break;
-                            default:
-                                $sql = $db->quoteKey($driver->name) . ' = ' . $db->quoteValue($driver->newValue);
-                                break;
-                        }
-
-                        if ($sql) {
-                            $table->where($sql);
-                        }
-                    }
-                }
-            }
-
-            $rows = $table->getYieldArrays();
-
-            $exporter = Be::getPlugin('Exporter');
-
-            $exportDriver = isset($postData['postData']['driver']) ? $postData['postData']['driver'] : 'csv';
-
-            $filename = null;
-            if (isset($this->setting['export']['title'])) {
-                $filename = $this->setting['export']['title'];
-            } elseif (isset($this->setting['lists']['title'])) {
-                $filename = $this->setting['lists']['title'];
-            }
-            $filename .= '（' . date('YmdHis') . '）';
-            $filename .= ($exportDriver == 'csv' ? '.csv' : '.xls');
-
-            $exporter->setDriver($exportDriver)->setOutput('http', $filename);
-
-            $fields = null;
-            if (isset($this->setting['export']['items'])) {
-                $fields = $this->setting['export']['items'];
-            } else {
-                $fields = $this->setting['lists']['table']['items'];
-            }
-
-            $headers = [];
-            foreach ($fields as $item) {
-                if (!isset($item['label'])) {
-                    continue;
-                }
-                $driver = null;
-                if (isset($item['driver'])) {
-                    $driverName = $item['driver'];
-                    $driver = new $driverName($item);
-                } else {
-                    $driver = new \Be\Plugin\Table\Item\TableItemText($item);
-                }
-
-                $headers[] = $driver->label;
-            }
-            $exporter->setHeaders($headers);
-
-            foreach ($rows as $row) {
-                $formattedRow = [];
-
-                foreach ($fields as $item) {
-                    if (!isset($item['label'])) {
-                        continue;
-                    }
-
-                    $itemName = $item['name'];
-                    $itemValue = '';
-                    if (isset($item['exportValue'])) {
-                        $value = $item['exportValue'];
-                        if ($value instanceof \Closure) {
-                            $itemValue = $value($row);
-                        } else {
-                            $itemValue = $value;
-                        }
-                    } else {
-                        if (isset($item['value'])) {
-                            $value = $item['value'];
-                            if ($value instanceof \Closure) {
-                                $itemValue = $value($row);
-                            } else {
-                                $itemValue = $value;
-                            }
-                        } else {
-                            if (isset($row[$itemName])) {
-                                $itemValue = $row[$itemName];
-                            }
-                        }
-
-                        if (isset($item['keyValues'])) {
-                            $keyValues = $item['keyValues'];
-                            if ($keyValues instanceof \Closure) {
-                                $itemValue = $keyValues($itemValue);
-                            } else {
-                                if (isset($keyValues[$itemValue])) {
-                                    $itemValue = $keyValues[$itemValue];
-                                } else {
-                                    $itemValue = '';
-                                }
-                            }
-                        }
-                    }
-
-                    $formattedRow[$itemName] = $itemValue;
-                }
-
-                $exporter->addRow($formattedRow);
-            }
-
-            $exporter->end();
-
-            $content = null;
-            if (isset($this->setting['export']['title'])) {
-                $content = $this->setting['export']['title'] . '（' . $exportDriver . '）';
-            } elseif (isset($this->setting['lists']['title'])) {
-                $content = '导出 ' . $this->setting['lists']['title'] . '（' . $exportDriver . '）';
-            } else {
-                $content = '导出 ' . $exportDriver;
-            }
-
-            if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                beSystemLog($content, $formData);
-            }
-
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
-        }
-
     }
 
 
