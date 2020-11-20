@@ -12,6 +12,7 @@ abstract class Driver
     protected $outputType = 'http';
     protected $outputFileNameOrPath = null;
     protected $memoryLimit = '1g';
+    protected $split = null; // 数据量过大时，拆分为多个文件，打成一个 zip 压缩包
 
     /**
      * 设置执行超时时间
@@ -45,6 +46,18 @@ abstract class Driver
 
         $this->outputType = $outputType;
         $this->outputFileNameOrPath = $outputFileNameOrPath;
+        return $this;
+    }
+
+    /**
+     * TODO 设置拆分为多个文件的行数
+     *
+     * @param int $split 行数，到达该行时生成一个新的文件
+     * @return Driver
+     */
+    public function setSplit($split)
+    {
+        $this->split = $split;
         return $this;
     }
 

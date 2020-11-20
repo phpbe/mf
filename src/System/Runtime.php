@@ -265,6 +265,12 @@ class Runtime
             $this->actionName = $actionName;
             $this->pathway = $appName . '.' . $controllerName . '.' . $actionName;
 
+            if ($appName == 'System' && $controllerName == 'Installer') {
+                $instance = new \Be\App\System\Controller\Installer();
+                $instance->$actionName();
+                exit;
+            }
+
             $my = Be::getUser();
             if ($my->id == 0) {
                 Be::getService('System.User')->rememberMe();
@@ -290,9 +296,9 @@ class Runtime
                 // 已登录用户，IP锁定功能校验
                 $configUser = Be::getConfig('System.User');
                 if ($configUser->ipLock) {
-                    if ($my->last_login_ip != Request::ip()) {
+                    if ($my->this_login_ip != Request::ip()) {
                         Be::getService('System.User')->logout();
-                        Response::error('检测到您的账号在其它地点登录！', beUrl('System.User.login'));
+                        Response::error('检测到您的账号在其它地点（'.$my->this_login_ip . ' '. $my->this_login_time.'）登录！', beUrl('System.User.login'));
                     }
                 }
             }

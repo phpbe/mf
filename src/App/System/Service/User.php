@@ -64,20 +64,18 @@ class User
             try {
                 $tupleUser->loadBy('username', $username);
             } catch (\Exception $e) {
-                throw new ServiceException('用户账号（'.$username.'）不存在！');
+                throw new ServiceException('用户账号（' . $username . '）不存在！');
             }
 
             $password = $this->encryptPassword($password, $tupleUser->salt);
 
             if ($tupleUser->password === $password) {
                 if ($tupleUser->is_delete == 1) {
-                    throw new ServiceException('用户账号（'.$username.'）不可用！');
+                    throw new ServiceException('用户账号（' . $username . '）不可用！');
                 } elseif ($tupleUser->is_enable == 0) {
-                    throw new ServiceException('用户账号（'.$username.'）已被禁用！');
+                    throw new ServiceException('用户账号（' . $username . '）已被禁用！');
                 } else {
                     session::delete($timesKey);
-
-                    $this->makeLogin($tupleUser);
 
                     $tupleUserLoginLog->success = 1;
                     $tupleUserLoginLog->description = '登陆成功！';
@@ -87,10 +85,14 @@ class User
                         $rememberMeToken = Random::complex(32);
                     } while (Be::newTable('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
 
-                    $tupleUser->last_login_time = date('Y-m-d H:i:s');
-                    $tupleUser->last_login_ip = Request::ip();
+                    $tupleUser->last_login_time = $tupleUser->this_login_time;
+                    $tupleUser->this_login_time = date('Y-m-d H:i:s');
+                    $tupleUser->last_login_ip = $tupleUser->this_login_ip;
+                    $tupleUser->this_login_ip = Request::ip();
                     $tupleUser->remember_me_token = $rememberMeToken;
                     $tupleUser->save();
+
+                    $this->makeLogin($tupleUser);
 
                     cookie::setExpire(time() + 30 * 86400);
                     cookie::set('_rememberMe', $rememberMeToken);
@@ -119,13 +121,14 @@ class User
      * @param Tuple | Object | int $userId 用户Row对象 | Object数据 | 用户ID
      * @throws ServiceException
      */
-    public function makeLogin($userId) {
+    public function makeLogin($userId)
+    {
         $user = null;
-        if($userId instanceof Tuple) {
+        if ($userId instanceof Tuple) {
             $user = $userId->toObject();
-        }elseif(is_object($userId)) {
+        } elseif (is_object($userId)) {
             $user = $userId;
-        }elseif(is_numeric($userId)) {
+        } elseif (is_numeric($userId)) {
             $tupleUser = Be::newTuple('system_user');
             $tupleUser->load($userId);
             $user = $tupleUser->toObject();
@@ -161,21 +164,12 @@ class User
                 }
 
                 if ($tupleUser->id > 0 && $tupleUser->is_enable == 1 && $tupleUser->is_delete == 0) {
+                    $tupleUser->last_login_time = $tupleUser->this_login_time;
+                    $tupleUser->this_login_time = date('Y-m-d H:i:s');
+                    $tupleUser->last_login_ip = $tupleUser->this_login_ip;
+                    $tupleUser->this_login_ip = Request::ip();
+                    $tupleUser->save();
                     $this->makeLogin($tupleUser);
-                    $db = Be::getDb();
-                    $db->beginTransaction();
-                    try {
-
-                        $tupleUser->last_login_time = date('Y-m-d H:i:s');
-                        $tupleUser->save();
-
-                        $db->commit();
-                        return $tupleUser;
-
-                    } catch (\Exception $e) {
-                        $db->rollback();
-                        throw $e;
-                    }
                 }
             }
         }

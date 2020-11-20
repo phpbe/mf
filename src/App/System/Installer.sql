@@ -27,7 +27,7 @@ CREATE TABLE `system_log` (
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='系统操作日志';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统操作日志';
 
 CREATE TABLE `system_role` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
@@ -41,10 +41,10 @@ CREATE TABLE `system_role` (
   `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户角色';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户角色';
 
 INSERT INTO `system_role` (`id`, `name`, `remark`, `permission`, `permissions`, `is_enable`, `is_delete`, `ordering`, `create_time`, `update_time`) VALUES
-(1, '超级管理员', '能执行所有操作', 1, '', 1, 0, 0, '2020-09-10 00:43:01', '2020-09-10 00:43:01');
+(1, '超级管理员', '能执行所有操作', 1, '', 1, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 CREATE TABLE `system_task`(
     `id` INT NOT NULL AUTO_INCREMENT COMMENT '自增ID',
@@ -53,7 +53,7 @@ CREATE TABLE `system_task`(
     `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY(`id`)
-) ENGINE = InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='计划任务';
+) ENGINE = InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 CREATE TABLE `system_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增编号',
@@ -72,13 +72,16 @@ CREATE TABLE `system_user` (
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后一次登陆时间',
+  `this_login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '本次登陆时间',
   `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '最后一次登录的IP',
+  `this_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '本次登录的IP',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户';
 
-INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `last_login_ip`) VALUES
-(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'be@phpbe.com', '管理员', 0, '', '', 1, 0, CURRENT_TIMESTAMP, '0000-00-00 00:00:00', '127.0.0.1');
+
+INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `this_login_time`, `last_login_ip`, `this_login_ip`) VALUES
+(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'be@phpbe.com', '管理员', 0, '', '', 1, 0, CURRENT_TIMESTAMP, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '127.0.0.1', '127.0.0.1');
 
 CREATE TABLE `system_user_login_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
