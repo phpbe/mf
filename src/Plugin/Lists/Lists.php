@@ -23,6 +23,12 @@ class Lists extends Plugin
             $setting['form']['action'] = Request::url();
         }
 
+        if (!isset($setting['form']['actions'])) {
+            $setting['form']['actions'] = [
+                'submit' => true,
+            ];
+        }
+
         return parent::setting($setting);
     }
 

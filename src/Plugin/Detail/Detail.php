@@ -26,6 +26,12 @@ class Detail extends Plugin
             $setting['theme'] = 'Nude';
         }
 
+        if (!isset($setting['form']['actions'])) {
+            $setting['form']['actions'] = [
+                'cancel' => true,
+            ];
+        }
+
         return parent::setting($setting);
     }
 

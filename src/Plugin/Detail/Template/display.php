@@ -77,7 +77,46 @@
             }
             ?>
             <el-form-item>
-                <el-button type="primary" @click="close">关闭</el-button>
+                <?php
+                if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
+                    foreach ($this->setting['form']['actions'] as $actionK => $action) {
+                        if ($actionK == 'cancel') {
+                            if ($action) {
+                                if ($action === true) {
+                                    echo '<el-button type="primary" @click="cancel">关闭</el-button> ';
+                                    continue;
+                                } elseif (is_string($action)) {
+                                    echo '<el-button type="primary" @click="cancel">' . $action . '</el-button> ';
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+
+                        $driver = null;
+                        if (isset($item['driver'])) {
+                            $driverName = $item['driver'];
+                            $driver = new $driverName($item);
+                        } else {
+                            $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
+                        }
+                        echo $driver->getHtml() . ' ';
+
+                        $vueDataX = $driver->getVueData();
+                        if ($vueDataX) {
+                            $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                        }
+
+                        $vueMethodsX = $driver->getVueMethods();
+                        if ($vueMethodsX) {
+                            $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                        }
+
+                    }
+                }
+                ?>
+
             </el-form-item>
         </el-form>
     </div>
@@ -112,12 +151,80 @@
                 ?>
             },
             methods: {
-                close: function () {
+                cancel: function () {
                     if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
                         parent.close();
                     } else {
                         window.close();
                     }
+                },
+                formAction: function (name, option) {
+                    var data = {};
+                    data.postData = option.postData;
+                    return this.action(option, data);
+                },
+                action: function (option, data) {
+                    if (option.target == 'ajax') {
+                        var _this = this;
+                        this.$http.post(option.url, data).then(function (response) {
+                            if (response.status == 200) {
+                                if (response.data.success) {
+                                    _this.$message.success(response.data.message);
+                                } else {
+                                    if (response.data.message) {
+                                        _this.$message.error(response.data.message);
+                                    }
+                                }
+                            }
+                        }).catch(function (error) {
+                            _this.$message.error(error);
+                        });
+                    } else {
+                        var eForm = document.createElement("form");
+                        eForm.action = option.url;
+                        switch (option.target) {
+                            case "self":
+                            case "_self":
+                                eForm.target = "_self";
+                                break;
+                            case "blank":
+                            case "_blank":
+                                eForm.target = "_blank";
+                                break;
+                            case "dialog":
+                                eForm.target = "frame-dialog";
+                                this.dialog.title = option.dialog.title;
+                                this.dialog.width = option.dialog.width;
+                                this.dialog.height = option.dialog.height;
+                                this.dialog.visible = true;
+                                break;
+                            case "drawer":
+                                eForm.target = "frame-drawer";
+                                this.drawer.title = option.drawer.title;
+                                this.drawer.width = option.drawer.width;
+                                this.drawer.visible = true;
+                                break;
+                        }
+                        eForm.method = "post";
+                        eForm.style.display = "none";
+
+                        var e = document.createElement("textarea");
+                        e.name = 'data';
+                        e.value = JSON.stringify(data);
+                        eForm.appendChild(e);
+
+                        document.body.appendChild(eForm);
+
+                        setTimeout(function () {
+                            eForm.submit();
+                        }, 50);
+
+                        setTimeout(function () {
+                            document.body.removeChild(eForm);
+                        }, 3000);
+                    }
+
+                    return false;
                 }
                 <?php
                 if ($vueMethods) {

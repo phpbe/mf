@@ -114,7 +114,44 @@
                         }
                         ?>
                         <el-form-item>
-                            <el-button type="primary" icon="el-icon-search" @click="search" :disabled="loading">查询</el-button>
+                            <?php
+                            if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
+                                foreach ($this->setting['form']['actions'] as $actionK => $action) {
+                                    if ($actionK == 'submit') {
+                                        if ($action) {
+                                            if ($action === true) {
+                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">查询</el-button> ';
+                                                continue;
+                                            } elseif (is_string($action)) {
+                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">' . $action . '</el-button> ';
+                                                continue;
+                                            }
+                                        } else {
+                                            continue;
+                                        }
+                                    }
+
+                                    $driver = null;
+                                    if (isset($item['driver'])) {
+                                        $driverName = $item['driver'];
+                                        $driver = new $driverName($item);
+                                    } else {
+                                        $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
+                                    }
+                                    echo $driver->getHtml() . ' ';
+
+                                    $vueDataX = $driver->getVueData();
+                                    if ($vueDataX) {
+                                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                                    }
+
+                                    $vueMethodsX = $driver->getVueMethods();
+                                    if ($vueMethodsX) {
+                                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                                    }
+                                }
+                            }
+                            ?>
                         </el-form-item>
                     </el-col>
                 </el-row>
@@ -183,6 +220,7 @@
                 }
                 ?>>
                 <?php
+                $opHtml = null;
                 $opPosition = 'right';
                 if (isset($this->setting['operation'])) {
 
@@ -358,7 +396,7 @@
                 ?>
             },
             methods: {
-                search: function () {
+                submit: function () {
                     this.page = 1;
                     this.loadTableData();
                 },
@@ -436,6 +474,19 @@
                         this.orderByDir = "";
                     }
                     this.loadTableData();
+                },
+                formAction: function (name, option) {
+                    var data = {
+                        formData: this.formData,
+                        orderBy: this.orderBy,
+                        orderByDir: this.orderByDir,
+                        page: this.page,
+                        pageSize: this.pageSize
+                    };
+
+                    data.postData = option.postData;
+                    data.selectedRows = this.selectedRows;
+                    return this.action(option, data);
                 },
                 toolbarItemAction: function (name, option) {
                     var data = {
@@ -587,7 +638,7 @@
                 ?>
             },
             created: function () {
-                this.search();
+                this.submit();
                 <?php
                 if (isset($this->setting['reload']) && is_numeric($this->setting['reload'])) {
                     echo 'var _this = this;';

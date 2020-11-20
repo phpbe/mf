@@ -10,25 +10,25 @@
     <div id="app" v-cloak>
 
         <el-form<?php
-            $formUi = [
-                ':model' => 'formData',
-                'ref' => 'formRef',
-                'size' => 'mini',
-                'label-width' => '150px',
-            ];
+        $formUi = [
+            ':model' => 'formData',
+            'ref' => 'formRef',
+            'size' => 'mini',
+            'label-width' => '150px',
+        ];
 
-            if (isset($this->setting['form']['ui'])) {
-                $formUi = array_merge($formUi, $this->setting['form']['ui']);
-            }
+        if (isset($this->setting['form']['ui'])) {
+            $formUi = array_merge($formUi, $this->setting['form']['ui']);
+        }
 
-            foreach ($formUi as $k => $v) {
-                if ($v === null) {
-                    echo ' ' . $k;
-                } else {
-                    echo ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($formUi as $k => $v) {
+            if ($v === null) {
+                echo ' ' . $k;
+            } else {
+                echo ' ' . $k . '="' . $v . '"';
             }
-            ?>>
+        }
+        ?>>
             <?php
             if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
                 foreach ($this->setting['form']['items'] as $item) {
@@ -82,7 +82,45 @@
             <el-form-item>
                 <?php
                 if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
-                    foreach ($this->setting['form']['actions'] as $action) {
+                    foreach ($this->setting['form']['actions'] as $actionK => $action) {
+                        if ($actionK == 'submit') {
+                            if ($action) {
+                                if ($action === true) {
+                                    echo '<el-button type="primary" @click="submit" :disabled="loading">保存</el-button> ';
+                                    continue;
+                                } elseif (is_string($action)) {
+                                    echo '<el-button type="primary" @click="submit" :disabled="loading">' . $action . '</el-button> ';
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        } elseif ($actionK == 'reset') {
+                            if ($action) {
+                                if ($action === true) {
+                                    echo '<el-button type="warning" @click="reset" :disabled="loading">重置</el-button> ';
+                                    continue;
+                                } elseif (is_string($action)) {
+                                    echo '<el-button type="warning" @click="reset" :disabled="loading">' . $action . '</el-button> ';
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        } elseif ($actionK == 'cancel') {
+                            if ($action) {
+                                if ($action === true) {
+                                    echo '<el-button @click="cancel" :disabled="loading">取消</el-button> ';
+                                    continue;
+                                } elseif (is_string($action)) {
+                                    echo '<el-button @click="cancel" :disabled="loading">' . $action . '</el-button> ';
+                                    continue;
+                                }
+                            } else {
+                                continue;
+                            }
+                        }
+
                         $driver = null;
                         if (isset($item['driver'])) {
                             $driverName = $item['driver'];
@@ -90,17 +128,7 @@
                         } else {
                             $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
                         }
-                        echo $driver->getHtml();
-
-                        $jsX = $driver->getJs();
-                        if ($jsX) {
-                            $js = array_merge($js, $jsX);
-                        }
-
-                        $cssX = $driver->getCss();
-                        if ($cssX) {
-                            $css = array_merge($css, $cssX);
-                        }
+                        echo $driver->getHtml() . ' ';
 
                         $vueDataX = $driver->getVueData();
                         if ($vueDataX) {
@@ -111,24 +139,7 @@
                         if ($vueMethodsX) {
                             $vueMethods = array_merge($vueMethods, $vueMethodsX);
                         }
-
-                        $vueHooksX = $driver->getVueHooks();
-                        if ($vueHooksX) {
-                            foreach ($vueHooksX as $k => $v) {
-                                if (isset($vueHooks[$k])) {
-                                    $vueHooks[$k] .= "\r\n" . $v;
-                                } else {
-                                    $vueHooks[$k] = $v;
-                                }
-                            }
-                        }
                     }
-                } else {
-                    ?>
-                    <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
-                    <el-button type="warning" @click="reset" :disabled="loading">重置</el-button>
-                    <el-button @click="close" :disabled="loading">取消</el-button>
-                    <?php
                 }
                 ?>
             </el-form-item>
@@ -185,14 +196,14 @@
     if (count($js) > 0) {
         $js = array_unique($js);
         foreach ($js as $x) {
-            echo '<script src="'.$x.'"></script>';
+            echo '<script src="' . $x . '"></script>';
         }
     }
 
     if (count($css) > 0) {
         $css = array_unique($css);
         foreach ($css as $x) {
-            echo '<link rel="stylesheet" type="text/css" href="'.$x.'" />';
+            echo '<link rel="stylesheet" type="text/css" href="' . $x . '" />';
         }
     }
     ?>
@@ -213,7 +224,7 @@
                 ?>
             },
             methods: {
-                save: function () {
+                submit: function () {
                     var _this = this;
                     this.$refs["formRef"].validate(function (valid) {
                         if (valid) {
@@ -234,7 +245,7 @@
                                         }
 
                                         alert(message);
-                                        if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                                        if (self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")) {
                                             parent.closeAndReload();
                                         } else {
                                             window.close();
@@ -273,11 +284,9 @@
                                         _this.$message.error(response.data.message);
                                     }
                                 }
-                                _this.loadTableData();
                             }
                         }).catch(function (error) {
                             _this.$message.error(error);
-                            _this.loadTableData();
                         });
                     } else {
                         var eForm = document.createElement("form");
@@ -335,8 +344,8 @@
                 reset: function () {
                     this.$refs["formRef"].resetFields();
                 },
-                close: function () {
-                    if(self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")){
+                cancel: function () {
+                    if (self.frameElement != null && (self.frameElement.tagName == "IFRAME" || self.frameElement.tagName == "iframe")) {
                         parent.close();
                     } else {
                         window.close();
@@ -353,35 +362,35 @@
 
             <?php
             if (isset($vueHooks['beforeCreate'])) {
-                echo ',beforeCreate: function () {'.$vueHooks['beforeCreate'].'}';
+                echo ',beforeCreate: function () {' . $vueHooks['beforeCreate'] . '}';
             }
 
             if (isset($vueHooks['created'])) {
-                echo ',created: function () {'.$vueHooks['created'].'}';
+                echo ',created: function () {' . $vueHooks['created'] . '}';
             }
 
             if (isset($vueHooks['beforeMount'])) {
-                echo ',beforeMount: function () {'.$vueHooks['beforeMount'].'}';
+                echo ',beforeMount: function () {' . $vueHooks['beforeMount'] . '}';
             }
 
             if (isset($vueHooks['mounted'])) {
-                echo ',mounted: function () {'.$vueHooks['mounted'].'}';
+                echo ',mounted: function () {' . $vueHooks['mounted'] . '}';
             }
 
             if (isset($vueHooks['beforeUpdate'])) {
-                echo ',beforeUpdate: function () {'.$vueHooks['beforeUpdate'].'}';
+                echo ',beforeUpdate: function () {' . $vueHooks['beforeUpdate'] . '}';
             }
 
             if (isset($vueHooks['updated'])) {
-                echo ',updated: function () {'.$vueHooks['updated'].'}';
+                echo ',updated: function () {' . $vueHooks['updated'] . '}';
             }
 
             if (isset($vueHooks['beforeDestroy'])) {
-                echo ',beforeDestroy: function () {'.$vueHooks['beforeDestroy'].'}';
+                echo ',beforeDestroy: function () {' . $vueHooks['beforeDestroy'] . '}';
             }
 
             if (isset($vueHooks['destroyed'])) {
-                echo ',destroyed: function () {'.$vueHooks['destroyed'].'}';
+                echo ',destroyed: function () {' . $vueHooks['destroyed'] . '}';
             }
             ?>
         });

@@ -25,6 +25,14 @@ class Form extends Plugin
             $setting['form']['action'] = Request::url();
         }
 
+        if (!isset($setting['form']['actions'])) {
+            $setting['form']['actions'] = [
+                'submit' => true,
+                'reset' => true,
+                'cancel' => true,
+            ];
+        }
+
         return parent::setting($setting);
     }
 
