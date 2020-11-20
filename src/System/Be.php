@@ -254,7 +254,7 @@ abstract class Be
      * 获取指定的一个服务（单例）
      *
      * @param string $name 服务名
-     * @return Service | mixed
+     * @return mixed
      */
     public static function getService($name)
     {
@@ -268,7 +268,7 @@ abstract class Be
      * 新创建一个服务
      *
      * @param string $name 服务名
-     * @return Service | mixed
+     * @return mixed
      */
     public static function newService($name)
     {

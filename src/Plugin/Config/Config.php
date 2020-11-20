@@ -44,7 +44,7 @@ class Config extends Plugin
                                 unset($config['value']);
                             }
                             $config['name'] = $configName;
-                            $config['url'] = beUrl(Be::getRuntime()->getPathway(), ['configName' => $configName]);
+                            $config['url'] = beUrl(Be::getRuntime()->getRoute(), ['configName' => $configName]);
                             $configs[] = $config;
                         }
                     }

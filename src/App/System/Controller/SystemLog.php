@@ -97,7 +97,7 @@ class SystemLog
                             'align' => 'left',
                         ],
                         [
-                            'name' => 'pathway',
+                            'name' => 'route',
                             'label' => '访问路径',
                             'value' => function($row) {
                                 return $row['app'] . '.' .$row['controller'] . '.' .$row['action'];

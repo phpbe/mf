@@ -163,7 +163,7 @@
                     });
                 },
                 goto: function (tab) {
-                    var sUrl = "<?php echo beUrl(\Be\System\Be::getRuntime()->getPathway()); ?>";
+                    var sUrl = "<?php echo beUrl(\Be\System\Be::getRuntime()->getRoute()); ?>";
                     sUrl += sUrl.indexOf("?") >= 0 ? "&" : "?";
                     sUrl += "configName=" + tab.name;
                     window.location.href = sUrl;

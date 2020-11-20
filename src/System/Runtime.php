@@ -23,7 +23,7 @@ class Runtime
     private $appName = null;
     private $controllerName = null;
     private $actionName = null;
-    private $pathway = null;
+    private $route = null;
 
     public function __construct()
     {
@@ -157,9 +157,9 @@ class Runtime
      *
      * @return null | string
      */
-    public function getPathway()
+    public function getRoute()
     {
-        return $this->pathway;
+        return $this->route;
     }
 
     public function execute()
@@ -175,7 +175,7 @@ class Runtime
             Session::start();
 
             // 从网址中提取出 路径
-            $pathway = null;
+            $route = null;
             if ($configSystem->urlRewrite) {
 
                 //print_r($_SERVER);
@@ -217,7 +217,7 @@ class Runtime
                 $uris = explode('/', $uri);
                 $len = count($uris);
                 if ($len > 1) {
-                    $pathway = $uris[1];
+                    $route = $uris[1];
                 }
 
                 if ($len > 2) {
@@ -238,18 +238,18 @@ class Runtime
                 }
 
             } else {
-                $pathway = Request::request('pathway', '');
+                $route = Request::request('route', '');
             }
 
             $appName = null;
             $controllerName = null;
             $actionName = null;
-            if ($pathway) {
-                $pathways = explode('.', $pathway);
-                if (count($pathways) == 3) {
-                    $appName = $pathways[0];
-                    $controllerName = $pathways[1];
-                    $actionName = $pathways[2];
+            if ($route) {
+                $routes = explode('.', $route);
+                if (count($routes) == 3) {
+                    $appName = $routes[0];
+                    $controllerName = $routes[1];
+                    $actionName = $routes[2];
                 }
             }
 
@@ -263,7 +263,7 @@ class Runtime
             $this->appName = $appName;
             $this->controllerName = $controllerName;
             $this->actionName = $actionName;
-            $this->pathway = $appName . '.' . $controllerName . '.' . $actionName;
+            $this->route = $appName . '.' . $controllerName . '.' . $actionName;
 
             if ($appName == 'System' && $controllerName == 'Installer') {
                 $instance = new \Be\App\System\Controller\Installer();
@@ -350,26 +350,26 @@ class Runtime
             date_default_timezone_set($configSystem->timezone);
 
             if (!isset($argv[1])) {
-                echo '参数项（pathway）缺失（示例：php be System.Task.run）！';
+                echo '参数项（route）缺失（示例：php be System.Task.run）！';
                 exit;
             }
 
             array_shift($argv);
-            $pathway = array_shift($argv);
-            $pathways = explode('.', $pathway);
-            if (count($pathways) < 3) {
-                echo '参数项（pathway）错误（示例：php be System.Task.run）！';
+            $route = array_shift($argv);
+            $routes = explode('.', $route);
+            if (count($routes) < 3) {
+                echo '参数项（route）错误（示例：php be System.Task.run）！';
                 exit;
             }
 
-            $appName = $pathways[0];
-            $controllerName = $pathways[1];
-            $actionName = $pathways[2];
+            $appName = $routes[0];
+            $controllerName = $routes[1];
+            $actionName = $routes[2];
 
             $this->appName = $appName;
             $this->controllerName = $controllerName;
             $this->actionName = $actionName;
-            $this->pathway = $appName . '.' . $controllerName . '.' . $actionName;
+            $this->route = $appName . '.' . $controllerName . '.' . $actionName;
 
             $class = 'Be\\App\\' . $appName . '\\Controller\\' . $controllerName;
             if (!class_exists($class)) {
