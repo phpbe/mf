@@ -174,8 +174,9 @@ class Runtime
             // 启动 session
             Session::start();
 
+            $route = Request::request('route', '');
+
             // 从网址中提取出 路径
-            $route = null;
             if ($configSystem->urlRewrite) {
 
                 //print_r($_SERVER);
@@ -237,8 +238,6 @@ class Runtime
                     }
                 }
 
-            } else {
-                $route = Request::request('route', '');
             }
 
             $appName = null;
@@ -266,8 +265,7 @@ class Runtime
             $this->route = $appName . '.' . $controllerName . '.' . $actionName;
 
             if ($appName == 'System' && $controllerName == 'Installer') {
-                $instance = new \Be\App\System\Controller\Installer();
-                $instance->$actionName();
+                (new \Be\App\System\Controller\Installer())->$actionName();
                 exit;
             }
 

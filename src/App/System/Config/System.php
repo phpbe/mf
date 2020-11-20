@@ -55,4 +55,10 @@ class System
      */
     public $developer = true;
 
+    /**
+     * @BeConfigItem("是否开启可安装及重装", driver="FormItemSwitch")
+     */
+    public $installable = true;
+
+
 }
