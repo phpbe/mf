@@ -1,10 +1,7 @@
-<?php
-use Be\System\Be;
-?>
 <be-html>
 <?php
 $adminThemeUrl = \Be\System\Be::getProperty('Theme.Admin')->getUrl();
-$themeUrl = Be::getProperty('Theme.Admin')->getUrl();
+$themeUrl = \Be\System\Be::getProperty('Theme.Installer')->getUrl();
 ?>
 <!DOCTYPE html>
 <html>
@@ -33,9 +30,15 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
     <be-body>
     <div class="be-body">
 
-        <be-center>
-        </be-center>
+        <div class="logo"><div class="txt">安装程序</div></div>
 
+
+        <be-center>
+
+
+
+
+        </be-center>
     </div>
     </be-body>
 </body>

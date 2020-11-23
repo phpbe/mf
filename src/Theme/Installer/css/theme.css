@@ -1,0 +1,36 @@
+body {background-color: #fff;}
+::-webkit-scrollbar {width: 8px;}
+::-webkit-scrollbar-thumb {background-color: #555;}
+[v-cloak] {display: none;}
+[class^="el-icon-fa"],
+[class*="el-icon-fa"] {
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: normal;
+    font-family: FontAwesome!important;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.be-body {
+    width: 800px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.logo {
+    height: 60px;
+    background: #fff url("../images/logo.png") no-repeat;
+    border-bottom: #eee 1px solid;
+    margin-bottom: 30px;
+}
+
+.logo .txt {
+    padding: 25px 0 0 200px;
+    font-size: 14px;
+    color: #999;
+}
+
