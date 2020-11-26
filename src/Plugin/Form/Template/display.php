@@ -82,38 +82,38 @@
             <el-form-item>
                 <?php
                 if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
-                    foreach ($this->setting['form']['actions'] as $actionK => $action) {
-                        if ($actionK == 'submit') {
-                            if ($action) {
-                                if ($action === true) {
+                    foreach ($this->setting['form']['actions'] as $key => $item) {
+                        if ($key == 'submit') {
+                            if ($item) {
+                                if ($item === true) {
                                     echo '<el-button type="primary" @click="submit" :disabled="loading">保存</el-button> ';
                                     continue;
-                                } elseif (is_string($action)) {
-                                    echo '<el-button type="primary" @click="submit" :disabled="loading">' . $action . '</el-button> ';
+                                } elseif (is_string($item)) {
+                                    echo '<el-button type="primary" @click="submit" :disabled="loading">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {
                                 continue;
                             }
-                        } elseif ($actionK == 'reset') {
-                            if ($action) {
-                                if ($action === true) {
+                        } elseif ($key == 'reset') {
+                            if ($item) {
+                                if ($item === true) {
                                     echo '<el-button type="warning" @click="reset" :disabled="loading">重置</el-button> ';
                                     continue;
-                                } elseif (is_string($action)) {
-                                    echo '<el-button type="warning" @click="reset" :disabled="loading">' . $action . '</el-button> ';
+                                } elseif (is_string($item)) {
+                                    echo '<el-button type="warning" @click="reset" :disabled="loading">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {
                                 continue;
                             }
-                        } elseif ($actionK == 'cancel') {
-                            if ($action) {
-                                if ($action === true) {
+                        } elseif ($key == 'cancel') {
+                            if ($item) {
+                                if ($item === true) {
                                     echo '<el-button @click="cancel" :disabled="loading">取消</el-button> ';
                                     continue;
-                                } elseif (is_string($action)) {
-                                    echo '<el-button @click="cancel" :disabled="loading">' . $action . '</el-button> ';
+                                } elseif (is_string($item)) {
+                                    echo '<el-button @click="cancel" :disabled="loading">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {

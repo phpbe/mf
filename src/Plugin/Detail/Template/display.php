@@ -79,14 +79,14 @@
             <el-form-item>
                 <?php
                 if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
-                    foreach ($this->setting['form']['actions'] as $actionK => $action) {
-                        if ($actionK == 'cancel') {
-                            if ($action) {
-                                if ($action === true) {
+                    foreach ($this->setting['form']['actions'] as $key => $item) {
+                        if ($key == 'cancel') {
+                            if ($item) {
+                                if ($item === true) {
                                     echo '<el-button type="primary" @click="cancel">关闭</el-button> ';
                                     continue;
-                                } elseif (is_string($action)) {
-                                    echo '<el-button type="primary" @click="cancel">' . $action . '</el-button> ';
+                                } elseif (is_string($item)) {
+                                    echo '<el-button type="primary" @click="cancel">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {

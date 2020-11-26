@@ -116,14 +116,14 @@
                         <el-form-item>
                             <?php
                             if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
-                                foreach ($this->setting['form']['actions'] as $actionK => $action) {
-                                    if ($actionK == 'submit') {
-                                        if ($action) {
-                                            if ($action === true) {
+                                foreach ($this->setting['form']['actions'] as $key => $item) {
+                                    if ($key == 'submit') {
+                                        if ($item) {
+                                            if ($item === true) {
                                                 echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">查询</el-button> ';
                                                 continue;
-                                            } elseif (is_string($action)) {
-                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">' . $action . '</el-button> ';
+                                            } elseif (is_string($item)) {
+                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">' . $item . '</el-button> ';
                                                 continue;
                                             }
                                         } else {

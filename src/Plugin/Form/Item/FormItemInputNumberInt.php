@@ -36,6 +36,10 @@ class FormItemInputNumberInt extends FormItem
             $this->ui['input-number'][':step'] = '1';
         }
 
+        if (!isset($this->ui['input-number'][':precision'])) {
+            $this->ui['input-number'][':precision'] = '0';
+        }
+
         $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
     }
 

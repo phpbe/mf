@@ -9,7 +9,7 @@ class System
     /**
      * @BeConfigItem("是否开启伪静态", driver="FormItemSwitch")
      */
-    public $urlRewrite = 1;
+    public $urlRewrite = 0;
 
     /**
      * @BeConfigItem("伪静态页后辍", driver="FormItemInput")
