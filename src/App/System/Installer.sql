@@ -60,7 +60,6 @@ CREATE TABLE `system_user` (
   `username` varchar(120) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` char(40) NOT NULL DEFAULT '' COMMENT '密码',
   `salt` char(32) NOT NULL DEFAULT '' COMMENT '密码盐值',
-  `remember_me_token` char(32) NOT NULL DEFAULT '' COMMENT '记住我 Token',
   `role_id` INT NOT NULL DEFAULT '0' COMMENT '角色ID',
   `avatar` varchar(60) NOT NULL DEFAULT '' COMMENT '头像',
   `email` varchar(120) NOT NULL DEFAULT '' COMMENT '邮箱',
@@ -68,20 +67,20 @@ CREATE TABLE `system_user` (
   `gender` tinyint(3) NOT NULL DEFAULT '-1' COMMENT '性别（0：女/1：男/-1：保密）',
   `phone` varchar(20) NOT NULL DEFAULT '' COMMENT '电话',
   `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '手机',
+  `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '上次登陆时间',
+  `this_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '本次登陆时间',
+  `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '上次登录的IP',
+  `this_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '本次登录的IP',
   `is_enable` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否可用',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `last_login_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后一次登陆时间',
-  `this_login_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '本次登陆时间',
-  `last_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '最后一次登录的IP',
-  `this_login_ip` VARCHAR(15) NOT NULL DEFAULT '' COMMENT '本次登录的IP',
+  `update_time` timestamp on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户';
 
-
-INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `remember_me_token`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `is_enable`, `is_delete`, `create_time`, `last_login_time`, `this_login_time`, `last_login_ip`, `this_login_ip`) VALUES
-(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 'e3FLxEcsEd2DbLOQEpG8EhGkKj9p5k2J', 1, '', 'be@phpbe.com', '管理员', 0, '', '', 1, 0, CURRENT_TIMESTAMP, '0000-00-00 00:00:00', '0000-00-00 00:00:00', '127.0.0.1', '127.0.0.1');
+INSERT INTO `system_user` (`id`, `username`, `password`, `salt`, `role_id`, `avatar`, `email`, `name`, `gender`, `phone`, `mobile`, `last_login_time`, `this_login_time`, `last_login_ip`, `this_login_ip`, `is_enable`, `is_delete`, `create_time`, `update_time`) VALUES
+(1, 'admin', 'a2ad3e6e3acf5b182324ed782f8a0556d43e59dd', 'ybFD7uzKMH8yvPHvuPNNT0vDv7uF2811', 1, '', 'be@phpbe.com', '管理员', 0, '', '', '0000-00-00 00:00:00', '0000-00-00 00:00:00', '127.0.0.1', '127.0.0.1', 1, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 CREATE TABLE `system_user_login_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',

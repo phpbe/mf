@@ -1,6 +1,8 @@
 <?php
 namespace Be\System;
 
+use Be\System\Exception\RuntimeException;
+
 /**
  * 属性基类
  */
@@ -9,6 +11,7 @@ abstract class Property
     protected $name = null; // 名称
     protected $label = ''; // 中文名
     protected $icon = ''; // 图标
+    protected $description = ''; // 描述
 
     public $path = null; // 路径，相对于根路径
 
@@ -53,6 +56,14 @@ abstract class Property
     /**
      * @return string
      */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
@@ -71,7 +82,7 @@ abstract class Property
         if( isset( $this->$name ) ) {
             return $this->$name;
         } else {
-            trigger_error( $name . ' 属性未定义',  E_USER_NOTICE );
+            throw new RuntimeException($name . ' 属性未定义！');
         }
     }
 

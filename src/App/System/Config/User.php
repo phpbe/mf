@@ -45,10 +45,10 @@ class User
     public $ldap_host = '';
 
     /**
-     * @BeConfigItem("LDAP服务器参数",
+     * @BeConfigItem("LDAP DN",
      *     driver="FormItemInput"
      *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
      */
-    public $ldap_option = '';
+    public $ldap_dn = '';
 
 }

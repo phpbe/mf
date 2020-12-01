@@ -5,13 +5,10 @@ namespace Be\App\System\Service;
 use Be\System\Db\Tuple;
 use Be\System\Exception\ServiceException;
 use Be\System\Request;
-use Be\Util\Net\FileUpload;
 use Be\Util\Random;
-use Be\Util\Validator;
 use Be\System\Be;
 use Be\System\Cookie;
 use Be\System\Session;
-use PHPMailer\PHPMailer\Exception;
 
 class User
 {
@@ -58,49 +55,104 @@ class User
         $db = Be::getDb();
         $db->beginTransaction();
         try {
-
             $tupleUser = Be::newTuple('system_user');
 
-            try {
-                $tupleUser->loadBy('username', $username);
-            } catch (\Exception $e) {
-                throw new ServiceException('用户账号（' . $username . '）不存在！');
-            }
+            $configUser = Be::getConfig('System.User');
+            if ($configUser->ldap) {
 
-            $password = $this->encryptPassword($password, $tupleUser->salt);
-
-            if ($tupleUser->password === $password) {
-                if ($tupleUser->is_delete == 1) {
-                    throw new ServiceException('用户账号（' . $username . '）不可用！');
-                } elseif ($tupleUser->is_enable == 0) {
-                    throw new ServiceException('用户账号（' . $username . '）已被禁用！');
-                } else {
-                    session::delete($timesKey);
-
-                    $tupleUserLoginLog->success = 1;
-                    $tupleUserLoginLog->description = '登陆成功！';
-
-                    $rememberMeToken = null;
-                    do {
-                        $rememberMeToken = Random::complex(32);
-                    } while (Be::newTable('system_user')->where('remember_me_token', $rememberMeToken)->count() > 0);
-
-                    $tupleUser->last_login_time = $tupleUser->this_login_time;
-                    $tupleUser->this_login_time = date('Y-m-d H:i:s');
-                    $tupleUser->last_login_ip = $tupleUser->this_login_ip;
-                    $tupleUser->this_login_ip = Request::ip();
-                    $tupleUser->remember_me_token = $rememberMeToken;
-                    $tupleUser->save();
-
-                    $this->makeLogin($tupleUser);
-
-                    cookie::setExpire(time() + 30 * 86400);
-                    cookie::set('_rememberMe', $rememberMeToken);
-
+                $conn = null;
+                try {
+                    $conn = ldap_connect($configUser->ldap_host);
+                } catch (\Throwable $e) {
+                    throw new ServiceException('无法连接到LDAP服务器（' . $configUser->ldap_host . '）！');
                 }
+
+                $bind = null;
+                try {
+                    $bind = ldap_bind($conn, $username, $password);
+                } catch (\Throwable $e) {
+                    $ldapErr = ldap_error($conn);
+                    ldap_close($conn);
+                    throw new ServiceException('LDAP登录失败' . ($ldapErr ? ('（' . $ldapErr . '）') : '') . '！');
+                }
+
+                if (!$bind) {
+                    ldap_close($conn);
+                    throw new ServiceException('用户账号和密码不匹配！');
+                }
+
+                $name = '';
+                try {
+                    $filter = "(&(sAMAccountName=$username))";
+                    $sr = ldap_search($conn, $configUser->ldap_dn, $filter);
+                    $info = ldap_get_entries($conn, $sr);
+                    if (isset($info[0]['description'][0]) && $info[0]['description'][0]) {
+                        $name = $info[0]['description'][0];
+                        $encoding = mb_detect_encoding($name, array('GBK','GB2312','BIG5', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'ISO-8859-1'));
+                        if ($encoding != 'UTF-8') {
+                            $name = iconv($encoding, 'UTF-8//IGNORE', $name);
+                        }
+                    }
+                } catch (\Throwable $e) {
+                }
+
+                ldap_close($conn);
+
+                try {
+                    $tupleUser->loadBy('username', $username);
+                } catch (\Exception $e) {
+                    $tupleUser->username = $username;
+                    $tupleUser->name = $name;
+                    $tupleUser->salt = Random::complex(32);
+                    $tupleUser->create_time = date('Y-m-d H:i:s');
+                }
+
+                $tupleUser->password = $this->encryptPassword($password, $tupleUser->salt);
+                if ($name) {
+                    $tupleUser->name = $name;
+                }
+                $tupleUser->last_login_time = $tupleUser->this_login_time;
+                $tupleUser->this_login_time = date('Y-m-d H:i:s');
+                $tupleUser->last_login_ip = $tupleUser->this_login_ip;
+                $tupleUser->this_login_ip = $ip;
+                $tupleUser->update_time = date('Y-m-d H:i:s');
+                $tupleUser->save();
+
             } else {
-                throw new ServiceException('密码错误！');
+
+                try {
+                    $tupleUser->loadBy('username', $username);
+                } catch (\Exception $e) {
+                    throw new ServiceException('用户账号（' . $username . '）不存在！');
+                }
+
+                if ($tupleUser->password === $this->encryptPassword($password, $tupleUser->salt)) {
+                    if ($tupleUser->is_delete == 1) {
+                        throw new ServiceException('用户账号（' . $username . '）不可用！');
+                    } elseif ($tupleUser->is_enable == 0) {
+                        throw new ServiceException('用户账号（' . $username . '）已被禁用！');
+                    } else {
+                        $tupleUser->last_login_time = $tupleUser->this_login_time;
+                        $tupleUser->this_login_time = date('Y-m-d H:i:s');
+                        $tupleUser->last_login_ip = $tupleUser->this_login_ip;
+                        $tupleUser->this_login_ip = $ip;
+                        $tupleUser->update_time = date('Y-m-d H:i:s');
+                        $tupleUser->save();
+                    }
+                } else {
+                    throw new ServiceException('密码错误！');
+                }
             }
+
+            $this->makeLogin($tupleUser);
+
+            $rememberMe = $username . '|' . base64_encode($this->rc4($password, $tupleUser->salt));
+            Cookie::set('_rememberMe', $rememberMe, time() + 30 * 86400);
+
+            $tupleUserLoginLog->success = 1;
+            $tupleUserLoginLog->description = '登陆成功！';
+
+            Session::delete($timesKey);
 
             $db->commit();
             $tupleUserLoginLog->save();
@@ -147,34 +199,32 @@ class User
     /**
      * 记住我 自动登录
      *
-     * @return Tuple | false
      * @throws \Exception
      */
     public function rememberMe()
     {
-        if (cookie::has('_rememberMe')) {
-            $rememberMe = cookie::get('_rememberMe', '');
+        if (Cookie::has('_rememberMe')) {
+            $rememberMe = Cookie::get('_rememberMe', '');
             if ($rememberMe) {
+                $rememberMe = Cookie::get('_rememberMe');
+                $rememberMe = explode('|', $rememberMe);
+                if (count($rememberMe) != 2) return;
+
+                $username = $rememberMe[0];
 
                 $tupleUser = Be::newTuple('system_user');
                 try {
-                    $tupleUser->loadBy('remember_me_token', $rememberMe);
+                    $tupleUser->loadBy('username', $username);
+
+                    $password = base64_decode($rememberMe[1]);
+                    $password = $this->rc4($password, $tupleUser->salt);
+
+                    $this->login($username, $password, Request::ip());
                 } catch (\Exception $e) {
-
-                }
-
-                if ($tupleUser->id > 0 && $tupleUser->is_enable == 1 && $tupleUser->is_delete == 0) {
-                    $tupleUser->last_login_time = $tupleUser->this_login_time;
-                    $tupleUser->this_login_time = date('Y-m-d H:i:s');
-                    $tupleUser->last_login_ip = $tupleUser->this_login_ip;
-                    $tupleUser->this_login_ip = Request::ip();
-                    $tupleUser->save();
-                    $this->makeLogin($tupleUser);
+                    return;
                 }
             }
         }
-
-        return false;
     }
 
     /**
@@ -183,8 +233,8 @@ class User
      */
     public function logout()
     {
-        session::delete('_user');
-        cookie::delete('_rememberMe');
+        Session::delete('_user');
+        Cookie::delete('_rememberMe');
     }
 
     /**
@@ -198,5 +248,43 @@ class User
     {
         return sha1(sha1($password) . $salt);
     }
+
+
+    public function rc4($txt, $pwd)
+    {
+        $result = '';
+        $kL = strlen($pwd);
+        $tL = strlen($txt);
+        $level = 256;
+        $key = [];
+        $box = [];
+
+        for ($i = 0; $i < $level; ++$i) {
+            $key[$i] = ord($pwd[$i % $kL]);
+            $box[$i] = $i;
+        }
+
+        for ($j = $i = 0; $i < $level; ++$i) {
+            $j = ($j + $box[$i] + $key[$i]) % $level;
+            $tmp = $box[$i];
+            $box[$i] = $box[$j];
+            $box[$j] = $tmp;
+        }
+
+        for ($a = $j = $i = 0; $i < $tL; ++$i) {
+            $a = ($a + 1) % $level;
+            $j = ($j + $box[$a]) % $level;
+
+            $tmp = $box[$a];
+            $box[$a] = $box[$j];
+            $box[$j] = $tmp;
+
+            $k = $box[($box[$a] + $box[$j]) % $level];
+            $result .= chr(ord($txt[$i]) ^ $k);
+        }
+
+        return $result;
+    }
+
 
 }

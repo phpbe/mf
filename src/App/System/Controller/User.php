@@ -300,7 +300,7 @@ class User
                             },
                         ],
                     ],
-                    'exclude' => ['password', 'salt', 'remember_me_token']
+                    'exclude' => ['password', 'salt']
                 ],
 
                 'operation' => [
@@ -406,12 +406,24 @@ class User
                             'label' => '创建时间',
                         ],
                         [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                        ],
+                        [
                             'name' => 'last_login_time',
-                            'label' => '最后一次登陆时间',
+                            'label' => '上次登陆时间',
                         ],
                         [
                             'name' => 'last_login_ip',
-                            'label' => '最后一次登录的IP',
+                            'label' => '上次登录的IP',
+                        ],
+                        [
+                            'name' => 'this_login_time',
+                            'label' => '本次登陆时间',
+                        ],
+                        [
+                            'name' => 'this_login_ip',
+                            'label' => '本次登录的IP',
                         ],
                     ]
                 ],
@@ -487,6 +499,7 @@ class User
                         $tuple->salt = Random::complex(32);
                         $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $tuple->salt);
                         $tuple->create_time = date('Y-m-d H:i:s');
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     },
                 ],
             ],
@@ -563,6 +576,7 @@ class User
                         } else {
                             unset($tuple->password);
                         }
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     }
                 ]
             ],
@@ -595,6 +609,8 @@ class User
                                 }
                             }
                         }
+
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     },
                 ],
             ],
