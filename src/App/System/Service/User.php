@@ -81,36 +81,17 @@ class User
                     throw new ServiceException('用户账号和密码不匹配！');
                 }
 
-                $name = '';
-                try {
-                    $filter = "(&(sAMAccountName=$username))";
-                    $sr = ldap_search($conn, $configUser->ldap_dn, $filter);
-                    $info = ldap_get_entries($conn, $sr);
-                    if (isset($info[0]['description'][0]) && $info[0]['description'][0]) {
-                        $name = $info[0]['description'][0];
-                        $encoding = mb_detect_encoding($name, array('GBK','GB2312','BIG5', 'UTF-8', 'UTF-16LE', 'UTF-16BE', 'ISO-8859-1'));
-                        if ($encoding != 'UTF-8') {
-                            $name = iconv($encoding, 'UTF-8//IGNORE', $name);
-                        }
-                    }
-                } catch (\Throwable $e) {
-                }
-
                 ldap_close($conn);
 
                 try {
                     $tupleUser->loadBy('username', $username);
                 } catch (\Exception $e) {
                     $tupleUser->username = $username;
-                    $tupleUser->name = $name;
                     $tupleUser->salt = Random::complex(32);
                     $tupleUser->create_time = date('Y-m-d H:i:s');
                 }
 
                 $tupleUser->password = $this->encryptPassword($password, $tupleUser->salt);
-                if ($name) {
-                    $tupleUser->name = $name;
-                }
                 $tupleUser->last_login_time = $tupleUser->this_login_time;
                 $tupleUser->this_login_time = date('Y-m-d H:i:s');
                 $tupleUser->last_login_ip = $tupleUser->this_login_ip;

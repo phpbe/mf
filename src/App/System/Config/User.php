@@ -44,11 +44,4 @@ class User
      */
     public $ldap_host = '';
 
-    /**
-     * @BeConfigItem("LDAP DN",
-     *     driver="FormItemInput"
-     *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
-     */
-    public $ldap_dn = '';
-
 }
