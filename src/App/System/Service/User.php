@@ -67,6 +67,8 @@ class User
                     throw new ServiceException('无法连接到LDAP服务器（' . $configUser->ldap_host . '）！');
                 }
 
+                ldap_set_option($conn, LDAP_OPT_PROTOCOL_VERSION, 3);
+
                 $bind = null;
                 try {
                     if ($configUser->ldap_pattern) {
