@@ -69,7 +69,12 @@ class User
 
                 $bind = null;
                 try {
-                    $bind = ldap_bind($conn, $username, $password);
+                    if ($configUser->ldap_pattern) {
+                        $pattern = str_replace('{username}', $username, $configUser->ldap_pattern);
+                        $bind = ldap_bind($conn, $pattern, $password);
+                    } else {
+                        $bind = ldap_bind($conn, $username, $password);
+                    }
                 } catch (\Throwable $e) {
                     $ldapErr = ldap_error($conn);
                     ldap_close($conn);

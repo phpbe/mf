@@ -39,9 +39,17 @@ class User
 
     /**
      * @BeConfigItem("LDAP服务器地址",
-     *     driver="FormItemInput"
+     *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
      */
     public $ldap_host = '';
+
+    /**
+     * @BeConfigItem("LDAP服务器用户名模式",
+     *     driver="FormItemInput",
+     *     description="示例：cu={username},ou=users,dc=phpbe.dc=com，其中 {username} 为用户名占位符",
+     *     ui="return ['form-item' => ['v-show' => 'formData.ldap == 1']];")
+     */
+    public $ldap_pattern = '';
 
 }
