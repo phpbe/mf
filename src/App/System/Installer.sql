@@ -15,7 +15,7 @@ INSERT INTO `system_app` (`id`, `name`, `label`, `icon`, `ordering`, `install_ti
 (1, 'System', '系统', 'el-icon-s-tools', 0, CURRENT_TIMESTAMP);
 
 
-CREATE TABLE `system_log` (
+CREATE TABLE `system_op_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
   `app` VARCHAR(60) NOT NULL DEFAULT '' COMMENT '应用名',

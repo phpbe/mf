@@ -11,7 +11,7 @@ use Be\System\Response;
  * @BeMenuGroup("用户")
  * @BePermissionGroup("用户")
  */
-class SystemLog
+class OpLog
 {
 
     /**
@@ -26,7 +26,7 @@ class SystemLog
 
         Be::getPlugin('Curd')->setting([
             'label' => '操作日志',
-            'table' => 'system_log',
+            'table' => 'system_op_log',
             'lists' => [
                 'title' => '操作日志',
                 'orderBy' => 'create_time',
@@ -197,10 +197,10 @@ class SystemLog
         $db = Be::getDb();
         $db->startTransaction();
         try {
-            Be::newTable('system_log')
+            Be::newTable('system_op_log')
                 ->where('create_time', '<', date('Y-m-d H:i:s', time() - 90 * 86400))
                 ->delete();
-            beSystemLog('删除三个月前操作日志！');
+            beOpLog('删除三个月前操作日志！');
             $db->commit();
             Response::success('删除三个月前操作日志成功！');
         } catch (\Exception $e) {

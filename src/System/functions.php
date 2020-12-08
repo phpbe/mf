@@ -9,9 +9,9 @@ use Be\System\Be;
  * @param mixed $details 日志明细
  * @throws \Exception
  */
-function beSystemLog($content, $details = '')
+function beOpLog($content, $details = '')
 {
-    Be::getService('System.SystemLog')->addLog($content, $details);
+    Be::getService('System.OpLog')->addLog($content, $details);
 }
 
 /**

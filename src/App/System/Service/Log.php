@@ -4,7 +4,7 @@ namespace Be\App\System\Service;
 use Be\System\Be;
 use Be\System\Exception\ServiceException;
 
-class RuntimeLog
+class Log
 {
 
     /**
@@ -14,7 +14,7 @@ class RuntimeLog
      */
     public function getYears()
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog';
+        $dir = Be::getRuntime()->getDataPath() . '/System/Log';
         $years = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -35,7 +35,7 @@ class RuntimeLog
      */
     public function getMonths($year)
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year;
+        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year;
         $months = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -57,7 +57,7 @@ class RuntimeLog
      */
     public function getDays($year, $month)
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month;
+        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month;
         $days = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -81,8 +81,8 @@ class RuntimeLog
      */
     public function getLogs($year, $month, $day, $offset = 0, $limit = 100)
     {
-        $dataDir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month . '/' . $day . '/';
-        $indexPath = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month . '/' . $day . '/index';
+        $dataDir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/';
+        $indexPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
         if (!is_file($indexPath)) return array();
 
         if ($offset < 0) $offset = 0;
@@ -129,7 +129,7 @@ class RuntimeLog
      */
     public function getLogCount($year, $month, $day)
     {
-        $path = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month . '/' . $day . '/index';
+        $path = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
         if (!is_file($path)) return 0;
         return intval(filesize($path) / 36);
     }
@@ -145,7 +145,7 @@ class RuntimeLog
      */
     public function getLog($year, $month, $day, $hashName)
     {
-        $dataPath = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' .  $year . '/' . $month . '/' . $day . '/'.$hashName;
+        $dataPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/'.$hashName;
         if (!is_file($dataPath)) {
             throw new ServiceException('打开日志数据文件不存在！');
         }
@@ -197,11 +197,11 @@ class RuntimeLog
 
         $dir = null;
         if ($month == 0) {
-            $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' . $year;
+            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year;
         } elseif ($day == 0) {
-            $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' . $year . '/' . $month;
+            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month;
         } else {
-            $dir = Be::getRuntime()->getDataPath() . '/System/RuntimeLog/' . $year . '/' . $month . '/' . $day;
+            $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day;
         }
 
         Be::getLib('Fso')->rmDir($dir);

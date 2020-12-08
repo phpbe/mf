@@ -421,7 +421,7 @@ class Report extends Plugin
             }
 
             if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                beSystemLog($content, $postData);
+                beOpLog($content, $postData);
             }
 
         } catch (\Exception $e) {

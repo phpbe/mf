@@ -34,7 +34,7 @@ class Cache
             $type = Request::request('type');
             $serviceSystemCache = Be::getService('System.Cache');
             $serviceSystemCache->clear($type);
-            beSystemLog('删除缓存（' . $type . '）');
+            beOpLog('删除缓存（' . $type . '）');
             Response::success('删除缓存成功！', beUrl('System.System.cache'));
         } catch (\Exception $e) {
             Response::error($e->getMessage());

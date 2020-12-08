@@ -146,7 +146,7 @@ class UserLoginLog
             Be::newTable('system_user_login_log')
                 ->where('create_time', '<', date('Y-m-d H:i:s', time() - 90 * 86400))
                 ->delete();
-            beSystemLog('删除三个月前用户登录日志！');
+            beOpLog('删除三个月前用户登录日志！');
             $db->commit();
             Response::success('删除三个月前用户登录日志成功！');
         } catch (\Exception $e) {

@@ -33,10 +33,10 @@ class Mail
                     ->to($toEmail)
                     ->send();
 
-                beSystemLog('发送测试邮件到 ' . $toEmail . ' -成功',  Request::json('formData'));
+                beOpLog('发送测试邮件到 ' . $toEmail . ' -成功',  Request::json('formData'));
                 Response::success('发送邮件成功！', beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             } catch (\Exception $e) {
-                beSystemLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
+                beOpLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
                 Response::error('发送邮件失败：' . $e->getMessage(), beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             }
 

@@ -3,8 +3,6 @@
 namespace Be\System;
 
 
-use Be\System\Exception\RuntimeException;
-
 /**
  *  运行时
  * @package System
@@ -322,7 +320,7 @@ class Runtime
                 'message' => $e->getMessage()
             ]));
 
-            RuntimeLog::emergency($e->getMessage(), [
+            Log::emergency($e->getMessage(), [
                 'hash' => $hash,
                 'code' => $e->getCode(),
                 'file' => $e->getFile(),
@@ -390,7 +388,7 @@ class Runtime
                 'message' => $e->getMessage()
             ]));
 
-            RuntimeLog::emergency($e->getMessage(), [
+            Log::emergency($e->getMessage(), [
                 'hash' => $hash,
                 'code' => $e->getCode(),
                 'file' => $e->getFile(),

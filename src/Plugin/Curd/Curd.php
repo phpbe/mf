@@ -301,8 +301,8 @@ class Curd extends Plugin
                 $content = '导出 ' . $exportDriver;
             }
 
-            if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                beSystemLog($content, $formData);
+            if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                beOpLog($content, $formData);
             }
 
         } catch (\Throwable $t) {
@@ -616,8 +616,8 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $tuple->$primaryKey;
                 }
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
                 }
                 $db->commit();
                 Response::success($title . '：新建成功！');
@@ -746,8 +746,8 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $tuple->$primaryKey;
                 }
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
                 }
                 $db->commit();
                 Response::success($title . '：编辑成功！');
@@ -915,8 +915,8 @@ class Curd extends Plugin
 
                 $strPrimaryKeyValue = implode(',', $primaryKeyValues);
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
             } catch (\Throwable $t) {
@@ -976,8 +976,8 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $primaryKeyValue;
                 }
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');
@@ -1065,8 +1065,8 @@ class Curd extends Plugin
 
                 $strPrimaryKeyValue = implode(',', $primaryKeyValues);
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');
@@ -1113,8 +1113,8 @@ class Curd extends Plugin
                     $strPrimaryKeyValue = $primaryKeyValue;
                 }
 
-                if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
-                    beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
+                if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
+                    beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');

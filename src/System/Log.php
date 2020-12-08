@@ -3,13 +3,13 @@
 namespace Be\System;
 
 use Monolog\Logger;
-use Be\System\RuntimeLog\Handler\SystemHandler;
-use Be\System\RuntimeLog\Processor\SystemProcessor;
+use Be\System\Log\Handler\SystemHandler;
+use Be\System\Log\Processor\SystemProcessor;
 
 /**
  * 日志类
  */
-class RuntimeLog
+class Log
 {
 
     private static $logger = null;
@@ -23,11 +23,11 @@ class RuntimeLog
     {
         if (self::$logger === null) {
 
-            $configRuntimeLog = Be::getConfig('System.RuntimeLog');
+            $configSystemLog = Be::getConfig('System.Log');
 
             $level = Logger::DEBUG;
-            if (isset($configRuntimeLog->level)) {
-                switch ($configRuntimeLog->level) {
+            if (isset($configSystemLog->level)) {
+                switch ($configSystemLog->level) {
                     case 'debug':
                         $level = Logger::DEBUG;
                         break;
@@ -60,7 +60,7 @@ class RuntimeLog
             $handler = new SystemHandler($level);
             $logger->pushHandler($handler);
 
-            $processor = new SystemProcessor($level, $configRuntimeLog);
+            $processor = new SystemProcessor($level, $configSystemLog);
             $logger->pushProcessor($processor);
 
             self::$logger = $logger;

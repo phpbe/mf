@@ -5,7 +5,7 @@ use Be\System\Be;
 use Be\System\Exception\RuntimeException;
 use Be\System\Request;
 
-class SystemLog
+class OpLog
 {
     /**
      * @param $content
@@ -16,7 +16,7 @@ class SystemLog
     {
         $runtime = Be::getRuntime();
         $my = Be::getUser();
-        $tupleAdminLog = Be::newTuple('system_log');
+        $tupleAdminLog = Be::newTuple('system_op_log');
         $tupleAdminLog->user_id = $my->id;
         $tupleAdminLog->app = $runtime->getAppName();
         $tupleAdminLog->controller = $runtime->getControllerName();
