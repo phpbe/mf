@@ -218,8 +218,8 @@ class Config extends Plugin
             chmod($path, 0755);
 
             Response::success('保存成功！');
-        } catch (\Exception $e) {
-            Response::error('保存失败：' . $e->getMessage());
+        } catch (\Throwable $t) {
+            Response::error('保存失败：' . $t->getMessage());
         }
     }
 
@@ -236,8 +236,8 @@ class Config extends Plugin
             if (file_exists($path)) @unlink($path);
 
             Response::success('恢复默认值成功！');
-        } catch (\Exception $e) {
-            Response::error('恢复默认值失败：' . $e->getMessage());
+        } catch (\Throwable $t) {
+            Response::error('恢复默认值失败：' . $t->getMessage());
         }
     }
 

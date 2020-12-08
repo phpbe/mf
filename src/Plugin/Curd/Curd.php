@@ -168,9 +168,9 @@ class Curd extends Plugin
                     'tableData' => $formattedRows,
                 ]);
                 Response::json();
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 Response::set('success', false);
-                Response::set('message', $e->getMessage());
+                Response::set('message', $t->getMessage());
                 Response::json();
             }
 
@@ -305,8 +305,8 @@ class Curd extends Plugin
                 beSystemLog($content, $formData);
             }
 
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
+        } catch (\Throwable $t) {
+            Response::error($t->getMessage());
         }
     }
 
@@ -528,8 +528,8 @@ class Curd extends Plugin
                 ->setValue($row)
                 ->display();
 
-        } catch (\Exception $e) {
-            Response::error($e->getMessage());
+        } catch (\Throwable $t) {
+            Response::error($t->getMessage());
         }
     }
 
@@ -622,9 +622,9 @@ class Curd extends Plugin
                 $db->commit();
                 Response::success($title . '：新建成功！');
 
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
 
         } else {
@@ -751,9 +751,9 @@ class Curd extends Plugin
                 }
                 $db->commit();
                 Response::success($title . '：编辑成功！');
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
 
         } else {
@@ -808,8 +808,8 @@ class Curd extends Plugin
                     ->setValue($tuple->toArray())
                     ->display();
 
-            } catch (\Exception $e) {
-                Response::error($e->getMessage());
+            } catch (\Throwable $t) {
+                Response::error($t->getMessage());
             }
         }
     }
@@ -919,10 +919,10 @@ class Curd extends Plugin
                     beSystemLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
 
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
 
         } elseif (isset($postData['row'])) {
@@ -981,9 +981,9 @@ class Curd extends Plugin
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
         } else {
             Response::error('参数（rows或row）缺失！');
@@ -1070,9 +1070,9 @@ class Curd extends Plugin
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
 
         } elseif (isset($postData['row'])) {
@@ -1118,9 +1118,9 @@ class Curd extends Plugin
                 }
                 $db->commit();
                 Response::success($title . '，执行成功！');
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                Response::error($t->getMessage());
             }
         }
     }
