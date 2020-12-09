@@ -34,7 +34,9 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadFileTypes)) {
-                Response::error('禁止上传的文件类型：' . $ext . '！');
+                Response::set('success', false);
+                Response::set('message', '禁止上传的文件类型：' . $ext . '！');
+                Response::json();
             }
 
             $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
@@ -79,7 +81,9 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
-                Response::error('禁止上传的图像类型：' . $ext . '！');
+                Response::set('success', false);
+                Response::set('message', '禁止上传的图像类型：' . $ext . '！');
+                Response::json();
             }
 
             ini_set('memory_limit', '-1');
@@ -139,7 +143,9 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
-                Response::error('禁止上传的图像类型：' . $ext . '！');
+                Response::set('success', false);
+                Response::set('message', '禁止上传的图像类型：' . $ext . '！');
+                Response::json();
             }
 
             ini_set('memory_limit', '-1');
