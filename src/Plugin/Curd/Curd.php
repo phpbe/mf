@@ -226,8 +226,25 @@ class Curd extends Plugin
             Response::success('导入成功！');
         } else {
             $setting = $this->setting['import'];
-            $title = isset($this->setting['title']) ? ($this->setting['title'] . ' - 导入') : '导入';
-            Response::setTitle($title);
+
+            $setting['db'] = $this->setting['db'];
+            $setting['table'] = $this->setting['table'];
+
+            if (isset($this->setting['title'])) {
+                $setting['title'] = $this->setting['title'] . ' - 导入';
+            }
+
+            if (!isset($setting['mapping']['items'])) {
+                $mappingItems = [];
+                foreach ($this->setting['lists']['table']['items'] as $item) {
+                    $mappingItems[] = [
+                        'name' => $item['name'],
+                        'label' => $item['label'],
+                    ];
+                }
+                $setting['mapping']['items'] = $mappingItems;
+            }
+
             $importer->setting($setting)->display();
         }
     }
