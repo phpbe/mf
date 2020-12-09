@@ -41,6 +41,13 @@ class Plugin
 
             $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
             $newFilePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newFileName;
+
+            $dir = dirname($newFilePath);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+                chmod($dir, 0755);
+            }
+
             if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
                 $newFileUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newFileName;
                 Response::set('newValue', $newFileName);
@@ -101,6 +108,12 @@ class Plugin
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
                 $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+
+                $dir = dirname($newImagePath);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                    chmod($dir, 0755);
+                }
 
                 if ($libImage->save($newImagePath)) {
                     $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
@@ -163,6 +176,12 @@ class Plugin
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
                 $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+
+                $dir = dirname($newImagePath);
+                if (!is_dir($dir)) {
+                    mkdir($dir, 0755, true);
+                    chmod($dir, 0755);
+                }
 
                 if ($libImage->save($newImagePath)) {
                     $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
