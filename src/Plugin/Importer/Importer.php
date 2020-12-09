@@ -91,7 +91,7 @@ class Importer extends Plugin
                     ],
                     'value' => 'detect',
                     'ui' => [
-                        'form-itme' => [
+                        'form-item' => [
                             'v-if' => 'formData.type == \'csv\'',
                         ]
                     ]
@@ -106,11 +106,22 @@ class Importer extends Plugin
             ];
         }
 
+        if (!isset($setting['downloadTemplateUrl'])) {
+            $downloadTemplateUrl = Request::url();
+            if (strpos($downloadTemplateUrl, 'task=import') === false) {
+                $downloadTemplateUrl .= (strpos($downloadTemplateUrl, '?') === false ? '?' : '&') . 'task=downloadTemplate';
+            } else {
+                $downloadTemplateUrl = str_replace('task=import', 'task=downloadTemplate', $downloadTemplateUrl);
+            }
+            $setting['downloadTemplateUrl'] = $downloadTemplateUrl;
+        }
+
         $setting['form']['actions'][] = [
             'name' => 'download',
             'label' => '下载模板',
+            'url' => $setting['downloadTemplateUrl'],
             'target' => 'blank',
-            'task' => 'downloadTemplate',
+            'icon' => 'el-icon-download',
         ];
 
         if (!isset($setting['mapping']['items'])) {
@@ -445,12 +456,18 @@ class Importer extends Plugin
 
     public function downloadTemplate()
     {
-        $postData = Request::json();
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
         $formData = $postData['formData'];
 
         $type = $formData['type'] ?? 'csv';
         $file = $formData['file'] ?? 'file';
         $charset = $formData['charset'] ?? 'detect';
+
+        if ($charset == 'detect') {
+            $charset = 'gbk';
+        }
+        $charset = strtoupper($charset);
 
         $exporter = Be::getPlugin('Exporter');
         if ($type == 'csv' || $type == 'excel') {

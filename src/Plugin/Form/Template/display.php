@@ -269,6 +269,7 @@
                 },
                 formAction: function (name, option) {
                     var data = {};
+                    data.formData = this.formData;
                     data.postData = option.postData;
                     return this.action(option, data);
                 },

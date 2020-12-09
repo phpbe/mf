@@ -250,6 +250,16 @@ class Curd extends Plugin
                 $setting['mapping']['items'] = $mappingItems;
             }
 
+            if (!isset($setting['downloadTemplateUrl'])) {
+                $downloadTemplateUrl = Request::url();
+                if (strpos($downloadTemplateUrl, 'task=import') === false) {
+                    $downloadTemplateUrl .= (strpos($downloadTemplateUrl, '?') === false ? '?' : '&') . 'task=importDownloadTemplate';
+                } else {
+                    $downloadTemplateUrl = str_replace('task=import', 'task=importDownloadTemplate', $downloadTemplateUrl);
+                }
+                $setting['downloadTemplateUrl'] = $downloadTemplateUrl;
+            }
+
             $importer->setting($setting)->display();
         }
     }
@@ -257,12 +267,31 @@ class Curd extends Plugin
     /**
      * 导入 - 下载模板
      */
-    public function downloadTemplate()
+    public function importDownloadTemplate()
     {
         $importer = Be::getPlugin('Importer');
-        $setting = $this->setting['import'];
-        $title = isset($this->setting['title']) ? ($this->setting['title'] . ' - 导入') : '导入';
-        Response::setTitle($title);
+
+        $setting = $this->setting['import'] ?? [];
+
+        if (!isset($setting['lists']['title']) && isset($this->setting['lists']['title'])) {
+            $setting['title'] = $this->setting['lists']['title'] . ' - 导入模板';
+        }
+
+        if (!isset($setting['lists']['theme']) && isset($this->setting['lists']['theme'])) {
+            $setting['theme'] = $this->setting['lists']['theme'];
+        }
+
+        if (!isset($setting['mapping']['items'])) {
+            $mappingItems = [];
+            foreach ($this->setting['lists']['table']['items'] as $item) {
+                $mappingItems[] = [
+                    'name' => $item['name'],
+                    'label' => $item['label'],
+                ];
+            }
+            $setting['mapping']['items'] = $mappingItems;
+        }
+
         $importer->setting($setting)->downloadTemplate();
     }
 
