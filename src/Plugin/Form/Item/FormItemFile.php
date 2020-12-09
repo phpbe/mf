@@ -38,7 +38,11 @@ class FormItemFile extends FormItem
         $this->maxSizeInt = FileSize::string2Int($this->maxSize);
 
         // 允许上传的文件类型
-        $this->allowUploadFileTypes = Be::getConfig('System.System')->allowUploadFileTypes;
+        if (isset($params['allowUploadFileTypes'])) {
+            $this->allowUploadFileTypes = $params['allowUploadFileTypes'];
+        } else {
+            $this->allowUploadFileTypes = Be::getConfig('System.System')->allowUploadFileTypes;
+        }
 
         if (!$this->description) {
             $this->description = '格式：'. implode(', ', $this->allowUploadFileTypes) .'，小于 ' . $this->maxSize;

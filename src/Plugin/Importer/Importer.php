@@ -64,9 +64,10 @@ class Importer extends Plugin
                     'name' => 'type',
                     'label' => '文件类型',
                     'driver' => FormItemSelect::class,
+                    'required' => true,
                     'keyValues' => [
-                        'csv' => 'CSV（.csv），适合导入大量数量',
-                        'excel' => 'Excel（.xls/.xlsx），适合导入少量数量',
+                        'csv' => 'CSV（.csv）',
+                        'excel' => 'Excel（.xls/.xlsx）',
                     ],
                     'value' => 'csv',
                 ],
@@ -74,12 +75,15 @@ class Importer extends Plugin
                     'name' => 'file',
                     'label' => '选择文件',
                     'driver' => FormItemFile::class,
+                    'allowUploadFileTypes' => ['.csv', '.xls', '.xlsx'],
+                    'required' => true,
                     'path' => $setting['path'], // 保存咱径
                 ],
                 [
                     'name' => 'charset',
                     'label' => '编码',
                     'driver' => FormItemSelect::class,
+                    'required' => true,
                     'keyValues' => [
                         'detect' => '自动识别',
                         'gbk' => 'GBK',
