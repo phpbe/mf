@@ -53,7 +53,11 @@ class Csv extends Driver
         }
 
         foreach ($headers as &$header) {
-            $header = iconv('UTF-8', 'GBK//IGNORE', $header);
+
+            if ($this->charset != 'UTF-8') {
+                $header = iconv('UTF-8', $this->charset . '//IGNORE', $header);
+            }
+
             if (strpos($header, '"') !== false) {
                 $header = str_replace('"', '""', $header);
             }
@@ -105,7 +109,9 @@ class Csv extends Driver
                 }
 
             } else {
-                $x = iconv('UTF-8', 'GBK//IGNORE', $x);
+                if ($this->charset != 'UTF-8') {
+                    $x = iconv('UTF-8', $this->charset . '//IGNORE', $x);
+                }
                 if (strpos($x, '"') !== false) {
                     $x = str_replace('"', '""', $x);
                 }

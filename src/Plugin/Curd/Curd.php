@@ -187,6 +187,64 @@ class Curd extends Plugin
     }
 
     /*
+     * 导入
+     *
+     */
+    public function import()
+    {
+        $importer = Be::getPlugin('Importer');
+
+        if (Request::isAjax()) {
+
+            $dbName = 'master';
+            if (isset($config['db'])) {
+                $dbName = $config['db'];
+            }
+
+            $db = Be::getDb($dbName);
+
+            $db->startTransaction();
+            try {
+
+                if (!isset($this->setting['table'])) {
+                    throw new PluginException('未设置要导入的表名！');
+                }
+                $tableName = $this->setting['table'];
+
+                $rows = $importer->process();
+                foreach ($rows as $row) {
+                    $db->insert($tableName, $row);
+                }
+
+                $db->commit();
+            } catch (\Exception $e) {
+                $db->rollback();
+
+                Response::error($e->getMessage());
+            }
+
+            Response::success('导入成功！');
+        } else {
+            $setting = $this->setting['import'];
+            $title = isset($this->setting['title']) ? ($this->setting['title'] . ' - 导入') : '导入';
+            Response::setTitle($title);
+            $importer->setting($setting)->display();
+        }
+    }
+
+    /**
+     * 导入 - 下载模板
+     */
+    public function downloadTemplate()
+    {
+        $importer = Be::getPlugin('Importer');
+        $setting = $this->setting['import'];
+        $title = isset($this->setting['title']) ? ($this->setting['title'] . ' - 导入') : '导入';
+        Response::setTitle($title);
+        $importer->setting($setting)->downloadTemplate();
+    }
+
+    /*
      * 导出
      *
      */

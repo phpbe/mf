@@ -10,6 +10,7 @@ abstract class Driver
 
     protected $timeLimit = 3600;
     protected $outputType = 'http';
+    protected $charset = 'GBK';
     protected $outputFileNameOrPath = null;
     protected $memoryLimit = '1g';
     protected $split = null; // 数据量过大时，拆分为多个文件，打成一个 zip 压缩包
@@ -46,6 +47,18 @@ abstract class Driver
 
         $this->outputType = $outputType;
         $this->outputFileNameOrPath = $outputFileNameOrPath;
+        return $this;
+    }
+
+    /**
+     * 设置字符编码
+     *
+     * @param string $charset 字符编码
+     * @return Driver
+     */
+    public function setCharset($charset)
+    {
+        $this->charset = $charset;
         return $this;
     }
 
