@@ -310,7 +310,7 @@ class Importer extends Plugin
                         $formattedValues[$item['name']] = $val;
                     }
 
-                    foreach ($this->setting['field']['items'] as $item) {
+                    foreach ($this->setting['mapping']['items'] as $item) {
                         if (isset($item['check']) && $item['check'] instanceof \Closure) {
                             $fn = $item['check'];
                             $fn($formattedValues);
@@ -324,6 +324,11 @@ class Importer extends Plugin
                                 $formattedValues[$item['name']] = $fn($formattedValues);
                             }
                         }
+                    }
+
+                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
+                        $fn = $this->setting['mapping']['format'];
+                        $formattedValues = $fn($formattedValues);
                     }
 
                     yield $formattedValues;
@@ -435,6 +440,11 @@ class Importer extends Plugin
                                 $values[$item['name']] = $fn($values);
                             }
                         }
+                    }
+
+                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
+                        $fn = $this->setting['mapping']['format'];
+                        $values = $fn($values);
                     }
 
                     yield $values;
