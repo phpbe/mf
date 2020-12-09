@@ -420,7 +420,7 @@ class Report extends Plugin
                 $content = '导出 ' . $exportDriver;
             }
 
-            if (!isset($this->setting['systemLog']) || $this->setting['systemLog']) {
+            if (!isset($this->setting['opLog']) || $this->setting['opLog']) {
                 beOpLog($content, $postData);
             }
 

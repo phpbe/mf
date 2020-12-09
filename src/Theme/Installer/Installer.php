@@ -38,7 +38,7 @@
             if (isset($this->steps) && is_array($this->steps) && count($this->steps) > 0) {
                 ?>
                 <div id="steps">
-                    <el-steps :active="active" finish-status="success">
+                    <el-steps :active="<?php echo isset($this->step) ? $this->step : 0; ?>" align-center>
                         <?php
                         foreach ($this->steps as $step) {
                             ?>
@@ -52,10 +52,7 @@
             }
             ?>
 
-            <be-center>
-
-
-            </be-center>
+            <be-center></be-center>
         </div>
         <?php
         if (isset($this->steps) && is_array($this->steps) && count($this->steps) > 0) {
