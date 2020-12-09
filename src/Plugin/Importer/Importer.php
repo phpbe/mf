@@ -473,6 +473,7 @@ class Importer extends Plugin
         if ($type == 'csv' || $type == 'excel') {
 
             $filename = isset($this->setting['title']) ? $this->setting['title'] : '导入模板';
+            $filename .= ($type == 'csv' ? '.csv' : '.xls');
 
             $exporter->setDriver($type)
                 ->setCharset($charset)
