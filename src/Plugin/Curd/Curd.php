@@ -194,72 +194,43 @@ class Curd extends Plugin
     {
         $importer = Be::getPlugin('Importer');
 
+        $setting = $this->setting['import'] ?? [];
+
+        $setting['db'] = $this->setting['db'];
+        $setting['table'] = $this->setting['table'];
+
+        if (!isset($setting['lists']['title']) && isset($this->setting['lists']['title'])) {
+            $setting['title'] = $this->setting['lists']['title'] . ' - 导入';
+        }
+
+        if (!isset($setting['lists']['theme']) && isset($this->setting['lists']['theme'])) {
+            $setting['theme'] = $this->setting['lists']['theme'];
+        }
+
+        if (!isset($setting['mapping']['items'])) {
+            $mappingItems = [];
+            foreach ($this->setting['lists']['table']['items'] as $item) {
+                $mappingItems[] = [
+                    'name' => $item['name'],
+                    'label' => $item['label'],
+                ];
+            }
+            $setting['mapping']['items'] = $mappingItems;
+        }
+
+        if (!isset($setting['downloadTemplateUrl'])) {
+            $downloadTemplateUrl = Request::url();
+            if (strpos($downloadTemplateUrl, 'task=import') === false) {
+                $downloadTemplateUrl .= (strpos($downloadTemplateUrl, '?') === false ? '?' : '&') . 'task=importDownloadTemplate';
+            } else {
+                $downloadTemplateUrl = str_replace('task=import', 'task=importDownloadTemplate', $downloadTemplateUrl);
+            }
+            $setting['downloadTemplateUrl'] = $downloadTemplateUrl;
+        }
+
         if (Request::isAjax()) {
-
-            $dbName = 'master';
-            if (isset($config['db'])) {
-                $dbName = $config['db'];
-            }
-
-            $db = Be::getDb($dbName);
-
-            $db->startTransaction();
-            try {
-
-                if (!isset($this->setting['table'])) {
-                    throw new PluginException('未设置要导入的表名！');
-                }
-                $tableName = $this->setting['table'];
-
-                $rows = $importer->process();
-                foreach ($rows as $row) {
-                    $db->insert($tableName, $row);
-                }
-
-                $db->commit();
-            } catch (\Exception $e) {
-                $db->rollback();
-
-                Response::error($e->getMessage());
-            }
-
-            Response::success('导入成功！');
+            $importer->setting($setting)->import();
         } else {
-
-            $setting = $this->setting['import'] ?? [];
-
-            $setting['db'] = $this->setting['db'];
-            $setting['table'] = $this->setting['table'];
-
-            if (!isset($setting['lists']['title']) && isset($this->setting['lists']['title'])) {
-                $setting['title'] = $this->setting['lists']['title'] . ' - 导入';
-            }
-
-            if (!isset($setting['lists']['theme']) && isset($this->setting['lists']['theme'])) {
-                $setting['theme'] = $this->setting['lists']['theme'];
-            }
-
-            if (!isset($setting['mapping']['items'])) {
-                $mappingItems = [];
-                foreach ($this->setting['lists']['table']['items'] as $item) {
-                    $mappingItems[] = [
-                        'name' => $item['name'],
-                        'label' => $item['label'],
-                    ];
-                }
-                $setting['mapping']['items'] = $mappingItems;
-            }
-
-            if (!isset($setting['downloadTemplateUrl'])) {
-                $downloadTemplateUrl = Request::url();
-                if (strpos($downloadTemplateUrl, 'task=import') === false) {
-                    $downloadTemplateUrl .= (strpos($downloadTemplateUrl, '?') === false ? '?' : '&') . 'task=importDownloadTemplate';
-                } else {
-                    $downloadTemplateUrl = str_replace('task=import', 'task=importDownloadTemplate', $downloadTemplateUrl);
-                }
-                $setting['downloadTemplateUrl'] = $downloadTemplateUrl;
-            }
-
             $importer->setting($setting)->display();
         }
     }

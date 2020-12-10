@@ -45,7 +45,6 @@ class Importer extends Plugin
      * @return Plugin
      * @throws PluginException
      */
-
     public function setting($setting = [])
     {
         if (!isset($setting['form']['action'])) {
@@ -71,6 +70,7 @@ class Importer extends Plugin
                     'name' => 'file',
                     'label' => '选择文件',
                     'driver' => FormItemFile::class,
+                    'path' => Be::getRuntime()->getDataPath() . '/System/Plugin/Importer/', // 保存咱径
                     'allowUploadFileTypes' => ['.csv', '.xls', '.xlsx'],
                     'required' => true,
                 ],
@@ -149,8 +149,8 @@ class Importer extends Plugin
     public function import()
     {
         $dbName = 'master';
-        if (isset($config['db'])) {
-            $dbName = $config['db'];
+        if (isset($this->setting['db'])) {
+            $dbName = $this->setting['db'];
         }
 
         $db = Be::getDb($dbName);
@@ -164,7 +164,18 @@ class Importer extends Plugin
             $tableName = $this->setting['table'];
 
             $rows = $this->process();
-            foreach ($rows as $row) {
+            foreach ($rows as $i => $row) {
+
+                foreach ($this->setting['mapping']['items'] as $item) {
+                    // 检查唯一性
+                    if (isset($item['unique']) && $item['unique']) {
+                        $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey($tableName) . ' WHERE ' . $db->quoteKey($item['name']) . '=' . $db->quoteValue($row[$item['name']]);
+                        if ($db->getValue($sql) > 0) {
+                            throw new PluginException('第 ' . ($i + 1) . ' 行的 ' . $item['label'] . ' 已存在值为 ' . $row[$item['name']] . ' 的记录！');
+                        }
+                    }
+                }
+
                 $db->insert($tableName, $row);
             }
 
@@ -277,25 +288,27 @@ class Importer extends Plugin
 
                         $val = $values[$colMapping[$item['label']]];
 
-                        switch ($item['type']) {
-                            case 'date':
-                                $val = str_replace('年', '-', $val);
-                                $val = str_replace('月', '-', $val);
-                                $val = str_replace('日', '', $val);
-                                $val = date('Y-m-d', strtotime($val));
-                                break;
-                            case 'datetime':
-                                $val = str_replace('年', '-', $val);
-                                $val = str_replace('月', '-', $val);
-                                $val = str_replace('日', '', $val);
-                                $val = date('Y-m-d H:i:s', strtotime($val));
-                                break;
-                            case 'number':
-                                $val = str_replace(',', '', $val);
-                                break;
+                        if (isset($item['type'])) {
+                            switch ($item['type']) {
+                                case 'date':
+                                    $val = str_replace('年', '-', $val);
+                                    $val = str_replace('月', '-', $val);
+                                    $val = str_replace('日', '', $val);
+                                    $val = date('Y-m-d', strtotime($val));
+                                    break;
+                                case 'datetime':
+                                    $val = str_replace('年', '-', $val);
+                                    $val = str_replace('月', '-', $val);
+                                    $val = str_replace('日', '', $val);
+                                    $val = date('Y-m-d H:i:s', strtotime($val));
+                                    break;
+                                case 'number':
+                                    $val = str_replace(',', '', $val);
+                                    break;
+                            }
                         }
 
-                        if ($item['required']) {
+                        if (isset($item['required']) && $item['required']) {
                             if (!$val) {
                                 throw new PluginException('列 ' . $item['label'] . ' 不能为空！');
                             }
@@ -318,11 +331,6 @@ class Importer extends Plugin
                                 $formattedValues[$item['name']] = $fn($formattedValues);
                             }
                         }
-                    }
-
-                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
-                        $fn = $this->setting['mapping']['format'];
-                        $formattedValues = $fn($formattedValues);
                     }
 
                     yield $formattedValues;
@@ -385,33 +393,35 @@ class Importer extends Plugin
 
                         $val = (string)$sheet->getCellByColumnAndRow($colMapping[$item['label']], $row)->getValue();
 
-                        switch ($item['type']) {
-                            case 'date':
-                                if (is_numeric($val)) {
-                                    $val = gmdate('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($val));
-                                } else {
-                                    $val = str_replace('年', '-', $val);
-                                    $val = str_replace('月', '-', $val);
-                                    $val = str_replace('日', '', $val);
-                                    $val = date('Y-m-d', strtotime($val));
-                                }
-                                break;
-                            case 'datetime':
-                                if (is_numeric($val)) {
-                                    $val = gmdate('Y-m-d H:i:s', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($val));
-                                } else {
-                                    $val = str_replace('年', '-', $val);
-                                    $val = str_replace('月', '-', $val);
-                                    $val = str_replace('日', '', $val);
-                                    $val = date('Y-m-d H:i:s', strtotime($val));
-                                }
-                                break;
-                            case 'number':
-                                $val = str_replace(',', '', $val);
-                                break;
+                        if (isset($item['type'])) {
+                            switch ($item['type']) {
+                                case 'date':
+                                    if (is_numeric($val)) {
+                                        $val = gmdate('Y-m-d', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($val));
+                                    } else {
+                                        $val = str_replace('年', '-', $val);
+                                        $val = str_replace('月', '-', $val);
+                                        $val = str_replace('日', '', $val);
+                                        $val = date('Y-m-d', strtotime($val));
+                                    }
+                                    break;
+                                case 'datetime':
+                                    if (is_numeric($val)) {
+                                        $val = gmdate('Y-m-d H:i:s', \PhpOffice\PhpSpreadsheet\Shared\Date::excelToTimestamp($val));
+                                    } else {
+                                        $val = str_replace('年', '-', $val);
+                                        $val = str_replace('月', '-', $val);
+                                        $val = str_replace('日', '', $val);
+                                        $val = date('Y-m-d H:i:s', strtotime($val));
+                                    }
+                                    break;
+                                case 'number':
+                                    $val = str_replace(',', '', $val);
+                                    break;
+                            }
                         }
 
-                        if ($item['required']) {
+                        if (isset($item['required']) && $item['required']) {
                             if (!$val) {
                                 throw new PluginException('列 ' . $item['label'] . ' 不能为空！');
                             }
@@ -434,11 +444,6 @@ class Importer extends Plugin
                                 $values[$item['name']] = $fn($values);
                             }
                         }
-                    }
-
-                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
-                        $fn = $this->setting['mapping']['format'];
-                        $values = $fn($values);
                     }
 
                     yield $values;
