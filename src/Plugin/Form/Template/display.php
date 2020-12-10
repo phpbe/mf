@@ -86,10 +86,10 @@
                         if ($key == 'submit') {
                             if ($item) {
                                 if ($item === true) {
-                                    echo '<el-button type="primary" @click="submit" :disabled="loading">保存</el-button> ';
+                                    echo '<el-button type="primary" @click="submit" :disabled="loading" icon="el-icon-check">保存</el-button> ';
                                     continue;
                                 } elseif (is_string($item)) {
-                                    echo '<el-button type="primary" @click="submit" :disabled="loading">' . $item . '</el-button> ';
+                                    echo '<el-button type="primary" @click="submit" :disabled="loading" icon="el-icon-check">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {
@@ -98,10 +98,10 @@
                         } elseif ($key == 'reset') {
                             if ($item) {
                                 if ($item === true) {
-                                    echo '<el-button type="warning" @click="reset" :disabled="loading">重置</el-button> ';
+                                    echo '<el-button type="warning" @click="reset" :disabled="loading" icon="el-icon-refresh-left">重置</el-button> ';
                                     continue;
                                 } elseif (is_string($item)) {
-                                    echo '<el-button type="warning" @click="reset" :disabled="loading">' . $item . '</el-button> ';
+                                    echo '<el-button type="warning" @click="reset" :disabled="loading" icon="el-icon-refresh-left">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {
@@ -110,10 +110,10 @@
                         } elseif ($key == 'cancel') {
                             if ($item) {
                                 if ($item === true) {
-                                    echo '<el-button @click="cancel" :disabled="loading">取消</el-button> ';
+                                    echo '<el-button @click="cancel" :disabled="loading" icon="el-icon-close">取消</el-button> ';
                                     continue;
                                 } elseif (is_string($item)) {
-                                    echo '<el-button @click="cancel" :disabled="loading">' . $item . '</el-button> ';
+                                    echo '<el-button @click="cancel" :disabled="loading" icon="el-icon-close">' . $item . '</el-button> ';
                                     continue;
                                 }
                             } else {
