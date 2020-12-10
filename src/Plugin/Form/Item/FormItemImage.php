@@ -32,7 +32,7 @@ class FormItemImage extends FormItem
         parent::__construct($params, $row);
 
         if (!isset($params['path'])) {
-            throw new PluginException('参数' . $this->label . ' ('.$this->name.') 须指定保存路径（path）');
+            throw new PluginException('参数' . $this->label . ' (' . $this->name . ') 须指定保存路径（path）');
         }
         $this->path = $params['path'];
 
@@ -45,7 +45,7 @@ class FormItemImage extends FormItem
 
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
-                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请上传'.$this->label.'\', trigger: \'blur\' }]';
+                $this->ui['form-item'][':rules'] = '[{required: true, message: \'请上传' . $this->label . '\', trigger: \'blur\' }]';
             }
         }
 
@@ -60,7 +60,7 @@ class FormItemImage extends FormItem
         }
 
         if (!$this->description) {
-            $this->description = '格式：'. implode(', ', $this->allowUploadImageTypes) .'，小于 ' . $this->maxSize;
+            $this->description = '格式：' . implode(', ', $this->allowUploadImageTypes) . '，' . $this->maxSize . ' 以内';
         }
 
         if (!isset($this->ui['upload']['accept'])) {
@@ -80,11 +80,11 @@ class FormItemImage extends FormItem
         }
 
         if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'formItems.'.$this->name.'.fileList';
+            $this->ui['upload'][':file-list'] = 'formItems.' . $this->name . '.fileList';
         }
 
         if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'formItems.'.$this->name.'.postData';
+            $this->ui['upload'][':data'] = 'formItems.' . $this->name . '.postData';
         }
 
         if (!isset($this->ui['upload']['limit'])) {
@@ -115,7 +115,7 @@ class FormItemImage extends FormItem
         }
         $html .= '>';
 
-        $html .= '<img v-if="formData.' . $this->name . '" :src="formItems.' . $this->name . '.url" alt="'.$this->label.'" style="max-width:120px;" />';
+        $html .= '<img v-if="formData.' . $this->name . '" :src="formItems.' . $this->name . '.url" alt="' . $this->label . '" style="max-width:120px;" />';
 
         $html .= '<el-upload';
         if (isset($this->ui['upload'])) {
@@ -129,7 +129,7 @@ class FormItemImage extends FormItem
         }
         $html .= '>';
         $html .= '<el-button size="mini" type="primary"><i class="el-icon-upload2"></i> 选择图像文件</el-button>';
-        $html .= '<div class="el-upload__tip" slot="tip">'.$this->description.'</div>';
+        $html .= '<div class="el-upload__tip" slot="tip">' . $this->description . '</div>';
         $html .= '</el-upload>';
         $html .= '</el-form-item>';
         return $html;
@@ -173,20 +173,20 @@ class FormItemImage extends FormItem
     {
         return [
             'formItemImage_' . $this->name . '_beforeUpload' => 'function(file) {
-                if (file.size > '. $this->maxSizeInt.'){
-                    this.$message.error("'.$this->label.' 图像尺寸须小于 '.$this->maxSize.'！");
+                if (file.size > ' . $this->maxSizeInt . '){
+                    this.$message.error("' . $this->label . ' 图像尺寸须小于 ' . $this->maxSize . '！");
                     return false;
                 }
                 return true;
             }',
             'formItemImage_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
-                    this.formItems.'.$this->name.'.url = response.url;
-                    this.formData.'.$this->name.' = response.newValue;
+                    this.formItems.' . $this->name . '.url = response.url;
+                    this.formData.' . $this->name . ' = response.newValue;
                 } else {
                     this.$message.error(response.message);
                 }
-                this.formItems.'.$this->name.'.fileList = [];
+                this.formItems.' . $this->name . '.fileList = [];
             }',
             'formItemImage_onError' => 'function(){
                 this.$message.error("上传失败，请重新上传");
