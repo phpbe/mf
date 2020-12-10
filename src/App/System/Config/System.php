@@ -26,7 +26,7 @@ class System
     /**
      * @BeConfigItem("允许上传的文件大小", driver="FormItemInput")
      */
-    public $uploadMaxSize = '1M';
+    public $uploadMaxSize = '100M';
 
     /**
      * @BeConfigItem("允许上传的文件类型", driver="FormItemCode", language="json", valueType = "array(string)")
