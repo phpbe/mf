@@ -48,10 +48,6 @@ class Importer extends Plugin
 
     public function setting($setting = [])
     {
-        if (!isset($setting['path'])) {
-            $setting['path'] = Be::getRuntime()->getDataPath() . '/System/Plugin/Importer/';
-        }
-
         if (!isset($setting['form']['action'])) {
             $action = Request::url();
             $action .= (strpos($action, '?') === false ? '?' : '&') . 'task=import';
@@ -77,7 +73,6 @@ class Importer extends Plugin
                     'driver' => FormItemFile::class,
                     'allowUploadFileTypes' => ['.csv', '.xls', '.xlsx'],
                     'required' => true,
-                    'path' => $setting['path'], // 保存咱径
                 ],
                 [
                     'name' => 'charset',
@@ -193,8 +188,7 @@ class Importer extends Plugin
         $file = $formData['file'] ?? 'file';
         $charset = $formData['charset'] ?? 'detect';
 
-        $path = $this->setting['path'] . $file;
-
+        $path = Be::getRuntime()->getDataPath() . '/tmp/' . $file;
 
         if ($type == 'csv') {
 
