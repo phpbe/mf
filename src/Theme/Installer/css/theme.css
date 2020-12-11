@@ -34,3 +34,6 @@ body {background-color: #fff;}
     color: #999;
 }
 
+#steps {
+    padding: 10px 0 30px 0;
+}

@@ -51,7 +51,7 @@ class Installer
             $isAllPassed = array_sum($value) == count($value);
 
             Response::set('steps', $this->steps);
-            Response::set('step', 1);
+            Response::set('step', 0);
 
             Be::getPlugin('Detail')
                 ->setting([
@@ -109,7 +109,7 @@ class Installer
                                 'target' => 'self',
                                 'ui' => [
                                     'button' => [
-                                        'type' => $isAllPassed ? 'success' : 'danger',
+                                        'type' => $isAllPassed ? 'primary' : 'danger',
                                         ':disabled' => $isAllPassed ? 'false' : 'true',
                                     ]
                                 ]
@@ -131,13 +131,14 @@ class Installer
     {
         if (Request::isPost()) {
 
-            $postData = Request::json();
+            $postData = Request::post('data', '', '');
+            $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
             $configDb = Be::getConfig('System.Db');
             foreach ($configDb->master as $k => $v) {
                 if (isset($formData[$k])) {
-                    $configDb->master->$k = $formData[$k];
+                    $configDb->master[$k] = $formData[$k];
                 }
             }
 
@@ -156,6 +157,7 @@ class Installer
                     'form' => [
                         'ui' => [
                             'label-width' => '200px',
+                            'style' => 'width: 600px',
                         ],
                         'items' => [
                             [
@@ -194,12 +196,12 @@ class Installer
                         ],
                         'actions' => [
                             [
-                                'name' => '',
                                 'label' => '继续安装',
+                                'target' => 'self',
                                 '@click' => 'submit',
                                 'ui' => [
                                     'button' => [
-                                        'type' => 'success'
+                                        'type' => 'primary'
                                     ]
                                 ]
                             ]
@@ -233,7 +235,7 @@ class Installer
                                                 "value" : responseData.data.databases[x]
                                             });
                                         }
-                                        _this.formItems.db_name.suggestions = suggestions;
+                                        _this.formItems.name.suggestions = suggestions;
                                     } else {
                                         if (responseData.message) {
                                             _this.$message.error(responseData.message);
@@ -280,7 +282,8 @@ class Installer
     public function installApp()
     {
         if (Request::isPost()) {
-            $postData = Request::json();
+            $postData = Request::post('data', '', '');
+            $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
             $service = Be::getService('System.Installer');
@@ -298,17 +301,17 @@ class Installer
             Response::json();
         } else {
             Response::set('steps', $this->steps);
-            Response::set('step', 3);
+            Response::set('step', 2);
 
             $appProperties = [];
-            $appProperties['System'] = Be::getProperty('App.System');
+            $appProperties[] = (array)Be::getProperty('App.System');
             $appNames = Be::getService('System.Installer')->getAppNames();
             foreach ($appNames as $appName) {
-                $appProperties[$appName] = Be::getProperty('App.' . $appName);
+                $appProperties[] = (array)Be::getProperty('App.' . $appName);
             }
 
             Response::set('appProperties', $appProperties);
-            Response::display();
+            Response::display('App.System.Installer.installApp', 'Installer');
         }
     }
 
@@ -322,7 +325,8 @@ class Installer
         $tuple->load(1);
 
         if (Request::isPost()) {
-            $postData = Request::json();
+            $postData = Request::post('data', '', '');
+            $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
             $tuple->username = $formData['username'];
