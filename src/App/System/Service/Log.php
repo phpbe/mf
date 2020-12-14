@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\App\System\Service;
 
 use Be\System\Be;
@@ -35,7 +36,7 @@ class Log
      */
     public function getMonths($year)
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year;
+        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year;
         $months = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -57,7 +58,7 @@ class Log
      */
     public function getDays($year, $month)
     {
-        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month;
+        $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month;
         $days = array();
         if (file_exists($dir) && is_dir($dir)) {
             $fileNames = scandir($dir);
@@ -81,16 +82,16 @@ class Log
      */
     public function getLogs($year, $month, $day, $offset = 0, $limit = 100)
     {
-        $dataDir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/';
-        $indexPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
-        if (!is_file($indexPath)) return array();
+        $dataDir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day . '/';
+        $indexPath = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day . '/index';
+        if (!is_file($indexPath)) return [];
 
         if ($offset < 0) $offset = 0;
         if ($limit <= 0) $limit = 20;
         if ($limit > 500) $limit = 500;
 
-        $max = intval(filesize($indexPath) / 36) - 1;
-        if ($max < 0) return array();
+        $max = intval(filesize($indexPath) / 20) - 1;
+        if ($max < 0) return [];
 
         $from = $offset;
         $to = $offset + $limit - 1;
@@ -99,21 +100,32 @@ class Log
         if ($to > $max) $to = $max;
 
         $fIndex = fopen($indexPath, 'rb');
-        if (!$fIndex) return array();
+        if (!$fIndex) return [];
 
-        $logs = array();
+        $logs = [];
         for ($i = $from; $i <= $to; $i++) {
             fseek($fIndex, $i * 20);
 
-            $dataHashName = implode('', unpack('H*', fread($fIndex, 32)));
+            $dataHashName = implode('', unpack('H*', fread($fIndex, 16)));
             $createTime = intval(implode('', unpack('L', fread($fIndex, 4))));
 
-            $data = file_get_contents($dataDir . $dataHashName);
+            $path = $dataDir . $dataHashName;
+            if (file_exists($path)) {
+                $data = file_get_contents($path);
+                $data = json_decode($data, true);
 
-            $data = json_decode($data);
-            $data['create_time'] = date('Y-m-d H:i:s', $createTime);
-            $this->formatLog($data);
-            $logs[] = $data;
+                $log = [];
+                $log['year'] = $year;
+                $log['month'] = $month;
+                $log['day'] = $day;
+                $log['hash'] = $data['extra']['hash'];
+                $log['file'] = $data['context']['file'];
+                $log['line'] = $data['context']['line'];
+                $log['code'] = $data['context']['code'];
+                $log['create_time'] = date('Y-m-d H:i:s', $createTime);
+                $log['record_time'] = date('Y-m-d H:i:s', $data['extra']['record_time']);
+                $logs[] = $log;
+            }
         }
         fclose($fIndex);
         return $logs;
@@ -129,9 +141,9 @@ class Log
      */
     public function getLogCount($year, $month, $day)
     {
-        $path = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/index';
+        $path = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day . '/index';
         if (!is_file($path)) return 0;
-        return intval(filesize($path) / 36);
+        return intval(filesize($path) / 20);
     }
 
     /**
@@ -145,65 +157,35 @@ class Log
      */
     public function getLog($year, $month, $day, $hashName)
     {
-        $dataPath = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/'.$hashName;
+        $dataPath = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day . '/' . $hashName;
         if (!is_file($dataPath)) {
             throw new ServiceException('打开日志数据文件不存在！');
         }
 
         $data = file_get_contents($dataPath);
-        $data = json_decode($data);
-        $this->formatLog($data);
+        $data = json_decode($data, true);
         return $data;
-    }
-
-    /**
-     * 格式化日志
-     *
-     * @param array $log 日志
-     */
-    public function formatLog(&$log) {
-
-        if (!isset($log['file'])) {
-            $file = '';
-            if (isset($log['extra']['file'])) {
-                $file = $log['extra']['file'];
-            }
-            $log['file'] = $file;
-        }
-
-        if (!isset($log['line'])) {
-            $line = '';
-            if (isset($log['extra']['line'])) {
-                $line = $log['extra']['line'];
-            }
-            $log['line'] = $line;
-        }
-
-        if (!isset($log['message'])) {
-            $log['message'] = '';
-        }
-
-        $log['record_time'] = date('Y-m-d H:i:s', $log['record_time']);
     }
 
     /**
      * 删除日志
      *
+     * @param string $range 删除范围
      * @param int $year 年
      * @param int $month 月
      * @param int $day 日
      */
-    public function deleteLogs($year, $month = 0, $day = 0) {
-
+    public function deleteLogs($range, $year, $month = 0, $day = 0)
+    {
         $dir = null;
-        if ($month == 0) {
+        if ($range == 'year') {
             $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year;
-        } elseif ($day == 0) {
+        } elseif ($range == 'month') {
             $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month;
-        } else {
+        } elseif ($range == 'day') {
             $dir = Be::getRuntime()->getDataPath() . '/System/Log/' . $year . '/' . $month . '/' . $day;
         }
 
-        Be::getLib('Fso')->rmDir($dir);
+        \Be\Util\FileSystem\Dir::rm($dir);
     }
 }

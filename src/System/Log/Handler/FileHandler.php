@@ -6,7 +6,7 @@ use Monolog\Logger;
 use Monolog\Handler\AbstractProcessingHandler;
 use Be\System\Be;
 
-class SystemHandler extends AbstractProcessingHandler
+class FileHandler extends AbstractProcessingHandler
 {
 
 
@@ -26,19 +26,17 @@ class SystemHandler extends AbstractProcessingHandler
         $day = date('d', $t);
 
         $dir = Be::getRuntime()->getDataPath() . '/System/Log/' .  $year . '/' . $month . '/' . $day . '/';
-        if (!is_dir($dir)) mkdir($dir, 0777, true);
-
-        $logFileName = null;
-        if (isset($record['extra']['hash'])) {
-            $logFileName = $record['extra']['hash'];
-        } else {
-            $logFileName = md5(json_encode($record)); // 相同错误只存储一次
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+            chmod($dir, 0755);
         }
+
+        $logFileName = $record['extra']['hash'];
 
         $logFilePath = $dir . $logFileName;
 
         if (!file_exists($logFilePath)) {
-            $record['record_time'] = $t;
+            $record['extra']['record_time'] = $t;
             file_put_contents($logFilePath, json_encode($record));
         }
 
@@ -49,6 +47,8 @@ class SystemHandler extends AbstractProcessingHandler
             fwrite($f, pack('L', $t));
             fclose($f);
         }
+
+        return true;
     }
 
 }

@@ -3,11 +3,20 @@
 namespace Be\System;
 
 use Monolog\Logger;
-use Be\System\Log\Handler\SystemHandler;
-use Be\System\Log\Processor\SystemProcessor;
+use Be\System\Log\Handler\FileHandler;
+use Be\System\Log\Processor\FileProcessor;
 
 /**
  * 日志类
+ *
+ * @method static bool debug(\Throwable $t)
+ * @method static bool info(\Throwable $t)
+ * @method static bool notice(\Throwable $t)
+ * @method static bool warning(\Throwable $t)
+ * @method static bool error(\Throwable $t)
+ * @method static bool critical(\Throwable $t)
+ * @method static bool alert(\Throwable $t)
+ * @method static bool emergency(\Throwable $t)
  */
 class Log
 {
@@ -57,10 +66,10 @@ class Log
 
             $logger = new Logger('Be');
 
-            $handler = new SystemHandler($level);
+            $handler = new FileHandler($level);
             $logger->pushHandler($handler);
 
-            $processor = new SystemProcessor($level, $configSystemLog);
+            $processor = new FileProcessor($level, $configSystemLog);
             $logger->pushProcessor($processor);
 
             self::$logger = $logger;
@@ -69,45 +78,60 @@ class Log
         return self::$logger;
     }
 
-
-    public static function debug($message, array $context = array())
+    /**
+     *
+     * @param $name
+     * @param $arguments
+     * @return string
+     */
+    public static function __callStatic($name, $arguments)
     {
-        return self::getLogger()->addRecord(Logger::DEBUG, $message, $context);
+        $level = null;
+        switch ($name) {
+            case 'debug':
+                $level = Logger::DEBUG;
+                break;
+            case 'info':
+                $level = Logger::INFO;
+                break;
+            case 'notice':
+                $level = Logger::NOTICE;
+                break;
+            case 'warning':
+                $level = Logger::WARNING;
+                break;
+            case 'error':
+                $level = Logger::ERROR;
+                break;
+            case 'critical':
+                $level = Logger::CRITICAL;
+                break;
+            case 'alert':
+                $level = Logger::ALERT;
+                break;
+            case 'emergency':
+                $level = Logger::EMERGENCY;
+                break;
+            default:
+                echo '不支持的系统日志方法：' . $name . '！';
+                exit;
+        }
+
+        /**
+         * @var \Throwable $t
+         */
+        $t = $arguments[0];
+
+        $message = $t->getMessage();
+        $context = [
+            'file' => $t->getFile(),
+            'line' => $t->getLine(),
+            'code' => $t->getCode(),
+            'trace' => $t->getTrace(),
+        ];
+
+        return self::getLogger()->addRecord($level, $message, $context);
     }
 
-    public static function info($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::INFO, $message, $context);
-    }
-
-    public static function notice($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::NOTICE, $message, $context);
-    }
-
-    public static function warning($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::WARNING, $message, $context);
-    }
-
-    public static function error($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::ERROR, $message, $context);
-    }
-
-    public static function critical($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::CRITICAL, $message, $context);
-    }
-
-    public static function alert($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::ALERT, $message, $context);
-    }
-
-    public static function emergency($message, array $context = array())
-    {
-        return self::getLogger()->addRecord(Logger::EMERGENCY, $message, $context);
-    }
 
 }

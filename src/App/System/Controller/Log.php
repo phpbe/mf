@@ -1,4 +1,5 @@
 <?php
+
 namespace Be\App\System\Controller;
 
 use Be\Plugin\Form\Item\FormItemRadioGroupButton;
@@ -17,12 +18,15 @@ class Log
      * 运行日志
      *
      * @BeMenu("系统日志", icon="el-icon-fa fa-video-camera", ordering="10.3")
-     * @BePermission("系统日志", ordering="10.3")
+     * @BePermission("列表", ordering="10.3")
      */
     public function lists()
     {
+        //$a = 1/0;
+        //Be::getTable('op_log');
+
         $serviceSystemLog = Be::getService('System.Log');
-        if (Request::isPost()) {
+        if (Request::isAjax()) {
             $postData = Request::json();
             $formData = $postData['formData'];
 
@@ -55,11 +59,33 @@ class Log
             $month = date('m');
             $day = date('d');
 
+            if (Request::isPost()) {
+                $postData = Request::post('data', '', '');
+                $postData = json_decode($postData, true);
+                $formData = $postData['formData'];
+
+                $year = $formData['year'];
+                $month = $formData['month'];
+                $day = $formData['day'];
+            }
+
             $months = $serviceSystemLog->getMonths($year);
             $days = $serviceSystemLog->getDays($year, $month);
 
             if (!in_array($day, $days) && count($days) > 0) {
                 $day = $days[0];
+            }
+
+            if (!$years) {
+                $years = [$year];
+            }
+
+            if (!$months) {
+                $months = [$month];
+            }
+
+            if (!$days) {
+                $days = [$day];
             }
 
             Be::getPlugin('Lists')->setting([
@@ -75,7 +101,10 @@ class Log
                             'ui' => [
                                 'form-item' => [
                                     'style' => 'display:block',
-                                ]
+                                ],
+                                'radio-group' => [
+                                    '@change' => 'showLogs',
+                                ],
                             ],
                         ],
                         [
@@ -87,7 +116,10 @@ class Log
                             'ui' => [
                                 'form-item' => [
                                     'style' => 'display:block',
-                                ]
+                                ],
+                                'radio-group' => [
+                                    '@change' => 'showLogs',
+                                ],
                             ],
                         ],
                         [
@@ -99,19 +131,58 @@ class Log
                             'ui' => [
                                 'form-item' => [
                                     'style' => 'display:block',
-                                ]
+                                ],
+                                'radio-group' => [
+                                    '@change' => 'showLogs',
+                                ],
                             ],
+                        ],
+                    ],
+                    'actions' => [
+                        'submit' => false,
+                    ]
+
+                ],
+                'toolbar' => [
+                    'items' => [
+                        [
+                            'label' => '删除本日（' . $year . '-' . $month . '-' . $day . '）全部日志',
+                            'url' => beUrl('System.Log.delete', ['range' => 'day']),
+                            'confirm' => '确认要删除本日（' . $year . '-' . $month . '-' . $day . '）全部日志么？',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'button' => [
+                                    'type' => 'warning'
+                                ]
+                            ]
+                        ],
+                        [
+                            'label' => '删除本月（' . $year . '-' . $month . '）全部日志',
+                            'url' => beUrl('System.Log.delete', ['range' => 'month']),
+                            'confirm' => '确认要删除本月（' . $year . '-' . $month . '）全部日志么？',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'button' => [
+                                    'type' => 'danger'
+                                ]
+                            ]
+                        ],
+                        [
+                            'label' => '删除本年（' . $year . '）全部日志',
+                            'url' => beUrl('System.Log.delete', ['range' => 'year']),
+                            'confirm' => '确认要删除本年（' . $year . '）全部日志么？',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'button' => [
+                                    'type' => 'danger'
+                                ]
+                            ]
                         ],
                     ],
                 ],
 
                 'table' => [
                     'items' => [
-                        [
-                            'name' => 'type',
-                            'label' => '类型',
-                            'align' => 'center',
-                        ],
                         [
                             'name' => 'file',
                             'label' => '文件',
@@ -120,7 +191,10 @@ class Log
                         [
                             'name' => 'line',
                             'label' => '行号',
-                            'align' => 'center',
+                        ],
+                        [
+                            'name' => 'code',
+                            'label' => '错误码',
                         ],
                         [
                             'name' => 'message',
@@ -130,17 +204,12 @@ class Log
                         [
                             'name' => 'create_time',
                             'label' => '产生时间',
-                            'align' => 'left',
                         ],
                         [
                             'name' => 'record_time',
                             'label' => '首次产生时间',
-                            'align' => 'left',
                         ],
                     ],
-                    'ui' => [
-                        'border' => true,
-                    ]
                 ],
 
                 'operation' => [
@@ -160,18 +229,12 @@ class Log
                                 ]
                             ]
                         ],
-                        [
-                            'label' => '删除',
-                            'url' => beUrl('System.Log.delete'),
-                            'confirm' => '确认要删除么？',
-                            'target' => 'ajax',
-                            'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
-                            ]
-                        ],
                     ]
+                ],
+                'vueMethods' => [
+                    'showLogs' => 'function() {
+                        this.formAction("", {url:"' . beUrl('System.Log.lists') . '", target:"self", postData: []});
+                    }',
                 ],
             ])->execute();
         }
@@ -180,21 +243,18 @@ class Log
     /**
      * 查看系统日志
      *
-     * @BePermission("查看", ordering="10.3")
+     * @BePermission("明细", ordering="10.3")
      */
     public function detail()
     {
-        $year = Request::request('year');
-        $month = Request::request('month');
-        $day = Request::request('day');
-        $hash = Request::request('hash');
-
+        $data = Request::post('data', '', '');
+        $data = json_decode($data, true);
         try {
             $servicebeOpLog = Be::getService('System.Log');
-            $log = $servicebeOpLog->getlog($year, $month, $day, $hash);
-            Response::setTitle('系统日志详情');
+            $log = $servicebeOpLog->getlog($data['row']['year'], $data['row']['month'], $data['row']['day'], $data['row']['hash']);
+            Response::setTitle('系统日志明细');
             Response::set('log', $log);
-            Response::display();
+            Response::display(null, 'Nude');
         } catch (\Exception $e) {
             Response::error($e->getMessage());
         }
@@ -205,14 +265,19 @@ class Log
      *
      * @BePermission("删除", ordering="10.3")
      */
-    public function delete() {
-        $year = Request::request('year', 0, 'int');
-        $month = Request::request('month', 0, 'int');
-        $day = Request::request('day', 0, 'int');
+    public function delete()
+    {
+        $range = Request::get('range', 'day');
+
+        $postData = Request::json();
+        $formData = $postData['formData'];
+        $year = $formData['year'];
+        $month = $formData['month'];
+        $day = $formData['day'];
 
         try {
             $servicebeOpLog = Be::getService('System.Log');
-            $servicebeOpLog->deleteLogs($year, $month, $day);
+            $servicebeOpLog->deleteLogs($range, $year, $month, $day);
             Response::success('删除日志成功！');
         } catch (\Exception $e) {
             Response::error($e->getMessage());

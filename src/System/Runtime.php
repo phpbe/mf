@@ -313,23 +313,9 @@ class Runtime
                 Response::error('未定义的任务：' . $actionName);
             }
 
-        } catch (\Throwable $e) {
-            $hash = md5(json_encode([
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'message' => $e->getMessage()
-            ]));
-
-            Log::emergency($e->getMessage(), [
-                'hash' => $hash,
-                'code' => $e->getCode(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTrace()
-            ]);
-
-            Response::set('logHash', $hash);
-            Response::exception($e);
+        } catch (\Throwable $t) {
+            Log::emergency($t);
+            Response::exception($t);
         }
     }
 
@@ -381,22 +367,9 @@ class Runtime
                 exit;
             }
 
-        } catch (\Throwable $e) {
-            $hash = md5(json_encode([
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'message' => $e->getMessage()
-            ]));
-
-            Log::emergency($e->getMessage(), [
-                'hash' => $hash,
-                'code' => $e->getCode(),
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-                'trace' => $e->getTrace()
-            ]);
-
-            echo '#' . $hash . '：' . $e->getMessage();
+        } catch (\Throwable $t) {
+            Log::emergency($t);
+            echo $t->getMessage();
             exit;
         }
     }
