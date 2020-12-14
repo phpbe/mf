@@ -8,14 +8,14 @@ use Be\System\Be;
 use Be\System\Response;
 
 /**
- * @BeMenuGroup("用户")
- * @BePermissionGroup("用户")
+ * @BeMenuGroup("日志")
+ * @BePermissionGroup("日志")
  */
 class OpLog
 {
 
     /**
-     * 系统日志
+     * 操作日志
      *
      * @BeMenu("操作日志", icon="el-icon-fa fa-video-camera", ordering="10.3")
      * @BePermission("查看操作日志", ordering="10.3")
@@ -23,6 +23,7 @@ class OpLog
     public function logs()
     {
         $userKeyValues = Be::getDb()->getKeyValues('SELECT id, `name` FROM `system_user` WHERE is_delete=0');
+        $appKeyValues = Be::getService('System.App')->getAppNameLabelKeyValues();
 
         Be::getPlugin('Curd')->setting([
             'label' => '操作日志',
@@ -38,6 +39,12 @@ class OpLog
                             'label' => '用户',
                             'driver' => FormItemSelect::class,
                             'keyValues' => $userKeyValues,
+                        ],
+                        [
+                            'name' => 'app',
+                            'label' => '应用',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => $appKeyValues,
                         ],
                         [
                             'name' => 'content',
@@ -92,9 +99,10 @@ class OpLog
                             'keyValues' => $userKeyValues,
                         ],
                         [
-                            'name' => 'content',
-                            'label' => '内容',
-                            'align' => 'left',
+                            'name' => 'app',
+                            'label' => '应用',
+                            'width' => '120',
+                            'keyValues' => $appKeyValues,
                         ],
                         [
                             'name' => 'route',
@@ -103,6 +111,11 @@ class OpLog
                                 return $row['app'] . '.' .$row['controller'] . '.' .$row['action'];
                             },
                             'width' => '240'
+                        ],
+                        [
+                            'name' => 'content',
+                            'label' => '内容',
+                            'align' => 'left',
                         ],
                         [
                             'name' => 'ip',
@@ -190,7 +203,7 @@ class OpLog
     /**
      * 删除操作日志
      *
-     * @BePermission("删除操作日志", ordering="10.31")
+     * @BePermission("操作日志", ordering="10.31")
      */
     public function deleteLogs()
     {
