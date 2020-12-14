@@ -28,9 +28,8 @@ class Cache
                 && $this->clear('AdminTemplate');
         }
 
-        $libFso = Be::getLib('Fso');
-        if ($file === null) return $libFso->rmDir(Be::getRuntime()->getCachePath() . '/' . $dir);
-        return $libFso->rmDir(Be::getRuntime()->getCachePath() . '/' . $dir . '/' . $file);
+        if ($file === null) return \Be\Util\FileSystem\Dir::rm(Be::getRuntime()->getCachePath() . '/' . $dir);
+        return \Be\Util\FileSystem\Dir::rm(Be::getRuntime()->getCachePath() . '/' . $dir . '/' . $file);
     }
 
 

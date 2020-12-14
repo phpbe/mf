@@ -68,8 +68,7 @@ class FileManager
         $absDirPath = $this->getAbsDirPath($dirName, $path);
         if ($absDirPath == false) return false;
 
-        $libFso = Be::getLib('Fso');
-        $libFso->rmDir($absDirPath);
+        \Be\Util\FileSystem\Dir::rm($absDirPath);
 
         return true;
     }

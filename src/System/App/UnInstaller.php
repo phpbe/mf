@@ -1,8 +1,6 @@
 <?php
 namespace Be\System\App;
 
-use Be\System\Be;
-
 /**
  * 应用卸载器
  */

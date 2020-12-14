@@ -36,7 +36,7 @@ class System
         $userCount = $tableAdminUser->count();
         Response::set('userCount', $userCount);
 
-        $recentLogs = Be::getTable('system_log')
+        $recentLogs = Be::getTable('system_op_log')
             ->where('user_id', $my->id)
             ->orderBy('id', 'DESC')
             ->limit(5)
