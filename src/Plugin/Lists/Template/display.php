@@ -1,7 +1,14 @@
 <be-head>
     <style type="text/css">
-        .el-table__row .el-divider__text, .el-link {font-size: 12px; margin-left: 4px; margin-right: 4px;}
-        .el-drawer__header span{outline: none;}
+        .el-table__row .el-divider__text, .el-link {
+            font-size: 12px;
+            margin-left: 4px;
+            margin-right: 4px;
+        }
+
+        .el-drawer__header span {
+            outline: none;
+        }
     </style>
 </be-head>
 
@@ -19,22 +26,22 @@
     <div id="app" v-cloak>
 
         <el-form<?php
-            $formUi = [
-                ':inline' => 'true',
-                'size' => 'mini',
-            ];
-            if (isset($this->setting['form']['ui'])) {
-                $formUi = array_merge($formUi, $this->setting['form']['ui']);
-            }
+        $formUi = [
+            ':inline' => 'true',
+            'size' => 'mini',
+        ];
+        if (isset($this->setting['form']['ui'])) {
+            $formUi = array_merge($formUi, $this->setting['form']['ui']);
+        }
 
-            foreach ($formUi as $k => $v) {
-                if ($v === null) {
-                    echo ' ' . $k;
-                } else {
-                    echo ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($formUi as $k => $v) {
+            if ($v === null) {
+                echo ' ' . $k;
+            } else {
+                echo ' ' . $k . '="' . $v . '"';
             }
-            ?>>
+        }
+        ?>>
             <?php
             $tabHtml = '';
             $tabPosition = 'beforeForm';
@@ -112,47 +119,49 @@
                                 }
                             }
                         }
-                        ?>
-                        <el-form-item>
-                            <?php
-                            if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
-                                foreach ($this->setting['form']['actions'] as $key => $item) {
-                                    if ($key == 'submit') {
-                                        if ($item) {
-                                            if ($item === true) {
-                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">查询</el-button> ';
-                                                continue;
-                                            } elseif (is_string($item)) {
-                                                echo '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">' . $item . '</el-button> ';
-                                                continue;
-                                            }
-                                        } else {
+
+                        if (isset($this->setting['form']['actions']) && count($this->setting['form']['actions']) > 0) {
+                            $html = '';
+                            foreach ($this->setting['form']['actions'] as $key => $item) {
+                                if ($key == 'submit') {
+                                    if ($item) {
+                                        if ($item === true) {
+                                            $html .= '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">查询</el-button> ';
+                                            continue;
+                                        } elseif (is_string($item)) {
+                                            $html .= '<el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">' . $item . '</el-button> ';
                                             continue;
                                         }
-                                    }
-
-                                    $driver = null;
-                                    if (isset($item['driver'])) {
-                                        $driverName = $item['driver'];
-                                        $driver = new $driverName($item);
                                     } else {
-                                        $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
-                                    }
-                                    echo $driver->getHtml() . ' ';
-
-                                    $vueDataX = $driver->getVueData();
-                                    if ($vueDataX) {
-                                        $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-                                    }
-
-                                    $vueMethodsX = $driver->getVueMethods();
-                                    if ($vueMethodsX) {
-                                        $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                                        continue;
                                     }
                                 }
+
+                                $driver = null;
+                                if (isset($item['driver'])) {
+                                    $driverName = $item['driver'];
+                                    $driver = new $driverName($item);
+                                } else {
+                                    $driver = new \Be\Plugin\Form\Action\FormActionButton($item);
+                                }
+                                $html .= $driver->getHtml() . ' ';
+
+                                $vueDataX = $driver->getVueData();
+                                if ($vueDataX) {
+                                    $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+                                }
+
+                                $vueMethodsX = $driver->getVueMethods();
+                                if ($vueMethodsX) {
+                                    $vueMethods = array_merge($vueMethods, $vueMethodsX);
+                                }
                             }
-                            ?>
-                        </el-form-item>
+
+                            if ($html) {
+                                echo '<el-form-item>' . $html . '</el-form-item>';
+                            }
+                        }
+                        ?>
                     </el-col>
                 </el-row>
                 <?php
@@ -197,28 +206,28 @@
             ?>
 
             <el-table<?php
-                $tableUi = [
-                    ':data' => 'tableData',
-                    'ref' => 'tableRef',
-                    'v-loading' => 'loading',
-                    'size' => 'mini',
-                    ':height' => 'tableHeight',
-                    ':default-sort' => '{prop:orderBy,order:orderByDir}',
-                    '@sort-change' => 'sort',
-                    '@selection-change' => 'selectionChange',
-                ];
-                if (isset($this->setting['table']['ui'])) {
-                    $tableUi = array_merge($tableUi, $this->setting['table']['ui']);
-                }
+            $tableUi = [
+                ':data' => 'tableData',
+                'ref' => 'tableRef',
+                'v-loading' => 'loading',
+                'size' => 'mini',
+                ':height' => 'tableHeight',
+                ':default-sort' => '{prop:orderBy,order:orderByDir}',
+                '@sort-change' => 'sort',
+                '@selection-change' => 'selectionChange',
+            ];
+            if (isset($this->setting['table']['ui'])) {
+                $tableUi = array_merge($tableUi, $this->setting['table']['ui']);
+            }
 
-                foreach ($tableUi as $k => $v) {
-                    if ($v === null) {
-                        echo ' ' . $k;
-                    } else {
-                        echo ' ' . $k . '="' . $v . '"';
-                    }
+            foreach ($tableUi as $k => $v) {
+                if ($v === null) {
+                    echo ' ' . $k;
+                } else {
+                    echo ' ' . $k . '="' . $v . '"';
                 }
-                ?>>
+            }
+            ?>>
                 <?php
                 $opHtml = null;
                 $opPosition = 'right';
@@ -351,14 +360,14 @@
     if (count($js) > 0) {
         $js = array_unique($js);
         foreach ($js as $x) {
-            echo '<script src="'.$x.'"></script>';
+            echo '<script src="' . $x . '"></script>';
         }
     }
 
     if (count($css) > 0) {
         $css = array_unique($css);
         foreach ($css as $x) {
-            echo '<link rel="stylesheet" href="'.$x.'">';
+            echo '<link rel="stylesheet" href="' . $x . '">';
         }
     }
     ?>
@@ -593,40 +602,40 @@
                 hideDrawer: function () {
                     this.drawer.visible = false;
                 },
-                selectionChange: function(rows) {
+                selectionChange: function (rows) {
                     this.selectedRows = rows;
                     this.updateToolbars();
                 },
-                updateToolbars: function() {
+                updateToolbars: function () {
                     var toolbarEnable;
                     <?php
                     if (isset($this->setting['toolbar']['items']) && count($this->setting['toolbar']['items']) > 0) {
-                        $i = 0;
-                        foreach ($this->setting['toolbar']['items'] as $item) {
-                            if (isset($item['task']) &&
-                                $item['task'] == 'fieldEdit' &&
-                                isset($item['postData']['field']) &&
-                                isset($item['postData']['value'])) {
-                                ?>
-                                if (this.selectedRows.length > 0) {
-                                    toolbarEnable = true;
-                                    for(var x in this.selectedRows) {
-                                        if (this.selectedRows[x].<?php echo $item['postData']['field']; ?> == "<?php echo $item['postData']['value']; ?>") {
-                                            toolbarEnable = false;
-                                        }
-                                    }
-                                } else {
-                                    toolbarEnable = false;
-                                }
-                                this.toolbarItems.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
-                                <?php
+                    $i = 0;
+                    foreach ($this->setting['toolbar']['items'] as $item) {
+                    if (isset($item['task']) &&
+                $item['task'] == 'fieldEdit' &&
+                isset($item['postData']['field']) &&
+                isset($item['postData']['value'])) {
+                    ?>
+                    if (this.selectedRows.length > 0) {
+                        toolbarEnable = true;
+                        for (var x in this.selectedRows) {
+                            if (this.selectedRows[x].<?php echo $item['postData']['field']; ?> == "<?php echo $item['postData']['value']; ?>") {
+                                toolbarEnable = false;
                             }
-                            $i++;
                         }
+                    } else {
+                        toolbarEnable = false;
+                    }
+                    this.toolbarItems.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
+                    <?php
+                    }
+                    $i++;
+                    }
                     }
                     ?>
                 },
-                resize: function() {
+                resize: function () {
                     this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 55;
                 }
                 <?php
@@ -668,27 +677,27 @@
 
             <?php
             if (isset($vueHooks['beforeCreate'])) {
-                echo ',beforeCreate: function () {'.$vueHooks['beforeCreate'].'}';
+                echo ',beforeCreate: function () {' . $vueHooks['beforeCreate'] . '}';
             }
 
             if (isset($vueHooks['beformMount'])) {
-                echo ',beformMount: function () {'.$vueHooks['beformMount'].'}';
+                echo ',beformMount: function () {' . $vueHooks['beformMount'] . '}';
             }
 
             if (isset($vueHooks['beforeUpdate'])) {
-                echo ',beforeUpdate: function () {'.$vueHooks['beforeUpdate'].'}';
+                echo ',beforeUpdate: function () {' . $vueHooks['beforeUpdate'] . '}';
             }
 
             if (isset($vueHooks['updated'])) {
-                echo ',updated: function () {'.$vueHooks['updated'].'}';
+                echo ',updated: function () {' . $vueHooks['updated'] . '}';
             }
 
             if (isset($vueHooks['beforeDestroy'])) {
-                echo ',beforeDestroy: function () {'.$vueHooks['beforeDestroy'].'}';
+                echo ',beforeDestroy: function () {' . $vueHooks['beforeDestroy'] . '}';
             }
 
             if (isset($vueHooks['destroyed'])) {
-                echo ',destroyed: function () {'.$vueHooks['destroyed'].'}';
+                echo ',destroyed: function () {' . $vueHooks['destroyed'] . '}';
             }
             ?>
         });
