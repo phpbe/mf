@@ -217,7 +217,7 @@ class Log
                     'width' => '120',
                     'items' => [
                         [
-                            'label' => '查看',
+                            'label' => '查看明细',
                             'url' => beUrl('System.Log.detail'),
                             'target' => 'drawer',
                             'drawer' => [

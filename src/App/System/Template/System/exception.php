@@ -7,11 +7,12 @@
     <script type="text/javascript" language="javascript"
             src="<?php echo \Be\System\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.js"></script>
     <style type="text/css">
-        .prettyprint {
+        pre.prettyprint {
             background-color: #fff;
             color: #000;
             white-space: pre-wrap;
             word-wrap: break-word;
+            border-color: #ddd;
         }
     </style>
 </be-head>
@@ -32,22 +33,22 @@
 
             <el-tabs v-model="activeTab" type="border-card">
                 <el-tab-pane label="错误跟踪信息" name="tab-trace">
-                    <pre class="prettyprint linenums"><?php var_export($this->e->getTrace()); ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($this->e->getTrace()); ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_SERVER" name="tab-server">
-                    <pre class="prettyprint linenums"><?php var_export($_SERVER) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($_SERVER) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_GET" name="tab-get">
-                    <pre class="prettyprint linenums"><?php var_export($_GET) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($_GET) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_POST" name="tab-post">
-                    <pre class="prettyprint linenums"><?php var_export($_POST) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($_POST) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_REQUEST" name="tab-request">
-                    <pre class="prettyprint linenums"><?php var_export($_REQUEST) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($_REQUEST) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_COOKIE" name="tab-cookie">
-                    <pre class="prettyprint linenums"><?php var_export($_COOKIE) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($_COOKIE) ?></pre>
                 </el-tab-pane>
             </el-tabs>
             <?php
@@ -58,7 +59,7 @@
             </div>
 
             <div class="exception-message">
-                <?php echo $this->e->getMessage() . '（#' . $this->logHash . '）'; ?>
+                <?php echo $this->e->getMessage(); ?>
             </div>
             <?php
         }

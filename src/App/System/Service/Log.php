@@ -122,6 +122,7 @@ class Log
                 $log['file'] = $data['context']['file'];
                 $log['line'] = $data['context']['line'];
                 $log['code'] = $data['context']['code'];
+                $log['message'] = $data['message'];
                 $log['create_time'] = date('Y-m-d H:i:s', $createTime);
                 $log['record_time'] = date('Y-m-d H:i:s', $data['extra']['record_time']);
                 $logs[] = $log;
