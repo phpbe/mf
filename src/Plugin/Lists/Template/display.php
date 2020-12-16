@@ -636,7 +636,8 @@
                     ?>
                 },
                 resize: function () {
-                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 55;
+                    var offset = this.total > 0 ? 55 : 15;
+                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - offset;
                 }
                 <?php
                 if ($vueMethods) {
@@ -661,10 +662,11 @@
             },
             mounted: function () {
                 this.$nextTick(function () {
-                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - 55;
+                    var offset = this.total > 0 ? 55 : 15;
+                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - offset;
                     var self = this;
                     window.onresize = function () {
-                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 55
+                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - offset
                     };
                 });
 

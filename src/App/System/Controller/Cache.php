@@ -27,7 +27,7 @@ class Cache
             $tableData = $serviceSystemLog->getCaches();
             Response::set('success', true);
             Response::set('data', [
-                'total' => count($tableData),
+                'total' => 0,
                 'tableData' => $tableData,
             ]);
             Response::json();
@@ -173,7 +173,7 @@ class Cache
             $name = $postData['row']['name'] ?? null;
             $serviceSystemCache = Be::getService('System.Cache');
             $serviceSystemCache->delete($name);
-            beOpLog('清除缓存（' . $name . '）');
+            beOpLog($name ? ('清除缓存（' . $name. '）') : '清除所有缓存' );
             Response::success('清除缓存成功！');
         } catch (\Exception $e) {
             Response::error($e->getMessage());
