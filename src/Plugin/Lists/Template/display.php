@@ -665,7 +665,7 @@
                     var self = this;
                     window.onresize = function () {
                         self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - 55
-                    }
+                    };
                 });
 
                 <?php
@@ -673,8 +673,17 @@
                     echo $vueHooks['mounted'];
                 }
                 ?>
+            },
+            updated: function () {
+                this.$nextTick(function () {
+                    this.$refs['tableRef'].doLayout();
+                });
+                <?php
+                if (isset($vueHooks['updated'])) {
+                    echo $vueHooks['updated'];
+                }
+                ?>
             }
-
             <?php
             if (isset($vueHooks['beforeCreate'])) {
                 echo ',beforeCreate: function () {' . $vueHooks['beforeCreate'] . '}';
@@ -688,9 +697,6 @@
                 echo ',beforeUpdate: function () {' . $vueHooks['beforeUpdate'] . '}';
             }
 
-            if (isset($vueHooks['updated'])) {
-                echo ',updated: function () {' . $vueHooks['updated'] . '}';
-            }
 
             if (isset($vueHooks['beforeDestroy'])) {
                 echo ',beforeDestroy: function () {' . $vueHooks['beforeDestroy'] . '}';
