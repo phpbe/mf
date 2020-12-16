@@ -8,7 +8,7 @@ use Be\Util\FileSystem\FileSize;
 class Cache
 {
 
-    const TYPES = [
+    const CATEGORIES = [
         [
             'name' => 'Cache',
             'label' => '文件缓存',
@@ -60,22 +60,22 @@ class Cache
         ],
     ];
 
-    public function getCaches()
+    public function getCategories()
     {
-        $caches = [];
-        foreach (static::TYPES as $v) {
+        $categories = [];
+        foreach (static::CATEGORIES as $v) {
             $path = Be::getRuntime()->getCachePath() . '/System/' . $v['name'];
             $count = $this->getFileCount($path);
             $size = $this->getFileSize($path);
             $sizeStr = FileSize::int2String($size);
 
-            $caches[] = array_merge($v, [
+            $categories[] = array_merge($v, [
                 'count' => $count,
                 'size' => $size,
                 'sizeStr' => $sizeStr,
             ]);
         }
-        return $caches;
+        return $categories;
     }
 
 
@@ -89,7 +89,7 @@ class Cache
     {
         if ($name === null) {
             $success = true;
-            foreach (static::TYPES as $v) {
+            foreach (static::CATEGORIES as $v) {
                 if (!$this->delete($v['name'])) {
                     $success = false;
                 }

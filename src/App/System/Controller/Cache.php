@@ -24,7 +24,7 @@ class Cache
     {
         $serviceSystemLog = Be::getService('System.Cache');
         if (Request::isAjax()) {
-            $tableData = $serviceSystemLog->getCaches();
+            $tableData = $serviceSystemLog->getCategories();
             Response::set('success', true);
             Response::set('data', [
                 'total' => 0,
