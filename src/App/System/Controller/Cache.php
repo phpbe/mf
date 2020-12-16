@@ -113,8 +113,6 @@ class Cache
 
                 'vueMethods' => [
                     'getSummaries' => 'function(param) {
-                        console.log(param);
-                        
                         var summaries = [];
                         param.columns.forEach(function(column, index) {
                             if (index === 0) {
@@ -125,30 +123,27 @@ class Cache
                             var total;
                             if (column.property == "count") {
                                 total = 0;
-                                param.data.forEach(function(x, index){
+                                param.data.forEach(function(x){
                                     total += Number(x.count);
                                 })
                                 summaries[index] = total;
                             } else if (column.property == "sizeStr") {
                                 total = 0;
-                                param.data.forEach(function(x, index){
+                                param.data.forEach(function(x){
                                     total += Number(x.size);
                                 })
 
                                 if (total < 1024) {
                                     total = total + " B";
                                 } else if (total < (1024*1024)) {
-                                    var temp = total / 1024;
-                                    temp = temp.toFixed(2);
-                                    total = temp + " KB";
+                                    total = total / 1024;
+                                    total = total.toFixed(2) + " KB";
                                 } else if (total < (1024*1024*1024)) {
-                                    var temp = total / (1024*1024);
-                                    temp = temp.toFixed(2);
-                                    total = temp + " MB";
+                                    total = total / (1024*1024);
+                                    total = total.toFixed(2) + " MB";
                                 } else {
-                                    var temp = total / (1024*1024*1024);
-                                    temp = temp.toFixed(2);
-                                    total = temp + " GB";
+                                    total = total / (1024*1024*1024);
+                                    total = total.toFixed(2) + " GB";
                                 }
                                 
                                 summaries[index] = total;
