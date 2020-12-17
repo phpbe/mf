@@ -7,13 +7,10 @@ CREATE TABLE `system_app` (
   `icon` varchar(60) NOT NULL DEFAULT '' COMMENT '应用图标',
   `ordering` INT(11) NOT NULL DEFAULT '0' COMMENT '排序',
   `install_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '安装时间',
+  `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用';
-
-INSERT INTO `system_app` (`id`, `name`, `label`, `icon`, `ordering`, `install_time`) VALUES
-(1, 'System', '系统', 'el-icon-s-tools', 0, CURRENT_TIMESTAMP);
-
 
 CREATE TABLE `system_op_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',

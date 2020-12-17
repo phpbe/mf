@@ -198,10 +198,10 @@ class Installer
                             [
                                 'label' => '继续安装',
                                 'target' => 'self',
-                                '@click' => 'submit',
                                 'ui' => [
                                     'button' => [
-                                        'type' => 'primary'
+                                        'type' => 'primary',
+                                        '@click' => 'submit',
                                     ]
                                 ]
                             ]
@@ -374,10 +374,10 @@ class Installer
                         'actions' => [
                             [
                                 'label' => '完成安装',
-                                '@click' => 'submit',
                                 'ui' => [
                                     'button' => [
-                                        'type' => 'success'
+                                        'type' => 'success',
+                                        '@click' => 'submit',
                                     ]
                                 ]
                             ]

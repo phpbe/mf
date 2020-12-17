@@ -47,7 +47,7 @@ abstract class Tuple
      * 绑定一个数据源， GET, POST, 或者一个数组, 对象
      *
      * @param string | array | object $data 要绑定的数据对象
-     * @return \Be\System\Db\Tuple | bool
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function bind($data)
@@ -74,7 +74,7 @@ abstract class Tuple
      * 按主锓加载记录
      *
      * @param string | array $primaryKeyValue 主锓的值，当为数组时格式为键值对
-     * @return \Be\System\Db\Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function load($primaryKeyValue)
@@ -131,7 +131,7 @@ abstract class Tuple
      *
      * @param string|int|array $field 要加载数据的键名，$val == null 时，为指定的主键值加载，
      * @param string $value 要加载的键的值
-     * @return \Be\System\Db\Tuple | false
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function loadBy($field, $value = null)
@@ -171,7 +171,7 @@ abstract class Tuple
     /**
      * 插入数据到数据库
      *
-     * @return Tuple
+     * @return Tuple | mixed
      */
     public function insert()
     {
@@ -201,7 +201,7 @@ abstract class Tuple
     /**
      * 更新数据到数据库
      *
-     * @return Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function update()
@@ -232,7 +232,7 @@ abstract class Tuple
      * 替换数据到数据库
      * 仅支持 MYSQL，底层用 replace into 实现
      *
-     * @return Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function replace()
@@ -245,7 +245,7 @@ abstract class Tuple
      * 保存数据到数据库
      * 跟据主键是否有值自动识别插入或更新
      *
-     * @return Tuple
+     * @return Tuple | mixed
      */
     public function save()
     {
@@ -293,7 +293,7 @@ abstract class Tuple
      * 删除指定主键值的记录
      *
      * @param int $primaryKeyValue 主键值
-     * @return Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function delete($primaryKeyValue = null)
@@ -344,7 +344,7 @@ abstract class Tuple
      *
      * @param string $field 字段名
      * @param int $step 自增量
-     * @return Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function increment($field, $step = 1)
@@ -378,7 +378,7 @@ abstract class Tuple
      *
      * @param string $field 字段名
      * @param int $step 自减量
-     * @return Tuple
+     * @return Tuple | mixed
      * @throws TupleException
      */
     public function decrement($field, $step = 1)
