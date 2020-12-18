@@ -13,31 +13,31 @@ use Be\System\Response;
  * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")
  * @BePermissionGroup("管理")
  */
-class App
+class Theme
 {
 
     /**
-     * @BeMenu("应用", icon="el-icon-fa fa-cubes")
-     * @BePermission("应用列表")
+     * @BeMenu("主题", icon="el-icon-fa fa-cubes")
+     * @BePermission("主题列表")
      */
-    public function apps()
+    public function themes()
     {
         Be::getPlugin('Curd')->setting([
 
-            'label' => '应用管理',
-            'table' => 'system_app',
+            'label' => '主题管理',
+            'table' => 'system_theme',
 
             'lists' => [
-                'title' => '已安装的应用列表',
+                'title' => '已安装的主题列表',
                 'form' => [
                     'items' => [
                         [
                             'name' => 'name',
-                            'label' => '应用名',
+                            'label' => '主题名',
                         ],
                         [
                             'name' => 'label',
-                            'label' => '应用中文名',
+                            'label' => '主题中文名',
                         ],
                         [
                             'name' => 'install_time',
@@ -73,25 +73,14 @@ class App
                             'width' => '90',
                         ],
                         [
-                            'name' => 'icon',
-                            'label' => '图标',
-                            'driver' => TableItemIcon::class,
-                            'width' => '90',
-                        ],
-                        [
                             'name' => 'name',
-                            'label' => '应用名',
+                            'label' => '主题名',
                             'width' => '120',
                             'align' => 'left',
                         ],
                         [
                             'name' => 'label',
-                            'label' => '应用中文名',
-                        ],
-                        [
-                            'name' => 'ordering',
-                            'label' => '排序',
-                            'width' => '90',
+                            'label' => '主题中文名',
                         ],
                         [
                             'name' => 'install_time',
@@ -123,7 +112,7 @@ class App
                         [
                             'label' => '卸载',
                             'action' => 'uninstall',
-                            'confirm' => '应用数据将被清除，且不可恢复，确认要卸载么？',
+                            'confirm' => '确认要卸载么？',
                             'target' => 'ajax',
                             'ui' => [
                                 'link' => [
@@ -136,26 +125,17 @@ class App
             ],
 
             'edit' => [
-                'title' => '编辑应用',
+                'title' => '编辑主题',
                 'form' => [
                     'items' => [
                         [
                             'name' => 'name',
-                            'label' => '应用名',
+                            'label' => '主题名',
                             'disabled' => true,
                         ],
                         [
                             'name' => 'label',
-                            'label' => '应用中文名',
-                        ],
-                        [
-                            'name' => 'icon',
-                            'label' => '图标',
-                        ],
-                        [
-                            'name' => 'ordering',
-                            'label' => '排序',
-                            'driver' => FormItemInputNumberInt::class,
+                            'label' => '主题中文名',
                         ],
                     ]
                 ],
@@ -169,40 +149,39 @@ class App
     }
 
     /**
-     * 安装新应用
+     * 安装新主题
      *
-     * @BePermission("安装应用")
+     * @BePermission("安装主题")
      */
     public function install()
     {
         if (Request::isAjax()) {
             $postData = Request::json();
 
-            if (!isset($postData['formData']['appName'])) {
-                Response::error('参数应用名缺失！');
+            if (!isset($postData['formData']['themeName'])) {
+                Response::error('参数主题名缺失！');
             }
 
-            $appName = $postData['formData']['appName'];
+            $themeName = $postData['formData']['themeName'];
 
             try {
-                $serviceApp = Be::getService('System.App');
-                $serviceApp->install($appName);
+                $serviceApp = Be::getService('System.Theme');
+                $serviceApp->install($themeName);
 
-                beOpLog('安装新应用：' . $appName);
-                Response::success('应用安装成功！');
+                beOpLog('安装新主题：' . $themeName);
+                Response::success('主题安装成功！');
             } catch (\Throwable $t) {
                 Response::error($t->getMessage());
             }
-
         } else {
             Be::getPlugin('Form')
                 ->setting([
-                    'title' => '安装新应用',
+                    'title' => '安装新主题',
                     'form' => [
                         'items' => [
                             [
-                                'name' => 'appName',
-                                'label' => '应用名',
+                                'name' => 'themeName',
+                                'label' => '主题名',
                                 'required' => true,
                             ],
                         ],
@@ -216,26 +195,26 @@ class App
     }
 
     /**
-     * 卸载应用
+     * 卸载主题
      *
-     * @BePermission("卸载应用")
+     * @BePermission("卸载主题")
      */
     public function uninstall()
     {
         $postData = Request::json();
 
         if (!isset($postData['row']['name'])) {
-            Response::error('参数应用名缺失！');
+            Response::error('参数主题名缺失！');
         }
 
-        $appName = $postData['row']['name'];
+        $themeName = $postData['row']['name'];
 
         try {
-            $serviceApp = Be::getService('System.App');
-            $serviceApp->uninstall($appName);
+            $serviceTheme = Be::getService('System.Theme');
+            $serviceTheme->uninstall($themeName);
 
-            beOpLog('卸载应用：' . $appName);
-            Response::success('应用卸载成功！');
+            beOpLog('卸载主题：' . $themeName);
+            Response::success('主题卸载成功！');
         } catch (\Throwable $t) {
             Response::error($t->getMessage());
         }

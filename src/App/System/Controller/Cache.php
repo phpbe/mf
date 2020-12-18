@@ -10,15 +10,15 @@ use Be\System\Response;
 
 
 /**
- * @BeMenuGroup("缓存管理", icon = "el-icon-fa fa-database")
- * @BePermissionGroup("缓存管理")
+ * @BeMenuGroup("管理", icon = "el-icon-fa fa-database")
+ * @BePermissionGroup("管理")
  */
 class Cache
 {
 
     /**
-     * @BeMenu("缓存管理")
-     * @BePermission("缓存管理")
+     * @BeMenu("缓存")
+     * @BePermission("缓存列表")
      */
     public function index()
     {

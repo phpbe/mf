@@ -46,8 +46,6 @@ class App
         return array_column($this->getApps(), 'label', 'name');
     }
 
-    // 安装应用文件
-
     /**
      * @param string $appName 应应用名
      * @return bool
