@@ -81,7 +81,7 @@ class Role
                             ]
                         ],
                         [
-                            'label' => '批量启用',
+                            'label' => '启用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -96,7 +96,7 @@ class Role
                             ]
                         ],
                         [
-                            'label' => '批量禁用',
+                            'label' => '禁用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -111,7 +111,7 @@ class Role
                             ]
                         ],
                         [
-                            'label' => '批量删除',
+                            'label' => '删除',
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
                             'postData' => [
@@ -456,7 +456,7 @@ class Role
                         $field = $postData['postData']['field'];
                         if ($field == 'is_enable') {
                             if ($tuple->is_enable == 0) {
-                                $n = Be::getTuple('system_user')
+                                $n = Be::getTable('system_user')
                                     ->where('role_id', $tuple->id)
                                     ->where('is_delete', 0)
                                     ->count();
@@ -466,7 +466,7 @@ class Role
                             }
                         } elseif ($field == 'is_delete') {
                             if ($tuple->is_delete == 1) {
-                                $n = Be::getTuple('system_user')
+                                $n = Be::getTable('system_user')
                                     ->where('role_id', $tuple->id)
                                     ->where('is_delete', 0)
                                     ->count();

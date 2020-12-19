@@ -191,10 +191,12 @@ class Log
                         [
                             'name' => 'line',
                             'label' => '行号',
+                            'width' => '90',
                         ],
                         [
                             'name' => 'code',
                             'label' => '错误码',
+                            'width' => '90',
                         ],
                         [
                             'name' => 'message',
@@ -204,10 +206,12 @@ class Log
                         [
                             'name' => 'create_time',
                             'label' => '产生时间',
+                            'width' => '150',
                         ],
                         [
                             'name' => 'record_time',
                             'label' => '首次产生时间',
+                            'width' => '150',
                         ],
                     ],
                 ],

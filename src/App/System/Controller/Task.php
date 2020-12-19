@@ -2,12 +2,19 @@
 
 namespace Be\App\System\Controller;
 
+use Be\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Plugin\Form\Item\FormItemCron;
+use Be\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Plugin\Form\Item\FormItemSwitch;
+use Be\Plugin\Table\Item\TableItemSelection;
+use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
+use Be\System\Db\Tuple;
 
 
 /**
- * @BeMenuGroup("计划任务")
- * @BePermissionGroup("计划任务")
+ * @BeMenuGroup("管理")
+ * @BePermissionGroup("管理")
  */
 class Task
 {
@@ -16,7 +23,7 @@ class Task
      * 计划任务
      *
      * @BeMenu("计划任务")
-     * @BePermission("计划任务")
+     * @BePermission("计划任务列表")
      */
     public function tasks()
     {
@@ -27,40 +34,25 @@ class Task
 
             'lists' => [
                 'title' => '许划任务',
-
-                'filter' => [
-                    ['is_delete', '=', '0'],
-                ],
-
                 'form' => [
                     'items' => [
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => ['' => '所有角色'] + $roleKeyValues,
-                        ],
-                        [
-                            'name' => 'username',
-                            'label' => '用户名',
-                        ],
                         [
                             'name' => 'name',
                             'label' => '名称',
                         ],
                         [
-                            'name' => 'email',
-                            'label' => '邮箱',
+                            'name' => 'driver',
+                            'label' => '驱动	',
                         ],
                         [
-                            'name' => 'is_enable',
-                            'label' => '启用状态',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => [
-                                '' => '不限',
-                                '1' => '启用',
-                                '0' => '禁用',
-                            ]
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间	',
+                            'driver' => FormItemDatePickerRange::class,
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间	',
+                            'driver' => FormItemDatePickerRange::class,
                         ],
                     ],
                 ],
@@ -70,18 +62,18 @@ class Task
 
                     'items' => [
                         [
-                            'label' => '新建用户',
+                            'label' => '新建许划任务',
                             'task' => 'create',
-                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
+                            'target' => 'drawer',
                             'ui' => [
                                 'button' => [
-                                    'icon' => 'el-icon-fa fa-user-plus',
-                                    'type' => 'success',
+                                    'icon' => 'el-icon-plus',
+                                    'type' => 'primary',
                                 ]
                             ]
                         ],
                         [
-                            'label' => '批量启用',
+                            'label' => '启用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -96,7 +88,7 @@ class Task
                             ]
                         ],
                         [
-                            'label' => '批量禁用',
+                            'label' => '禁用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -111,13 +103,9 @@ class Task
                             ]
                         ],
                         [
-                            'label' => '批量删除',
-                            'task' => 'fieldEdit',
+                            'label' => '删除',
+                            'task' => 'delete',
                             'target' => 'ajax',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => '1',
-                            ],
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-delete',
@@ -125,45 +113,10 @@ class Task
                                 ]
                             ]
                         ],
-                        [
-                            'label' => '导出',
-                            'driver' => ToolbarItemButtonDropDown::class,
-                            'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
-                            ],
-                            'menus' => [
-                                [
-                                    'label' => 'CSV',
-                                    'task' => 'export',
-                                    'postData' => [
-                                        'driver' => 'csv',
-                                    ],
-                                    'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-text-o',
-                                    ],
-                                ],
-                                [
-                                    'label' => 'EXCEL',
-                                    'task' => 'export',
-                                    'postData' => [
-                                        'driver' => 'excel',
-                                    ],
-                                    'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-excel-o',
-                                    ],
-                                ],
-                            ]
-                        ],
                     ]
                 ],
 
                 'table' => [
-
-                    // 未指定时取表的所有字段
                     'items' => [
                         [
                             'driver' => TableItemSelection::class,
@@ -175,44 +128,21 @@ class Task
                             'width' => '60',
                         ],
                         [
-                            'name' => 'avatar',
-                            'label' => '头像',
-                            'driver' => TableItemAvatar::class,
-                            'value' => function ($row) {
-                                if ($row['avatar'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
-                                } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
-                                }
-                            },
-                            'ui' => [
-                                'avatar' => [
-                                    ':size' => '32',
-                                ]
-                            ],
-                            'width' => '50',
-                        ],
-                        [
-                            'name' => 'username',
-                            'label' => '用户名',
-                            'width' => '120',
-                        ],
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'keyValues' => $roleKeyValues,
-                        ],
-                        [
-                            'name' => 'email',
-                            'label' => '邮箱',
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '名称',
                         ],
                         [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
+                            'name' => 'driver',
+                            'label' => '驱动	',
+                        ],
+                        [
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                            'width' => '90',
+                        ],
+                        [
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间',
                             'width' => '150',
                         ],
                         [
@@ -226,8 +156,17 @@ class Task
                                 return $row['is_enable'] ? '启用' : '禁用';
                             },
                         ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                            'width' => '150',
+                        ],
                     ],
-                    'exclude' => ['password', 'salt', 'remember_me_token']
                 ],
 
                 'operation' => [
@@ -258,10 +197,6 @@ class Task
                             'label' => '删除',
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => 1,
-                            ],
                             'ui' => [
                                 'link' => [
                                     'type' => 'danger'
@@ -281,56 +216,16 @@ class Task
                             'label' => 'ID',
                         ],
                         [
-                            'name' => 'avatar',
-                            'label' => '头像',
-                            'driver' => DetailItemAvatar::class,
-                            'value' => function ($row) {
-                                if ($row['avatar'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
-                                } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
-                                }
-                            },
-                        ],
-                        [
-                            'name' => 'username',
-                            'label' => '用户名',
-                        ],
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'keyValues' => $roleKeyValues,
-                        ],
-                        [
-                            'name' => 'email',
-                            'label' => '邮箱',
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '名称',
                         ],
                         [
-                            'name' => 'gender',
-                            'label' => '性别',
-                            'value' => function ($row) {
-                                switch ($row['gender']) {
-                                    case '-1':
-                                        return '保密';
-                                    case '0':
-                                        return '女';
-                                    case '1':
-                                        return '男';
-                                }
-                                return '';
-                            },
+                            'name' => 'driver',
+                            'label' => '驱动	',
                         ],
                         [
-                            'name' => 'phone',
-                            'label' => '电话',
-                        ],
-                        [
-                            'name' => 'mobile',
-                            'label' => '手机',
+                            'name' => 'schedule',
+                            'label' => '执行计划',
                         ],
                         [
                             'name' => 'is_enable',
@@ -338,16 +233,16 @@ class Task
                             'driver' => DetailItemSwitch::class,
                         ],
                         [
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间',
+                        ],
+                        [
                             'name' => 'create_time',
                             'label' => '创建时间',
                         ],
                         [
-                            'name' => 'last_login_time',
-                            'label' => '最后一次登陆时间',
-                        ],
-                        [
-                            'name' => 'last_login_ip',
-                            'label' => '最后一次登录的IP',
+                            'name' => 'update_time',
+                            'label' => '更新时间',
                         ],
                     ]
                 ],
@@ -358,57 +253,17 @@ class Task
                 'form' => [
                     'items' => [
                         [
-                            'name' => 'avatar',
-                            'label' => '头像',
-                            'driver' => FormItemAvatar::class,
-                            'path' => '/System/User/Avatar/',
-                            'maxWidth' => $configUser->avatarWidth,
-                            'maxHeight' => $configUser->avatarHeight,
-                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
-                        ],
-                        [
-                            'name' => 'username',
-                            'label' => '用户名',
-                            'required' => true,
-                            'unique' => true,
-                        ],
-                        [
-                            'name' => 'password',
-                            'label' => '密码',
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => $roleKeyValues,
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'email',
-                            'label' => '邮箱',
-                            'unique' => true,
-                            'required' => true,
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '名称',
-                            'required' => true,
                         ],
                         [
-                            'name' => 'gender',
-                            'label' => '性别',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => $genderKeyValues,
-                            'required' => true,
+                            'name' => 'driver',
+                            'label' => '驱动	',
                         ],
                         [
-                            'name' => 'phone',
-                            'label' => '电话',
-                        ],
-                        [
-                            'name' => 'mobile',
-                            'label' => '手机',
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                            'driver' => FormItemCron::class,
                         ],
                         [
                             'name' => 'is_enable',
@@ -419,10 +274,9 @@ class Task
                     ]
                 ],
                 'events' => [
-                    'before' => function (Tuple &$tuple) {
-                        $tuple->salt = Random::complex(32);
-                        $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password, $tuple->salt);
+                    'before' => function (Tuple $tuple) {
                         $tuple->create_time = date('Y-m-d H:i:s');
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     },
                 ],
             ],
@@ -432,57 +286,17 @@ class Task
                 'form' => [
                     'items' => [
                         [
-                            'name' => 'avatar',
-                            'label' => '头像',
-                            'driver' => FormItemAvatar::class,
-                            'path' => '/System/User/Avatar/',
-                            'maxWidth' => $configUser->avatarWidth,
-                            'maxHeight' => $configUser->avatarHeight,
-                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
-                        ],
-                        [
-                            'name' => 'username',
-                            'label' => '用户名',
-                            'disabled' => true,
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'password',
-                            'label' => '密码',
-                            'value' => '',
-                        ],
-                        [
-                            'name' => 'role_id',
-                            'label' => '角色',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => $roleKeyValues,
-                            'required' => true,
-                        ],
-                        [
-                            'name' => 'email',
-                            'label' => '邮箱',
-                            'disabled' => true,
-                            'required' => true,
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '名称',
-                            'required' => true,
                         ],
                         [
-                            'name' => 'gender',
-                            'label' => '性别',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => $genderKeyValues,
-                            'required' => true,
+                            'name' => 'driver',
+                            'label' => '驱动	',
                         ],
                         [
-                            'name' => 'phone',
-                            'label' => '电话',
-                        ],
-                        [
-                            'name' => 'mobile',
-                            'label' => '手机',
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                            'driver' => FormItemCron::class,
                         ],
                         [
                             'name' => 'is_enable',
@@ -492,49 +306,19 @@ class Task
                     ]
                 ],
                 'events' => [
-                    'before' => function (Tuple &$tuple) {
-                        if ($tuple->password != '') {
-                            $tuple->password = Be::getService('System.User')->encryptPassword($tuple->password);
-                        } else {
-                            unset($tuple->password);
-                        }
+                    'before' => function (Tuple $tuple) {
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     }
                 ]
             ],
 
             'fieldEdit' => [
                 'events' => [
-                    'before' => function ($tuple) {
-                        $postData = Request::json();
-                        $field = $postData['postData']['field'];
-                        if ($field == 'is_enable') {
-                            if ($tuple->is_enable == 0) {
-                                if ($tuple->id == 1) {
-                                    throw new PluginException('默认用户不能禁用');
-                                }
-
-                                $my = Be::getUser();
-                                if ($tuple->id == $my->id) {
-                                    throw new PluginException('不能禁用自已的账号');
-                                }
-                            }
-                        } elseif ($field == 'is_delete') {
-                            if ($tuple->is_delete == 1) {
-                                if ($tuple->id == 1) {
-                                    throw new PluginException('默认用户不能删除');
-                                }
-
-                                $my = Be::getUser();
-                                if ($tuple->id == $my->id) {
-                                    throw new PluginException('不能删除自已');
-                                }
-                            }
-                        }
+                    'before' => function (Tuple $tuple) {
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     },
                 ],
             ],
-
-            'export' => [],
 
         ])->execute();
 

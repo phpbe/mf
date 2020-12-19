@@ -25,6 +25,18 @@ CREATE TABLE `system_theme` (
 INSERT INTO `system_theme` (`id`, `name`, `label`, `install_time`, `update_time`) VALUES
 (1, 'Admin', '默认主题', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
+CREATE TABLE `system_task` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `name` varchar(200) NOT NULL COMMENT '名称',
+  `driver` varchar(220) NOT NULL DEFAULT '' COMMENT '驱动',
+  `schedule` varchar(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
+  `is_enable` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否可用',
+  `last_execute_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后执行时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
+
 CREATE TABLE `system_op_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增编号',
   `user_id` int(11) NOT NULL DEFAULT '0' COMMENT '用户ID',
@@ -55,15 +67,6 @@ CREATE TABLE `system_role` (
 
 INSERT INTO `system_role` (`id`, `name`, `remark`, `permission`, `permissions`, `is_enable`, `is_delete`, `ordering`, `create_time`, `update_time`) VALUES
 (1, '超级管理员', '能执行所有操作', 1, '', 1, 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
-
-CREATE TABLE `system_task`(
-    `id` INT NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-    `driver` VARCHAR(240) NOT NULL DEFAULT '' COMMENT '驱动',
-    `schedule` VARCHAR(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
-    `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_time` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-    PRIMARY KEY(`id`)
-) ENGINE = InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 CREATE TABLE `system_user` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增编号',

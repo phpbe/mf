@@ -151,7 +151,7 @@ class User
                             ]
                         ],
                         [
-                            'label' => '批量启用',
+                            'label' => '启用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -166,7 +166,7 @@ class User
                             ]
                         ],
                         [
-                            'label' => '批量禁用',
+                            'label' => '禁用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -181,7 +181,7 @@ class User
                             ]
                         ],
                         [
-                            'label' => '批量删除',
+                            'label' => '删除',
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
                             'postData' => [
