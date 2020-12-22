@@ -163,7 +163,12 @@ class Importer extends Plugin
             }
             $tableName = $this->setting['table'];
 
+            $batchLimit = $this->setting['batch'] ?? 1000;
+
             $rows = $this->process();
+
+            $offset = 0;
+            $batch = [];
             foreach ($rows as $i => $row) {
 
                 foreach ($this->setting['mapping']['items'] as $item) {
@@ -176,7 +181,17 @@ class Importer extends Plugin
                     }
                 }
 
-                $db->insert($tableName, $row);
+                $offset++;
+                $batch[] = $row;
+                if ($offset >= $batchLimit) {
+                    $db->quickInsertMany($tableName, $batch);
+                    $offset = 0;
+                    $batch = [];
+                }
+            }
+
+            if ($offset > 0) {
+                $db->quickInsertMany($tableName, $batch);
             }
 
             $db->commit();
@@ -188,7 +203,6 @@ class Importer extends Plugin
 
         Response::success('导入成功！');
     }
-
 
     public function process()
     {
@@ -251,6 +265,10 @@ class Importer extends Plugin
 
             // 校验表头
             foreach ($this->setting['mapping']['items'] as $index => $item) {
+                if (isset($item['value'])) {
+                    continue;
+                }
+
                 if (!isset($colMapping[$item['label']])) {
                     throw new PluginException('您上传的文件中缺少 ' . $item['label'] . ' 列！');
                 }
@@ -285,6 +303,10 @@ class Importer extends Plugin
 
                     $formattedValues = [];
                     foreach ($this->setting['mapping']['items'] as $item) {
+
+                        if (isset($item['value'])) {
+                            continue;
+                        }
 
                         $val = $values[$colMapping[$item['label']]];
 
@@ -325,12 +347,17 @@ class Importer extends Plugin
 
                         if (isset($item['value'])) {
                             if ($item['value'] instanceof \Closure) {
-                                $formattedValues[$item['name']] = $item['value'];
-                            } else {
                                 $fn = $item['value'];
                                 $formattedValues[$item['name']] = $fn($formattedValues);
+                            } else {
+                                $formattedValues[$item['name']] = $item['value'];
                             }
                         }
+                    }
+
+                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
+                        $fn = $this->setting['mapping']['format'];
+                        $formattedValues = $fn($formattedValues);
                     }
 
                     yield $formattedValues;
@@ -379,6 +406,10 @@ class Importer extends Plugin
 
             // 校验表头
             foreach ($this->setting['mapping']['items'] as $index => $item) {
+                if (isset($item['value'])) {
+                    continue;
+                }
+
                 if (!isset($colMapping[$item['label']])) {
                     throw new PluginException('您上传的文件中缺少 ' . $item['label'] . ' 列！');
                 }
@@ -390,6 +421,10 @@ class Importer extends Plugin
                 try {
                     $values = [];
                     foreach ($this->setting['mapping']['items'] as $item) {
+
+                        if (isset($item['value'])) {
+                            continue;
+                        }
 
                         $val = (string)$sheet->getCellByColumnAndRow($colMapping[$item['label']], $row)->getValue();
 
@@ -438,12 +473,17 @@ class Importer extends Plugin
 
                         if (isset($item['value'])) {
                             if ($item['value'] instanceof \Closure) {
-                                $values[$item['name']] = $item['value'];
-                            } else {
                                 $fn = $item['value'];
                                 $values[$item['name']] = $fn($values);
+                            } else {
+                                $values[$item['name']] = $item['value'];
                             }
                         }
+                    }
+
+                    if (isset($this->setting['mapping']['format']) && $this->setting['mapping']['format'] instanceof \Closure) {
+                        $fn = $this->setting['mapping']['format'];
+                        $values = $fn($values);
                     }
 
                     yield $values;
