@@ -351,9 +351,9 @@ class Importer extends Plugin
 
             $reader = null;
             $ext = strtolower(strrchr($file, '.'));
-            if ($ext == 'xlsx') {
+            if ($ext == '.xlsx') {
                 $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
-            } elseif ($ext == 'xls') {
+            } elseif ($ext == '.xls') {
                 $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xls');
             }
 
