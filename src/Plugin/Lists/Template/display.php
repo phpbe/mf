@@ -434,7 +434,11 @@
                                 _this.pages = 1;
 
                                 if (responseData.message) {
-                                    _this.$message.error(responseData.message);
+                                    _this.$message({
+                                        showClose: true,
+                                        message: responseData.message,
+                                        type: 'error'
+                                    });
                                 }
                             }
                             _this.updateToolbars();
@@ -537,16 +541,28 @@
                         this.$http.post(option.url, data).then(function (response) {
                             if (response.status == 200) {
                                 if (response.data.success) {
-                                    _this.$message.success(response.data.message);
+                                    _this.$message({
+                                        showClose: true,
+                                        message: response.data.message,
+                                        type: 'success'
+                                    });
                                 } else {
                                     if (response.data.message) {
-                                        _this.$message.error(response.data.message);
+                                        _this.$message({
+                                            showClose: true,
+                                            message: response.data.message,
+                                            type: 'error'
+                                        });
                                     }
                                 }
                                 _this.loadTableData();
                             }
                         }).catch(function (error) {
-                            _this.$message.error(error);
+                            _this.$message({
+                                showClose: true,
+                                message: error,
+                                type: 'error'
+                            });
                             _this.loadTableData();
                         });
                     } else {
