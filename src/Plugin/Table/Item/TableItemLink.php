@@ -31,6 +31,10 @@ class TableItemLink extends TableItem
             if (!isset($this->ui['link']['@click'])) {
                 $this->ui['link']['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
             }
+        } else {
+            if (!isset($this->ui['link']['@click'])) {
+                $this->ui['link']['@click'] = 'tableItemLinkClick(\'' . $this->name . '\', scope.row)';
+            }
         }
     }
 
@@ -70,6 +74,60 @@ class TableItemLink extends TableItem
         $html .= '</el-table-column>';
 
         return $html;
+    }
+
+    /**
+     * 获取 vue data
+     *
+     * @return false | array
+     */
+    public function getVueData()
+    {
+        $vueData = [
+            'tableItems' => [
+                $this->name => [
+                    'url' => $this->url ?? '',
+                    'confirm' => $this->confirm === null ? '' : $this->confirm,
+                    'target' => $this->target,
+                    'postData' => $this->postData,
+                ]
+            ]
+        ];
+
+        if ($this->target == 'dialog') {
+            $vueData['tableItems'][$this->name]['dialog'] = $this->dialog;
+        } elseif ($this->target == 'drawer') {
+            $vueData['tableItems'][$this->name]['drawer'] = $this->drawer;
+        }
+
+        return $vueData;
+    }
+
+    /**
+     * 获取 vue 方法
+     *
+     * @return false | array
+     */
+    public function getVueMethods()
+    {
+        return [
+            'tableItemLinkClick' => 'function (name, row) {
+                var option = this.tableItems[name];
+                option.url = row[name];
+                if (option.confirm) {
+                    var _this = this;
+                    this.$confirm(option.confirm, \'操作确认\', {
+                      confirmButtonText: \'确定\',
+                      cancelButtonText: \'取消\',
+                      type: \'warning\'
+                    }).then(function(){
+                        _this.tableItemAction(name, option, row);
+                    }).catch(function(){});
+                } else {
+                    this.tableItemAction(name, option, row);
+                }
+            }'
+        ];
     }
 
 }
