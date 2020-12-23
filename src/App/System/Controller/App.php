@@ -56,10 +56,8 @@ class App
                             'action' => 'install',
                             'target' => 'drawer',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
                             ]
                         ],
                     ]
@@ -115,9 +113,7 @@ class App
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -126,9 +122,7 @@ class App
                             'confirm' => '应用数据将被清除，且不可恢复，确认要卸载么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]

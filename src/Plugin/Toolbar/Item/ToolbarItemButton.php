@@ -19,18 +19,18 @@ class ToolbarItemButton extends ToolbarItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['button']['icon'])) {
+        if (!isset($this->ui['icon'])) {
             if (isset($params['icon'])) {
-                $this->ui['button']['icon'] = $params['icon'];
+                $this->ui['icon'] = $params['icon'];
             }
         }
 
-        if (!isset($this->ui['button']['@click'])) {
-            $this->ui['button']['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
+        if (!isset($this->ui['@click'])) {
+            $this->ui['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
         }
 
-        if (!isset($this->ui['button'][':disabled'])) {
-            $this->ui['button'][':disabled'] = '!toolbarItems.' . $this->name . '.enable';
+        if (!isset($this->ui[':disabled'])) {
+            $this->ui[':disabled'] = '!toolbarItems.' . $this->name . '.enable';
         }
 
     }
@@ -43,13 +43,11 @@ class ToolbarItemButton extends ToolbarItem
     public function getHtml()
     {
         $html = '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

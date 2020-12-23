@@ -66,10 +66,8 @@ class OpLog
                             'confirm' => '确认要删除么？',
                             "target" => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ],
                         ],
                         [
@@ -77,9 +75,7 @@ class OpLog
                             'task' => 'export',
                             'target' => 'blank',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ]
                         ],
                     ]
@@ -138,10 +134,8 @@ class OpLog
                             'label' => '查看',
                             'task' => 'detail',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-search',
-                                    'type' => 'success'
-                                ]
+                                'icon' => 'el-icon-search',
+                                'type' => 'success'
                             ]
                         ],
                     ]

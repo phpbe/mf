@@ -66,10 +66,8 @@ class Task
                             'task' => 'create',
                             'target' => 'drawer',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -81,10 +79,8 @@ class Task
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -96,10 +92,8 @@ class Task
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-lock',
-                                    'type' => 'warning',
-                                ]
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -107,10 +101,8 @@ class Task
                             'task' => 'delete',
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ]
                         ],
                     ]
@@ -178,9 +170,7 @@ class Task
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
+                                'type' => 'success'
                             ]
                         ],
                         [
@@ -188,9 +178,7 @@ class Task
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -198,9 +186,7 @@ class Task
                             'task' => 'fieldEdit',
                             'target' => 'ajax',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]
@@ -338,7 +324,7 @@ class Task
     /**
      * 执行计划任务调度
      */
-    public function run()
+    public function dispatch()
     {
         // 抽取任务
         $extractTasks = Be::newTable('system_task')
@@ -350,7 +336,7 @@ class Task
 
         $t = time();
         foreach ($extractTasks as $extractTask) {
-            $url = beUrl('Etl.Task.runExtract', ['id' => $extractTask->id, 't' => $t]);
+            $url = beUrl('System.Task.run', ['id' => $extractTask->id, 't' => $t]);
             echo $url . '<br>';
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
@@ -363,4 +349,14 @@ class Task
 
         echo '-';
     }
+
+
+    /**
+     * 执行计划任务调度
+     */
+    public function run()
+    {
+
+    }
+
 }

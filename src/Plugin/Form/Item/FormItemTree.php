@@ -42,14 +42,14 @@ class FormItemTree extends FormItem
             $this->treeData = $this->treeDataDisabled($this->treeData);
         }
 
-        if (!isset($this->ui['tree']['node-key'])) {
-            $this->ui['tree']['node-key'] = 'key';
+        if (!isset($this->ui['node-key'])) {
+            $this->ui['node-key'] = 'key';
         }
 
-        $this->ui['tree'][':data'] = 'formItems.' . $this->name . '.treeData';
-        $this->ui['tree'][':default-checked-keys'] = 'formItems.' . $this->name . '.value';
-        $this->ui['tree']['show-checkbox'] = null;
-        $this->ui['tree']['@check'] = 'formItemTree_' . $this->name.'_check';
+        $this->ui[':data'] = 'formItems.' . $this->name . '.treeData';
+        $this->ui[':default-checked-keys'] = 'formItems.' . $this->name . '.value';
+        $this->ui['show-checkbox'] = null;
+        $this->ui['@check'] = 'formItemTree_' . $this->name.'_check';
     }
 
 
@@ -83,13 +83,15 @@ class FormItemTree extends FormItem
         $html .= '>';
 
         $html .= '<el-tree';
-        if (isset($this->ui['tree'])) {
-            foreach ($this->ui['tree'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

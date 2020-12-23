@@ -25,12 +25,12 @@ class FormItemRadioGroupButton extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['radio-group']['disabled'])) {
-                $this->ui['radio-group']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        $this->ui['radio-group']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -51,13 +51,15 @@ class FormItemRadioGroupButton extends FormItem
         $html .= '>';
 
         $html .= '<el-radio-group';
-        if (isset($this->ui['radio-group'])) {
-            foreach ($this->ui['radio-group'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item' || $k == 'adio-button') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

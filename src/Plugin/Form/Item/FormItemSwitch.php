@@ -27,20 +27,20 @@ class FormItemSwitch extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['switch']['disabled'])) {
-                $this->ui['switch']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['switch']['active-value'])) {
-            $this->ui['switch']['active-value'] = 1;
+        if (!isset($this->ui['active-value'])) {
+            $this->ui['active-value'] = 1;
         }
 
-        if (!isset($this->ui['switch']['inactive-value'])) {
-            $this->ui['switch']['inactive-value'] = 0;
+        if (!isset($this->ui['inactive-value'])) {
+            $this->ui['inactive-value'] = 0;
         }
 
-        $this->ui['switch']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -61,13 +61,15 @@ class FormItemSwitch extends FormItem
         $html .= '>';
 
         $html .= '<el-switch';
-        if (isset($this->ui['switch'])) {
-            foreach ($this->ui['switch'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

@@ -19,24 +19,24 @@ class ToolbarItemLink extends ToolbarItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['link']['type'])) {
+        if (!isset($this->ui['type'])) {
             if (isset($params['type'])) {
-                $this->ui['link']['type'] = $params['type'];
+                $this->ui['type'] = $params['type'];
             } else {
-                $this->ui['link']['type'] = 'primary';
+                $this->ui['type'] = 'primary';
             }
         }
 
-        if (!isset($this->ui['link']['icon']) && isset($params['icon'])) {
-            $this->ui['link']['icon'] = $params['icon'];
+        if (!isset($this->ui['icon']) && isset($params['icon'])) {
+            $this->ui['icon'] = $params['icon'];
         }
 
-        if (isset($this->ui['link']['href'])) {
-            unset($this->ui['link']['href']);
+        if (isset($this->ui['href'])) {
+            unset($this->ui['href']);
         }
 
-        if (!isset($this->ui['link']['@click'])) {
-            $this->ui['link']['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
+        if (!isset($this->ui['@click'])) {
+            $this->ui['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
         }
     }
 
@@ -48,13 +48,11 @@ class ToolbarItemLink extends ToolbarItem
     public function getHtml()
     {
         $html = '<el-link';
-        if (isset($this->ui['link'])) {
-            foreach ($this->ui['link'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

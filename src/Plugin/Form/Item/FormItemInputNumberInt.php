@@ -27,20 +27,20 @@ class FormItemInputNumberInt extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['input']['disabled'])) {
-                $this->ui['input']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['input-number'][':step'])) {
-            $this->ui['input-number'][':step'] = '1';
+        if (!isset($this->ui[':step'])) {
+            $this->ui[':step'] = '1';
         }
 
-        if (!isset($this->ui['input-number'][':precision'])) {
-            $this->ui['input-number'][':precision'] = '0';
+        if (!isset($this->ui[':precision'])) {
+            $this->ui[':precision'] = '0';
         }
 
-        $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -61,13 +61,15 @@ class FormItemInputNumberInt extends FormItem
         $html .= '>';
 
         $html .= '<el-input-number';
-        if (isset($this->ui['input-number'])) {
-            foreach ($this->ui['input-number'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' '.$k;
-                } else {
-                    $html .= ' '.$k.'="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' '.$k;
+            } else {
+                $html .= ' '.$k.'="' . $v . '"';
             }
         }
         $html .= '>';

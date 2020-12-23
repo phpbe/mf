@@ -23,26 +23,26 @@ class FormItemSelect extends FormItem
                 $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择' . $this->label . '\', trigger: \'change\' }]';
             }
         } else {
-            if (!isset($this->ui['select']['clearable'])) {
-                $this->ui['select']['clearable'] = null;
+            if (!isset($this->ui['clearable'])) {
+                $this->ui['clearable'] = null;
             }
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['select']['disabled'])) {
-                $this->ui['select']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['select']['placeholder'])) {
-            $this->ui['select']['placeholder'] = '请选择';
+        if (!isset($this->ui['placeholder'])) {
+            $this->ui['placeholder'] = '请选择';
         }
 
-        if (!isset($this->ui['select']['filterable'])) {
-            $this->ui['select']['filterable'] = null;
+        if (!isset($this->ui['filterable'])) {
+            $this->ui['filterable'] = null;
         }
 
-        $this->ui['select']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -63,13 +63,15 @@ class FormItemSelect extends FormItem
         $html .= '>';
 
         $html .= '<el-select';
-        if (isset($this->ui['select'])) {
-            foreach ($this->ui['select'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

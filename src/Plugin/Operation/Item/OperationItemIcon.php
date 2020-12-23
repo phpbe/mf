@@ -18,8 +18,8 @@ class OperationItemIcon extends OperationItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['icon']['@click'])) {
-            $this->ui['icon']['@click'] = 'operationItemClick(\'' . $this->name . '\', scope.row)';
+        if (!isset($this->ui['@click'])) {
+            $this->ui['@click'] = 'operationItemClick(\'' . $this->name . '\', scope.row)';
         }
     }
 
@@ -31,8 +31,8 @@ class OperationItemIcon extends OperationItem
     public function getHtml()
     {
         $html = '<el-icon';
-        if (isset($this->ui['icon'])) {
-            foreach ($this->ui['icon'] as $k => $v) {
+        if (isset($this->ui)) {
+            foreach ($this->ui as $k => $v) {
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {

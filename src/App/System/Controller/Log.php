@@ -102,9 +102,7 @@ class Log
                                 'form-item' => [
                                     'style' => 'display:block',
                                 ],
-                                'radio-group' => [
-                                    '@change' => 'showLogs',
-                                ],
+                                '@change' => 'showLogs',
                             ],
                         ],
                         [
@@ -117,9 +115,7 @@ class Log
                                 'form-item' => [
                                     'style' => 'display:block',
                                 ],
-                                'radio-group' => [
-                                    '@change' => 'showLogs',
-                                ],
+                                '@change' => 'showLogs',
                             ],
                         ],
                         [
@@ -132,9 +128,7 @@ class Log
                                 'form-item' => [
                                     'style' => 'display:block',
                                 ],
-                                'radio-group' => [
-                                    '@change' => 'showLogs',
-                                ],
+                                '@change' => 'showLogs',
                             ],
                         ],
                     ],
@@ -151,9 +145,7 @@ class Log
                             'confirm' => '确认要删除本日（' . $year . '-' . $month . '-' . $day . '）全部日志么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'type' => 'warning'
-                                ]
+                                'type' => 'warning'
                             ]
                         ],
                         [
@@ -162,9 +154,7 @@ class Log
                             'confirm' => '确认要删除本月（' . $year . '-' . $month . '）全部日志么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                         [
@@ -173,9 +163,7 @@ class Log
                             'confirm' => '确认要删除本年（' . $year . '）全部日志么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ],
@@ -228,9 +216,7 @@ class Log
                                 'width' => '75%',
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                     ]

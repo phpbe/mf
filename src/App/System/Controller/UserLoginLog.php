@@ -67,10 +67,8 @@ class UserLoginLog
                             'confirm' => '确认要删除么？',
                             "target" => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ],
                         ],
                         [
@@ -78,9 +76,7 @@ class UserLoginLog
                             'task' => 'export',
                             'target' => 'blank',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ]
                         ],
                     ]

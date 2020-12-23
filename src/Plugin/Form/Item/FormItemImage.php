@@ -63,35 +63,35 @@ class FormItemImage extends FormItem
             $this->description = '格式：' . implode(', ', $this->allowUploadImageTypes) . '，' . $this->maxSize . ' 以内';
         }
 
-        if (!isset($this->ui['upload']['accept'])) {
-            $this->ui['upload']['accept'] = implode(',', $this->allowUploadImageTypes);
+        if (!isset($this->ui['accept'])) {
+            $this->ui['accept'] = implode(',', $this->allowUploadImageTypes);
         }
 
-        if (!isset($this->ui['upload'][':on-success'])) {
-            $this->ui['upload'][':on-success'] = 'formItemImage_' . $this->name . '_onSuccess';
+        if (!isset($this->ui[':on-success'])) {
+            $this->ui[':on-success'] = 'formItemImage_' . $this->name . '_onSuccess';
         }
 
-        if (!isset($this->ui['upload'][':before-upload'])) {
-            $this->ui['upload'][':before-upload'] = 'formItemImage_' . $this->name . '_beforeUpload';
+        if (!isset($this->ui[':before-upload'])) {
+            $this->ui[':before-upload'] = 'formItemImage_' . $this->name . '_beforeUpload';
         }
 
-        if (!isset($this->ui['upload'][':on-error'])) {
-            $this->ui['upload'][':on-error'] = 'formItemImage_onError';
+        if (!isset($this->ui[':on-error'])) {
+            $this->ui[':on-error'] = 'formItemImage_onError';
         }
 
-        if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'formItems.' . $this->name . '.fileList';
+        if (!isset($this->ui[':file-list'])) {
+            $this->ui[':file-list'] = 'formItems.' . $this->name . '.fileList';
         }
 
-        if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'formItems.' . $this->name . '.postData';
+        if (!isset($this->ui[':data'])) {
+            $this->ui[':data'] = 'formItems.' . $this->name . '.postData';
         }
 
-        if (!isset($this->ui['upload']['limit'])) {
-            $this->ui['upload']['limit'] = 1;
+        if (!isset($this->ui['limit'])) {
+            $this->ui['limit'] = 1;
         }
 
-        $this->ui['upload']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -101,8 +101,8 @@ class FormItemImage extends FormItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['upload']['action'])) {
-            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadImage');
+        if (!isset($this->ui['action'])) {
+            $this->ui['action'] = beUrl('System.Plugin.uploadImage');
         }
 
         $html = '<el-form-item';
@@ -118,13 +118,15 @@ class FormItemImage extends FormItem
         $html .= '<img v-if="formData.' . $this->name . '" :src="formItems.' . $this->name . '.url" alt="' . $this->label . '" style="max-width:120px;" />';
 
         $html .= '<el-upload';
-        if (isset($this->ui['upload'])) {
-            foreach ($this->ui['upload'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

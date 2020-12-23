@@ -25,18 +25,18 @@ class FormItemInputTextArea extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['input']['disabled'])) {
-                $this->ui['input']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        $this->ui['input']['type'] = 'textarea';
+        $this->ui['type'] = 'textarea';
 
-        if (!isset($this->ui['input'][':autosize'])) {
-            $this->ui['input'][':autosize'] = '{minRows:3,maxRows:10}';
+        if (!isset($this->ui[':autosize'])) {
+            $this->ui[':autosize'] = '{minRows:3,maxRows:10}';
         }
 
-        $this->ui['input']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -57,13 +57,15 @@ class FormItemInputTextArea extends FormItem
         $html .= '>';
 
         $html .= '<el-input';
-        if (isset($this->ui['input'])) {
-            foreach ($this->ui['input'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

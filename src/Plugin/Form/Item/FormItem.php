@@ -125,6 +125,10 @@ abstract class FormItem
             }
         }
 
+        if (!isset($this->ui['form-item'])) {
+            $this->ui['form-item'] = [];
+        }
+
         if (!isset($this->ui['form-item']['prop']) && $this->name) {
             $this->ui['form-item']['prop'] = $this->name;
         }

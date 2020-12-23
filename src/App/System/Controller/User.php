@@ -144,10 +144,8 @@ class User
                             'task' => 'create',
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-user-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-fa fa-user-plus',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -159,10 +157,8 @@ class User
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -174,10 +170,8 @@ class User
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-lock',
-                                    'type' => 'warning',
-                                ]
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -189,19 +183,15 @@ class User
                                 'value' => '1',
                             ],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ]
                         ],
                         [
                             'label' => '导出',
                             'driver' => ToolbarItemButtonDropDown::class,
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ],
                             'menus' => [
                                 [
@@ -256,9 +246,7 @@ class User
                                 }
                             },
                             'ui' => [
-                                'avatar' => [
-                                    ':size' => '32',
-                                ]
+                                ':size' => '32',
                             ],
                             'width' => '50',
                         ],
@@ -312,9 +300,7 @@ class User
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -327,9 +313,7 @@ class User
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]

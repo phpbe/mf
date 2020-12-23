@@ -52,20 +52,20 @@ class FormItemAutoComplete extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['autocomplete']['disabled'])) {
-                $this->ui['autocomplete']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['autocomplete']['clearable'])) {
-            $this->ui['autocomplete']['clearable'] = null;
+        if (!isset($this->ui['clearable'])) {
+            $this->ui['clearable'] = null;
         }
 
-        if (!isset($this->ui['autocomplete'][':fetch-suggestions'])) {
-            $this->ui['autocomplete'][':fetch-suggestions'] = 'formItemAutoComplete_' . $this->name . '_fetchSuggestions';
+        if (!isset($this->ui[':fetch-suggestions'])) {
+            $this->ui[':fetch-suggestions'] = 'formItemAutoComplete_' . $this->name . '_fetchSuggestions';
         }
 
-        $this->ui['autocomplete']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
 
@@ -87,13 +87,15 @@ class FormItemAutoComplete extends FormItem
         $html .= '>';
 
         $html .= '<el-autocomplete';
-        if (isset($this->ui['autocomplete'])) {
-            foreach ($this->ui['autocomplete'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

@@ -27,12 +27,12 @@ class FormItemInputNumber extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['input']['disabled'])) {
-                $this->ui['input']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        $this->ui['input-number']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -53,13 +53,15 @@ class FormItemInputNumber extends FormItem
         $html .= '>';
 
         $html .= '<el-input-number';
-        if (isset($this->ui['input-number'])) {
-            foreach ($this->ui['input-number'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' '.$k;
-                } else {
-                    $html .= ' '.$k.'="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' '.$k;
+            } else {
+                $html .= ' '.$k.'="' . $v . '"';
             }
         }
         $html .= '>';

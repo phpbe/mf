@@ -71,11 +71,11 @@ class FormItemAvatar extends FormItem
             }
         }
 
-        if (!isset($this->ui['avatar']['shape'])) {
+        if (!isset($this->ui['shape'])) {
             $this->ui['avatar']['shape'] = 'square';
         }
 
-        if (!isset($this->ui['avatar'][':src'])) {
+        if (!isset($this->ui[':src'])) {
             $this->ui['avatar'][':src'] = 'formItems.' . $this->name . '.url';
         }
 
@@ -132,15 +132,18 @@ class FormItemAvatar extends FormItem
         $html .= '>';
 
         $html .= '<el-avatar v-if="formItems.' . $this->name . '.url"';
-        if (isset($this->ui['avatar'])) {
-            foreach ($this->ui['avatar'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item' || $k == 'upload') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
+
         $html .= '>';
         $html .= '</el-avatar>';
 

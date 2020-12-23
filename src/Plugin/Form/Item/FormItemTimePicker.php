@@ -25,20 +25,20 @@ class FormItemTimePicker extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['time-picker']['disabled'])) {
-                $this->ui['time-picker']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['time-picker']['placeholder'])) {
-            $this->ui['time-picker']['placeholder'] = '选择时间';
+        if (!isset($this->ui['placeholder'])) {
+            $this->ui['placeholder'] = '选择时间';
         }
 
-        if (!isset($this->ui['time-picker']['value-format'])) {
-            $this->ui['time-picker']['value-format'] = 'HH:mm:ss';
+        if (!isset($this->ui['value-format'])) {
+            $this->ui['value-format'] = 'HH:mm:ss';
         }
 
-        $this->ui['time-picker']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -59,13 +59,15 @@ class FormItemTimePicker extends FormItem
         $html .= '>';
 
         $html .= '<el-time-picker';
-        if (isset($this->ui['time-picker'])) {
-            foreach ($this->ui['time-picker'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

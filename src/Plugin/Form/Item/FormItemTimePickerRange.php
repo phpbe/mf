@@ -27,30 +27,30 @@ class FormItemTimePickerRange extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['time-picker']['disabled'])) {
-                $this->ui['time-picker']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['time-picker']['range-separator'])) {
-            $this->ui['time-picker']['range-separator'] = '至';
+        if (!isset($this->ui['range-separator'])) {
+            $this->ui['range-separator'] = '至';
         }
 
-        if (!isset($this->ui['time-picker']['start-placeholder'])) {
-            $this->ui['time-picker']['start-placeholder'] = '开始时间';
+        if (!isset($this->ui['start-placeholder'])) {
+            $this->ui['start-placeholder'] = '开始时间';
         }
 
-        if (!isset($this->ui['time-picker']['end-placeholder'])) {
-            $this->ui['time-picker']['end-placeholder'] = '结束时间';
+        if (!isset($this->ui['end-placeholder'])) {
+            $this->ui['end-placeholder'] = '结束时间';
         }
 
-        if (!isset($this->ui['time-picker']['value-format'])) {
-            $this->ui['time-picker']['value-format'] = 'HH:mm:ss';
+        if (!isset($this->ui['value-format'])) {
+            $this->ui['value-format'] = 'HH:mm:ss';
         }
 
-        $this->ui['time-picker']['is-range'] = null;
-        $this->ui['date-picker']['@change'] = 'formItemTimePickerRange_' . $this->name.'_change';
-        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.value';
+        $this->ui['is-range'] = null;
+        $this->ui['@change'] = 'formItemTimePickerRange_' . $this->name.'_change';
+        $this->ui['v-model'] = 'formItems.' . $this->name.'.value';
     }
 
     /**
@@ -71,13 +71,15 @@ class FormItemTimePickerRange extends FormItem
         $html .= '>';
 
         $html .= '<el-time-picker';
-        if (isset($this->ui['time-picker'])) {
-            foreach ($this->ui['time-picker'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

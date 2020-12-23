@@ -74,10 +74,8 @@ class Role
                             'task' => 'create',
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-user-plus',
-                                    'type' => 'success',
-                                ]
+                                'icon' => 'el-icon-fa fa-user-plus',
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -89,10 +87,8 @@ class Role
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -104,10 +100,8 @@ class Role
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-lock',
-                                    'type' => 'warning',
-                                ]
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -119,19 +113,15 @@ class Role
                                 'value' => '1',
                             ],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ]
                         ],
                         [
                             'label' => '导出',
                             'driver' => ToolbarItemButtonDropDown::class,
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ],
                             'menus' => [
                                 [
@@ -225,9 +215,7 @@ class Role
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -239,9 +227,7 @@ class Role
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]

@@ -25,12 +25,12 @@ class FormItemRadio extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['radio']['disabled'])) {
-                $this->ui['radio']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        $this->ui['radio']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -52,13 +52,15 @@ class FormItemRadio extends FormItem
 
         foreach ($this->keyValues as $key => $val) {
             $html .= '<el-radio';
-            if (isset($this->ui['radio'])) {
-                foreach ($this->ui['radio'] as $k => $v) {
-                    if ($v === null) {
-                        $html .= ' ' . $k;
-                    } else {
-                        $html .= ' ' . $k . '="' . $v . '"';
-                    }
+            foreach ($this->ui as $k => $v) {
+                if ($k == 'form-item') {
+                    continue;
+                }
+
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
                 }
             }
 

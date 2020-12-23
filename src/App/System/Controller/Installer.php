@@ -67,9 +67,7 @@ class Installer
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isPhpVersionGtMatch'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
-                                    'icon' => [
-                                        'style' => 'color:' . ($value['isPhpVersionGtMatch'] ? '#67C23A' : '#F56C6C')
-                                    ]
+                                    'style' => 'color:' . ($value['isPhpVersionGtMatch'] ? '#67C23A' : '#F56C6C')
                                 ]
                             ],
                             [
@@ -77,9 +75,7 @@ class Installer
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isPdoMysqlInstalled'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
-                                    'icon' => [
-                                        'style' => 'color:' . ($value['isPdoMysqlInstalled'] ? '#67C23A' : '#F56C6C')
-                                    ]
+                                    'style' => 'color:' . ($value['isPdoMysqlInstalled'] ? '#67C23A' : '#F56C6C')
                                 ]
                             ],
                             [
@@ -87,9 +83,7 @@ class Installer
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isCacheDirWritable'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
-                                    'icon' => [
-                                        'style' => 'color:' . ($value['isCacheDirWritable'] ? '#67C23A' : '#F56C6C')
-                                    ]
+                                    'style' => 'color:' . ($value['isCacheDirWritable'] ? '#67C23A' : '#F56C6C')
                                 ]
                             ],
                             [
@@ -97,9 +91,7 @@ class Installer
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isDataDirWritable'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
-                                    'icon' => [
-                                        'style' => 'color:' . ($value['isDataDirWritable'] ? '#67C23A' : '#F56C6C')
-                                    ]
+                                    'style' => 'color:' . ($value['isDataDirWritable'] ? '#67C23A' : '#F56C6C')
                                 ]
                             ],
                         ],
@@ -108,10 +100,8 @@ class Installer
                                 'label' => '继续安装',
                                 'target' => 'self',
                                 'ui' => [
-                                    'button' => [
-                                        'type' => $isAllPassed ? 'primary' : 'danger',
-                                        ':disabled' => $isAllPassed ? 'false' : 'true',
-                                    ]
+                                    'type' => $isAllPassed ? 'primary' : 'danger',
+                                    ':disabled' => $isAllPassed ? 'false' : 'true',
                                 ]
                             ]
                         ]
@@ -199,10 +189,8 @@ class Installer
                                 'label' => '继续安装',
                                 'target' => 'self',
                                 'ui' => [
-                                    'button' => [
-                                        'type' => 'primary',
-                                        '@click' => 'submit',
-                                    ]
+                                    'type' => 'primary',
+                                    '@click' => 'submit',
                                 ]
                             ]
                         ]
@@ -375,10 +363,8 @@ class Installer
                             [
                                 'label' => '完成安装',
                                 'ui' => [
-                                    'button' => [
-                                        'type' => 'success',
-                                        '@click' => 'submit',
-                                    ]
+                                    'type' => 'success',
+                                    '@click' => 'submit',
                                 ]
                             ]
                         ]

@@ -42,9 +42,7 @@ class Cache
                             'confirm' => '确认要清除所有缓存么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ],
@@ -103,9 +101,7 @@ class Cache
                             'target' => 'ajax',
                             'confirm' => '确认要清除缓存么？',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]

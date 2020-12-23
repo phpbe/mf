@@ -27,30 +27,30 @@ class FormItemDatePickerMonthRange extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['date-picker']['disabled'])) {
-                $this->ui['date-picker']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['date-picker']['range-separator'])) {
-            $this->ui['date-picker']['range-separator'] = '至';
+        if (!isset($this->ui['range-separator'])) {
+            $this->ui['range-separator'] = '至';
         }
 
-        if (!isset($this->ui['date-picker']['start-placeholder'])) {
-            $this->ui['date-picker']['start-placeholder'] = '开始月份';
+        if (!isset($this->ui['start-placeholder'])) {
+            $this->ui['start-placeholder'] = '开始月份';
         }
 
-        if (!isset($this->ui['date-picker']['end-placeholder'])) {
-            $this->ui['date-picker']['end-placeholder'] = '结束月份';
+        if (!isset($this->ui['end-placeholder'])) {
+            $this->ui['end-placeholder'] = '结束月份';
         }
 
-        if (!isset($this->ui['date-picker']['value-format'])) {
-            $this->ui['date-picker']['value-format'] = 'yyyy-MM';
+        if (!isset($this->ui['value-format'])) {
+            $this->ui['value-format'] = 'yyyy-MM';
         }
 
-        $this->ui['date-picker']['type'] = 'monthrange';
-        $this->ui['date-picker']['@change'] = 'formItemDatePickerMonthRange_' . $this->name.'_change';
-        $this->ui['date-picker']['v-model'] = 'formItems.' . $this->name.'.value';
+        $this->ui['type'] = 'monthrange';
+        $this->ui['@change'] = 'formItemDatePickerMonthRange_' . $this->name.'_change';
+        $this->ui['v-model'] = 'formItems.' . $this->name.'.value';
     }
 
     /**
@@ -71,13 +71,15 @@ class FormItemDatePickerMonthRange extends FormItem
         $html .= '>';
 
         $html .= '<el-date-picker';
-        if (isset($this->ui['date-picker'])) {
-            foreach ($this->ui['date-picker'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

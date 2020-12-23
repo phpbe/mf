@@ -24,21 +24,21 @@ class FormItemDatePicker extends FormItem
         }
 
         if ($this->disabled) {
-            if (!isset($this->ui['date-picker']['disabled'])) {
-                $this->ui['date-picker']['disabled'] = 'true';
+            if (!isset($this->ui['disabled'])) {
+                $this->ui['disabled'] = 'true';
             }
         }
 
-        if (!isset($this->ui['date-picker']['placeholder'])) {
-            $this->ui['date-picker']['placeholder'] = '选择日期';
+        if (!isset($this->ui['placeholder'])) {
+            $this->ui['placeholder'] = '选择日期';
         }
 
-        if (!isset($this->ui['date-picker']['value-format'])) {
-            $this->ui['date-picker']['value-format'] = 'yyyy-MM-dd';
+        if (!isset($this->ui['value-format'])) {
+            $this->ui['value-format'] = 'yyyy-MM-dd';
         }
 
-        $this->ui['date-picker']['type'] = 'date';
-        $this->ui['date-picker']['v-model'] = 'formData.' . $this->name;
+        $this->ui['type'] = 'date';
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
 
@@ -60,13 +60,15 @@ class FormItemDatePicker extends FormItem
         $html .= '>';
 
         $html .= '<el-date-picker';
-        if (isset($this->ui['date-picker'])) {
-            foreach ($this->ui['date-picker'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'form-item') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';
