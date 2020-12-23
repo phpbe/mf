@@ -101,7 +101,7 @@ class UserLoginLog
                             'driver' => TableItemCustom::class,
                             'width' => '150',
                             'keyValues' => [
-                                '0' => '<span class="el-tag el-tag--info el-tag--light">失败</span>',
+                                '0' => '<span class="el-tag el-tag--danger el-tag--light">失败</span>',
                                 '1' => '<span class="el-tag el-tag--success el-tag--light">成功</span>',
                             ],
                             'exportValue' => function($row){

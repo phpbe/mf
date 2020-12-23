@@ -2,6 +2,7 @@
 namespace Be\App\System;
 
 use Be\System\Be;
+use Be\Util\Random;
 
 /**
  * 应用安装器
@@ -24,6 +25,11 @@ class Installer extends \Be\System\App\Installer
                 $db->query($sql);
             }
         }
+
+        // 生成计划任务调度 KEY
+        $config = Be::getConfig('System.Task');
+        $config->key = Random::complex(16);
+        Be::getService('System.Config')->save('System.Task', $config);
 	}
 
 }

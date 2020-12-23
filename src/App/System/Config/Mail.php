@@ -31,7 +31,7 @@ class Mail
     /**
      * @BeConfigItem("SMTP端口号",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], 'input-number' => [':min' => 1]];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], ':min' => 1];")
      */
     public $smtpPort = 25;
 
@@ -60,7 +60,7 @@ class Mail
     /**
      * @BeConfigItem("SMTP超时时间",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], 'input-number' => [':min' => 1]];")
+     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'],':min' => 1];")
      */
     public $smtpTimeout = 10;
 }

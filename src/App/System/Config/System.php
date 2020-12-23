@@ -46,7 +46,7 @@ class System
     /**
      * @BeConfigItem("默认分页",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['input-number' => [':min' => 1]];")
+     *     ui="return [':min' => 1];")
      */
     public $pageSize = 10;
 

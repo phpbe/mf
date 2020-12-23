@@ -18,7 +18,7 @@ class Session
     /**
      * @BeConfigItem("超时时间",
      *     driver="FormItemInputNumberInt",
-     *     ui = "return ['input-number' => [':min' => 1]];")
+     *     ui = "return [':min' => 1];")
      */
     public $expire = 1440;
 

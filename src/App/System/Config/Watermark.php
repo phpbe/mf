@@ -62,7 +62,7 @@ class Watermark
     /**
      * @BeConfigItem("文印文字大小",
      *     driver = "FormItemInputNumberInt",
-     *     ui = "return ['form-item' => ['v-show' => 'formData.enable == 1 && formData.type == \'text\''], 'input-number' => [':min' => 1]];")
+     *     ui = "return ['form-item' => ['v-show' => 'formData.enable == 1 && formData.type == \'text\''], ':min' => 1];")
      */
     public $textSize = 20;
 
