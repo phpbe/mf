@@ -89,7 +89,6 @@ class TableItemLink extends TableItem
                     'url' => $this->url ?? '',
                     'confirm' => $this->confirm === null ? '' : $this->confirm,
                     'target' => $this->target,
-                    'postData' => $this->postData,
                 ]
             ]
         ];
@@ -113,7 +112,7 @@ class TableItemLink extends TableItem
         return [
             'tableItemLinkClick' => 'function (name, row) {
                 var option = this.tableItems[name];
-                option.url = row[name];
+                var sUrl = option.url ? option.url:row[name]; 
                 if (option.confirm) {
                     var _this = this;
                     this.$confirm(option.confirm, \'操作确认\', {
@@ -121,10 +120,60 @@ class TableItemLink extends TableItem
                       cancelButtonText: \'取消\',
                       type: \'warning\'
                     }).then(function(){
-                        _this.tableItemAction(name, option, row);
+                         switch (option.target) {
+                            case "self":
+                            case "_self":
+                                window.location.href = sUrl;
+                            case "dialog":
+                                _this.dialog.title = option.dialog.title;
+                                _this.dialog.width = option.dialog.width;
+                                _this.dialog.height = option.dialog.height;
+                                _this.dialog.visible = true;
+                                setTimeout(function () {
+                                    document.getElementById("frame-dialog").src = sUrl;
+                                }, 50);
+                                break;
+                            case "drawer":
+                                _this.drawer.title = option.drawer.title;
+                                _this.drawer.width = option.drawer.width;
+                                _this.drawer.visible = true;
+                                setTimeout(function () {
+                                    document.getElementById("frame-drawer").src = sUrl;
+                                }, 50);
+                                break;
+                            case "blank":
+                            case "_blank":
+                            default:
+                                window.open(sUrl);
+                        }
                     }).catch(function(){});
                 } else {
-                    this.tableItemAction(name, option, row);
+                    switch (option.target) {
+                        case "self":
+                        case "_self":
+                            window.location.href = sUrl;
+                        case "dialog":
+                            this.dialog.title = option.dialog.title;
+                            this.dialog.width = option.dialog.width;
+                            this.dialog.height = option.dialog.height;
+                            this.dialog.visible = true;
+                            setTimeout(function () {
+                                document.getElementById("frame-dialog").src = sUrl;
+                            }, 50);
+                            break;
+                        case "drawer":
+                            this.drawer.title = option.drawer.title;
+                            this.drawer.width = option.drawer.width;
+                            this.drawer.visible = true;
+                            setTimeout(function () {
+                                document.getElementById("frame-drawer").src = sUrl;
+                            }, 50);
+                            break;
+                        case "blank":
+                        case "_blank":
+                        default:
+                            window.open(sUrl);
+                    }
                 }
             }'
         ];
