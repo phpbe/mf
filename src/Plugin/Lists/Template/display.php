@@ -43,6 +43,10 @@
         }
         ?>>
             <?php
+            if (isset($this->setting['headnote'])) {
+                echo $this->setting['headnote'];
+            }
+
             $tabHtml = '';
             $tabPosition = 'beforeForm';
             if (isset($this->setting['tab'])) {
@@ -294,6 +298,12 @@
                 ?>
             </el-table>
 
+            <?php
+            if (isset($this->setting['footnote'])) {
+                echo $this->setting['footnote'];
+            }
+            ?>
+
             <div style="text-align: center; padding: 10px 10px 0 10px;" v-if="total > 0">
                 <el-pagination
                         @size-change="changePageSize"
@@ -305,7 +315,6 @@
                         :total="total">
                 </el-pagination>
             </div>
-
         </el-form>
 
         <el-dialog

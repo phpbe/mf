@@ -29,6 +29,10 @@
             }
             ?>>
             <?php
+            if (isset($this->setting['headnote'])) {
+                echo $this->setting['headnote'];
+            }
+
             if (isset($this->setting['form']['items']) && count($this->setting['form']['items']) > 0) {
                 foreach ($this->setting['form']['items'] as $item) {
                     $driver = null;
@@ -118,6 +122,11 @@
                 ?>
 
             </el-form-item>
+            <?php
+            if (isset($this->setting['footnote'])) {
+                echo $this->setting['footnote'];
+            }
+            ?>
         </el-form>
     </div>
 
