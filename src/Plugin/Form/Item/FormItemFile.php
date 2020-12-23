@@ -169,7 +169,6 @@ class FormItemFile extends FormItem
             }',
             'formItemFile_' . $this->name . '_onSuccess' => 'function (response, file, fileList) {
                 if (response.success) {
-                    this.$message.success(response.message);
                     this.formItems.' . $this->name . '.url = response.url;
                     this.formData.' . $this->name . ' = response.newValue;
                 } else {
