@@ -325,7 +325,7 @@
                 :wrapper-closable="false"
                 :destroy-on-close="true">
             <iframe id="frame-drawer" name="frame-drawer" src="about:blank"
-                    style="width:100%;height:100%;border:0;"></iframe>
+                    style="width:100%;height:100%;border:0;margin:0 10px;"></iframe>
         </el-drawer>
 
     </div>
