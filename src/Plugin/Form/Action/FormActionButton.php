@@ -19,20 +19,20 @@ class FormActionButton extends FormAction
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['button']['size'])) {
-            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        if (!isset($this->ui['size'])) {
+            $this->ui['size'] = isset($params['size']) ? $params['size'] : 'mini';
         }
 
-        if (!isset($this->ui['button']['type']) && isset($params['type'])) {
-            $this->ui['button']['type'] = $params['type'];
+        if (!isset($this->ui['type']) && isset($params['type'])) {
+            $this->ui['type'] = $params['type'];
         }
 
-        if (!isset($this->ui['button']['icon']) && isset($params['icon'])) {
-            $this->ui['button']['icon'] = $params['icon'];
+        if (!isset($this->ui['icon']) && isset($params['icon'])) {
+            $this->ui['icon'] = $params['icon'];
         }
 
-        if (!isset($this->ui['button']['@click'])) {
-            $this->ui['button']['@click'] = 'formActionClick(\'' . $this->name . '\')';
+        if (!isset($this->ui['@click'])) {
+            $this->ui['@click'] = 'formActionClick(\'' . $this->name . '\')';
         }
     }
 
@@ -45,13 +45,11 @@ class FormActionButton extends FormAction
     public function getHtml()
     {
         $html = '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

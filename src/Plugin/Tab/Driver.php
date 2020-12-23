@@ -89,15 +89,15 @@ class Driver
             }
         }
 
-        if (!isset($this->ui['tabs']['type'])) {
-            $this->ui['tabs']['type'] = 'card';
+        if (!isset($this->ui['type'])) {
+            $this->ui['type'] = 'card';
         }
 
-        if (!isset($this->ui['tabs']['@tab-click'])) {
-            $this->ui['tabs']['@tab-click'] = 'tabClick';
+        if (!isset($this->ui['@tab-click'])) {
+            $this->ui['@tab-click'] = 'tabClick';
         }
 
-        $this->ui['tabs']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
 
     }
 
@@ -109,7 +109,7 @@ class Driver
     public function getHtml()
     {
         $html = '<el-tabs';
-        foreach ($this->ui['tabs'] as $k => $v) {
+        foreach ($this->ui as $k => $v) {
             if ($v === null) {
                 $html .= ' ' . $k;
             } else {

@@ -19,13 +19,13 @@ class TableItemImage extends TableItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['image'][':src'])) {
-            $this->ui['image'][':src'] = 'scope.row.'.$this->name.'';
+        if (!isset($this->ui[':src'])) {
+            $this->ui[':src'] = 'scope.row.'.$this->name.'';
         }
 
         if ($this->url) {
-            if (!isset($this->ui['image']['@click'])) {
-                $this->ui['image']['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
+            if (!isset($this->ui['@click'])) {
+                $this->ui['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
             }
         }
     }
@@ -50,13 +50,15 @@ class TableItemImage extends TableItem
         $html .= '>';
         $html .= '<template slot-scope="scope">';
         $html .= '<el-image';
-        if (isset($this->ui['image'])) {
-            foreach ($this->ui['image'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'table-column') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

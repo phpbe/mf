@@ -18,13 +18,13 @@ class TableItemTag extends TableItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['tag']['size'])) {
-            $this->ui['tag']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        if (!isset($this->ui['size'])) {
+            $this->ui['size'] = isset($params['size']) ? $params['size'] : 'mini';
         }
 
         if ($this->url) {
-            if (!isset($this->ui['tag']['@click'])) {
-                $this->ui['tag']['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
+            if (!isset($this->ui['@click'])) {
+                $this->ui['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
             }
         }
     }
@@ -49,13 +49,15 @@ class TableItemTag extends TableItem
         $html .= '>';
         $html .= '<template slot-scope="scope">';
         $html .= '<el-tag';
-        if (isset($this->ui['tag'])) {
-            foreach ($this->ui['tag'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'table-column') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

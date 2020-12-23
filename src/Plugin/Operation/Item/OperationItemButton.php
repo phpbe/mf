@@ -20,15 +20,7 @@ class OperationItemButton extends OperationItem
         parent::__construct($params);
 
         if (!isset($this->ui['size'])) {
-            $this->ui['size'] = isset($params['size']) ? $params['size'] : 'mini';
-        }
-
-        if (!isset($this->ui['type']) && isset($params['type'])) {
-            $this->ui['type'] = $params['type'];
-        }
-
-        if (!isset($this->ui['icon']) && isset($params['icon'])) {
-            $this->ui['icon'] = $params['icon'];
+            $this->ui['size'] = 'mini';
         }
 
         if (!isset($this->ui['@click'])) {

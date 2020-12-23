@@ -71,13 +71,14 @@ class FormActionButtonDropDown extends FormAction
         $html .= '>';
 
         $html .= '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'dropdown' || $k == 'dropdown-menu') {
+                continue;
+            }
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

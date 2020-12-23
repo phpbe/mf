@@ -19,21 +19,13 @@ class TableItemButton extends TableItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['button']['size'])) {
-            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
-        }
-
-        if (!isset($this->ui['button']['type']) && isset($params['type'])) {
-            $this->ui['button']['type'] = $params['type'];
-        }
-
-        if (!isset($this->ui['button']['icon']) && isset($params['icon'])) {
-            $this->ui['button']['icon'] = $params['icon'];
+        if (!isset($this->ui['size'])) {
+            $this->ui['size'] =  'mini';
         }
 
         if ($this->url) {
-            if (!isset($this->ui['button']['@click'])) {
-                $this->ui['button']['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
+            if (!isset($this->ui['@click'])) {
+                $this->ui['@click'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
             }
         }
     }
@@ -58,13 +50,15 @@ class TableItemButton extends TableItem
         $html .= '>';
         $html .= '<template slot-scope="scope">';
         $html .= '<el-button';
-        if (isset($this->ui['button'])) {
-            foreach ($this->ui['button'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'table-column') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';

@@ -71,43 +71,43 @@ class FormItemAvatar extends FormItem
             }
         }
 
-        if (!isset($this->ui['shape'])) {
+        if (!isset($this->ui['avatar']['shape'])) {
             $this->ui['avatar']['shape'] = 'square';
         }
 
-        if (!isset($this->ui[':src'])) {
+        if (!isset($this->ui['avatar'][':src'])) {
             $this->ui['avatar'][':src'] = 'formItems.' . $this->name . '.url';
         }
 
-        if (!isset($this->ui['upload']['accept'])) {
-            $this->ui['upload']['accept'] = implode(',', $this->allowUploadImageTypes);
+        if (!isset($this->ui['accept'])) {
+            $this->ui['accept'] = implode(',', $this->allowUploadImageTypes);
         }
 
-        if (!isset($this->ui['upload'][':on-success'])) {
-            $this->ui['upload'][':on-success'] = 'formItemImage_' . $this->name . '_onSuccess';
+        if (!isset($this->ui[':on-success'])) {
+            $this->ui[':on-success'] = 'formItemImage_' . $this->name . '_onSuccess';
         }
 
-        if (!isset($this->ui['upload'][':before-upload'])) {
-            $this->ui['upload'][':before-upload'] = 'formItemImage_' . $this->name . '_beforeUpload';
+        if (!isset($this->ui[':before-upload'])) {
+            $this->ui[':before-upload'] = 'formItemImage_' . $this->name . '_beforeUpload';
         }
 
-        if (!isset($this->ui['upload'][':on-error'])) {
-            $this->ui['upload'][':on-error'] = 'formItemImage_onError';
+        if (!isset($this->ui[':on-error'])) {
+            $this->ui[':on-error'] = 'formItemImage_onError';
         }
 
-        if (!isset($this->ui['upload'][':file-list'])) {
-            $this->ui['upload'][':file-list'] = 'formItems.' . $this->name . '.fileList';
+        if (!isset($this->ui[':file-list'])) {
+            $this->ui[':file-list'] = 'formItems.' . $this->name . '.fileList';
         }
 
-        if (!isset($this->ui['upload'][':data'])) {
-            $this->ui['upload'][':data'] = 'formItems.' . $this->name . '.postData';
+        if (!isset($this->ui[':data'])) {
+            $this->ui[':data'] = 'formItems.' . $this->name . '.postData';
         }
 
-        if (!isset($this->ui['upload']['limit'])) {
-            $this->ui['upload']['limit'] = 1;
+        if (!isset($this->ui['limit'])) {
+            $this->ui['limit'] = 1;
         }
 
-        $this->ui['upload']['v-model'] = 'formData.' . $this->name;
+        $this->ui['v-model'] = 'formData.' . $this->name;
     }
 
     /**
@@ -132,15 +132,14 @@ class FormItemAvatar extends FormItem
         $html .= '>';
 
         $html .= '<el-avatar v-if="formItems.' . $this->name . '.url"';
-        foreach ($this->ui as $k => $v) {
-            if ($k == 'form-item' || $k == 'upload') {
-                continue;
-            }
 
-            if ($v === null) {
-                $html .= ' ' . $k;
-            } else {
-                $html .= ' ' . $k . '="' . $v . '"';
+        if (isset($this->ui['avatar'])) {
+            foreach ($this->ui['avatar'] as $k => $v) {
+                if ($v === null) {
+                    $html .= ' ' . $k;
+                } else {
+                    $html .= ' ' . $k . '="' . $v . '"';
+                }
             }
         }
 
@@ -148,8 +147,12 @@ class FormItemAvatar extends FormItem
         $html .= '</el-avatar>';
 
         $html .= '<el-upload';
-        if (isset($this->ui['upload'])) {
-            foreach ($this->ui['upload'] as $k => $v) {
+        if (isset($this->ui)) {
+            foreach ($this->ui as $k => $v) {
+                if ($k == 'form-item' || $k == 'avatar') {
+                    continue;
+                }
+
                 if ($v === null) {
                     $html .= ' ' . $k;
                 } else {

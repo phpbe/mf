@@ -26,8 +26,8 @@ class OperationItemButtonDropDown extends OperationItem
             $this->ui['dropdown']['@command'] = 'operationItemButtonDropDownClick';
         }
 
-        if (!isset($this->ui['button']['size'])) {
-            $this->ui['button']['size'] = isset($params['size']) ? $params['size'] : 'mini';
+        if (!isset($this->ui['size'])) {
+            $this->ui['size'] = 'mini';
         }
 
         if (!isset($this->ui['dropdown-menu']['slot'])) {

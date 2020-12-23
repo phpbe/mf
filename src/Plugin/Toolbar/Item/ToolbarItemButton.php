@@ -19,12 +19,6 @@ class ToolbarItemButton extends ToolbarItem
     {
         parent::__construct($params);
 
-        if (!isset($this->ui['icon'])) {
-            if (isset($params['icon'])) {
-                $this->ui['icon'] = $params['icon'];
-            }
-        }
-
         if (!isset($this->ui['@click'])) {
             $this->ui['@click'] = 'toolbarItemClick(\'' . $this->name . '\')';
         }

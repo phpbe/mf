@@ -19,8 +19,8 @@ class TableItemSwitch extends TableItem
         parent::__construct($params);
 
         if ($this->url) {
-            if (!isset($this->ui['switch']['@change'])) {
-                $this->ui['switch']['@change'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
+            if (!isset($this->ui['@change'])) {
+                $this->ui['@change'] = 'tableItemClick(\'' . $this->name . '\', scope.row)';
             }
 
             if (!isset($this->postData['field'])) {
@@ -28,16 +28,16 @@ class TableItemSwitch extends TableItem
             }
         }
 
-        if (!isset($this->ui['switch']['active-value'])) {
-            $this->ui['switch']['active-value'] = '1';
+        if (!isset($this->ui['active-value'])) {
+            $this->ui['active-value'] = '1';
         }
 
-        if (!isset($this->ui['switch']['inactive-value'])) {
-            $this->ui['switch']['inactive-value'] = '0';
+        if (!isset($this->ui['inactive-value'])) {
+            $this->ui['inactive-value'] = '0';
         }
 
-        if (!isset($this->ui['switch']['v-model'])) {
-            $this->ui['switch']['v-model'] = 'tableData[scope.$index].' . $this->name; //'scope.row.' . $this->name;
+        if (!isset($this->ui['v-model'])) {
+            $this->ui['v-model'] = 'tableData[scope.$index].' . $this->name; //'scope.row.' . $this->name;
         }
     }
 
@@ -62,13 +62,15 @@ class TableItemSwitch extends TableItem
         $html .= '>';
         $html .= '<template slot-scope="scope">';
         $html .= '<el-switch';
-        if (isset($this->ui['switch'])) {
-            foreach ($this->ui['switch'] as $k => $v) {
-                if ($v === null) {
-                    $html .= ' ' . $k;
-                } else {
-                    $html .= ' ' . $k . '="' . $v . '"';
-                }
+        foreach ($this->ui as $k => $v) {
+            if ($k == 'table-column') {
+                continue;
+            }
+
+            if ($v === null) {
+                $html .= ' ' . $k;
+            } else {
+                $html .= ' ' . $k . '="' . $v . '"';
             }
         }
         $html .= '>';
