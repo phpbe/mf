@@ -450,6 +450,7 @@
                                     });
                                 }
                             }
+                            _this.resize();
                             _this.updateToolbars();
                         }
                     }).catch(function (error) {
@@ -473,6 +474,7 @@
                                 _this.tableData = responseData.data.tableData;
                                 _this.pages = Math.floor(_this.total / _this.pageSize);
                             }
+                            _this.resize();
                             _this.updateToolbars();
                         }
                     });
@@ -635,28 +637,25 @@
                     var toolbarEnable;
                     <?php
                     if (isset($this->setting['toolbar']['items']) && count($this->setting['toolbar']['items']) > 0) {
-                    $i = 0;
-                    foreach ($this->setting['toolbar']['items'] as $item) {
-                    if (isset($item['task']) &&
-                $item['task'] == 'fieldEdit' &&
-                isset($item['postData']['field']) &&
-                isset($item['postData']['value'])) {
-                    ?>
-                    if (this.selectedRows.length > 0) {
-                        toolbarEnable = true;
-                        for (var x in this.selectedRows) {
-                            if (this.selectedRows[x].<?php echo $item['postData']['field']; ?> == "<?php echo $item['postData']['value']; ?>") {
+                        $i = 0;
+                        foreach ($this->setting['toolbar']['items'] as $item) {
+                            if (isset($item['task']) && $item['task'] == 'fieldEdit' && isset($item['postData']['field']) && isset($item['postData']['value'])) {
+                            ?>
+                            if (this.selectedRows.length > 0) {
+                                toolbarEnable = true;
+                                for (var x in this.selectedRows) {
+                                    if (this.selectedRows[x].<?php echo $item['postData']['field']; ?> == "<?php echo $item['postData']['value']; ?>") {
+                                        toolbarEnable = false;
+                                    }
+                                }
+                            } else {
                                 toolbarEnable = false;
                             }
+                            this.toolbarItems.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
+                            <?php
+                            }
+                            $i++;
                         }
-                    } else {
-                        toolbarEnable = false;
-                    }
-                    this.toolbarItems.<?php echo $toolbarItemDriverNames[$i]; ?>.enable = toolbarEnable;
-                    <?php
-                    }
-                    $i++;
-                    }
                     }
                     ?>
                 },
@@ -687,11 +686,10 @@
             },
             mounted: function () {
                 this.$nextTick(function () {
-                    var offset = this.total > 0 ? 55 : 15;
-                    this.tableHeight = document.documentElement.clientHeight - this.$refs.tableRef.$el.offsetTop - offset;
-                    var self = this;
+                    this.resize();
+                    var _this = this;
                     window.onresize = function () {
-                        self.tableHeight = document.documentElement.clientHeight - self.$refs.tableRef.$el.offsetTop - offset
+                        _this.resize();
                     };
                 });
 
