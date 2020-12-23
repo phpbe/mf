@@ -92,8 +92,8 @@ class FormItemFile extends FormItem
      */
     public function getHtml()
     {
-        if (!isset($this->ui['upload']['action'])) {
-            $this->ui['upload']['action'] = beUrl('System.Plugin.uploadFile');
+        if (!isset($this->ui['action'])) {
+            $this->ui['action'] = beUrl('System.Plugin.uploadFile');
         }
 
         $html = '<el-form-item';
