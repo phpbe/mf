@@ -146,7 +146,7 @@ abstract class Be
      * 获取指定的库（单例）
      *
      * @param string $lib 库名，可指定命名空间，调用第三方库
-     * @return Lib | mixed
+     * @return mixed
      * @throws RuntimeException
      */
     public static function getLib($lib)
@@ -161,7 +161,7 @@ abstract class Be
      * 新创建一个指定的库
      *
      * @param string $lib 库名，可指定命名空间，调用第三方库
-     * @return Lib | mixed
+     * @return mixed
      * @throws RuntimeException
      */
     public static function newLib($lib)

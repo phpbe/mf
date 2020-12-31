@@ -105,6 +105,14 @@ class Task
                                 'type' => 'danger'
                             ]
                         ],
+                        [
+                            'label' => '部署',
+                            'action' => 'tutorial',
+                            'target' => 'drawer',
+                            'ui' => [
+                                'icon' => 'el-icon-helper',
+                            ]
+                        ],
                     ]
                 ],
 
@@ -235,7 +243,7 @@ class Task
             ],
 
             'create' => [
-                'title' => '新建用户',
+                'title' => '新建计划任务',
                 'form' => [
                     'items' => [
                         [
@@ -268,7 +276,7 @@ class Task
             ],
 
             'edit' => [
-                'title' => '编辑用户',
+                'title' => '编辑计划任务',
                 'form' => [
                     'items' => [
                         [
@@ -311,6 +319,14 @@ class Task
     }
 
     /**
+     * 部署
+     */
+    public function tutorial()
+    {
+
+    }
+
+    /**
      * 侓康检查
      */
     public function health()
@@ -328,7 +344,6 @@ class Task
     {
         // 抽取任务
         $extractTasks = Be::newTable('system_task')
-            ->where('is_delete', 0)
             ->where('is_enable', 1)
             ->where('schedule', '!=', '')
             ->getObjects();
