@@ -625,7 +625,11 @@ abstract class Driver
                 }
             }
 
-            $fields[] = $this->quoteKey($key) . '=' . $this->quoteValue($value);
+            if ($value === null) {
+                $fields[] = $this->quoteKey($key) . '=null';
+            } else {
+                $fields[] = $this->quoteKey($key) . '=' . $this->quoteValue($value);
+            }
         }
 
         if (!$where) {
@@ -847,14 +851,24 @@ abstract class Driver
                     foreach ($primaryKey as $pKey) {
                         $when[] = $this->quoteKey($pKey) . '=' . $this->quoteValue($vars[$pKey]);
                     }
-                    $caseMapping[$field][] = 'WHEN ' . implode(' AND ', $when) . ' THEN ' . $this->quoteValue($vars[$field]);
+
+                    if ($vars[$field] === null) {
+                        $caseMapping[$field][] = 'WHEN ' . implode(' AND ', $when) . ' THEN null';
+                    } else {
+                        $caseMapping[$field][] = 'WHEN ' . implode(' AND ', $when) . ' THEN ' . $this->quoteValue($vars[$field]);
+                    }
 
                 } else {
                     // 主键不更新
                     if ($field == $primaryKey) {
                         continue;
                     }
-                    $caseMapping[$field][] = 'WHEN ' . $this->quoteValue($vars[$primaryKey]) . ' THEN ' . $this->quoteValue($vars[$field]);
+
+                    if ($vars[$field] !== null) {
+                        $caseMapping[$field][] = 'WHEN ' . $this->quoteValue($vars[$primaryKey]) . ' THEN null';
+                    } else {
+                        $caseMapping[$field][] = 'WHEN ' . $this->quoteValue($vars[$primaryKey]) . ' THEN ' . $this->quoteValue($vars[$field]);
+                    }
                 }
             }
 
