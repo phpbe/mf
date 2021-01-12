@@ -2,16 +2,16 @@
 
 namespace Be\Mf;
 
-use Be\Framework\Cache\CacheFactory;
-use Be\Framework\Db\DbFactory;
-use Be\Framework\Db\TableFactory;
-use Be\Framework\Db\TablePropertyFactory;
-use Be\Framework\Db\TupleFactory;
-use Be\Framework\Lib\LibFactory;
-use Be\Framework\Plugin\PluginFactory;
-use Be\Framework\Runtime\RuntimeException;
-use Be\Framework\Session\SessionFactory;
-use Be\Framework\Template\TemplateFactory;
+use Be\F\Cache\CacheFactory;
+use Be\F\Db\DbFactory;
+use Be\F\Db\TableFactory;
+use Be\F\Db\TablePropertyFactory;
+use Be\F\Db\TupleFactory;
+use Be\F\Lib\LibFactory;
+use Be\F\Plugin\PluginFactory;
+use Be\F\Runtime\RuntimeException;
+use Be\F\Session\SessionFactory;
+use Be\F\Template\TemplateFactory;
 
 /**
  *  BE系统资源工厂
@@ -25,7 +25,7 @@ abstract class Be extends \Be\F\Be
     /**
      * 获取SESSION
      *
-     * @return \Be\Framework\Session\Driver
+     * @return \Be\F\Session\Driver
      */
     public static function getSession()
     {
@@ -35,7 +35,7 @@ abstract class Be extends \Be\F\Be
     /**
      * 获取Cache
      *
-     * @return \Be\Framework\Cache\Driver
+     * @return \Be\F\Cache\Driver
      */
     public static function getCache()
     {
@@ -46,7 +46,7 @@ abstract class Be extends \Be\F\Be
      * 获取数据库对象（单例）
      *
      * @param string $name 数据库名
-     * @return \Be\Framework\Db\Driver
+     * @return \Be\F\Db\Driver
      * @throws RuntimeException
      */
     public static function getDb($name = 'master')
@@ -60,7 +60,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 数据库名
      * @param int $expire 有效时间(单位：秒)
-     * @return \Be\Framework\Db\Driver
+     * @return \Be\F\Db\Driver
      * @throws RuntimeException
      */
     public static function getExpireDb($name = 'master', $expire = 600)
@@ -72,7 +72,7 @@ abstract class Be extends \Be\F\Be
      * 新创建一个数据库对象
      *
      * @param string $name 数据库名
-     * @return \Be\Framework\Db\Driver
+     * @return \Be\F\Db\Driver
      * @throws RuntimeException
      */
     public static function newDb($name = 'master')
@@ -85,7 +85,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 数据库行记灵对象名
      * @param string $db 库名
-     * @return \Be\Framework\Db\Tuple | mixed
+     * @return \Be\F\Db\Tuple | mixed
      */
     public static function getTuple($name, $db = 'master')
     {
@@ -97,7 +97,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 数据库行记灵对象名
      * @param string $db 库名
-     * @return \Be\Framework\Db\Tuple | mixed
+     * @return \Be\F\Db\Tuple | mixed
      */
     public static function newTuple($name, $db = 'master')
     {
@@ -109,7 +109,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 表名
      * @param string $db 库名
-     * @return \Be\Framework\Db\Table
+     * @return \Be\F\Db\Table
      */
     public static function getTable($name, $db = 'master')
     {
@@ -121,7 +121,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 表名
      * @param string $db 库名
-     * @return \Be\Framework\Db\Table
+     * @return \Be\F\Db\Table
      */
     public static function newTable($name, $db = 'master')
     {
@@ -133,7 +133,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $name 表名
      * @param string $db 库名
-     * @return \Be\Framework\Db\TableProperty
+     * @return \Be\F\Db\TableProperty
      */
     public static function getTableProperty($name, $db = 'master')
     {
@@ -193,7 +193,7 @@ abstract class Be extends \Be\F\Be
      *
      * @param string $template 模板名
      * @param string $theme 主题名
-     * @return \Be\Framework\Template\Driver
+     * @return \Be\F\Template\Driver
      * @throws RuntimeException
      */
     public static function getTemplate($template, $theme = null)
@@ -205,7 +205,7 @@ abstract class Be extends \Be\F\Be
     /**
      * 获取指定的一个菜单（单例）
      *
-     * @return \Be\Framework\Menu\Driver
+     * @return \Be\F\Menu\Driver
      */
     public static function getMenu()
     {

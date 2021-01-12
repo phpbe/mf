@@ -3,8 +3,8 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\Framework\db\Driver;
-use Be\Framework\Exception\ServiceException;
+use Be\F\db\Driver;
+use Be\F\Exception\ServiceException;
 
 class Installer
 {

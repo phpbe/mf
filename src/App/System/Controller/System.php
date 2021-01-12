@@ -2,7 +2,7 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\Framework\Response;
+use Be\F\Response;
 
 /**
  * Class System

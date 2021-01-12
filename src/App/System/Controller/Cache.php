@@ -2,11 +2,11 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\Framework\Plugin\Table\Item\TableItemIcon;
-use Be\Framework\Plugin\Table\Item\TableItemTag;
+use Be\F\Plugin\Table\Item\TableItemIcon;
+use Be\F\Plugin\Table\Item\TableItemTag;
 use Be\Mf\Be;
-use Be\Framework\Request;
-use Be\Framework\Response;
+use Be\F\Request;
+use Be\F\Response;
 
 
 /**

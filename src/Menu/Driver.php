@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\Framework\Menu;
+namespace Be\F\Menu;
 
 /**
  * 菜单基类

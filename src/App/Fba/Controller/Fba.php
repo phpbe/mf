@@ -3,10 +3,10 @@
 namespace Be\Mf\App\Fba\Controller;
 
 
-use Be\Framework\Plugin\Form\Item\FormItemSelect;
+use Be\F\Plugin\Form\Item\FormItemSelect;
 use Be\Mf\Be;
-use Be\Framework\Cache;
-use Be\Framework\Request;
+use Be\F\Cache;
+use Be\F\Request;
 
 /**
  * Class Fba

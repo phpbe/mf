@@ -2,9 +2,9 @@
 
 namespace Be\Mf\App\System\Service;
 
-use Be\Framework\Exception\ServiceException;
+use Be\F\Exception\ServiceException;
 use Be\Mf\Be;
-use Be\Framework\Util\Str;
+use Be\F\Util\Str;
 
 class Db
 {

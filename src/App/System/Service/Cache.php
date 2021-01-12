@@ -3,7 +3,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\Framework\Util\FileSystem\FileSize;
+use Be\F\Util\FileSystem\FileSize;
 
 class Cache
 {

@@ -2,8 +2,8 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\Framework\Exception\ServiceException;
-use Be\Framework\RuntimeException;
+use Be\F\Exception\ServiceException;
+use Be\F\RuntimeException;
 
 class Watermark
 {

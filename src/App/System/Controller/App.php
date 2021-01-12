@@ -1,11 +1,11 @@
 <?php
 namespace Be\Mf\App\System\Controller;
 
-use Be\Framework\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\Framework\Plugin\Form\Item\FormItemInputNumberInt;
-use Be\Framework\Plugin\Table\Item\TableItemIcon;
+use Be\F\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\F\Plugin\Form\Item\FormItemInputNumberInt;
+use Be\F\Plugin\Table\Item\TableItemIcon;
 use Be\Mf\Be;
-use Be\Framework\Db\Tuple;
+use Be\F\Db\Tuple;
 
 /**
  * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")

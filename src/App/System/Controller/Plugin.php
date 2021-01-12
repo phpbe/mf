@@ -3,10 +3,10 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\Framework\Request;
-use Be\Framework\Response;
-use Be\Framework\Util\FileSystem\FileSize;
-use Be\Framework\Util\Net\FileUpload;
+use Be\F\Request;
+use Be\F\Response;
+use Be\F\Util\FileSystem\FileSize;
+use Be\F\Util\Net\FileUpload;
 
 /**
  * @BePermissionGroup("*")

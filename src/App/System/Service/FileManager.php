@@ -2,8 +2,8 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\Framework\Session;
-use Be\Framework\Exception\ServiceException;
+use Be\F\Session;
+use Be\F\Exception\ServiceException;
 
 /**
  */

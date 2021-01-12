@@ -1,12 +1,7 @@
 <?php
 namespace Be\Mf\App\Etl\Controller;
 
-
-
-
 use Be\Mf\Be;
-use Be\Framework\Request;
-use Be\Framework\Response;
 
 class Er
 {
@@ -45,7 +40,9 @@ class Er
 
         $formattedTables = array();
 
-        $filterTables = Request::get('tables');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        $filterTables = $request->get('tables');
         if ($filterTables) {
             $filterTables = explode(',', $filterTables);
             foreach ($filterTables as $filterTable) {
@@ -71,8 +68,8 @@ class Er
             }
         }
 
-        Response::set('tables', $formattedTables);
-        Response::display();
+        $response->set('tables', $formattedTables);
+        $response->display();
     }
 
 }

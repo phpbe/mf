@@ -3,8 +3,8 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\Framework\Request;
-use Be\Framework\Response;
+use Be\F\Request;
+use Be\F\Response;
 
 /**
  * @BeMenuGroup("系统配置")

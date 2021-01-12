@@ -4,8 +4,8 @@ namespace Be\Mf\App\System\Service;
 
 
 use Be\App\System\Helper\DocComment;
-use Be\Framework\Db\Tuple;
-use Be\Framework\Exception\ServiceException;
+use Be\F\Db\Tuple;
+use Be\F\Exception\ServiceException;
 use Be\Mf\Be;
 
 class Role

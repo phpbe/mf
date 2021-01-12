@@ -2,23 +2,23 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\Framework\Plugin\Table\Item\TableItemLink;
-use Be\Framework\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
-use Be\Framework\Plugin\Detail\Item\DetailItemAvatar;
-use Be\Framework\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Framework\Plugin\Form\Item\FormItemAvatar;
-use Be\Framework\Plugin\Form\Item\FormItemSelect;
-use Be\Framework\Plugin\Form\Item\FormItemSwitch;
-use Be\Framework\Plugin\Table\Item\TableItemAvatar;
-use Be\Framework\Plugin\Table\Item\TableItemSelection;
-use Be\Framework\Plugin\Table\Item\TableItemSwitch;
+use Be\F\Plugin\Table\Item\TableItemLink;
+use Be\F\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
+use Be\F\Plugin\Detail\Item\DetailItemAvatar;
+use Be\F\Plugin\Detail\Item\DetailItemSwitch;
+use Be\F\Plugin\Form\Item\FormItemAvatar;
+use Be\F\Plugin\Form\Item\FormItemSelect;
+use Be\F\Plugin\Form\Item\FormItemSwitch;
+use Be\F\Plugin\Table\Item\TableItemAvatar;
+use Be\F\Plugin\Table\Item\TableItemSelection;
+use Be\F\Plugin\Table\Item\TableItemSwitch;
 use Be\Mf\Be;
-use Be\Framework\Db\Tuple;
-use Be\Framework\Exception\PluginException;
-use Be\Framework\Request;
-use Be\Framework\Response;
+use Be\F\Db\Tuple;
+use Be\F\Exception\PluginException;
+use Be\F\Request;
+use Be\F\Response;
 
-use Be\Framework\Util\Random;
+use Be\F\Util\Random;
 
 /**
  * Class User

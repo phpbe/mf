@@ -2,9 +2,9 @@
 
 namespace Be\Mf\App\System\Service;
 
-use Be\Framework\Db\Tuple;
-use Be\Framework\Exception\ServiceException;
-use Be\Framework\Util\Random;
+use Be\F\Db\Tuple;
+use Be\F\Exception\ServiceException;
+use Be\F\Util\Random;
 use Be\Mf\Be;
 
 class User

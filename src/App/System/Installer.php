@@ -2,7 +2,7 @@
 namespace Be\Mf\App\System;
 
 use Be\Mf\Be;
-use Be\Framework\Util\Random;
+use Be\F\Util\Random;
 
 /**
  * 应用安装器

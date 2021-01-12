@@ -3,20 +3,20 @@
 namespace Be\Mf\App\System\Controller;
 
 
-use Be\Framework\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Framework\Plugin\Detail\Item\DetailItemTree;
-use Be\Framework\Plugin\Form\Item\FormItemRadioGroupButton;
-use Be\Framework\Plugin\Form\Item\FormItemSelect;
-use Be\Framework\Plugin\Form\Item\FormItemSwitch;
-use Be\Framework\Plugin\Form\Item\FormItemTree;
-use Be\Framework\Plugin\Table\Item\TableItemLink;
-use Be\Framework\Plugin\Table\Item\TableItemSelection;
-use Be\Framework\Plugin\Table\Item\TableItemSwitch;
-use Be\Framework\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
+use Be\F\Plugin\Detail\Item\DetailItemSwitch;
+use Be\F\Plugin\Detail\Item\DetailItemTree;
+use Be\F\Plugin\Form\Item\FormItemRadioGroupButton;
+use Be\F\Plugin\Form\Item\FormItemSelect;
+use Be\F\Plugin\Form\Item\FormItemSwitch;
+use Be\F\Plugin\Form\Item\FormItemTree;
+use Be\F\Plugin\Table\Item\TableItemLink;
+use Be\F\Plugin\Table\Item\TableItemSelection;
+use Be\F\Plugin\Table\Item\TableItemSwitch;
+use Be\F\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Mf\Be;
-use Be\Framework\Db\Tuple;
-use Be\Framework\Exception\PluginException;
-use Be\Framework\Request;
+use Be\F\Db\Tuple;
+use Be\F\Exception\PluginException;
+use Be\F\Request;
 
 
 /**

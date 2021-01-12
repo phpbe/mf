@@ -3,7 +3,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\Framework\Exception\ServiceException;
+use Be\F\Exception\ServiceException;
 
 class Log
 {
