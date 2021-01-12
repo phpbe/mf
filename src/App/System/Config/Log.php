@@ -1,5 +1,5 @@
 <?php
-namespace Be\App\System\Config;
+namespace Be\Mf\App\System\Config;
 
 /**
  * @BeConfig("系统运行日志")

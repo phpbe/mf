@@ -1,9 +1,9 @@
 <?php
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Be;
-use Be\System\Exception\ServiceException;
-use Be\System\RuntimeException;
+use Be\Mf\Be;
+use Be\Framework\Exception\ServiceException;
+use Be\Framework\RuntimeException;
 
 class Watermark
 {
@@ -75,9 +75,9 @@ class Watermark
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
 
-            $watermarkImage = Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image;
+            $watermarkImage = Be::getRuntime()->dataPath() . '/System/Watermark/' .  $configWatermark->image;
             if (!$configWatermark->image || !file_exists($watermarkImage)) {
-                $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/watermark.png';
+                $watermarkImage = Be::getRuntime()->rootPath() . Be::getProperty('App.System')->path() . '/Template/Watermark/images/watermark.png';
             }
             
             // 添加图像水印

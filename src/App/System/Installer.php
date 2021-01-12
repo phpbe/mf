@@ -1,8 +1,8 @@
 <?php
-namespace Be\App\System;
+namespace Be\Mf\App\System;
 
-use Be\System\Be;
-use Be\Util\Random;
+use Be\Mf\Be;
+use Be\Framework\Util\Random;
 
 /**
  * 应用安装器

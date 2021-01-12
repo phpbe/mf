@@ -1,6 +1,6 @@
 <?php
-use Be\System\Be;
-use Be\System\Session;
+use Be\Mf\Be;
+use Be\Framework\Session;
 ?>
 
 <be-html>

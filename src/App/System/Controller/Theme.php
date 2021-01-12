@@ -1,13 +1,13 @@
 <?php
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\Plugin\Form\Item\FormItemInputNumberInt;
-use Be\Plugin\Table\Item\TableItemIcon;
-use Be\System\Be;
-use Be\System\Db\Tuple;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Framework\Plugin\Form\Item\FormItemInputNumberInt;
+use Be\Framework\Plugin\Table\Item\TableItemIcon;
+use Be\Mf\Be;
+use Be\Framework\Db\Tuple;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
 /**
  * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")
@@ -149,11 +149,14 @@ class Theme
      */
     public function install()
     {
-        if (Request::isAjax()) {
-            $postData = Request::json();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        if ($request->isAjax()) {
+            $postData = $request->json();
 
             if (!isset($postData['formData']['themeName'])) {
-                Response::error('参数主题名缺失！');
+                $response->error('参数主题名缺失！');
             }
 
             $themeName = $postData['formData']['themeName'];
@@ -163,9 +166,9 @@ class Theme
                 $serviceApp->install($themeName);
 
                 beOpLog('安装新主题：' . $themeName);
-                Response::success('主题安装成功！');
+                $response->success('主题安装成功！');
             } catch (\Throwable $t) {
-                Response::error($t->getMessage());
+                $response->error($t->getMessage());
             }
         } else {
             Be::getPlugin('Form')
@@ -195,10 +198,13 @@ class Theme
      */
     public function uninstall()
     {
-        $postData = Request::json();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->json();
 
         if (!isset($postData['row']['name'])) {
-            Response::error('参数主题名缺失！');
+            $response->error('参数主题名缺失！');
         }
 
         $themeName = $postData['row']['name'];
@@ -208,9 +214,9 @@ class Theme
             $serviceTheme->uninstall($themeName);
 
             beOpLog('卸载主题：' . $themeName);
-            Response::success('主题卸载成功！');
+            $response->success('主题卸载成功！');
         } catch (\Throwable $t) {
-            Response::error($t->getMessage());
+            $response->error($t->getMessage());
         }
     }
 

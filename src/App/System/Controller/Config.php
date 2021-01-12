@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\System\Be;
+use Be\Mf\Be;
 
 /**
  * @BeMenuGroup("系统配置", ordering="20")

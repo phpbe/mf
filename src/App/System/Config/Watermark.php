@@ -1,5 +1,5 @@
 <?php
-namespace Be\App\System\Config;
+namespace Be\Mf\App\System\Config;
 
 /**
  * @BeConfig("图片水印", test = "return beUrl('System.Watermark.test');")

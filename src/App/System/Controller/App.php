@@ -1,13 +1,11 @@
 <?php
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\Plugin\Form\Item\FormItemInputNumberInt;
-use Be\Plugin\Table\Item\TableItemIcon;
-use Be\System\Be;
-use Be\System\Db\Tuple;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Framework\Plugin\Form\Item\FormItemInputNumberInt;
+use Be\Framework\Plugin\Table\Item\TableItemIcon;
+use Be\Mf\Be;
+use Be\Framework\Db\Tuple;
 
 /**
  * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")
@@ -169,11 +167,13 @@ class App
      */
     public function install()
     {
-        if (Request::isAjax()) {
-            $postData = Request::json();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        if ($request->isAjax()) {
+            $postData = $request->json();
 
             if (!isset($postData['formData']['appName'])) {
-                Response::error('参数应用名缺失！');
+                $response->error('参数应用名缺失！');
             }
 
             $appName = $postData['formData']['appName'];
@@ -183,9 +183,9 @@ class App
                 $serviceApp->install($appName);
 
                 beOpLog('安装新应用：' . $appName);
-                Response::success('应用安装成功！');
+                $response->success('应用安装成功！');
             } catch (\Throwable $t) {
-                Response::error($t->getMessage());
+                $response->error($t->getMessage());
             }
 
         } else {
@@ -216,10 +216,13 @@ class App
      */
     public function uninstall()
     {
-        $postData = Request::json();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->json();
 
         if (!isset($postData['row']['name'])) {
-            Response::error('参数应用名缺失！');
+            $response->error('参数应用名缺失！');
         }
 
         $appName = $postData['row']['name'];
@@ -229,9 +232,9 @@ class App
             $serviceApp->uninstall($appName);
 
             beOpLog('卸载应用：' . $appName);
-            Response::success('应用卸载成功！');
+            $response->success('应用卸载成功！');
         } catch (\Throwable $t) {
-            Response::error($t->getMessage());
+            $response->error($t->getMessage());
         }
     }
 

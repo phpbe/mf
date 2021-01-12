@@ -1,10 +1,10 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Exception\ServiceException;
-use Be\System\Be;
-use Be\Util\Str;
+use Be\Framework\Exception\ServiceException;
+use Be\Mf\Be;
+use Be\Framework\Util\Str;
 
 class Db
 {
@@ -74,7 +74,7 @@ class Db
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/TableProperty/' . $dbName . '/' . $tableName . '.php';
+        $path = Be::getRuntime()->cachePath() . '/System/TableProperty/' . $dbName . '/' . $tableName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $code, LOCK_EX);
@@ -106,7 +106,7 @@ class Db
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Table/' . $dbName . '/' . $tableName . '.php';
+        $path = Be::getRuntime()->cachePath() . '/System/Table/' . $dbName . '/' . $tableName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $code, LOCK_EX);
@@ -150,7 +150,7 @@ class Db
         $code .= '}' . "\n";
         $code .= "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Tuple/' . $dbName . '/' . $tableName . '.php';
+        $path = Be::getRuntime()->cachePath() . '/System/Tuple/' . $dbName . '/' . $tableName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
         file_put_contents($path, $code, LOCK_EX);

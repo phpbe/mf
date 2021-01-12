@@ -1,14 +1,11 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Db\Tuple;
-use Be\System\Exception\ServiceException;
-use Be\System\Request;
-use Be\Util\Random;
-use Be\System\Be;
-use Be\System\Cookie;
-use Be\System\Session;
+use Be\Framework\Db\Tuple;
+use Be\Framework\Exception\ServiceException;
+use Be\Framework\Util\Random;
+use Be\Mf\Be;
 
 class User
 {
@@ -38,14 +35,18 @@ class User
             throw new ServiceException('参数IP（$ip）缺失！');
         }
 
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        $session = Be::getSession();
+
         $timesKey = '_user:login:ip:' . $ip;
-        $times = Session::get($timesKey);
+        $times = $session->get($timesKey);
         if (!$times) $times = 0;
         $times++;
         if ($times > 10) {
             throw new ServiceException('登陆失败次数过多，请稍后再试！');
         }
-        Session::set($timesKey, $times);
+        $session->set($timesKey, $times);
 
         $tupleUserLoginLog = Be::newTuple('system_user_login_log');
         $tupleUserLoginLog->username = $username;
@@ -135,12 +136,13 @@ class User
             $this->makeLogin($tupleUser);
 
             $rememberMe = $username . '|' . base64_encode($this->rc4($password, $tupleUser->salt));
-            Cookie::set('_rememberMe', $rememberMe, time() + 30 * 86400);
+
+            $response->cookie('_rememberMe', $rememberMe, time() + 30 * 86400);
 
             $tupleUserLoginLog->success = 1;
             $tupleUserLoginLog->description = '登陆成功！';
 
-            Session::delete($timesKey);
+            $session->delete($timesKey);
 
             $db->commit();
             $tupleUserLoginLog->save();
@@ -179,8 +181,8 @@ class User
         unset($user->password);
         unset($user->salt);
         unset($user->remember_me_token);
-        Session::set('_user', $user);
 
+        Be::getSession()->set('_user', $user);
         unset(Be::$cache['User:0']);
     }
 
@@ -191,26 +193,24 @@ class User
      */
     public function rememberMe()
     {
-        if (Cookie::has('_rememberMe')) {
-            $rememberMe = Cookie::get('_rememberMe', '');
-            if ($rememberMe) {
-                $rememberMe = Cookie::get('_rememberMe');
-                $rememberMe = explode('|', $rememberMe);
-                if (count($rememberMe) != 2) return;
+        $request = Be::getRequest();
+        $rememberMe = $request->cookie('_rememberMe', null);
+        if ($rememberMe) {
+            $rememberMe = explode('|', $rememberMe);
+            if (count($rememberMe) != 2) return;
 
-                $username = $rememberMe[0];
+            $username = $rememberMe[0];
 
-                $tupleUser = Be::newTuple('system_user');
-                try {
-                    $tupleUser->loadBy('username', $username);
+            $tupleUser = Be::newTuple('system_user');
+            try {
+                $tupleUser->loadBy('username', $username);
 
-                    $password = base64_decode($rememberMe[1]);
-                    $password = $this->rc4($password, $tupleUser->salt);
+                $password = base64_decode($rememberMe[1]);
+                $password = $this->rc4($password, $tupleUser->salt);
 
-                    $this->login($username, $password, Request::ip());
-                } catch (\Exception $e) {
-                    return;
-                }
+                $this->login($username, $password, $request->getIp());
+            } catch (\Exception $e) {
+                return;
             }
         }
     }
@@ -221,8 +221,8 @@ class User
      */
     public function logout()
     {
-        Session::delete('_user');
-        Cookie::delete('_rememberMe');
+        Be::getSession()->destroy();
+        Be::getResponse()->cookie('_rememberMe', '', -1);
     }
 
     /**

@@ -1,11 +1,11 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Form\Item\FormItemInputTextArea;
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Form\Item\FormItemInputTextArea;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
 /**
  * @BeMenuGroup("系统配置", icon="el-icon-setting")
@@ -20,11 +20,14 @@ class Mail
      */
     public function test()
     {
-        if (Request::isAjax()) {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-            $toEmail = Request::json('formData.toEmail', '');
-            $subject = Request::json('formData.subject', '');
-            $body = Request::json('formData.body', '', 'html');
+        if ($request->isAjax()) {
+
+            $toEmail = $request->json('formData.toEmail', '');
+            $subject = $request->json('formData.subject', '');
+            $body = $request->json('formData.body', '', 'html');
 
             try {
                 Be::getService('System.Mail')
@@ -33,11 +36,11 @@ class Mail
                     ->to($toEmail)
                     ->send();
 
-                beOpLog('发送测试邮件到 ' . $toEmail . ' -成功',  Request::json('formData'));
-                Response::success('发送邮件成功！', beUrl('System.Mail.test', ['toEmail' => $toEmail]));
+                beOpLog('发送测试邮件到 ' . $toEmail . ' -成功',  $request->json('formData'));
+                $response->success('发送邮件成功！', beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             } catch (\Exception $e) {
                 beOpLog('发送测试邮件到 ' . $toEmail . ' -失败：' . $e->getMessage());
-                Response::error('发送邮件失败：' . $e->getMessage(), beUrl('System.Mail.test', ['toEmail' => $toEmail]));
+                $response->error('发送邮件失败：' . $e->getMessage(), beUrl('System.Mail.test', ['toEmail' => $toEmail]));
             }
 
         } else {

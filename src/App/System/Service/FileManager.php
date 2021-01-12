@@ -1,9 +1,9 @@
 <?php
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Be;
-use Be\System\Session;
-use Be\System\Exception\ServiceException;
+use Be\Mf\Be;
+use Be\Framework\Session;
+use Be\Framework\Exception\ServiceException;
 
 /**
  */
@@ -13,7 +13,7 @@ class FileManager
     public function getFiles($option = array())
     {
         $absPath = $this->getAbsPath($option['path']);
-        if ($absPath == false) $absPath = Be::getRuntime()->getDataPath();
+        if ($absPath == false) $absPath = Be::getRuntime()->dataPath();
 
         $return = array();
 
@@ -148,7 +148,7 @@ class FileManager
 
     public function getAbsPath($path = null)
     {
-        if ($path == null) $path = Session::get('systemFileManagerPath');
+        if ($path == null) $path = $session->get('systemFileManagerPath');
 
         // 禁止用户查看其它目录
         if (strpos($path, './') != false) {
@@ -160,7 +160,7 @@ class FileManager
         }
 
         // 绝对路径
-        $absPath = Be::getRuntime()->getDataPath() . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $absPath = Be::getRuntime()->dataPath() . str_replace('/', DIRECTORY_SEPARATOR, $path);
         if (!is_dir($absPath)) {
             throw new ServiceException('路径不存在！');
         }

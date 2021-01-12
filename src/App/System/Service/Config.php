@@ -1,8 +1,8 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Be;
+use Be\Mf\Be;
 
 class Config
 {
@@ -30,7 +30,7 @@ class Config
         }
         $code .= "}\n";
 
-        $path = Be::getRuntime()->getDataPath() . '/' . $appName . '/Config/' . $configName . '.php';
+        $path = Be::getRuntime()->dataPath() . '/' . $appName . '/Config/' . $configName . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
         file_put_contents($path, $code, LOCK_EX);

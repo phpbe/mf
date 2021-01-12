@@ -1,5 +1,5 @@
 <?php
-namespace Be\App\System\Config;
+namespace Be\Mf\App\System\Config;
 
 /**
  * @BeConfig("邮件", test = "return beUrl('System.Mail.test');")

@@ -1,15 +1,15 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Plugin\Form\Item\FormItemCron;
-use Be\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\Plugin\Form\Item\FormItemSwitch;
-use Be\Plugin\Table\Item\TableItemSelection;
-use Be\Plugin\Table\Item\TableItemSwitch;
-use Be\System\Be;
-use Be\System\Db\Tuple;
+use Be\Framework\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Framework\Plugin\Form\Item\FormItemCron;
+use Be\Framework\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Framework\Plugin\Form\Item\FormItemSwitch;
+use Be\Framework\Plugin\Table\Item\TableItemSelection;
+use Be\Framework\Plugin\Table\Item\TableItemSwitch;
+use Be\Mf\Be;
+use Be\Framework\Db\Tuple;
 
 
 /**

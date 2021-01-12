@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Be;
-use Be\System\Exception\ServiceException;
+use Be\Mf\Be;
+use Be\Framework\Exception\ServiceException;
 
 class Template
 {
@@ -20,7 +20,7 @@ class Template
     {
         $themeProperty = Be::getProperty('Theme.' . $theme);
 
-        $fileTheme = Be::getRuntime()->getRootPath() . $themeProperty->getPath() . '/' . $theme . '.php';
+        $fileTheme = Be::getRuntime()->rootPath() . $themeProperty->path() . '/' . $theme . '.php';
         if (!file_exists($fileTheme)) {
             throw new ServiceException('主题 ' . $theme . ' 不存在！');
         }
@@ -30,13 +30,13 @@ class Template
         $name = array_shift($parts);
 
         $property = Be::getProperty($type . '.' . $name);
-        $fileTemplate = Be::getRuntime()->getRootPath() . $property->getPath() . '/Template/' . implode('/', $parts) . '.php';
+        $fileTemplate = Be::getRuntime()->rootPath() . $property->path() . '/Template/' . implode('/', $parts) . '.php';
 
         if (!file_exists($fileTemplate)) {
             throw new ServiceException('模板 ' . $template . ' 不存在！');
         }
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
+        $path = Be::getRuntime()->cachePath() . '/System/Template/' . $theme . '/' . $type . '/' . $name . '/' . implode('/', $parts) . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 
@@ -59,7 +59,7 @@ class Template
                     $tmpName = array_shift($includes);
 
                     $tmpProperty = Be::getProperty($tmpType . '.' . $tmpName);
-                    $fileInclude = Be::getRuntime()->getRootPath() . $tmpProperty->getPath() . '/Template/' . implode('/', $includes) . '.php';
+                    $fileInclude = Be::getRuntime()->rootPath() . $tmpProperty->path() . '/Template/' . implode('/', $includes) . '.php';
                     if (!file_exists($fileInclude)) {
                         throw new ServiceException('模板中包含的文件 ' . $m . ' 不存在！');
                     }

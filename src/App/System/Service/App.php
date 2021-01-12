@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
-use Be\System\Be;
-use Be\System\Exception\ServiceException;
+use Be\Mf\Be;
+use Be\Framework\Exception\ServiceException;
 
 class App
 {
@@ -76,9 +76,9 @@ class App
 
         $property = Be::getProperty('App.' . $appName);
         Be::getDb()->insert('system_app', [
-            'name' => $property->getName(),
-            'label' => $property->getLabel(),
-            'icon' => $property->getIcon(),
+            'name' => $property->name(),
+            'label' => $property->label(),
+            'icon' => $property->icon(),
             'ordering' => $lastOrdering + 1,
             'install_time' => date('Y-m-d H:i:s')
         ]);

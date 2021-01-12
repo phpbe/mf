@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Table\Item\TableItemIcon;
-use Be\Plugin\Table\Item\TableItemTag;
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Table\Item\TableItemIcon;
+use Be\Framework\Plugin\Table\Item\TableItemTag;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
 
 /**
@@ -22,15 +22,17 @@ class Cache
      */
     public function index()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
         $serviceSystemLog = Be::getService('System.Cache');
-        if (Request::isAjax()) {
+        if ($request->isAjax()) {
             $tableData = $serviceSystemLog->getCategories();
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'total' => 0,
                 'tableData' => $tableData,
             ]);
-            Response::json();
+            $response->json();
         } else {
             Be::getPlugin('Lists')->setting([
                 'pageSize' => 10,
@@ -159,15 +161,17 @@ class Cache
      */
     public function delete()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $name = $postData['row']['name'] ?? null;
             $serviceSystemCache = Be::getService('System.Cache');
             $serviceSystemCache->delete($name);
             beOpLog($name ? ('清除缓存（' . $name. '）') : '清除所有缓存' );
-            Response::success('清除缓存成功！');
+            $response->success('清除缓存成功！');
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
+            $response->error($e->getMessage());
         }
     }
 

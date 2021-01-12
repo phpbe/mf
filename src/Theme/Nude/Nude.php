@@ -1,5 +1,5 @@
 <?php
-use Be\System\Be;
+use Be\Mf\Be;
 ?>
 <be-html>
 <?php

@@ -1,8 +1,8 @@
 <?php
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\System\Be;
-use Be\System\Response;
+use Be\Mf\Be;
+use Be\Framework\Response;
 
 /**
  * Class System
@@ -20,43 +20,47 @@ class System
      */
     public function dashboard()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         $my = Be::getUser();
         if ($my->id == 0) {
-            Response::redirect(beUrl('System.User.login'));
+            $response->redirect(beUrl('System.User.login'));
+            return;
         }
 
-        Response::setTitle('后台首页');
+        $response->set('title', '后台首页');
 
         $tupleUser = Be::newTuple('system_user');
         $tupleUser->load($my->id);
         unset($tupleUser->password, $tupleUser->salt, $tupleUser->remember_me_token);
-        Response::set('user', $tupleUser);
+        $response->set('user', $tupleUser);
 
         $tableAdminUser = Be::getTable('system_user');
         $userCount = $tableAdminUser->count();
-        Response::set('userCount', $userCount);
+        $response->set('userCount', $userCount);
 
         $recentLogs = Be::getTable('system_op_log')
             ->where('user_id', $my->id)
             ->orderBy('id', 'DESC')
             ->limit(5)
             ->getObjects();
-        Response::set('recentLogs', $recentLogs);
+        $response->set('recentLogs', $recentLogs);
 
         $recentLoginLogs = Be::getTable('system_user_login_log')
             ->where('username', $my->username)
             ->orderBy('id', 'DESC')
             ->limit(5)
             ->getObjects();
-        Response::set('recentLoginLogs', $recentLoginLogs);
+        $response->set('recentLoginLogs', $recentLoginLogs);
 
         $serviceApp = Be::getService('System.App');
-        Response::set('appCount', $serviceApp->getAppCount());
+        $response->set('appCount', $serviceApp->getAppCount());
 
         $serviceTheme = Be::getService('System.Theme');
-        Response::set('themeCount', $serviceTheme->getThemeCount());
+        $response->set('themeCount', $serviceTheme->getThemeCount());
 
-        Response::display();
+        $response->display();
     }
 
 

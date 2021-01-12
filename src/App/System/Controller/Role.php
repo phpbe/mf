@@ -1,22 +1,22 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
 
-use Be\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Plugin\Detail\Item\DetailItemTree;
-use Be\Plugin\Form\Item\FormItemRadioGroupButton;
-use Be\Plugin\Form\Item\FormItemSelect;
-use Be\Plugin\Form\Item\FormItemSwitch;
-use Be\Plugin\Form\Item\FormItemTree;
-use Be\Plugin\Table\Item\TableItemLink;
-use Be\Plugin\Table\Item\TableItemSelection;
-use Be\Plugin\Table\Item\TableItemSwitch;
-use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
-use Be\System\Be;
-use Be\System\Db\Tuple;
-use Be\System\Exception\PluginException;
-use Be\System\Request;
+use Be\Framework\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Framework\Plugin\Detail\Item\DetailItemTree;
+use Be\Framework\Plugin\Form\Item\FormItemRadioGroupButton;
+use Be\Framework\Plugin\Form\Item\FormItemSelect;
+use Be\Framework\Plugin\Form\Item\FormItemSwitch;
+use Be\Framework\Plugin\Form\Item\FormItemTree;
+use Be\Framework\Plugin\Table\Item\TableItemLink;
+use Be\Framework\Plugin\Table\Item\TableItemSelection;
+use Be\Framework\Plugin\Table\Item\TableItemSwitch;
+use Be\Framework\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
+use Be\Mf\Be;
+use Be\Framework\Db\Tuple;
+use Be\Framework\Exception\PluginException;
+use Be\Framework\Request;
 
 
 /**
@@ -438,7 +438,8 @@ class Role
             'fieldEdit' => [
                 'events' => [
                     'before' => function (Tuple &$tuple) {
-                        $postData = Request::json();
+                        $request = Be::getRequest();
+                        $postData = $request->json();
                         $field = $postData['postData']['field'];
                         if ($field == 'is_enable') {
                             if ($tuple->is_enable == 0) {

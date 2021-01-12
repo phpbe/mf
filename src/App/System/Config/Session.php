@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\System\Config;
+namespace Be\Mf\App\System\Config;
 
 /**
  * @BeConfig("SESSION")
@@ -14,36 +14,46 @@ class Session
      */
     public $name = 'SSID';
 
-
     /**
-     * @BeConfigItem("超时时间",
+     * @BeConfigItem("SESSION 超时时间",
      *     driver="FormItemInputNumberInt",
      *     ui = "return [':min' => 1];")
      */
     public $expire = 1440;
 
     /**
-     * @BeConfigItem("SESSION 驱动",
-     *     driver="FormItemSelect",
-     *     description = "SESSION 驱动 Default：系统默认/Redis"
-     *     keyValues = "return ['default' => 'PHP原生','redis' => 'Redis'];")
+     * @BeConfigItem("主机名",
+     *     driver="FormItemInput",
+     *     ui = "return [':min' => 1];")
      */
-    public $driver = 'default';
+    public $host = '127.0.0.1';
 
     /**
-     * @BeConfigItem("REDIS设置项",
-     *     driver="FormItemCode",
-     *     language="json",
-     *     valueType = "mixed",
-     *     ui="return ['form-item' => ['v-show' => 'formData.driver==\'redis\'']];")
+     * @BeConfigItem("端口号",
+     *     driver="FormItemInputNumberInt",
+     *     ui = "return [':min' => 1, ':max' => 65535];")
      */
-    public $redis = [
-        'host' => '127.0.0.1', // 主机名
-        'port' => 6379, // 端口号
-        'timeout' => 0, // 超时时间
-        'persistent' => false, // 是否使用长连接
-        'password' => '', // 密码，不需要时留空
-        'db' => 0 // 默认选中数据库
-    ];
+    public $port = 6379;
+
+    /**
+     * @BeConfigItem("连接超时时间",
+     *     driver="FormItemInputNumberInt",
+     *     ui = "return [':min' => 1];")
+     */
+    public $timeout = 5;
+
+    /**
+     * @BeConfigItem("验证密码",
+     *     driver="FormItemInput")
+     */
+    public $auth = '';
+
+    /**
+     * @BeConfigItem("数据库",
+     *     driver="FormItemInputNumberInt",
+     *     ui = "return [':min' => 0, ':max' => 15];")
+     */
+    public $db = 0;
+
 
 }

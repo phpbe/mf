@@ -1,16 +1,16 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Detail\Item\DetailItemIcon;
-use Be\Plugin\Form\Item\FormItemAutoComplete;
-use Be\Plugin\Form\Item\FormItemCustom;
-use Be\Plugin\Form\Item\FormItemInputNumberInt;
-use Be\Plugin\Form\Item\FormItemInputPassword;
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
-use Be\Util\Random;
+use Be\Framework\Plugin\Detail\Item\DetailItemIcon;
+use Be\Framework\Plugin\Form\Item\FormItemAutoComplete;
+use Be\Framework\Plugin\Form\Item\FormItemCustom;
+use Be\Framework\Plugin\Form\Item\FormItemInputNumberInt;
+use Be\Framework\Plugin\Form\Item\FormItemInputPassword;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
+use Be\Framework\Util\Random;
 
 class Installer
 {
@@ -19,9 +19,11 @@ class Installer
 
     public function __construct()
     {
+        $response = Be::getResponse();
+
         $config = Be::getConfig('System.System');
         if (!$config->developer || !$config->installable) {
-            Response::end('请先开启系统配置中的 "开发者模式" 和 "可安装及重装" 配置项！');
+            $response->end('请先开启系统配置中的 "开发者模式" 和 "可安装及重装" 配置项！');
         }
 
         $this->steps = ['环境检测', '配置数据库', '安装应用', '配置系统', '完成'];
@@ -29,7 +31,8 @@ class Installer
 
     public function index()
     {
-        Response::redirect(beUrl('System.Installer.detect'));
+        $response = Be::getResponse();
+        $response->redirect(beUrl('System.Installer.detect'));
     }
 
     /**
@@ -39,8 +42,11 @@ class Installer
      */
     public function detect()
     {
-        if (Request::isPost()) {
-            Response::redirect(beUrl('System.Installer.installDb'));
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        if ($request->isPost()) {
+            $response->redirect(beUrl('System.Installer.installDb'));
         } else {
             $runtime = Be::getRuntime();
             $value = [];
@@ -50,8 +56,8 @@ class Installer
             $value['isDataDirWritable'] = is_writable($runtime->getDataPath()) ? 1 : 0;
             $isAllPassed = array_sum($value) == count($value);
 
-            Response::set('steps', $this->steps);
-            Response::set('step', 0);
+            $response->set('steps', $this->steps);
+            $response->set('step', 0);
 
             Be::getPlugin('Detail')
                 ->setting([
@@ -119,9 +125,12 @@ class Installer
      */
     public function installDb()
     {
-        if (Request::isPost()) {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-            $postData = Request::post('data', '', '');
+        if ($request->isPost()) {
+
+            $postData = $request->post('data', '', '');
             $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
@@ -134,11 +143,11 @@ class Installer
 
             Be::getService('System.Config')->save('System.Db', $configDb);
 
-            Response::redirect(beUrl('System.Installer.installApp'));
+            $response->redirect(beUrl('System.Installer.installApp'));
 
         } else {
-            Response::set('steps', $this->steps);
-            Response::set('step', 1);
+            $response->set('steps', $this->steps);
+            $response->set('step', 1);
 
             Be::getPlugin('Form')
                 ->setting([
@@ -247,18 +256,20 @@ class Installer
      */
     public function testDb()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $databases = Be::getService('System.Installer')->testDb($postData['formData']);
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'databases' => $databases,
             ]);
-            Response::json();
+            $response->json();
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
         }
     }
 
@@ -269,8 +280,10 @@ class Installer
      */
     public function installApp()
     {
-        if (Request::isPost()) {
-            $postData = Request::post('data', '', '');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        if ($request->isPost()) {
+            $postData = $request->post('data', '', '');
             $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
@@ -281,15 +294,15 @@ class Installer
                 }
             }
 
-            Response::set('success', true);
-            Response::set('message', '安装完成');
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('message', '安装完成');
+            $response->set('data', [
                 'redirectUrl' => beUrl('System.Installer.setting'),
             ]);
-            Response::json();
+            $response->json();
         } else {
-            Response::set('steps', $this->steps);
-            Response::set('step', 2);
+            $response->set('steps', $this->steps);
+            $response->set('step', 2);
 
             $appProperties = [];
             $appProperties[] = (array)Be::getProperty('App.System');
@@ -298,8 +311,8 @@ class Installer
                 $appProperties[] = (array)Be::getProperty('App.' . $appName);
             }
 
-            Response::set('appProperties', $appProperties);
-            Response::display('App.System.Installer.installApp', 'Installer');
+            $response->set('appProperties', $appProperties);
+            $response->display('App.System.Installer.installApp', 'Installer');
         }
     }
 
@@ -309,11 +322,14 @@ class Installer
      */
     public function setting()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         $tuple = Be::getTuple('system_user');
         $tuple->load(1);
 
-        if (Request::isPost()) {
-            $postData = Request::post('data', '', '');
+        if ($request->isPost()) {
+            $postData = $request->post('data', '', '');
             $postData = json_decode($postData, true);
             $formData = $postData['formData'];
 
@@ -325,10 +341,10 @@ class Installer
             $tuple->update_time = date('Y-m-d H:i:s');
             $tuple->update();
 
-            Response::redirect(beUrl('System.Installer.complete'));
+            $response->redirect(beUrl('System.Installer.complete'));
         } else {
-            Response::set('steps', $this->steps);
-            Response::set('step', 4);
+            $response->set('steps', $this->steps);
+            $response->set('step', 4);
 
             Be::getPlugin('Form')
                 ->setting([
@@ -381,14 +397,17 @@ class Installer
      */
     public function complete()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         $config = Be::getConfig('System.System');
         $config->installable = false;
         Be::getService('System.Config')->save('System.System', $config);
 
-        Response::set('steps', $this->steps);
-        Response::set('step', 5);
-        Response::set('url', beUrl());
-        Response::display();
+        $response->set('steps', $this->steps);
+        $response->set('step', 5);
+        $response->set('url', beUrl());
+        $response->display();
     }
 
 

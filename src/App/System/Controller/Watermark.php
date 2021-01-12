@@ -1,10 +1,10 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
 /**
  * @BeMenuGroup("系统配置")
@@ -19,10 +19,12 @@ class Watermark
      */
     public function test()
     {
-        $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/material.jpg';
-        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
+        $response = Be::getResponse();
 
-        if (!file_exists($src)) Response::end($src . ' 不存在');
+        $src = Be::getRuntime()->rootPath() . Be::getProperty('App.System')->path() . '/Template/Watermark/images/material.jpg';
+        $dst = Be::getRuntime()->dataPath() . '/System/Watermark/rendering.jpg';
+
+        if (!file_exists($src)) $response->end($src . ' 不存在');
         if (file_exists($dst)) @unlink($dst);
 
         copy($src, $dst);
@@ -32,8 +34,8 @@ class Watermark
         $serviceWatermark = Be::getService('System.Watermark');
         $serviceWatermark->mark($dst);
 
-        Response::setTitle('水印预览');
-        Response::display();
+        $response->set('title', '水印预览');
+        $response->display();
     }
 
 }

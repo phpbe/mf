@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\App\System\Service;
+namespace Be\Mf\App\System\Service;
 
 use Be\App\System\Helper\DocComment;
-use Be\System\Be;
+use Be\Mf\Be;
 
 class Menu
 {
@@ -24,7 +24,7 @@ class Menu
 
             $appProperty = Be::getProperty('App.'.$app->name);
             $appName = $app->name;
-            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
+            $controllerDir = Be::getRuntime()->rootPath() . $appProperty->path(). '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
 
             $controllers = scandir($controllerDir);
@@ -189,7 +189,7 @@ class Menu
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Menu.php';
+        $path = Be::getRuntime()->cachePath() . '/System/Menu.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

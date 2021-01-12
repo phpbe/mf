@@ -1,5 +1,5 @@
 <?php
-namespace Be\App\System\Config;
+namespace Be\Mf\App\System\Config;
 
 /**
  * @BeConfig("系统")
@@ -42,6 +42,11 @@ class System
      * @BeConfigItem("时区", driver="FormItemInput")
      */
     public $timezone = 'Asia/Shanghai';
+
+    /**
+     * @BeConfigItem("默认首页", driver="FormItemInput")
+     */
+    public $home = 'System.System.dashboard';
 
     /**
      * @BeConfigItem("默认分页",

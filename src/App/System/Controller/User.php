@@ -1,24 +1,24 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Table\Item\TableItemLink;
-use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
-use Be\Plugin\Detail\Item\DetailItemAvatar;
-use Be\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Plugin\Form\Item\FormItemAvatar;
-use Be\Plugin\Form\Item\FormItemSelect;
-use Be\Plugin\Form\Item\FormItemSwitch;
-use Be\Plugin\Table\Item\TableItemAvatar;
-use Be\Plugin\Table\Item\TableItemSelection;
-use Be\Plugin\Table\Item\TableItemSwitch;
-use Be\System\Be;
-use Be\System\Db\Tuple;
-use Be\System\Exception\PluginException;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Table\Item\TableItemLink;
+use Be\Framework\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
+use Be\Framework\Plugin\Detail\Item\DetailItemAvatar;
+use Be\Framework\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Framework\Plugin\Form\Item\FormItemAvatar;
+use Be\Framework\Plugin\Form\Item\FormItemSelect;
+use Be\Framework\Plugin\Form\Item\FormItemSwitch;
+use Be\Framework\Plugin\Table\Item\TableItemAvatar;
+use Be\Framework\Plugin\Table\Item\TableItemSelection;
+use Be\Framework\Plugin\Table\Item\TableItemSwitch;
+use Be\Mf\Be;
+use Be\Framework\Db\Tuple;
+use Be\Framework\Exception\PluginException;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
-use Be\Util\Random;
+use Be\Framework\Util\Random;
 
 /**
  * Class User
@@ -36,26 +36,29 @@ class User
      */
     public function login()
     {
-        if (Request::isPost()) {
-            $username = Request::json('username', '');
-            $password = Request::json('password', '');
-            $ip = Request::ip();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        if ($request->isPost()) {
+            $username = $request->json('username', '');
+            $password = $request->json('password', '');
+            $ip = $request->getIp();
             try {
                 $serviceUser = Be::getService('System.User');
                 $serviceUser->login($username, $password, $ip);
-                Response::success('登录成功！');
+                $response->success('登录成功！');
             } catch (\Exception $e) {
-                Response::error($e->getMessage());
+                $response->error($e->getMessage());
             }
         } else {
-
             $my = Be::getUser();
             if ($my->id > 0) {
-                Response::redirect(beUrl('System.System.dashboard'));
+                $response->redirect(beUrl('System.System.dashboard'));
+                return;
             }
 
-            Response::setTitle('登录');
-            Response::display();
+            $response->set('title', '登录');
+            $response->display();
         }
     }
 
@@ -66,11 +69,12 @@ class User
      */
     public function logout()
     {
+        $response = Be::getResponse();
         try {
             Be::getService('System.User')->logout();
-            Response::success('成功退出！', beUrl('System.User.login'));
+            $response->success('成功退出！', beUrl('System.User.login'));
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
+            $response->error($e->getMessage());
         }
     }
 
@@ -240,9 +244,9 @@ class User
                             'driver' => TableItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row['avatar'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
+                                    return Be::getProperty('App.System')->url() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
+                                    return Be::getRequest()->dataUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                             'ui' => [
@@ -334,9 +338,9 @@ class User
                             'driver' => DetailItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row['avatar'] == '') {
-                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
+                                    return Be::getProperty('App.System')->url() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRuntime()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
+                                    return Be::getRequest()->dataUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                         ],
@@ -424,7 +428,7 @@ class User
                             'path' => '/System/User/Avatar/',
                             'maxWidth' => $configUser->avatarWidth,
                             'maxHeight' => $configUser->avatarHeight,
-                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
+                            'defaultValue' => Be::getProperty('App.System')->url() . '/Template/User/images/avatar.png',
                         ],
                         [
                             'name' => 'username',
@@ -499,7 +503,7 @@ class User
                             'path' => '/System/User/Avatar/',
                             'maxWidth' => $configUser->avatarWidth,
                             'maxHeight' => $configUser->avatarHeight,
-                            'defaultValue' => Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png',
+                            'defaultValue' => Be::getProperty('App.System')->url() . '/Template/User/images/avatar.png',
                         ],
                         [
                             'name' => 'username',
@@ -568,7 +572,8 @@ class User
             'fieldEdit' => [
                 'events' => [
                     'before' => function ($tuple) {
-                        $postData = Request::json();
+                        $request = Be::getRequest();
+                        $postData = $request->json();
                         $field = $postData['postData']['field'];
                         if ($field == 'is_enable') {
                             if ($tuple->is_enable == 0) {

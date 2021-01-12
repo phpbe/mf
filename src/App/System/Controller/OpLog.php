@@ -1,11 +1,11 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\Plugin\Form\Item\FormItemSelect;
-use Be\System\Be;
-use Be\System\Response;
+use Be\Framework\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Framework\Plugin\Form\Item\FormItemSelect;
+use Be\Mf\Be;
+use Be\Framework\Response;
 
 /**
  * @BeMenuGroup("日志")
@@ -201,6 +201,9 @@ class OpLog
      */
     public function deleteLogs()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         $db = Be::getDb();
         $db->startTransaction();
         try {
@@ -209,10 +212,10 @@ class OpLog
                 ->delete();
             beOpLog('删除三个月前操作日志！');
             $db->commit();
-            Response::success('删除三个月前操作日志成功！');
+            $response->success('删除三个月前操作日志成功！');
         } catch (\Exception $e) {
             $db->rollback();
-            Response::error($e->getMessage());
+            $response->error($e->getMessage());
         }
     }
 

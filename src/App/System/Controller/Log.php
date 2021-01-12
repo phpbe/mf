@@ -1,11 +1,11 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\Plugin\Form\Item\FormItemRadioGroupButton;
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Framework\Plugin\Form\Item\FormItemRadioGroupButton;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
 
 /**
  * @BeMenuGroup("日志")
@@ -22,12 +22,15 @@ class Log
      */
     public function lists()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         //$a = 1/0;
         //Be::getTable('op_log');
 
         $serviceSystemLog = Be::getService('System.Log');
-        if (Request::isAjax()) {
-            $postData = Request::json();
+        if ($request->isAjax()) {
+            $postData = $request->json();
             $formData = $postData['formData'];
 
             $year = $formData['year'];
@@ -44,12 +47,12 @@ class Log
 
             $tableData = $serviceSystemLog->getlogs($year, $month, $day, $offset, $pageSize);
 
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'total' => $total,
                 'tableData' => $tableData,
             ]);
-            Response::json();
+            $response->json();
 
         } else {
 
@@ -59,8 +62,8 @@ class Log
             $month = date('m');
             $day = date('d');
 
-            if (Request::isPost()) {
-                $postData = Request::post('data', '', '');
+            if ($request->isPost()) {
+                $postData = $request->post('data', '', '');
                 $postData = json_decode($postData, true);
                 $formData = $postData['formData'];
 
@@ -237,16 +240,19 @@ class Log
      */
     public function detail()
     {
-        $data = Request::post('data', '', '');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $data = $request->post('data', '', '');
         $data = json_decode($data, true);
         try {
             $servicebeOpLog = Be::getService('System.Log');
             $log = $servicebeOpLog->getlog($data['row']['year'], $data['row']['month'], $data['row']['day'], $data['row']['hash']);
-            Response::setTitle('系统日志明细');
-            Response::set('log', $log);
-            Response::display(null, 'Nude');
+            $response->set('title', '系统日志明细');
+            $response->set('log', $log);
+            $response->display(null, 'Nude');
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
+            $response->error($e->getMessage());
         }
     }
 
@@ -257,9 +263,12 @@ class Log
      */
     public function delete()
     {
-        $range = Request::get('range', 'day');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $postData = Request::json();
+        $range = $request->get('range', 'day');
+
+        $postData = $request->json();
         $formData = $postData['formData'];
         $year = $formData['year'];
         $month = $formData['month'];
@@ -268,9 +277,9 @@ class Log
         try {
             $servicebeOpLog = Be::getService('System.Log');
             $servicebeOpLog->deleteLogs($range, $year, $month, $day);
-            Response::success('删除日志成功！');
+            $response->success('删除日志成功！');
         } catch (\Exception $e) {
-            Response::error($e->getMessage());
+            $response->error($e->getMessage());
         }
     }
 

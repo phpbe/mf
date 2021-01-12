@@ -1,12 +1,12 @@
 <?php
 
-namespace Be\App\System\Controller;
+namespace Be\Mf\App\System\Controller;
 
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
-use Be\Util\FileSystem\FileSize;
-use Be\Util\Net\FileUpload;
+use Be\Mf\Be;
+use Be\Framework\Request;
+use Be\Framework\Response;
+use Be\Framework\Util\FileSystem\FileSize;
+use Be\Framework\Util\Net\FileUpload;
 
 /**
  * @BePermissionGroup("*")
@@ -16,16 +16,19 @@ class Plugin
 
     public function uploadFile()
     {
-        $file = Request::files('file');
-        if ($file['error'] == 0) {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
+        $file = $request->files('file');
+        if ($file['error'] == 0) {
             $configSystem = Be::getConfig('System.System');
             $maxSize = $configSystem->uploadMaxSize;
             $maxSizeInt = FileSize::string2Int($maxSize);
             if ($file['size'] > $maxSizeInt) {
-                Response::set('success', false);
-                Response::set('message', '您上传的文件尺寸已超过最大限制：' . $maxSize . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '您上传的文件尺寸已超过最大限制：' . $maxSize . '！');
+                $response->json();
+                return;
             }
 
             $ext = '';
@@ -34,13 +37,14 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadFileTypes)) {
-                Response::set('success', false);
-                Response::set('message', '禁止上传的文件类型：' . $ext . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '禁止上传的文件类型：' . $ext . '！');
+                $response->json();
+                return;
             }
 
             $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
-            $newFilePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newFileName;
+            $newFilePath = Be::getRuntime()->dataPath() . '/tmp/' . $newFileName;
 
             $dir = dirname($newFilePath);
             if (!is_dir($dir)) {
@@ -49,37 +53,44 @@ class Plugin
             }
 
             if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                $newFileUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newFileName;
-                Response::set('newValue', $newFileName);
-                Response::set('url', $newFileUrl);
-                Response::set('success', true);
-                Response::set('message', '上传成功！');
-                Response::json();
+                $newFileUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newFileName;
+                $response->set('newValue', $newFileName);
+                $response->set('url', $newFileUrl);
+                $response->set('success', true);
+                $response->set('message', '上传成功！');
+                $response->json();
+                return;
             } else {
-                Response::set('success', false);
-                Response::set('message', '服务器处理上传文件出错！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '服务器处理上传文件出错！');
+                $response->json();
+                return;
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
-            Response::set('success', false);
-            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', '上传失败' . '(' . $errorDesc . ')');
+            $response->json();
+            return;
         }
     }
 
     public function uploadAvatar()
     {
-        $file = Request::files('file');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $file = $request->files('file');
         if ($file['error'] == 0) {
 
             $configSystem = Be::getConfig('System.System');
             $maxSize = $configSystem->uploadMaxSize;
             $maxSizeInt = FileSize::string2Int($maxSize);
             if ($file['size'] > $maxSizeInt) {
-                Response::set('success', false);
-                Response::set('message', '您上传的头像尺寸已超过最大限制：' . $maxSize . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '您上传的头像尺寸已超过最大限制：' . $maxSize . '！');
+                $response->json();
+                return;
             }
 
             $ext = '';
@@ -88,17 +99,18 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
-                Response::set('success', false);
-                Response::set('message', '禁止上传的图像类型：' . $ext . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '禁止上传的图像类型：' . $ext . '！');
+                $response->json();
+                return;
             }
 
             ini_set('memory_limit', '-1');
             $libImage = Be::getLib('Image');
             $libImage->open($file['tmp_name']);
             if ($libImage->isImage()) {
-                $maxWidth = Request::post('maxWidth', 0, 'int');
-                $maxHeight = Request::post('maxHeight', 0, 'int');
+                $maxWidth = $request->post('maxWidth', 0, 'int');
+                $maxHeight = $request->post('maxHeight', 0, 'int');
 
                 if ($maxWidth > 0 && $maxHeight> 0) {
                     if ($libImage->getWidth() > $maxWidth || $libImage->getheight() > $maxHeight) {
@@ -107,7 +119,7 @@ class Plugin
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+                $newImagePath = Be::getRuntime()->dataPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -116,38 +128,45 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
-                    Response::set('newValue', $newImageName);
-                    Response::set('url', $newImageUrl);
-                    Response::set('success', true);
-                    Response::set('message', '上传成功！');
-                    Response::json();
+                    $newImageUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newImageName;
+                    $response->set('newValue', $newImageName);
+                    $response->set('url', $newImageUrl);
+                    $response->set('success', true);
+                    $response->set('message', '上传成功！');
+                    $response->json();
+                    return;
                 }
             } else {
-                Response::set('success', false);
-                Response::set('message', '您上传的不是有效的图像文件！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '您上传的不是有效的图像文件！');
+                $response->json();
+                return;
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
-            Response::set('success', false);
-            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', '上传失败' . '(' . $errorDesc . ')');
+            $response->json();
+            return;
         }
     }
 
     public function uploadImage()
     {
-        $file = Request::files('file');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $file = $request->files('file');
         if ($file['error'] == 0) {
 
             $configSystem = Be::getConfig('System.System');
             $maxSize = $configSystem->uploadMaxSize;
             $maxSizeInt = FileSize::string2Int($maxSize);
             if ($file['size'] > $maxSizeInt) {
-                Response::set('success', false);
-                Response::set('message', '您上传的图像尺寸已超过最大限制：' . $maxSize . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '您上传的图像尺寸已超过最大限制：' . $maxSize . '！');
+                $response->json();
+                return;
             }
 
             $ext = '';
@@ -156,17 +175,18 @@ class Plugin
                 $ext = substr($file['name'], $rPos + 1);
             }
             if (!in_array($ext, $configSystem->allowUploadImageTypes)) {
-                Response::set('success', false);
-                Response::set('message', '禁止上传的图像类型：' . $ext . '！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '禁止上传的图像类型：' . $ext . '！');
+                $response->json();
+                return;
             }
 
             ini_set('memory_limit', '-1');
             $libImage = Be::getLib('Image');
             $libImage->open($file['tmp_name']);
             if ($libImage->isImage()) {
-                $maxWidth = Request::post('maxWidth', 0, 'int');
-                $maxHeight = Request::post('maxHeight', 0, 'int');
+                $maxWidth = $request->post('maxWidth', 0, 'int');
+                $maxHeight = $request->post('maxHeight', 0, 'int');
 
                 if ($maxWidth > 0 && $maxHeight> 0) {
                     if ($libImage->getWidth() > $maxWidth || $libImage->getheight() > $maxHeight) {
@@ -175,7 +195,7 @@ class Plugin
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+                $newImagePath = Be::getRuntime()->dataPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -184,23 +204,26 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRuntime()->getDataUrl(). '/tmp/' . $newImageName;
-                    Response::set('newValue', $newImageName);
-                    Response::set('url', $newImageUrl);
-                    Response::set('success', true);
-                    Response::set('message', '上传成功！');
-                    Response::json();
+                    $newImageUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newImageName;
+                    $response->set('newValue', $newImageName);
+                    $response->set('url', $newImageUrl);
+                    $response->set('success', true);
+                    $response->set('message', '上传成功！');
+                    $response->json();
+                    return;
                 }
             } else {
-                Response::set('success', false);
-                Response::set('message', '您上传的不是有效的图像文件！');
-                Response::json();
+                $response->set('success', false);
+                $response->set('message', '您上传的不是有效的图像文件！');
+                $response->json();
+                return;
             }
         } else {
             $errorDesc = FileUpload::errorDescription($file['error']);
-            Response::set('success', false);
-            Response::set('message', '上传失败' . '(' . $errorDesc . ')');
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', '上传失败' . '(' . $errorDesc . ')');
+            $response->json();
+            return;
         }
     }
 
