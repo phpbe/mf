@@ -18,7 +18,7 @@ use Be\Framework\Template\TemplateFactory;
  * @package System
  *
  */
-abstract class Be extends \Be\Framework\Be
+abstract class Be extends \Be\F\Be
 {
 
 
