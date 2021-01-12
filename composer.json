@@ -21,7 +21,7 @@
         "be/f-lib": "^2.1",
         "be/f-util": "^2.1",
         "be/f-template": "^2.1",
-        "be/mf-plugin": "^2.1.0"
+        "be/mf-plugin": "^2.1"
     },
     "autoload": {
         "psr-4": {
