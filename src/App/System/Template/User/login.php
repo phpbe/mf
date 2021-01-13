@@ -2,7 +2,7 @@
 use Be\Mf\Be;
 ?>
 <be-head>
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->url(); ?>/Template/User/css/login.css" />
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/Template/User/css/login.css" />
 </be-head>
 
 <be-body>

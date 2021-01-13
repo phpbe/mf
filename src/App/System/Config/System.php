@@ -19,7 +19,7 @@ class System
     /**
      * @BeConfigItem("主题",
      *     driver="FormItemSelect",
-     *     keyValues = "return \Be\System\Be::getService('System.Theme')->getThemeKeyValues();")
+     *     keyValues = "return \Be\Mf\Be::getService('System.Theme')->getThemeKeyValues();")
      */
     public $theme = 'Admin';
 

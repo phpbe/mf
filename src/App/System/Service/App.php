@@ -3,7 +3,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\F\Exception\ServiceException;
+use Be\Mf\App\ServiceException;
 
 class App
 {
@@ -63,7 +63,7 @@ class App
         $class = '\\Be\\App\\' . $appName . '\\Installer';
         if (class_exists($class)) {
             /**
-             * @var \Be\System\App\Installer $installer
+             * @var \Be\Mf\App\Installer $installer
              */
             $installer = new $class();
             $installer->install();
@@ -76,9 +76,9 @@ class App
 
         $property = Be::getProperty('App.' . $appName);
         Be::getDb()->insert('system_app', [
-            'name' => $property->name(),
-            'label' => $property->label(),
-            'icon' => $property->icon(),
+            'name' => $property->getName(),
+            'label' => $property->getLabel(),
+            'icon' => $property->getIcon(),
             'ordering' => $lastOrdering + 1,
             'install_time' => date('Y-m-d H:i:s')
         ]);
@@ -105,7 +105,7 @@ class App
         $class = '\\Be\\App\\' . $appName . '\\UnInstaller';
         if (class_exists($class)) {
             /**
-             * @var \Be\System\App\UnInstaller $unInstaller
+             * @var \Be\Mf\App\UnInstaller $unInstaller
              */
             $unInstaller = new $class();
             $unInstaller->uninstall();

@@ -2,8 +2,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\F\Exception\RuntimeException;
-use Be\F\Request;
+use Be\F\Runtime\RuntimeException;
 
 class OpLog
 {

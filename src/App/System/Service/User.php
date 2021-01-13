@@ -3,8 +3,8 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\F\Db\Tuple;
-use Be\F\Exception\ServiceException;
 use Be\F\Util\Random;
+use Be\Mf\App\ServiceException;
 use Be\Mf\Be;
 
 class User

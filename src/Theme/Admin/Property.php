@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\Theme\Admin;
+namespace Be\Mf\Theme\Admin;
 
 
-class Property extends \Be\System\Theme\Property
+class Property extends \Be\F\Property\Driver
 {
 
     public $label = '默认主题';

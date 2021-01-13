@@ -3,10 +3,9 @@
 namespace Be\Mf\App\Fba\Controller;
 
 
-use Be\F\Plugin\Form\Item\FormItemSelect;
+use Be\Mf\Plugin\Form\Item\FormItemSelect;
 use Be\Mf\Be;
-use Be\F\Cache;
-use Be\F\Request;
+
 
 /**
  * Class Fba
@@ -60,8 +59,8 @@ class Fba
      */
     public function index()
     {
-        if (Request::isPost()) {
-            $postData = Request::json();
+        if ($request->isPost()) {
+            $postData = $request->json();
             $response = $this->request($postData['formData']);
             print_r($response);
         } else {

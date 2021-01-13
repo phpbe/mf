@@ -2,7 +2,6 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\F\Response;
 
 /**
  * Class System
@@ -15,8 +14,8 @@ class System
     /**
      * 登陆后首页
      *
-     * @throws \Be\System\Exception\DbException
-     * @throws \Be\System\Exception\RuntimeException
+     * @throws \Be\F\Db\DbException
+     * @throws \Be\F\Runtime\RuntimeException
      */
     public function dashboard()
     {
@@ -65,7 +64,7 @@ class System
 
 
     /**
-     * @throws \Be\System\Exception\RuntimeException
+     * @throws \Be\F\Runtime\RuntimeException
      */
     public function historyBack()
     {

@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\Theme\Blank;
+namespace Be\Mf\Theme\Blank;
 
 
-class Property extends \Be\System\Theme\Property
+class Property extends \Be\F\Property\Driver
 {
 
     public $label = '空白主题';

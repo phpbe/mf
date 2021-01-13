@@ -3,8 +3,6 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\F\Request;
-use Be\F\Response;
 use Be\F\Util\FileSystem\FileSize;
 use Be\F\Util\Net\FileUpload;
 
@@ -43,8 +41,8 @@ class Plugin
                 return;
             }
 
-            $newFileName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $ext;
-            $newFilePath = Be::getRuntime()->dataPath() . '/tmp/' . $newFileName;
+            $newFileName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $ext;
+            $newFilePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newFileName;
 
             $dir = dirname($newFilePath);
             if (!is_dir($dir)) {
@@ -53,7 +51,7 @@ class Plugin
             }
 
             if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                $newFileUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newFileName;
+                $newFileUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newFileName;
                 $response->set('newValue', $newFileName);
                 $response->set('url', $newFileUrl);
                 $response->set('success', true);
@@ -118,8 +116,8 @@ class Plugin
                     }
                 }
 
-                $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->dataPath() . '/tmp/' . $newImageName;
+                $newImageName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $libImage->getType();
+                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -128,7 +126,7 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newImageName;
+                    $newImageUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newImageName;
                     $response->set('newValue', $newImageName);
                     $response->set('url', $newImageUrl);
                     $response->set('success', true);
@@ -194,8 +192,8 @@ class Plugin
                     }
                 }
 
-                $newImageName = date('YmdHis') . '-' . \Be\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->dataPath() . '/tmp/' . $newImageName;
+                $newImageName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $libImage->getType();
+                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -204,7 +202,7 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRequest()->dataUrl(). '/tmp/' . $newImageName;
+                    $newImageUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newImageName;
                     $response->set('newValue', $newImageName);
                     $response->set('url', $newImageUrl);
                     $response->set('success', true);

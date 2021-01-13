@@ -3,8 +3,8 @@ use Be\Mf\Be;
 ?>
 <be-html>
 <?php
-$adminThemeUrl = \Be\System\Be::getProperty('Theme.Admin')->getUrl();
-$themeUrl = Be::getProperty('Theme.Admin')->getUrl();
+$adminThemeUrl = \Be\Mf\Be::getProperty('Theme.Admin')->getUrl();
+$themeUrl = Be::getProperty('Theme.Nude')->getUrl();
 ?>
 <!DOCTYPE html>
 <html>

@@ -1,9 +1,9 @@
 <?php
 
-namespace Be\Theme\Nude;
+namespace Be\Mf\Theme\Nude;
 
 
-class Property extends \Be\System\Theme\Property
+class Property extends \Be\F\Property\Driver
 {
 
     public $label = '空白主题';

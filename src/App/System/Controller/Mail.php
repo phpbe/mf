@@ -2,10 +2,8 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\F\Plugin\Form\Item\FormItemInputTextArea;
+use Be\Mf\Plugin\Form\Item\FormItemInputTextArea;
 use Be\Mf\Be;
-use Be\F\Request;
-use Be\F\Response;
 
 /**
  * @BeMenuGroup("系统配置", icon="el-icon-setting")

@@ -1,6 +1,5 @@
 <?php
 use Be\Mf\Be;
-use Be\F\Session;
 ?>
 
 <be-html>
@@ -55,7 +54,7 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
                         :collapse="collapse"
                         :collapse-transition="false">
                     <?php
-                    $appName = Be::getRuntime()->getAppName();
+                    $appName = Be::getRequest()->getAppName();
                     foreach ($menuTree as $menu) {
 
                         if ($menu->id == $appName) {
@@ -182,7 +181,7 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
                     if ($my->avatar == '') {
                         echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                     } else {
-                        echo Be::getRuntime()->getDataUrl().'/System/User/Avatar/'.$my->avatar;
+                        echo Be::getRequest()->getDataUrl().'/System/User/Avatar/'.$my->avatar;
                     }
                     ?>" style="max-width:24px;max-height:24px; vertical-align: middle;" />
                     <?php echo $my->name; ?>
@@ -207,8 +206,7 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
 
     <script>
         <?php
-        $runtime = Be::getRuntime();
-        $menuKey = $runtime->getAppName() . '.' . $runtime->getControllerName() . '.' . $runtime->getActionName();
+        $menuKey = Be::getRequest()->getRoute();
         ?>
         var vueNorth = new Vue({
             el: '#be-north',

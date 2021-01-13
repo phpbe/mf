@@ -2,7 +2,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\F\Exception\ServiceException;
+use Be\Mf\App\ServiceException;
 use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail

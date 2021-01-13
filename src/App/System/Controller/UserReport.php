@@ -2,23 +2,11 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\F\Plugin\Table\Item\TableItemLink;
-use Be\F\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
-use Be\F\Plugin\Detail\Item\DetailItemAvatar;
-use Be\F\Plugin\Detail\Item\DetailItemSwitch;
-use Be\F\Plugin\Form\Item\FormItemAvatar;
-use Be\F\Plugin\Form\Item\FormItemSelect;
-use Be\F\Plugin\Form\Item\FormItemSwitch;
-use Be\F\Plugin\Table\Item\TableItemAvatar;
-use Be\F\Plugin\Table\Item\TableItemSelection;
-use Be\F\Plugin\Table\Item\TableItemSwitch;
+use Be\Mf\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
+use Be\Mf\Plugin\Form\Item\FormItemSelect;
+use Be\Mf\Plugin\Table\Item\TableItemAvatar;
+use Be\Mf\Plugin\Table\Item\TableItemSwitch;
 use Be\Mf\Be;
-use Be\F\Db\Tuple;
-use Be\F\Exception\PluginException;
-use Be\F\Request;
-use Be\F\Response;
-
-use Be\F\Util\Random;
 
 /**
  * Class User
@@ -156,9 +144,9 @@ class UserReport
                             'driver' => TableItemAvatar::class,
                             'value' => function ($row) {
                                 if ($row['avatar'] == '') {
-                                    return Be::getProperty('App.System')->url() . '/Template/User/images/avatar.png';
+                                    return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRequest()->dataUrl() . '/System/User/Avatar/' . $row['avatar'];
+                                    return Be::getRequest()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                             'ui' => [

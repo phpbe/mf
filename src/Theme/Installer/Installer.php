@@ -1,7 +1,7 @@
 <be-html>
     <?php
-    $adminThemeUrl = \Be\System\Be::getProperty('Theme.Admin')->getUrl();
-    $themeUrl = \Be\System\Be::getProperty('Theme.Installer')->getUrl();
+    $adminThemeUrl = \Be\Mf\Be::getProperty('Theme.Admin')->getUrl();
+    $themeUrl = \Be\Mf\Be::getProperty('Theme.Installer')->getUrl();
     ?>
     <!DOCTYPE html>
     <html>

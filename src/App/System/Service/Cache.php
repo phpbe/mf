@@ -64,7 +64,7 @@ class Cache
     {
         $categories = [];
         foreach (static::CATEGORIES as $v) {
-            $path = Be::getRuntime()->cachePath() . '/System/' . $v['name'];
+            $path = Be::getRuntime()->getCachePath() . '/System/' . $v['name'];
             $count = $this->getFileCount($path);
             $size = $this->getFileSize($path);
             $sizeStr = FileSize::int2String($size);
@@ -97,7 +97,7 @@ class Cache
             return $success;
         }
 
-        return \Be\Util\FileSystem\Dir::rm(Be::getRuntime()->cachePath() . '/System/' . $name);
+        return \Be\F\Util\FileSystem\Dir::rm(Be::getRuntime()->getCachePath() . '/System/' . $name);
     }
 
 

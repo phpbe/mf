@@ -1,5 +1,5 @@
 <be-head>
-    <link type="text/css" rel="stylesheet" href="<?php echo \Be\System\Be::getProperty('App.System')->url(); ?>/Template/System/css/error.css">
+    <link type="text/css" rel="stylesheet" href="<?php echo \Be\Mf\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/error.css">
 </be-head>
 
 <be-body>

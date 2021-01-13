@@ -2,7 +2,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\F\Exception\ServiceException;
+use Be\Mf\App\ServiceException;
 
 class Theme
 {
@@ -42,8 +42,8 @@ class Theme
 
         $property = Be::getProperty('Theme.' . $themeName);
         Be::getDb()->insert('system_theme', [
-            'name' => $property->name(),
-            'label' => $property->label(),
+            'name' => $property->getName(),
+            'label' => $property->getLabel(),
             'install_time' => date('Y-m-d H:i:s')
         ]);
 

@@ -3,8 +3,8 @@ use Be\Mf\Be;
 ?>
 
 <be-head>
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->url(); ?>/Template/System/css/dashboard.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->url(); ?>/Template/System/js/dashboard.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/dashboard.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/Template/System/js/dashboard.js"></script>
 </be-head>
 
 <be-center>
@@ -22,9 +22,9 @@ $configUser = Be::getConfig('System.User');
             <el-card shadow="hover" style="height: 180px;">
                 <el-image src="<?php
                 if ($this->user->avatar == '') {
-                    echo Be::getProperty('App.System')->url().'/Template/User/images/avatar.png';
+                    echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                 } else {
-                    echo Be::getRequest()->dataUrl().'/System/User/Avatar/'.$this->user->avatar;
+                    echo Be::getRequest()->getDataUrl().'/System/User/Avatar/'.$this->user->avatar;
                 }
                 ?>"></el-image>
 

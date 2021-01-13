@@ -5,7 +5,7 @@ namespace Be\Mf\App\System\Service;
 
 use Be\App\System\Helper\DocComment;
 use Be\F\Db\Tuple;
-use Be\F\Exception\ServiceException;
+use Be\Mf\App\ServiceException;
 use Be\Mf\Be;
 
 class Role
@@ -85,7 +85,7 @@ class Role
         }
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->cachePath() . '/System/Role/Role' . $roleId . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/System/Role/Role' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -104,7 +104,7 @@ class Role
         foreach ($apps as $app) {
             $appName = $app->name;
             $appProperty = Be::getProperty('App.'.$appName);
-            $controllerDir = Be::getRuntime()->rootPath() . $appProperty->path(). '/Controller';
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
             $controllers = scandir($controllerDir);
             foreach ($controllers as $controller) {
@@ -162,7 +162,7 @@ class Role
         $code .= '  public $permissions = [\'' . implode('\',\'',  $permissions) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->cachePath() . '/System/Role/Role0.php';
+        $path = Be::getRuntime()->getCachePath() . '/System/Role/Role0.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -179,7 +179,7 @@ class Role
 
             $children = [];
             $appProperty = Be::getProperty('App.'.$appName);
-            $controllerDir = Be::getRuntime()->rootPath() . $appProperty->path(). '/Controller';
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
             $controllers = scandir($controllerDir);
             foreach ($controllers as $controller) {

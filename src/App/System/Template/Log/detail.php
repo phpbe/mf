@@ -1,11 +1,11 @@
 <be-head>
     <link type="text/css" rel="stylesheet"
-          href="<?php echo \Be\System\Be::getProperty('App.System')->url(); ?>/Template/System/css/exception.css">
+          href="<?php echo \Be\Mf\Be::getProperty('App.System')->getUrl(); ?>/Template/System/css/exception.css">
     <link rel="stylesheet"
-          href="<?php echo \Be\System\Be::getProperty('App.System')->url(); ?>/Template/System/google-code-prettify/prettify.css"
+          href="<?php echo \Be\Mf\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.css"
           type="text/css"/>
     <script type="text/javascript" language="javascript"
-            src="<?php echo \Be\System\Be::getProperty('App.System')->url(); ?>/Template/System/google-code-prettify/prettify.js"></script>
+            src="<?php echo \Be\Mf\Be::getProperty('App.System')->getUrl(); ?>/Template/System/google-code-prettify/prettify.js"></script>
     <style type="text/css">
         pre.prettyprint {
             background-color: #fff;
@@ -47,7 +47,7 @@
             </el-tab-pane>
 
             <?php
-            $configSystemLog = \Be\System\Be::getConfig('System.Log');
+            $configSystemLog = \Be\Mf\Be::getConfig('System.Log');
 
             if (isset($configSystemLog->server) && $configSystemLog->server) {
                 ?>

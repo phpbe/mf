@@ -3,8 +3,7 @@
 namespace Be\Mf\App\System\Service;
 
 use Be\Mf\Be;
-use Be\F\db\Driver;
-use Be\F\Exception\ServiceException;
+use Be\Mf\App\ServiceException;
 
 class Installer
 {
@@ -51,7 +50,7 @@ class Installer
     public function getAppNames()
     {
         $apps = [];
-        $vendorPath = Be::getRuntime()->rootPath() . '/vendor';
+        $vendorPath = Be::getRuntime()->getRootPath() . '/vendor';
         $dirs = scandir($vendorPath);
         foreach ($dirs as $dir) {
             if ($dir != '..' && $dir != '.') {

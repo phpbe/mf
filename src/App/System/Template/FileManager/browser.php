@@ -3,8 +3,8 @@ use Be\Mf\Be;
 ?>
 
 <be-head>
-<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->url(); ?>/AdminTemplate/FileManager/css/browser.css">
-<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->url(); ?>/AdminTemplate/FileManager/r/js/browser.js"></script>
+<link type="text/css" rel="stylesheet" href="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/FileManager/css/browser.css">
+<script type="text/javascript" language="javascript" src="<?php echo Be::getProperty('App.System')->getUrl(); ?>/AdminTemplate/FileManager/r/js/browser.js"></script>
 </be-head>
 
 <be-body>

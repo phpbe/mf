@@ -2,12 +2,12 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\F\Plugin\Detail\Item\DetailItemSwitch;
-use Be\F\Plugin\Form\Item\FormItemCron;
-use Be\F\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\F\Plugin\Form\Item\FormItemSwitch;
-use Be\F\Plugin\Table\Item\TableItemSelection;
-use Be\F\Plugin\Table\Item\TableItemSwitch;
+use Be\Mf\Plugin\Detail\Item\DetailItemSwitch;
+use Be\Mf\Plugin\Form\Item\FormItemCron;
+use Be\Mf\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Mf\Plugin\Form\Item\FormItemSwitch;
+use Be\Mf\Plugin\Table\Item\TableItemSelection;
+use Be\Mf\Plugin\Table\Item\TableItemSwitch;
 use Be\Mf\Be;
 use Be\F\Db\Tuple;
 

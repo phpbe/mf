@@ -2,14 +2,11 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\F\Plugin\Detail\Item\DetailItemIcon;
-use Be\F\Plugin\Form\Item\FormItemAutoComplete;
-use Be\F\Plugin\Form\Item\FormItemCustom;
-use Be\F\Plugin\Form\Item\FormItemInputNumberInt;
-use Be\F\Plugin\Form\Item\FormItemInputPassword;
+use Be\Mf\Plugin\Detail\Item\DetailItemIcon;
+use Be\Mf\Plugin\Form\Item\FormItemAutoComplete;
+use Be\Mf\Plugin\Form\Item\FormItemCustom;
+use Be\Mf\Plugin\Form\Item\FormItemInputNumberInt;
 use Be\Mf\Be;
-use Be\F\Request;
-use Be\F\Response;
 use Be\F\Util\Random;
 
 class Installer

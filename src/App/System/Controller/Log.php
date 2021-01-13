@@ -2,10 +2,8 @@
 
 namespace Be\Mf\App\System\Controller;
 
-use Be\F\Plugin\Form\Item\FormItemRadioGroupButton;
+use Be\Mf\Plugin\Form\Item\FormItemRadioGroupButton;
 use Be\Mf\Be;
-use Be\F\Request;
-use Be\F\Response;
 
 /**
  * @BeMenuGroup("日志")

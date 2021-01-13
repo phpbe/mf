@@ -3,8 +3,6 @@
 namespace Be\Mf\App\System\Controller;
 
 use Be\Mf\Be;
-use Be\F\Request;
-use Be\F\Response;
 
 /**
  * @BeMenuGroup("系统配置")
@@ -21,8 +19,8 @@ class Watermark
     {
         $response = Be::getResponse();
 
-        $src = Be::getRuntime()->rootPath() . Be::getProperty('App.System')->path() . '/Template/Watermark/images/material.jpg';
-        $dst = Be::getRuntime()->dataPath() . '/System/Watermark/rendering.jpg';
+        $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/material.jpg';
+        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
 
         if (!file_exists($src)) $response->end($src . ' 不存在');
         if (file_exists($dst)) @unlink($dst);
