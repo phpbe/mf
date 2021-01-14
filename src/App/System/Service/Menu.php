@@ -2,7 +2,7 @@
 
 namespace Be\Mf\App\System\Service;
 
-use Be\App\System\Helper\DocComment;
+use Be\Mf\App\System\Helper\DocComment;
 use Be\Mf\Be;
 
 class Menu
