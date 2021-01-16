@@ -4,7 +4,7 @@ namespace Be\Mf\App\System;
 /**
  * 应用安装器
  */
-class UnInstaller extends \Be\System\App\UnInstaller
+class UnInstaller extends \Be\F\App\UnInstaller
 {
 
     /**

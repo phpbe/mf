@@ -10,13 +10,6 @@ class Cache
 
     const CATEGORIES = [
         [
-            'name' => 'Cache',
-            'label' => '文件缓存',
-            'description' => '缓存类型设置为File时，系统生成的文件缓存',
-            'type' => 'folder',
-            'icon' => 'el-icon-folder',
-        ],
-        [
             'name' => 'Role',
             'label' => '角色缓存',
             'description' => '角色资料、权限缓存',
@@ -64,7 +57,7 @@ class Cache
     {
         $categories = [];
         foreach (static::CATEGORIES as $v) {
-            $path = Be::getRuntime()->getCachePath() . '/System/' . $v['name'];
+            $path = Be::getRuntime()->getCachePath() . '/' . $v['name'];
             $count = $this->getFileCount($path);
             $size = $this->getFileSize($path);
             $sizeStr = FileSize::int2String($size);
@@ -97,7 +90,7 @@ class Cache
             return $success;
         }
 
-        return \Be\F\Util\FileSystem\Dir::rm(Be::getRuntime()->getCachePath() . '/System/' . $name);
+        return \Be\F\Util\FileSystem\Dir::rm(Be::getRuntime()->getCachePath() . '/' . $name);
     }
 
 

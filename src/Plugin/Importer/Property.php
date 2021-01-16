@@ -3,7 +3,7 @@
 namespace Be\Mf\Plugin\Importer;
 
 
-class Property extends \Be\F\Property\Driver
+class Property extends \Be\Mf\Plugin\Property
 {
 
     public $label = '导入器';

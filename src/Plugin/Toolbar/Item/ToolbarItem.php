@@ -2,7 +2,7 @@
 
 namespace Be\Mf\Plugin\Toolbar\Item;
 
-use Be\F\Request\RequestFactory;
+use Be\Mf\Be;
 
 /**
  * 工具栏驱动

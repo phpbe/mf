@@ -7,7 +7,7 @@ use Be\F\Util\Random;
 /**
  * 应用安装器
  */
-class Installer extends \Be\System\App\Installer
+class Installer extends \Be\F\App\Installer
 {
 
     /**

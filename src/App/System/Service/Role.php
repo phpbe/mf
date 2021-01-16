@@ -2,10 +2,9 @@
 
 namespace Be\Mf\App\System\Service;
 
-
-use Be\App\System\Helper\DocComment;
 use Be\F\Db\Tuple;
-use Be\Mf\App\ServiceException;
+use Be\F\App\ServiceException;
+use Be\Mf\App\System\Helper\DocComment;
 use Be\Mf\Be;
 
 class Role
@@ -72,9 +71,9 @@ class Role
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Be\\Cache\\System\\Role;' . "\n";
+        $code .= 'namespace Be\\Mf\\Cache\\Role;' . "\n";
         $code .= "\n";
-        $code .= 'class Role' . $roleId . ' extends \\Be\\System\\Role' . "\n";
+        $code .= 'class Role' . $roleId . ' extends \\Be\\Mf\\User\\Role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \'' . $tuple->name . '\';' . "\n";
         $code .= '  public $permission = \'' . $tuple->permission . '\';' . "\n";
@@ -85,7 +84,7 @@ class Role
         }
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Role/Role' . $roleId . '.php';
+        $path = Be::getRuntime()->getCachePath() . '/Role/Role' . $roleId . '.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -111,7 +110,7 @@ class Role
                 if ($controller == '.' || $controller == '..' || is_dir($controllerDir . '/' . $controller)) continue;
 
                 $controller = substr($controller, 0, -4);
-                $className = 'Be\\App\\' . $appName . '\\Controller\\' . $controller;
+                $className = 'Be\\Mf\\App\\' . $appName . '\\Controller\\' . $controller;
                 if (!class_exists($className)) continue;
 
                 $reflection = new \ReflectionClass($className);
@@ -153,16 +152,16 @@ class Role
         }
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Be\\Cache\\System\\Role;' . "\n";
+        $code .= 'namespace Be\\Mf\\Cache\\Role;' . "\n";
         $code .= "\n";
-        $code .= 'class Role0 extends \\Be\\System\\Role' . "\n";
+        $code .= 'class Role0 extends \\Be\\Mf\\User\\Role' . "\n";
         $code .= '{' . "\n";
         $code .= '  public $name = \'公共功能\';' . "\n";
         $code .= '  public $permission = \'-1\';' . "\n";
         $code .= '  public $permissions = [\'' . implode('\',\'',  $permissions) . '\'];' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Role/Role0.php';
+        $path = Be::getRuntime()->getCachePath() . '/Role/Role0.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0755, true);
 
@@ -186,7 +185,7 @@ class Role
                 if ($controller == '.' || $controller == '..' || is_dir($controllerDir . '/' . $controller)) continue;
 
                 $controller = substr($controller, 0, -4);
-                $className = 'Be\\App\\' . $appName . '\\Controller\\' . $controller;
+                $className = 'Be\\Mf\\App\\' . $appName . '\\Controller\\' . $controller;
                 if (!class_exists($className)) continue;
 
                 $reflection = new \ReflectionClass($className);

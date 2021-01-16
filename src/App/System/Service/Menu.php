@@ -32,7 +32,7 @@ class Menu
                 if ($controller == '.' || $controller == '..' || is_dir($controllerDir . '/' . $controller)) continue;
 
                 $controller = substr($controller, 0, -4);
-                $className = 'Be\\App\\' . $appName . '\\Controller\\' . $controller;
+                $className = 'Be\\Mf\\App\\' . $appName . '\\Controller\\' . $controller;
                 if (!class_exists($className)) continue;
 
                 $reflection = new \ReflectionClass($className);
@@ -168,9 +168,9 @@ class Menu
         $menus = $this->getMenus();
 
         $code = '<?php' . "\n";
-        $code .= 'namespace Be\\Cache\\System;' . "\n";
+        $code .= 'namespace Be\\Mf\\Cache;' . "\n";
         $code .= "\n";
-        $code .= 'class Menu extends \\Be\\System\\Menu' . "\n";
+        $code .= 'class Menu extends \\Be\\Mf\\Menu\\Driver' . "\n";
         $code .= '{' . "\n";
         $code .= '  public function __construct()' . "\n";
         $code .= '  {' . "\n";
@@ -189,7 +189,7 @@ class Menu
         $code .= '  }' . "\n";
         $code .= '}' . "\n";
 
-        $path = Be::getRuntime()->getCachePath() . '/System/Menu.php';
+        $path = Be::getRuntime()->getCachePath() . '/Menu.php';
         $dir = dirname($path);
         if (!is_dir($dir)) mkdir($dir, 0777, true);
 

@@ -3,7 +3,7 @@
 namespace Be\Mf\Plugin\FileManager;
 
 
-class Property extends \Be\F\Property\Driver
+class Property extends \Be\Mf\Plugin\Property
 {
 
     public $label = '文件管理器';

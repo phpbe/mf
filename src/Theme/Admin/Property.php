@@ -3,7 +3,7 @@
 namespace Be\Mf\Theme\Admin;
 
 
-class Property extends \Be\F\Property\Driver
+class Property extends \Be\Mf\Theme\Property
 {
 
     public $label = '默认主题';

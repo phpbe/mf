@@ -17,15 +17,20 @@ use Be\F\Runtime\RuntimeFactory;
 use Be\F\Runtime\RuntimeException;
 use Be\F\Session\SessionFactory;
 use Be\F\Template\TemplateFactory;
-use Be\Mf\App\ServiceFactory;
-use Be\MF\Plugin\PluginFactory;
+use Be\F\App\ServiceFactory;
+use Be\Mf\Menu\MenuFactory;
+use Be\Mf\Plugin\PluginFactory;
+use Be\Mf\User\Role;
+use Be\Mf\User\RoleFactory;
+use Be\Mf\User\User;
+use Be\Mf\User\UserFactory;
 
 /**
  *  BE系统资源工厂
  * @package System
  *
  */
-abstract class Be extends \Be\F\Be
+abstract class Be
 {
 
     /**
@@ -51,7 +56,7 @@ abstract class Be extends \Be\F\Be
     /**
      * 获取输出对象
      *
-     * @return \Be\F\Response\Driver
+     * @return \Be\F\Response\Driver | \Be\Mf\Response\Driver
      */
     public static function getResponse()
     {
@@ -222,6 +227,28 @@ abstract class Be extends \Be\F\Be
     }
 
     /**
+     * 获取指定的一个服务（单例）
+     *
+     * @param string $name 服务名
+     * @return mixed
+     */
+    public static function getService($name)
+    {
+        return ServiceFactory::getInstance($name);
+    }
+
+    /**
+     * 新创建一个服务
+     *
+     * @param string $name 服务名
+     * @return mixed
+     */
+    public static function newService($name)
+    {
+        return ServiceFactory::newInstance($name);
+    }
+
+    /**
      * 获取指定的库（单例）
      *
      * @param string $name 库名，可指定命名空间，调用第三方库
@@ -268,29 +295,6 @@ abstract class Be extends \Be\F\Be
     {
         return PluginFactory::newInstance($name);
     }
-
-    /**
-     * 获取指定的一个服务（单例）
-     *
-     * @param string $name 服务名
-     * @return mixed
-     */
-    public static function getService($name)
-    {
-        return ServiceFactory::getInstance($name);
-    }
-
-    /**
-     * 新创建一个服务
-     *
-     * @param string $name 服务名
-     * @return mixed
-     */
-    public static function newService($name)
-    {
-        return ServiceFactory::newInstance($name);
-    }
-
     /**
      * 获取指定的一个模板（单例）
      *
@@ -307,25 +311,12 @@ abstract class Be extends \Be\F\Be
     /**
      * 获取指定的一个菜单（单例）
      *
-     * @return \Be\F\Menu\Driver
+     * @return \Be\Mf\Menu\Driver
      */
     public static function getMenu()
     {
-        if (isset(self::$cache['Menu'])) return self::$cache['Menu'];
-
-        $path = self::getRuntime()->getCachePath() . '/Framework/Menu.php';
-        $configSystem = self::getConfig('System.System');
-        if ($configSystem->developer || !file_exists($path)) {
-            $service = self::getService('System.Menu');
-            $service->update();
-            include_once $path;
-        }
-
-        $class = 'Be\\Cache\\Framework\\Menu';
-        self::$cache['Menu'] = new $class();
-        return self::$cache['Menu'];
+        return MenuFactory::getInstance();
     }
-
 
     /**
      * 获取指定的一个角色信息（单例）
@@ -335,19 +326,7 @@ abstract class Be extends \Be\F\Be
      */
     public static function getRole($roleId)
     {
-        if (isset(self::$cache['Role'][$roleId])) return self::$cache['Role'][$roleId];
-
-        $path = self::getRuntime()->getCachePath() . '/System/Role/Role' . $roleId . '.php';
-        $configSystem = self::getConfig('System.System');
-        if ($configSystem->developer || !file_exists($path)) {
-            $service = self::getService('System.Role');
-            $service->updateRole($roleId);
-            include_once $path;
-        }
-
-        $class = 'Be\\Cache\\Framework\\Role\\Role' . $roleId;
-        self::$cache['Role'][$roleId] = new $class();
-        return self::$cache['Role'][$roleId];
+        return RoleFactory::getInstance($roleId);
     }
 
     /**
@@ -358,44 +337,32 @@ abstract class Be extends \Be\F\Be
      */
     public static function getUser($id = 0)
     {
-        if (isset(self::$cache['User'][$id])) return self::$cache['User'][$id];
-
-        $user = null;
-        if ($id == 0) {
-            $user = self::getSession()->get('_user');
-        } else {
-            $user = self::getTuple('system_user')->load($id)->toObject();
-            if ($user) {
-                unset($user->password, $user->salt, $user->remember_me_token);
-            }
-        }
-
-        self::$cache['User'][$id] = new User($user);
-        return self::$cache['User'][$id];
+        return UserFactory::getInstance();
     }
 
     /**
-     * 调用未声明的方法
+     * 回收指定资源
      *
-     * @param $name
-     * @param $arguments
-     * @return null
+     * @param string $key 为null时回收当前协程的所有私有资源
      */
-    public static function __callStatic($name, $arguments)
+    public static function recycle()
     {
-        $prefix = substr($name, 0, 3);
-        $module = substr($name, 3);
-        $factory = '\\Be\\Framework\\' . $module . '\\' . $module . 'Factory';
-        if ($prefix == 'get') {
-            if (is_callable([$factory, 'getInstance'])) {
-                return $factory::getInstance(...$arguments);
-            }
-        } elseif ($prefix == 'new') {
-            if (is_callable([$factory, 'newInstance'])) {
-                return $factory::newInstance(...$arguments);
-            }
+        foreach ([
+                     '\\Be\\F\\Request\\RequestFactory',
+                     '\\Be\\F\\Response\\ResponseFactory',
+                     '\\Be\\F\\Logger\\LoggerFactory',
+                     '\\Be\\F\\Session\\SessionFactory',
+                     '\\Be\\F\\Cache\\CacheFactory',
+                     '\\Be\\F\\Db\\DbFactory',
+                     '\\Be\\F\\Db\\TableFactory',
+                     '\\Be\\F\\Db\\TupleFactory',
+                     '\\Be\\F\\App\\ServiceFactory',
+                     '\\Be\\F\\Lib\\LibFactory',
+                     '\\Be\\F\\Template\\TemplateFactory',
+                     '\\Be\\Mf\\Plugin\\PluginFactory',
+                     '\\Be\\Mf\\User\\UserFactory',
+                 ] as $factoryClass) {
+            $factoryClass::recycle();
         }
-
-        return null;
     }
 }

@@ -32,7 +32,7 @@ class Config extends Driver
             foreach ($fileNames as $fileName) {
                 if ($fileName != '.' && $fileName != '..' && is_file($dir . '/' . $fileName)) {
                     $configName = substr($fileName, 0, -4);
-                    $className = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
+                    $className = '\\Be\\Mf\\App\\' . $appName . '\\Config\\' . $configName;
                     if (class_exists($className)) {
                         $reflection = new \ReflectionClass($className);
                         $classComment = $reflection->getDocComment();
@@ -61,7 +61,7 @@ class Config extends Driver
         $response->set('configName', $configName);
 
         $configItemDrivers = [];
-        $className = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
+        $className = '\\Be\\Mf\\App\\' . $appName . '\\Config\\' . $configName;
         if (class_exists($className)) {
             $configInstance = Be::getConfig($appName . '.' . $configName);
             $reflection = new \ReflectionClass($className);
@@ -84,7 +84,7 @@ class Config extends Driver
                     $driverClass = null;
                     if (isset($configItem['driver'])) {
                         if (substr($configItem['driver'], 0, 8) == 'FormItem') {
-                            $driverClass = '\\Be\\Plugin\\Form\\Item\\' . $configItem['driver'];
+                            $driverClass = '\\Be\\Mf\\Plugin\\Form\\Item\\' . $configItem['driver'];
                         } else {
                             $driverClass = $configItem['driver'];
                         }
@@ -123,11 +123,11 @@ class Config extends Driver
             $formData = $postData['formData'];
 
             $code = "<?php\n";
-            $code .= 'namespace Be\\Data\\' . $appName . '\\Config;' . "\n\n";
+            $code .= 'namespace Be\\Mf\\Data\\' . $appName . '\\Config;' . "\n\n";
             $code .= 'class ' . $configName . "\n";
             $code .= "{\n";
 
-            $className = '\\Be\\App\\' . $appName . '\\Config\\' . $configName;
+            $className = '\\Be\\Mf\\App\\' . $appName . '\\Config\\' . $configName;
             if (!class_exists($className)) {
                 throw new PluginException('配置项（' . $className . '）不存在！');
             }
@@ -157,7 +157,7 @@ class Config extends Driver
                     $driverClass = null;
                     if (isset($configItem['driver'])) {
                         if (substr($configItem['driver'], 0, 8) == 'FormItem') {
-                            $driverClass = '\\Be\\Plugin\\Form\\Item\\' . $configItem['driver'];
+                            $driverClass = '\\Be\\Mf\\Plugin\\Form\\Item\\' . $configItem['driver'];
                         } else {
                             $driverClass = $configItem['driver'];
                         }

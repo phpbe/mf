@@ -3,7 +3,7 @@
 namespace Be\Mf\App\System;
 
 
-class Property extends \Be\System\App\Property
+class Property extends \Be\F\App\Property
 {
 
     public $label = '系统';

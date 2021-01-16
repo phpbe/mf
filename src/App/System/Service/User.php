@@ -4,8 +4,9 @@ namespace Be\Mf\App\System\Service;
 
 use Be\F\Db\Tuple;
 use Be\F\Util\Random;
-use Be\Mf\App\ServiceException;
+use Be\F\App\ServiceException;
 use Be\Mf\Be;
+use Be\Mf\User\UserFactory;
 
 class User
 {
@@ -182,8 +183,8 @@ class User
         unset($user->salt);
         unset($user->remember_me_token);
 
+        UserFactory::recycle();
         Be::getSession()->set('_user', $user);
-        unset(Be::$cache['User:0']);
     }
 
     /**

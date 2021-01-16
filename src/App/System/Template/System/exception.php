@@ -23,6 +23,7 @@
         <?php
         $configSystem = \Be\Mf\Be::getConfig('System.System');
         if ($configSystem->developer) {
+            $request = \Be\Mf\Be::getRequest();
             ?>
             <el-alert
                     title="<?php echo $this->e->getMessage(); ?>"
@@ -36,19 +37,19 @@
                     <pre class="prettyprint linenums"><?php print_r($this->e->getTrace()); ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_SERVER" name="tab-server">
-                    <pre class="prettyprint linenums"><?php print_r($_SERVER) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($request->server()) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_GET" name="tab-get">
-                    <pre class="prettyprint linenums"><?php print_r($_GET) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($request->get()) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_POST" name="tab-post">
-                    <pre class="prettyprint linenums"><?php print_r($_POST) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($request->post()) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_REQUEST" name="tab-request">
-                    <pre class="prettyprint linenums"><?php print_r($_REQUEST) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($request->request()) ?></pre>
                 </el-tab-pane>
                 <el-tab-pane label="$_COOKIE" name="tab-cookie">
-                    <pre class="prettyprint linenums"><?php print_r($_COOKIE) ?></pre>
+                    <pre class="prettyprint linenums"><?php print_r($request->cookie()) ?></pre>
                 </el-tab-pane>
             </el-tabs>
             <?php

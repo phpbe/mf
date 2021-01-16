@@ -3,7 +3,7 @@
 namespace Be\Mf\Theme\Blank;
 
 
-class Property extends \Be\F\Property\Driver
+class Property extends \Be\Mf\Theme\Property
 {
 
     public $label = '空白主题';
