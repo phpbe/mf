@@ -4,11 +4,8 @@ vendor
 .DS_store
 Thumbs.db
 
-/cache/*
-!/cache/index.html
-
-/data/*
-!/data/index.html
-/index.php
+/src/Cache/*
+/src/Data/*
+/src/server.php
 
 
