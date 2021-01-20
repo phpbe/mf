@@ -2,6 +2,7 @@
 
 namespace Be\Mf\Runtime;
 
+use Be\F\Db\DbFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
 use Be\Mf\Be;
@@ -79,6 +80,11 @@ class HttpServer
 
         $this->server = new \Swoole\Http\Server("0.0.0.0", 80);
         $this->server->set(['enable_coroutine' => true]);
+
+        // 初始化数据库，Redis连接池
+        DbFactory::init();
+        RedisFactory::init();
+
         $this->server->on('request', function ($swRequest, $swResponse) {
             $swResponse->header('Server', 'BE/MF', false);
             $uri = $swRequest->server['request_uri'];
@@ -197,7 +203,7 @@ class HttpServer
                         $action = $routes[2];
                     } else {
                         $response->error('路由参数（' . $route . '）无法识别！');
-                        Be::recycle();
+                        Be::release();
                         return true;
                     }
                 }
@@ -218,12 +224,12 @@ class HttpServer
                         $return = $request->get('return', base64_encode($request->getUrl()));
                         $redirectUrl = beUrl('System.User.login', ['return' => $return]);
                         $response->error('登录超时，请生新登录！', $redirectUrl);
-                        Be::recycle();
+                        Be::release();
                         return true;
                     } else {
                         if (!$my->hasPermission($app, $controller, $action)) {
                             $response->error('您没有权限操作该功能！');
-                            Be::recycle();
+                            Be::release();
                             return true;
                         }
                     }
@@ -237,7 +243,7 @@ class HttpServer
                             Be::getService('System.User')->logout();
                             $redirectUrl = beUrl('System.User.login');
                             $response->error('检测到您的账号在其它地点（'.$my->this_login_ip . ' '. $my->this_login_time.'）登录！', $redirectUrl);
-                            Be::recycle();
+                            Be::release();
                             return true;
                         }
                     }
@@ -262,7 +268,7 @@ class HttpServer
                 Be::getLogger()->emergency($t);
             }
 
-            Be::recycle();
+            Be::release();
             return true;
         });
 

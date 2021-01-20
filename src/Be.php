@@ -341,11 +341,9 @@ abstract class Be
     }
 
     /**
-     * 回收指定资源
-     *
-     * @param string $key 为null时回收当前协程的所有私有资源
+     * 回收资源
      */
-    public static function recycle()
+    public static function release()
     {
         foreach ([
                      '\\Be\\F\\Request\\RequestFactory',
@@ -353,7 +351,6 @@ abstract class Be
                      '\\Be\\F\\Logger\\LoggerFactory',
                      '\\Be\\F\\Session\\SessionFactory',
                      '\\Be\\F\\Cache\\CacheFactory',
-                     '\\Be\\F\\Db\\DbFactory',
                      '\\Be\\F\\Db\\TableFactory',
                      '\\Be\\F\\Db\\TupleFactory',
                      '\\Be\\F\\App\\ServiceFactory',
@@ -361,8 +358,11 @@ abstract class Be
                      '\\Be\\F\\Template\\TemplateFactory',
                      '\\Be\\Mf\\Plugin\\PluginFactory',
                      '\\Be\\Mf\\User\\UserFactory',
+
+                     '\\Be\\F\\Db\\DbFactory',
+                     '\\Be\\F\\Redis\\RedisFactory',
                  ] as $factoryClass) {
-            $factoryClass::recycle();
+            $factoryClass::release();
         }
     }
 }
