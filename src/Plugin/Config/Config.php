@@ -2,7 +2,6 @@
 
 namespace Be\Mf\Plugin\Config;
 
-use Be\Mf\App\System\Helper\DocComment;
 use Be\F\Config\Annotation\BeConfig;
 use Be\F\Config\Annotation\BeConfigItem;
 use Be\Mf\Be;
@@ -36,7 +35,7 @@ class Config extends Driver
                     if (class_exists($className)) {
                         $reflection = new \ReflectionClass($className);
                         $classComment = $reflection->getDocComment();
-                        $parseClassComments = DocComment::parse($classComment);
+                        $parseClassComments = \Be\F\Util\Annotation::parse($classComment);
                         if (isset($parseClassComments['BeConfig'][0])) {
                             $annotation = new BeConfig($parseClassComments['BeConfig'][0]);
                             $config = $annotation->toArray();
@@ -69,7 +68,7 @@ class Config extends Driver
             foreach ($properties as $property) {
                 $itemName = $property->getName();
                 $itemComment = $property->getDocComment();
-                $parseItemComments = DocComment::parse($itemComment);
+                $parseItemComments = \Be\F\Util\Annotation::parse($itemComment);
                 if (isset($parseItemComments['BeConfigItem'][0])) {
                     $annotation = new BeConfigItem($parseItemComments['BeConfigItem'][0]);
                     $configItem = $annotation->toArray();
@@ -142,7 +141,7 @@ class Config extends Driver
                 }
 
                 $itemComment = $property->getDocComment();
-                $parseItemComments = DocComment::parse($itemComment);
+                $parseItemComments = \Be\F\Util\Annotation::parse($itemComment);
                 if (isset($parseItemComments['BeConfigItem'][0])) {
                     $annotation = new BeConfigItem($parseItemComments['BeConfigItem'][0]);
                     $configItem = $annotation->toArray();
