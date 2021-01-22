@@ -20,8 +20,7 @@ class RoleFactory
         if (isset(self::$cache[$roleId])) return self::$cache[$roleId];
 
         $path = Be::getRuntime()->getCachePath() . '/Role/Role' . $roleId . '.php';
-        $configSystem = Be::getConfig('System.System');
-        if ($configSystem->developer || !file_exists($path)) {
+        if (!file_exists($path)) {
             $service = Be::getService('System.Role');
             $service->updateRole($roleId);
             include_once $path;

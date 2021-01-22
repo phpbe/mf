@@ -183,7 +183,7 @@ class User
         unset($user->salt);
         unset($user->remember_me_token);
 
-        UserFactory::recycle();
+        UserFactory::release();
         Be::getSession()->set('_user', $user);
     }
 

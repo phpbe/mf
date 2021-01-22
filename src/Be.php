@@ -27,7 +27,7 @@ use Be\Mf\User\UserFactory;
 
 /**
  *  BE系统资源工厂
- * @package System
+ * @package Be\Mf
  *
  */
 abstract class Be
@@ -64,7 +64,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的配置文件（单例）
+     * 获取指定的配置文件
      *
      * @param string $name 配置文件名
      * @return mixed
@@ -96,7 +96,7 @@ abstract class Be
     }
 
     /**
-     * 获取一个属性（单例）
+     * 获取一个属性
      *
      * @param string $name 名称
      * @return \Be\F\Property\Driver
@@ -129,7 +129,7 @@ abstract class Be
     }
 
     /**
-     * 获取数据库对象（单例）
+     * 获取数据库对象
      *
      * @param string $name 数据库名
      * @return \Be\F\Db\Driver
@@ -141,7 +141,7 @@ abstract class Be
     }
 
     /**
-     * 获取有效期的数据库对象（单例）
+     * 获取有效期的数据库对象
      * 如果实例已创建时间超过了有效期，则创建新实例
      *
      * @param string $name 数据库名
@@ -167,7 +167,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个数据库行记灵对象（单例）
+     * 获取指定的一个数据库行记灵对象
      *
      * @param string $name 数据库行记灵对象名
      * @param string $db 库名
@@ -191,7 +191,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个数据库表对象（单例）
+     * 获取指定的一个数据库表对象
      *
      * @param string $name 表名
      * @param string $db 库名
@@ -215,7 +215,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个数据库表属性（单例）
+     * 获取指定的一个数据库表属性
      *
      * @param string $name 表名
      * @param string $db 库名
@@ -227,7 +227,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个服务（单例）
+     * 获取指定的一个服务
      *
      * @param string $name 服务名
      * @return mixed
@@ -249,7 +249,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的库（单例）
+     * 获取指定的库
      *
      * @param string $name 库名，可指定命名空间，调用第三方库
      * @return mixed
@@ -273,7 +273,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个扩展（单例）
+     * 获取指定的一个扩展
      *
      * @param string $name 扩展名
      * @return mixed
@@ -296,7 +296,7 @@ abstract class Be
         return PluginFactory::newInstance($name);
     }
     /**
-     * 获取指定的一个模板（单例）
+     * 获取指定的一个模板
      *
      * @param string $template 模板名
      * @param string $theme 主题名
@@ -309,7 +309,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个菜单（单例）
+     * 获取指定的一个菜单
      *
      * @return \Be\Mf\Menu\Driver
      */
@@ -319,7 +319,7 @@ abstract class Be
     }
 
     /**
-     * 获取指定的一个角色信息（单例）
+     * 获取指定的一个角色信息
      *
      * @param int $roleId 角色ID
      * @return Role
@@ -330,12 +330,11 @@ abstract class Be
     }
 
     /**
-     * 获取一个用户 实例（单例）
+     * 获取当前用户
      *
-     * @param int $id 用户编号
      * @return User | mixed
      */
-    public static function getUser($id = 0)
+    public static function getUser()
     {
         return UserFactory::getInstance();
     }

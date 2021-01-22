@@ -4,7 +4,7 @@ namespace Be\Mf\App\System\Service;
 
 use Be\F\Db\Tuple;
 use Be\F\App\ServiceException;
-use Be\Mf\App\System\Helper\DocComment;
+use Be\F\Util\Annotation;
 use Be\Mf\Be;
 
 class Role
@@ -102,8 +102,8 @@ class Role
         $apps = Be::getService('System.App')->getApps();
         foreach ($apps as $app) {
             $appName = $app->name;
-            $appProperty = Be::getProperty('App.'.$appName);
-            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
+            $appProperty = Be::getProperty('App.' . $appName);
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath() . '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
             $controllers = scandir($controllerDir);
             foreach ($controllers as $controller) {
@@ -118,7 +118,7 @@ class Role
 
                 // 类注释
                 $classComment = $reflection->getDocComment();
-                $parseClassComments = DocComment::parse($classComment);
+                $parseClassComments = Annotation::parse($classComment);
 
                 $permission = 0;
                 foreach ($parseClassComments as $key => $val) {
@@ -137,7 +137,7 @@ class Role
                         $permissions[] = $appName . '.' . $controller . '.' . $methodName;
                     } else {
                         $methodComment = $method->getDocComment();
-                        $methodComments = DocComment::parse($methodComment);
+                        $methodComments = Annotation::parse($methodComment);
                         foreach ($methodComments as $key => $val) {
                             if ($key == 'BePermission') {
                                 if (is_array($val[0]) && isset($val[0]['value']) && $val[0]['value'] == '*') {
@@ -158,7 +158,7 @@ class Role
         $code .= '{' . "\n";
         $code .= '  public $name = \'公共功能\';' . "\n";
         $code .= '  public $permission = \'-1\';' . "\n";
-        $code .= '  public $permissions = [\'' . implode('\',\'',  $permissions) . '\'];' . "\n";
+        $code .= '  public $permissions = [\'' . implode('\',\'', $permissions) . '\'];' . "\n";
         $code .= '}' . "\n";
 
         $path = Be::getRuntime()->getCachePath() . '/Role/Role0.php';
@@ -170,15 +170,16 @@ class Role
     }
 
 
-    public function getPermissionTree() {
+    public function getPermissionTree()
+    {
         $treeData = [];
         $apps = Be::getService('System.App')->getApps();
         foreach ($apps as $app) {
             $appName = $app->name;
 
             $children = [];
-            $appProperty = Be::getProperty('App.'.$appName);
-            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath(). '/Controller';
+            $appProperty = Be::getProperty('App.' . $appName);
+            $controllerDir = Be::getRuntime()->getRootPath() . $appProperty->getPath() . '/Controller';
             if (!file_exists($controllerDir) && !is_dir($controllerDir)) continue;
             $controllers = scandir($controllerDir);
             foreach ($controllers as $controller) {
@@ -190,7 +191,7 @@ class Role
 
                 $reflection = new \ReflectionClass($className);
                 $classComment = $reflection->getDocComment();
-                $parseClassComments = DocComment::parse($classComment);
+                $parseClassComments = Annotation::parse($classComment);
 
                 $childKey = null;
                 $childLabel = null;
@@ -229,7 +230,7 @@ class Role
                 foreach ($methods as &$method) {
                     $methodName = $method->getName();
                     $methodComment = $method->getDocComment();
-                    $methodComments = DocComment::parse($methodComment);
+                    $methodComments = Annotation::parse($methodComment);
                     foreach ($methodComments as $key => $val) {
                         if ($key == 'BePermission') {
                             if (is_array($val[0]) && isset($val[0]['value']) && $val[0]['value'] != '*') {
@@ -245,7 +246,7 @@ class Role
                 }
 
                 if (count($subChildren) > 0) {
-                    $children[$childLabel]['children'] = array_merge($children[$childLabel]['children'],$subChildren);
+                    $children[$childLabel]['children'] = array_merge($children[$childLabel]['children'], $subChildren);
                 }
             }
 
@@ -274,18 +275,18 @@ class Role
         // 排序
         foreach ($treeData as $k => &$v) {
             foreach ($v['children'] as $key => &$val) {
-                $orderings = array_column($val['children'],'ordering');
-                array_multisort($val['children'],SORT_ASC, SORT_NUMERIC,$orderings);
+                $orderings = array_column($val['children'], 'ordering');
+                array_multisort($val['children'], SORT_ASC, SORT_NUMERIC, $orderings);
             }
             unset($val);
 
-            $orderings = array_column($v['children'],'ordering');
-            array_multisort($v['children'],SORT_ASC, SORT_NUMERIC,$orderings);
+            $orderings = array_column($v['children'], 'ordering');
+            array_multisort($v['children'], SORT_ASC, SORT_NUMERIC, $orderings);
         }
         unset($v);
 
-        $orderings = array_column($treeData,'ordering');
-        array_multisort($treeData,SORT_ASC, SORT_NUMERIC,$orderings);
+        $orderings = array_column($treeData, 'ordering');
+        array_multisort($treeData, SORT_ASC, SORT_NUMERIC, $orderings);
 
         return $treeData;
     }

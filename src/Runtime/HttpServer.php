@@ -3,6 +3,7 @@
 namespace Be\Mf\Runtime;
 
 use Be\F\Db\DbFactory;
+use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
 use Be\Mf\Be;

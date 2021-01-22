@@ -23,8 +23,7 @@ abstract class MenuFactory
         if (isset(self::$cache['Menu'])) return self::$cache['Menu'];
 
         $path = Be::getRuntime()->getCachePath() . '/Menu.php';
-        $configSystem = Be::getConfig('System.System');
-        if ($configSystem->developer || !file_exists($path)) {
+        if (!file_exists($path)) {
             $service = Be::getService('System.Menu');
             $service->update();
             include_once $path;

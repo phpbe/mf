@@ -2,7 +2,7 @@
 
 namespace Be\Mf\App\System\Service;
 
-use Be\Mf\App\System\Helper\DocComment;
+use Be\F\Util\Annotation;
 use Be\Mf\Be;
 
 class Menu
@@ -40,7 +40,7 @@ class Menu
 
                 // 类注释
                 $classComment = $reflection->getDocComment();
-                $parseClassComments = DocComment::parse($classComment);
+                $parseClassComments = Annotation::parse($classComment);
                 foreach ($parseClassComments as $key => $val) {
                     if ($key == 'BeMenuGroup') {
                         if (is_array($val[0])) {
@@ -59,7 +59,7 @@ class Menu
                 foreach ($methods as &$method) {
                     $methodName = $method->getName();
                     $methodComment = $method->getDocComment();
-                    $methodComments = DocComment::parse($methodComment);
+                    $methodComments = Annotation::parse($methodComment);
                     $menuGroup = [];
                     $menu = [];
                     foreach ($methodComments as $key => $val) {

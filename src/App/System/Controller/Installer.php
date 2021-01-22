@@ -2,6 +2,7 @@
 
 namespace Be\Mf\App\System\Controller;
 
+use Be\F\Config\ConfigHelper;
 use Be\Mf\Plugin\Detail\Item\DetailItemIcon;
 use Be\Mf\Plugin\Form\Item\FormItemAutoComplete;
 use Be\Mf\Plugin\Form\Item\FormItemCustom;
@@ -138,7 +139,7 @@ class Installer
                 }
             }
 
-            Be::getService('System.Config')->save('System.Db', $configDb);
+            ConfigHelper::update('System.Db', $configDb);
 
             $response->redirect(beUrl('System.Installer.installApp'));
 

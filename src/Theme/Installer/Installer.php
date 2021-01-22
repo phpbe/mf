@@ -28,12 +28,16 @@
     </head>
     <body>
     <be-body>
-        <div class="be-body">
 
-            <div class="logo">
-                <div class="txt">安装程序</div>
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <div class="txt">安装程序</div>
+                </div>
             </div>
+        </div>
 
+        <div class="be-body">
             <?php
             if (isset($this->steps) && is_array($this->steps) && count($this->steps) > 0) {
                 ?>
