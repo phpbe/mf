@@ -6,7 +6,7 @@ namespace Be\Mf\Plugin\Table;
 class Property extends \Be\Mf\Plugin\Property
 {
 
-    public $label = '表格';
+    protected $label = '表格';
 
     public function __construct() {
         parent::__construct(__FILE__);
