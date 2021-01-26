@@ -98,6 +98,7 @@ class HttpServer
         $this->server->on('request', function ($swRequest, $swResponse) {
             $swResponse->header('Server', 'BE/MF', false);
             $uri = $swRequest->server['request_uri'];
+
             $ext = strrchr($uri, '.');
             if ($ext) {
                 $ext = strtolower(substr($ext, 1));
@@ -132,6 +133,7 @@ class HttpServer
                     }
                 }
             }
+
 
             $swRequest->request = null;
             if ($swRequest->get !== null) {
@@ -220,41 +222,43 @@ class HttpServer
 
                 $request->setRoute($app, $controller, $action);
 
-                $my = Be::getUser();
-                if ($my->id == 0) {
-                    Be::getService('System.User')->rememberMe();
+                if ($app != 'System' || $controller != 'Installer') {
                     $my = Be::getUser();
-                }
-
-                // 校验权限
-                $role0 = Be::getRole(0);
-                if (!$role0->hasPermission($app, $controller, $action)) {
-                    // 访问的不是公共内容，且未登录，跳转到登录页面
                     if ($my->id == 0) {
-                        $return = $request->get('return', base64_encode($request->getUrl()));
-                        $redirectUrl = beUrl('System.User.login', ['return' => $return]);
-                        $response->error('登录超时，请生新登录！', $redirectUrl);
-                        Be::release();
-                        return true;
-                    } else {
-                        if (!$my->hasPermission($app, $controller, $action)) {
-                            $response->error('您没有权限操作该功能！');
+                        Be::getService('System.User')->rememberMe();
+                        $my = Be::getUser();
+                    }
+
+                    // 校验权限
+                    $role0 = Be::getRole(0);
+                    if (!$role0->hasPermission($app, $controller, $action)) {
+                        // 访问的不是公共内容，且未登录，跳转到登录页面
+                        if ($my->id == 0) {
+                            $return = $request->get('return', base64_encode($request->getUrl()));
+                            $redirectUrl = beUrl('System.User.login', ['return' => $return]);
+                            $response->error('登录超时，请生新登录！', $redirectUrl);
                             Be::release();
                             return true;
+                        } else {
+                            if (!$my->hasPermission($app, $controller, $action)) {
+                                $response->error('您没有权限操作该功能！');
+                                Be::release();
+                                return true;
+                            }
                         }
                     }
-                }
 
-                if ($my->id > 0) {
-                    // 已登录用户，IP锁定功能校验
-                    $configUser = Be::getConfig('System.User');
-                    if ($configUser->ipLock) {
-                        if ($my->this_login_ip != $request->getIp()) {
-                            Be::getService('System.User')->logout();
-                            $redirectUrl = beUrl('System.User.login');
-                            $response->error('检测到您的账号在其它地点（'.$my->this_login_ip . ' '. $my->this_login_time.'）登录！', $redirectUrl);
-                            Be::release();
-                            return true;
+                    if ($my->id > 0) {
+                        // 已登录用户，IP锁定功能校验
+                        $configUser = Be::getConfig('System.User');
+                        if ($configUser->ipLock) {
+                            if ($my->this_login_ip != $request->getIp()) {
+                                Be::getService('System.User')->logout();
+                                $redirectUrl = beUrl('System.User.login');
+                                $response->error('检测到您的账号在其它地点（'.$my->this_login_ip . ' '. $my->this_login_time.'）登录！', $redirectUrl);
+                                Be::release();
+                                return true;
+                            }
                         }
                     }
                 }
