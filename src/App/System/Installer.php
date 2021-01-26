@@ -16,13 +16,15 @@ class Installer extends \Be\F\App\Installer
 	public function install()
 	{
         $db = Be::getDb();
-
-        $sql = file_get_contents(__DIR__ . '/Installer.sql');
-        $sqls = preg_split('/; *[\r\n]+/', $sql);
-        foreach ($sqls as $sql) {
-            $sql = trim($sql);
-            if ($sql) {
-                $db->query($sql);
+        $tableNames = $db->getTableNames();
+        if (!in_array('system_app', $tableNames)) {
+            $sql = file_get_contents(__DIR__ . '/Installer.sql');
+            $sqls = preg_split('/; *[\r\n]+/', $sql);
+            foreach ($sqls as $sql) {
+                $sql = trim($sql);
+                if ($sql) {
+                    $db->query($sql);
+                }
             }
         }
 	}
