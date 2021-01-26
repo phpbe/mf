@@ -133,6 +133,10 @@ class Role
                 $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
                 foreach ($methods as &$method) {
                     $methodName = $method->getName();
+                    if (substr($methodName, 0, 1) == '_') {
+                        continue;
+                    }
+
                     if ($permission == 1) {
                         $permissions[] = $appName . '.' . $controller . '.' . $methodName;
                     } else {
@@ -229,6 +233,10 @@ class Role
                 $methods = $reflection->getMethods(\ReflectionMethod::IS_PUBLIC);
                 foreach ($methods as &$method) {
                     $methodName = $method->getName();
+                    if (substr($methodName, 0, 1) == '_') {
+                        continue;
+                    }
+
                     $methodComment = $method->getDocComment();
                     $methodComments = Annotation::parse($methodComment);
                     foreach ($methodComments as $key => $val) {

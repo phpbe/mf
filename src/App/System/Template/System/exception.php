@@ -26,7 +26,7 @@
             $request = \Be\Mf\Be::getRequest();
             ?>
             <el-alert
-                    title="<?php echo $this->e->getMessage(); ?>"
+                    title="<?php echo htmlspecialchars($this->e->getMessage()); ?>"
                     type="error"
                     description="<?php echo '#' . $this->logHash; ?>"
                     show-icon>

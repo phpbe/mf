@@ -2,10 +2,13 @@
 
 namespace Be\Mf\Runtime;
 
+use Be\F\Config\ConfigFactory;
 use Be\F\Db\DbFactory;
 use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
+use Be\F\Runtime\RuntimeException;
+use Be\F\Runtime\RuntimeFactory;
 use Be\Mf\Be;
 
 class HttpServer
@@ -85,6 +88,12 @@ class HttpServer
         // 初始化数据库，Redis连接池
         DbFactory::init();
         RedisFactory::init();
+
+        $sessionConfig = ConfigFactory::getInstance('System.Session');
+        if ($sessionConfig->driver == 'File') {
+            $dir = RuntimeFactory::getInstance()->getCachePath() . '/session';
+            \Be\F\Util\FileSystem\Dir::rm($dir);
+        }
 
         $this->server->on('request', function ($swRequest, $swResponse) {
             $swResponse->header('Server', 'BE/MF', false);
@@ -280,6 +289,12 @@ class HttpServer
     public function stop()
     {
         $this->server->stop();
+
+        $sessionConfig = ConfigFactory::getInstance('System.Session');
+        if ($sessionConfig->driver == 'File') {
+            $dir = RuntimeFactory::getInstance()->getCachePath() . '/session';
+            \Be\F\Util\FileSystem\Dir::rm($dir);
+        }
     }
 
 
