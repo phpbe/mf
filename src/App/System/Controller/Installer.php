@@ -146,7 +146,9 @@ class Installer
                 Be::getService('System.Installer')->testDb($formData);
 
                 $configDb = Be::getConfig('System.Db');
-                foreach ($configDb->master as $k => $v) {
+
+                $configDbDefault = new \Be\F\Db\Config();
+                foreach ($configDbDefault->master as $k => $v) {
                     if (isset($formData[$k])) {
                         $configDb->master[$k] = $formData[$k];
                     }
@@ -167,6 +169,7 @@ class Installer
             $response->set('steps', $this->steps);
             $response->set('step', 1);
 
+            $configDb = Be::getConfig('System.Db');
             Be::getPlugin('Form')
                 ->setting([
                     'title' => '系统数据库配置',
@@ -181,24 +184,27 @@ class Installer
                                 'name' => 'host',
                                 'label' => '主机名',
                                 'required' => true,
+                                'value' => $configDb->master['host'],
                             ],
                             [
                                 'name' => 'port',
                                 'label' => '端口号',
                                 'driver' => FormItemInputNumberInt::class,
                                 'required' => true,
-                                'value' => 3306,
+                                'value' => $configDb->master['port'],
                                 'ui' => [':min' => 1, ':max' => 65535],
                             ],
                             [
                                 'name' => 'username',
                                 'label' => '用户名',
                                 'required' => true,
+                                'value' => $configDb->master['username'],
                             ],
                             [
                                 'name' => 'password',
                                 'label' => '密码',
                                 'required' => true,
+                                'value' => $configDb->master['password'],
                             ],
                             [
                                 'name' => 'testDb',
@@ -210,6 +216,14 @@ class Installer
                                 'label' => '库名',
                                 'driver' => FormItemAutoComplete::class,
                                 'required' => true,
+                            ],
+                            [
+                                'name' => 'pool',
+                                'label' => '连接池大小（0：不启用）',
+                                'driver' => FormItemInputNumberInt::class,
+                                'required' => true,
+                                'value' => $configDb->master['pool'],
+                                'ui' => [':min' => 0, ':max' => 10000],
                             ],
                         ],
                         'actions' => [
