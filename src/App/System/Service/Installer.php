@@ -66,7 +66,7 @@ class Installer
 
                             if (file_exists($propertyPath)) {
                                 $content = file_get_contents($propertyPath);
-                                preg_match('/namespace\s+Be\\\\App\\\\(\w+)/i', $content, $matches);
+                                preg_match('/namespace\s+Be\\\\Mf\\\\App\\\\(\w+)/i', $content, $matches);
                                 if (isset($matches[1]) && $matches[1] != 'System') {
                                     $apps[] = $matches[1];
                                 }
@@ -79,7 +79,6 @@ class Installer
         return $apps;
     }
 
-
     /**
      * 安装APP
      *
@@ -87,9 +86,15 @@ class Installer
      */
     public function installApp($app)
     {
-
+        $class = '\\Be\\Mf\\App\\' . $app . '\\Installer';
+        if (class_exists($class)) {
+            /**
+             * @var \Be\Mf\App\System\Installer $installer
+             */
+            $installer = new $class();
+            $installer->install();
+        }
     }
-
 
     /**
      * 卸载APP
@@ -98,7 +103,14 @@ class Installer
      */
     public function uninstallApp($app)
     {
-
+        $class = '\\Be\\Mf\\App\\' . $app . '\\UnInstaller';
+        if (class_exists($class)) {
+            /**
+             * @var \Be\Mf\App\System\UnInstaller $unInstaller
+             */
+            $unInstaller = new $class();
+            $unInstaller->uninstall();
+        }
     }
 
 

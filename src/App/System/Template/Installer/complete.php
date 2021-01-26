@@ -9,8 +9,9 @@
         </div>
 
         <div class="success-message">
-            安装完成！
+            安装完成！<a href="<?php echo beUrl(); ?>">进入系统</a>
         </div>
+
     </div>
     <script>
         new Vue({

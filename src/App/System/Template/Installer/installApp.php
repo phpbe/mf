@@ -4,15 +4,25 @@
 
 <be-center>
     <div id="app" v-cloak>
-        <el-form>
-            <el-table :data="tableData" ref="tableRef" @selection-change="selectionChange">
-                <el-table-column type="selection" width="50"></el-table-column>
-                <el-table-column prop="icon" label="" width="50"></el-table-column>
-                <el-table-column prop="name" label="名称" width="150"></el-table-column>
-                <el-table-column prop="label" label="名称" width="150"></el-table-column>
-                <el-table-column prop="description" label="描述"></el-table-column>
-            </el-table>
-            <el-button type="primary" icon="el-icon-search" @click="submit" :disabled="loading">查询</el-button>
+        <el-form size="mini" label-width="150px" ref="formRef">
+            <div style="padding: 20px 0">
+                <el-table :data="tableData" ref="tableRef" @selection-change="selectionChange">
+                    <el-table-column type="selection" width="50"></el-table-column>
+                    <el-table-column prop="icon" label="图标" width="90" align="center">
+                        <template slot-scope="scope">
+                            <el-icon :class="scope.row.icon"></el-icon>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="name" label="名称" width="150" align="center"></el-table-column>
+                    <el-table-column prop="label" label="中文名称" width="150" align="center"></el-table-column>
+                    <el-table-column prop="description" label="描述"></el-table-column>
+                </el-table>
+            </div>
+
+            <el-form-item>
+                <el-button type="primary" @click="submit" :disabled="loading">继续安装</el-button>
+            </el-form-item>
+
         </el-form>
     </div>
     <script>
@@ -22,43 +32,52 @@
                 formData:{
                     appNames: []
                 },
+                loading: false,
                 tableData: <?php echo json_encode($this->appProperties); ?>
             },
             methods: {
                 selectionChange: function(rows) {
                     var arrAppNames = [];
-                    for (var x in rows) {
+                    for (var i=0; i<rows.length; i++) {
                         var row = rows[i];
                         arrAppNames.push(row.name);
                     }
+
+                    if (arrAppNames.indexOf("System") === -1) {
+                        arrAppNames.push("System");
+                        this.$refs.tableRef.toggleRowSelection(this.tableData[0]);
+                    }
+
                     this.formData.appNames = arrAppNames;
                 },
                 submit: function () {
-                    var eForm = document.createElement("form");
-                    eForm.action = window.location.href;
-                    eForm.target = "_self";
-                    eForm.method = "post";
-                    eForm.style.display = "none";
+                    var _this = this;
+                    this.loading = true;
+                    this.$http.post("<?php echo beUrl('System.Installer.installApp'); ?>", {
+                        formData: this.formData
+                    }).then(function (response) {
+                        _this.loading = false;
+                        console.log(response);
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                window.location.href=responseData.redirectUrl;
+                            } else {
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.loading = false;
+                        _this.$message.error(error);
+                    });
 
-                    var e = document.createElement("textarea");
-                    e.name = 'data';
-                    e.value = JSON.stringify({formData: this.formData});
-                    eForm.appendChild(e);
-
-                    document.body.appendChild(eForm);
-
-                    setTimeout(function () {
-                        eForm.submit();
-                    }, 50);
-
-                    setTimeout(function () {
-                        document.body.removeChild(eForm);
-                    }, 3000);
                 }
             },
-            created: function () {
-                for(var x in this.tableData) {
-                    this.$refs.tableRef.selectionChange(this.tableData[x]);
+            mounted: function () {
+                for (var i=0; i<this.tableData.length; i++) {
+                    this.$refs.tableRef.toggleRowSelection(this.tableData[i]);
                 }
             }
         });

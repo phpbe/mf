@@ -25,11 +25,6 @@ class Installer extends \Be\F\App\Installer
                 $db->query($sql);
             }
         }
-
-        // 生成计划任务调度 KEY
-        $config = Be::getConfig('System.Task');
-        $config->key = Random::complex(16);
-        Be::getService('System.Config')->save('System.Task', $config);
 	}
 
 }
