@@ -141,20 +141,6 @@ abstract class Be
     }
 
     /**
-     * 获取有效期的数据库对象
-     * 如果实例已创建时间超过了有效期，则创建新实例
-     *
-     * @param string $name 数据库名
-     * @param int $expire 有效时间(单位：秒)
-     * @return \Be\F\Db\Driver
-     * @throws RuntimeException
-     */
-    public static function getExpireDb($name = 'master', $expire = 600)
-    {
-        return DbFactory::getExpireInstance($name, $expire);
-    }
-
-    /**
      * 新创建一个数据库对象
      *
      * @param string $name 数据库名

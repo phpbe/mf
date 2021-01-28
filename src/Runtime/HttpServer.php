@@ -7,12 +7,15 @@ use Be\F\Db\DbFactory;
 use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
-use Be\F\Runtime\RuntimeException;
 use Be\F\Runtime\RuntimeFactory;
 use Be\Mf\Be;
 
+
 class HttpServer
 {
+    /**
+     * @var \Swoole\Http\Server
+     */
     private $server = null;
 
     CONST MIME = [
@@ -96,7 +99,10 @@ class HttpServer
         }
 
         $this->server->on('request', function ($swRequest, $swResponse) {
-            $swResponse->header('Server', 'BE/MF', false);
+            /**
+             * @var \Swoole\Http\Response $swResponse
+             */
+            $swResponse->header('Server', 'be/mf', false);
             $uri = $swRequest->server['request_uri'];
 
             $ext = strrchr($uri, '.');
