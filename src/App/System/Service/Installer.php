@@ -97,7 +97,11 @@ class Installer
             $property = Be::getProperty('App.' . $app);
 
             $tuple = Be::newTuple('system_app');
-            $tuple->loadBy('name', $app);
+            try {
+                $tuple->loadBy('name', $app);
+            } catch (\Throwable $t) {
+
+            }
             $tuple->name = $app;
             $tuple->label = $property->getLabel();
             $tuple->icon = $property->getIcon();
@@ -124,8 +128,11 @@ class Installer
             $unInstaller->uninstall();
 
             $tuple = Be::newTuple('system_app');
-            $tuple->loadBy('name', $app);
-            $tuple->delete();
+            try {
+                $tuple->loadBy('name', $app);
+                $tuple->delete();
+            } catch (\Throwable $t) {
+            }
         }
     }
 
