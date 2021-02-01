@@ -93,6 +93,18 @@ class Installer
              */
             $installer = new $class();
             $installer->install();
+
+            $property = Be::getProperty('App.' . $app);
+
+            $tuple = Be::newTuple('system_app');
+            $tuple->loadBy('name', $app);
+            $tuple->name = $app;
+            $tuple->label = $property->getLabel();
+            $tuple->icon = $property->getIcon();
+            $tuple->install_time = date('Y-m-d H:i:s');
+            $tuple->update_time = date('Y-m-d H:i:s');
+            $tuple->save();
+
         }
     }
 
@@ -110,6 +122,10 @@ class Installer
              */
             $unInstaller = new $class();
             $unInstaller->uninstall();
+
+            $tuple = Be::newTuple('system_app');
+            $tuple->loadBy('name', $app);
+            $tuple->delete();
         }
     }
 
