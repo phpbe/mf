@@ -132,6 +132,7 @@ class Config extends Driver
             }
 
             $newValues = [];
+            $newValueStrings = [];
             $reflection = new \ReflectionClass($className);
             $properties = $reflection->getProperties(\ReflectionMethod::IS_PUBLIC);
             foreach ($properties as $property) {
@@ -166,47 +167,48 @@ class Config extends Driver
                     $driver = new $driverClass($configItem);
                     $driver->submit($formData);
 
-                    $newValue = null;
+                    $newValues[$itemName] = $driver->newValue;
+                    $newValueString = null;
                     switch ($driver->valueType) {
                         case 'array(int)':
                         case 'array(float)':
-                            $newValue = '[' . implode(',', $driver->newValue) . ']';
+                        $newValueString = '[' . implode(',', $driver->newValue) . ']';
                             break;
                         case 'array':
                         case 'array(string)':
-                            $newValue = $driver->newValue;
-                            foreach ($newValue as &$x) {
+                        $newValueString = $driver->newValue;
+                            foreach ($newValueString as &$x) {
                                 $x = str_replace('\'', '\\\'', $x);
                             }
                             unset($x);
-                            $newValue = '[\'' . implode('\',\'', $newValue) . '\']';
+                        $newValueString = '[\'' . implode('\',\'', $newValueString) . '\']';
                             break;
                         case 'mixed':
-                            $newValue = var_export($driver->newValue, true);
+                            $newValueString = var_export($driver->newValue, true);
                             break;
                         case 'bool':
-                            $newValue = $driver->newValue ? 'true' : 'false';
+                            $newValueString = $driver->newValue ? 'true' : 'false';
                             break;
                         case 'int':
                         case 'float':
-                            $newValue = $driver->newValue;
+                            $newValueString = $driver->newValue;
                             break;
                         case 'string':
-                            $newValue = '\'' . str_replace('\'', '\\\'', $driver->newValue) . '\'';
+                            $newValueString = '\'' . str_replace('\'', '\\\'', $driver->newValue) . '\'';
                             break;
                         default:
-                            $newValue = var_export($driver->newValue, true);
+                            $newValueString = var_export($driver->newValue, true);
                     }
 
-                    $newValues[$itemName] = $newValue;
+                    $newValueStrings[$itemName] = $newValueString;
                 }
             }
 
             $instance = Be::getConfig($appName . '.' . $configName);
             $vars = get_object_vars($instance);
             foreach ($vars as $k => $v) {
-                if (isset($newValues[$k])) {
-                    $code .= '  public $' . $k . ' = ' . $newValues[$k] . ';' . "\n";
+                if (isset($newValueStrings[$k])) {
+                    $code .= '  public $' . $k . ' = ' . $newValueStrings[$k] . ';' . "\n";
                 } else {
                     $code .= '  public $' . $k . ' = ' . var_export($v, true) . ';' . "\n";
                 }
@@ -219,6 +221,13 @@ class Config extends Driver
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             file_put_contents($path, $code, LOCK_EX);
             chmod($path, 0755);
+
+            // 更新 config 实例
+            foreach ($vars as $k => $v) {
+                if (isset($newValue[$k])) {
+                    $instance->$k = $newValue[$k];
+                }
+            }
 
             $response->success('保存成功！');
         } catch (\Throwable $t) {
@@ -239,6 +248,26 @@ class Config extends Driver
 
             $path = Be::getRuntime()->getDataPath() . '/' . $appName . '/Config/' . $configName . '.php';
             if (file_exists($path)) @unlink($path);
+
+            // 更新 config 实例
+            $config = Be::getConfig($appName . '.' . $configName);
+
+            $class = '\\Be\\' .  Be::getRuntime()->getFrameworkName() .'\\App\\' . $appName . '\\Config\\' . $configName;
+            $newConfig = new $class();
+
+            $vars = get_object_vars($newConfig);
+            foreach ($vars as $k => $v) {
+                if (isset($config->$k)) {
+                    $config->$k = $v;
+                }
+            }
+
+            $vars = get_object_vars($config);
+            foreach ($vars as $k => $v) {
+                if (!isset($newConfig->$k)) {
+                    unset($config->$k);
+                }
+            }
 
             $response->success('恢复默认值成功！');
         } catch (\Throwable $t) {
