@@ -224,8 +224,8 @@ class Config extends Driver
 
             // 更新 config 实例
             foreach ($vars as $k => $v) {
-                if (isset($newValue[$k])) {
-                    $instance->$k = $newValue[$k];
+                if (isset($newValues[$k])) {
+                    $instance->$k = $newValues[$k];
                 }
             }
 
