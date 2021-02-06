@@ -137,8 +137,7 @@ class User
             $this->makeLogin($tupleUser);
 
             $rememberMe = $username . '|' . base64_encode($this->rc4($password, $tupleUser->salt));
-
-            $response->cookie('_rememberMe', $rememberMe, time() + 30 * 86400);
+            $response->cookie('_rememberMe', $rememberMe, time() + 30 * 86400, '/', '', false, true);
 
             $tupleUserLoginLog->success = 1;
             $tupleUserLoginLog->description = '登陆成功！';
