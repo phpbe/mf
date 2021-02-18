@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\F\Config\Annotation;
+namespace Be\Mf\Menu\Annotation;
 
 /**
  * 驱动

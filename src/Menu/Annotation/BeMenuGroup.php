@@ -1,5 +1,5 @@
 <?php
-namespace Be\F\Annotation;
+namespace Be\Mf\Menu\Annotation;
 
 /**
  * 菜单分组
