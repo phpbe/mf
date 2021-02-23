@@ -242,7 +242,7 @@ class HttpServer
                         if ($my->id == 0) {
                             $return = $request->get('return', base64_encode($request->getUrl()));
                             $redirectUrl = beUrl('System.User.login', ['return' => $return]);
-                            $response->error('登录超时，请生新登录！', $redirectUrl);
+                            $response->error('登录超时，请重新登录！', $redirectUrl);
                             Be::release();
                             return true;
                         } else {
