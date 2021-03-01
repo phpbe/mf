@@ -27,14 +27,18 @@ INSERT INTO `system_theme` (`id`, `name`, `label`, `install_time`, `update_time`
 
 CREATE TABLE `system_task` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `name` varchar(200) NOT NULL COMMENT '名称',
-  `driver` varchar(220) NOT NULL DEFAULT '' COMMENT '驱动',
+  `app` varchar(60) NOT NULL COMMENT '应用	',
+  `name` varchar(60) NOT NULL COMMENT '名称',
+  `label` varchar(60) NOT NULL COMMENT '中文名称',
+  `driver` varchar(200) NOT NULL DEFAULT '' COMMENT '驱动',
   `schedule` varchar(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
   `is_enable` tinyint NOT NULL DEFAULT '1' COMMENT '是否可用',
+  `is_delete` tinyint NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `last_execute_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后执行时间',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `app` (`app`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
 CREATE TABLE `system_op_log` (

@@ -2,230 +2,317 @@
 
 namespace Be\Mf\Plugin\Task;
 
+use Be\F\Db\Tuple;
 use Be\Mf\Be;
+use Be\Mf\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Mf\Plugin\Driver;
-use Be\Mf\Plugin\PluginException;
+use Be\Mf\Plugin\Form\Item\FormItemCron;
+use Be\Mf\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Mf\Plugin\Form\Item\FormItemSwitch;
+use Be\Mf\Plugin\Table\Item\TableItemSelection;
+use Be\Mf\Plugin\Table\Item\TableItemSwitch;
+use Be\Mf\Task\Annotation\BeTask;
 
 /**
- * 配置
+ * 计划任务
  *
- * Class Config
- * @package Be\Mf\Plugin
+ * Class Task
+ * @package Be\Mf\Plugin\Task
  */
 class Task extends Driver
 {
 
-    public function display()
+    private $loaded = [];
+
+    /**
+     * 执行指定任务
+     *
+     * @param string $task
+     */
+    public function execute($task = null)
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
 
         $appName = isset($this->setting['appName']) ? $this->setting['appName'] : $request->getAppName();
+        if (!isset($this->loaded[$appName])) {
 
-        $tasks = [];
-        $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.' . $appName)->getPath() . '/Task';
-        if (file_exists($dir) && is_dir($dir)) {
-            $fileNames = scandir($dir);
-            foreach ($fileNames as $fileName) {
-                if ($fileName != '.' && $fileName != '..' && is_file($dir . '/' . $fileName)) {
-                    $taskName = substr($fileName, 0, -4);
-                    $className = '\\Be\\Mf\\App\\' . $appName . '\\Task\\' . $taskName;
-                    if (class_exists($className)) {
-                        $reflection = new \ReflectionClass($className);
-                        $classComment = $reflection->getDocComment();
-                        $parseClassComments = \Be\F\Util\Annotation::parse($classComment);
-                        if (isset($parseClassComments['BeConfig'][0])) {
-                            $annotation = new BeConfig($parseClassComments['BeConfig'][0]);
-                            $task = $annotation->toArray();
-                            if (isset($task['value'])) {
-                                $task['label'] = $task['value'];
-                                unset($task['value']);
+            $db = Be::getDb();
+            $sql = 'SELECT * FROM system_task WHERE app=' . $db->quoteValue($appName);
+            $dbTasks = $db->getKeyObjects($sql, null, 'driver');
+
+            $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.' . $appName)->getPath() . '/Task';
+            if (file_exists($dir) && is_dir($dir)) {
+                $fileNames = scandir($dir);
+                foreach ($fileNames as $fileName) {
+                    if ($fileName != '.' && $fileName != '..' && is_file($dir . '/' . $fileName)) {
+                        $taskName = substr($fileName, 0, -4);
+                        $className = '\\Be\\Mf\\App\\' . $appName . '\\Task\\' . $taskName;
+                        if (class_exists($className)) {
+                            $reflection = new \ReflectionClass($className);
+                            $classComment = $reflection->getDocComment();
+                            $parseClassComments = \Be\F\Util\Annotation::parse($classComment);
+                            if (isset($parseClassComments['BeTask'][0])) {
+                                $annotation = new BeTask($parseClassComments['BeTask'][0]);
+                                $task = $annotation->toArray();
+
+                                if (isset($dbTasks[$className])) {
+                                    $data = [
+                                        'id' => $dbTasks[$className]->id,
+                                        'name' => $taskName,
+                                        'label' => $task['value'] ?? '',
+                                        'schedule' => $task['schedule'] ?? '',
+                                        'is_delete' => 0,
+                                        'update_time' => date('Y-m-d H:i:s'),
+                                    ];
+                                    $db->update('system_task', $data, 'id');
+                                } else {
+                                    $data = [
+                                        'app' => $appName,
+                                        'name' => $taskName,
+                                        'label' => $task['value'] ?? '',
+                                        'driver' => $className,
+                                        'schedule' => $task['schedule'] ?? '',
+                                        'is_enable' => 0,
+                                        'is_delete' => 0,
+                                        'last_execute_time' => '0000-00-00 00:00:00',
+                                        'create_time' => date('Y-m-d H:i:s'),
+                                        'update_time' => date('Y-m-d H:i:s'),
+                                    ];
+                                    $db->insert('system_task', $data);
+                                }
                             }
-                            $task['name'] = $taskName;
-                            $task['url'] = beUrl($request->getRoute(), ['taskName' => $taskName]);
-                            $tasks[] = $task;
                         }
                     }
                 }
             }
+
+            $this->loaded[$appName] = 1;
         }
-        $response->set('$tasks', $tasks);
-
-        $theme = null;
-        if (isset($this->setting['theme'])) {
-            $theme = $this->setting['theme'];
-        }
-        $response->display('Plugin.Config.display', $theme);
-    }
 
 
-    public function saveTask()
-    {
-        $request = Be::getRequest();
-        $response = Be::getResponse();
+        Be::getPlugin('Curd')->setting([
 
-        try {
-            $appName = isset($this->setting['appName']) ? $this->setting['appName'] : $request->getAppName();
-            $configName = $request->get('configName', '');
-            if (!$configName) {
-                throw new PluginException('参数（configName）缺失！');
-            }
+            'label' => '许划任务',
+            'table' => 'system_task',
 
-            $postData = $request->json();
-            $formData = $postData['formData'];
+            'lists' => [
+                'title' => '许划任务',
 
-            $code = "<?php\n";
-            $code .= 'namespace Be\\Mf\\Data\\' . $appName . '\\Config;' . "\n\n";
-            $code .= 'class ' . $configName . "\n";
-            $code .= "{\n";
+                'filter' => [
+                    ['app', '=', $appName],
+                    ['is_delete', '=', '0'],
+                ],
 
-            $className = '\\Be\\Mf\\App\\' . $appName . '\\Config\\' . $configName;
-            if (!class_exists($className)) {
-                throw new PluginException('配置项（' . $className . '）不存在！');
-            }
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'name',
+                            'label' => '类名',
+                        ],
+                        [
+                            'name' => 'label',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'driver',
+                            'label' => '驱动	',
+                        ],
+                        [
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间',
+                            'driver' => FormItemDatePickerRange::class,
+                        ],
+                    ],
+                ],
 
-            $newValues = [];
-            $newValueStrings = [];
-            $reflection = new \ReflectionClass($className);
-            $properties = $reflection->getProperties(\ReflectionMethod::IS_PUBLIC);
-            foreach ($properties as $property) {
-                $itemName = $property->getName();
-                if (!isset($formData[$itemName])) {
-                    throw new PluginException('参数 (' . $itemName . ') 缺失！');
-                }
 
-                $itemComment = $property->getDocComment();
-                $parseItemComments = \Be\F\Util\Annotation::parse($itemComment);
-                if (isset($parseItemComments['BeConfigItem'][0])) {
-                    $annotation = new BeConfigItem($parseItemComments['BeConfigItem'][0]);
-                    $configItem = $annotation->toArray();
-                    if (isset($configItem['value'])) {
-                        $configItem['label'] = $configItem['value'];
-                        unset($configItem['value']);
+                'toolbar' => [
+
+                    'items' => [
+                        [
+                            'label' => '启用',
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '1',
+                            ],
+                            'target' => 'ajax',
+                            'ui' => [
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'primary',
+                            ]
+                        ],
+                        [
+                            'label' => '禁用',
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '0',
+                            ],
+                            'target' => 'ajax',
+                            'ui' => [
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
+                            ]
+                        ],
+                    ]
+                ],
+
+                'table' => [
+                    'items' => [
+                        [
+                            'driver' => TableItemSelection::class,
+                            'width' => '50',
+                        ],
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                            'width' => '60',
+                        ],
+                        [
+                            'name' => 'name',
+                            'label' => '类名',
+                        ],
+                        [
+                            'name' => 'label',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'driver',
+                            'label' => '驱动	',
+                        ],
+                        [
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                            'width' => '90',
+                        ],
+                        [
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间',
+                            'width' => '150',
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'driver' => TableItemSwitch::class,
+                            'target' => 'ajax',
+                            'task' => 'fieldEdit',
+                            'width' => '90',
+                            'exportValue' => function ($row) {
+                                return $row['is_enable'] ? '启用' : '禁用';
+                            },
+                        ],
+                    ],
+                ],
+
+                'operation' => [
+                    'label' => '操作',
+                    'width' => '120',
+                    'items' => [
+                        [
+                            'label' => '查看',
+                            'task' => 'detail',
+                            'target' => 'drawer',
+                            'ui' => [
+                                'type' => 'success'
+                            ]
+                        ],
+                        [
+                            'label' => '编辑',
+                            'task' => 'edit',
+                            'target' => 'drawer',
+                            'ui' => [
+                                'type' => 'primary'
+                            ]
+                        ],
+                    ]
+                ],
+
+            ],
+
+            'detail' => [
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                        ],
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                        ],
+                        [
+                            'name' => 'driver',
+                            'label' => '驱动	',
+                        ],
+                        [
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'driver' => DetailItemSwitch::class,
+                        ],
+                        [
+                            'name' => 'last_execute_time',
+                            'label' => '最后执行时间',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                        ],
+                    ]
+                ],
+            ],
+
+            'edit' => [
+                'title' => '编辑计划任务',
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'name',
+                            'label' => '名称',
+                            'readonly' => true,
+                        ],
+                        [
+                            'name' => 'driver',
+                            'label' => '驱动	',
+                            'readonly' => true,
+                        ],
+                        [
+                            'name' => 'schedule',
+                            'label' => '执行计划',
+                            'driver' => FormItemCron::class,
+                        ],
+                        [
+                            'name' => 'is_enable',
+                            'label' => '启用/禁用',
+                            'driver' => FormItemSwitch::class,
+                        ],
+                    ]
+                ],
+                'events' => [
+                    'before' => function (Tuple $tuple) {
+                        $tuple->update_time = date('Y-m-d H:i:s');
                     }
+                ]
+            ],
 
-                    $configItem['name'] = $itemName;
-                    $configItems[] = $configItem;
+            'fieldEdit' => [
+                'events' => [
+                    'before' => function (Tuple $tuple) {
+                        $tuple->update_time = date('Y-m-d H:i:s');
+                    },
+                ],
+            ],
 
-                    $driverClass = null;
-                    if (isset($configItem['driver'])) {
-                        if (substr($configItem['driver'], 0, 8) == 'FormItem') {
-                            $driverClass = '\\Be\\Mf\\Plugin\\Form\\Item\\' . $configItem['driver'];
-                        } else {
-                            $driverClass = $configItem['driver'];
-                        }
-                    } else {
-                        $driverClass = \Be\Mf\Plugin\Form\Item\FormItemInput::class;
-                    }
-                    $driver = new $driverClass($configItem);
-                    $driver->submit($formData);
-
-                    $newValues[$itemName] = $driver->newValue;
-                    $newValueString = null;
-                    switch ($driver->valueType) {
-                        case 'array(int)':
-                        case 'array(float)':
-                        $newValueString = '[' . implode(',', $driver->newValue) . ']';
-                            break;
-                        case 'array':
-                        case 'array(string)':
-                        $newValueString = $driver->newValue;
-                            foreach ($newValueString as &$x) {
-                                $x = str_replace('\'', '\\\'', $x);
-                            }
-                            unset($x);
-                        $newValueString = '[\'' . implode('\',\'', $newValueString) . '\']';
-                            break;
-                        case 'mixed':
-                            $newValueString = var_export($driver->newValue, true);
-                            break;
-                        case 'bool':
-                            $newValueString = $driver->newValue ? 'true' : 'false';
-                            break;
-                        case 'int':
-                        case 'float':
-                            $newValueString = $driver->newValue;
-                            break;
-                        case 'string':
-                            $newValueString = '\'' . str_replace('\'', '\\\'', $driver->newValue) . '\'';
-                            break;
-                        default:
-                            $newValueString = var_export($driver->newValue, true);
-                    }
-
-                    $newValueStrings[$itemName] = $newValueString;
-                }
-            }
-
-            $instance = Be::getConfig($appName . '.' . $configName);
-            $vars = get_object_vars($instance);
-            foreach ($vars as $k => $v) {
-                if (isset($newValueStrings[$k])) {
-                    $code .= '  public $' . $k . ' = ' . $newValueStrings[$k] . ';' . "\n";
-                } else {
-                    $code .= '  public $' . $k . ' = ' . var_export($v, true) . ';' . "\n";
-                }
-            }
-
-            $code .= "}\n";
-
-            $path = Be::getRuntime()->getDataPath() . '/' . $appName . '/Config/' . $configName . '.php';
-            $dir = dirname($path);
-            if (!is_dir($dir)) mkdir($dir, 0755, true);
-            file_put_contents($path, $code, LOCK_EX);
-            chmod($path, 0755);
-
-            // 更新 config 实例
-            foreach ($vars as $k => $v) {
-                if (isset($newValues[$k])) {
-                    $instance->$k = $newValues[$k];
-                }
-            }
-
-            $response->success('保存成功！');
-        } catch (\Throwable $t) {
-            $response->error('保存失败：' . $t->getMessage());
-        }
-    }
-
-    public function resetTask()
-    {
-        $request = Be::getRequest();
-        $response = Be::getResponse();
-        try {
-            $appName = isset($this->setting['appName']) ? $this->setting['appName'] : $request->getAppName();
-            $configName = $request->get('configName', '');
-            if (!$configName) {
-                throw new PluginException('参数（configName）缺失！');
-            }
-
-            $path = Be::getRuntime()->getDataPath() . '/' . $appName . '/Config/' . $configName . '.php';
-            if (file_exists($path)) @unlink($path);
-
-            // 更新 config 实例
-            $config = Be::getConfig($appName . '.' . $configName);
-
-            $class = '\\Be\\' .  Be::getRuntime()->getFrameworkName() .'\\App\\' . $appName . '\\Config\\' . $configName;
-            $newConfig = new $class();
-
-            $vars = get_object_vars($newConfig);
-            foreach ($vars as $k => $v) {
-                if (isset($config->$k)) {
-                    $config->$k = $v;
-                }
-            }
-
-            $vars = get_object_vars($config);
-            foreach ($vars as $k => $v) {
-                if (!isset($newConfig->$k)) {
-                    unset($config->$k);
-                }
-            }
-
-            $response->success('恢复默认值成功！');
-        } catch (\Throwable $t) {
-            $response->error('恢复默认值失败：' . $t->getMessage());
-        }
+        ])->execute();
     }
 
 }

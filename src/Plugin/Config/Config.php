@@ -12,7 +12,7 @@ use Be\Mf\Plugin\PluginException;
  * 配置
  *
  * Class Config
- * @package Be\Mf\Plugin
+ * @package Be\Mf\Plugin\Config
  */
 class Config extends Driver
 {
