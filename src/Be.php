@@ -11,6 +11,7 @@ use Be\F\Db\TupleFactory;
 use Be\F\Lib\LibFactory;
 use Be\F\Logger\LoggerFactory;
 use Be\F\Property\PropertyFactory;
+use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
 use Be\F\Runtime\RuntimeFactory;
@@ -150,6 +151,30 @@ abstract class Be
     public static function newDb($name = 'master')
     {
         return DbFactory::newInstance($name);
+    }
+
+    /**
+     * 获取Redis对象
+     *
+     * @param string $name Redis名
+     * @return \Be\F\Redis\Driver
+     * @throws RuntimeException
+     */
+    public static function getRedis($name = 'master')
+    {
+        return RedisFactory::getInstance($name);
+    }
+
+    /**
+     * 新创建一个Redis对象
+     *
+     * @param string $name Redis名
+     * @return \Be\F\Redis\Driver
+     * @throws RuntimeException
+     */
+    public static function newRedis($name = 'master')
+    {
+        return RedisFactory::newInstance($name);
     }
 
     /**
