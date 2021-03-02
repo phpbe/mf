@@ -130,30 +130,6 @@ abstract class Be
     }
 
     /**
-     * 获取数据库对象
-     *
-     * @param string $name 数据库名
-     * @return \Be\F\Db\Driver
-     * @throws RuntimeException
-     */
-    public static function getDb($name = 'master')
-    {
-        return DbFactory::getInstance($name);
-    }
-
-    /**
-     * 新创建一个数据库对象
-     *
-     * @param string $name 数据库名
-     * @return \Be\F\Db\Driver
-     * @throws RuntimeException
-     */
-    public static function newDb($name = 'master')
-    {
-        return DbFactory::newInstance($name);
-    }
-
-    /**
      * 获取Redis对象
      *
      * @param string $name Redis名
@@ -175,6 +151,30 @@ abstract class Be
     public static function newRedis($name = 'master')
     {
         return RedisFactory::newInstance($name);
+    }
+
+    /**
+     * 获取数据库对象
+     *
+     * @param string $name 数据库名
+     * @return \Be\F\Db\Driver
+     * @throws RuntimeException
+     */
+    public static function getDb($name = 'master')
+    {
+        return DbFactory::getInstance($name);
+    }
+
+    /**
+     * 新创建一个数据库对象
+     *
+     * @param string $name 数据库名
+     * @return \Be\F\Db\Driver
+     * @throws RuntimeException
+     */
+    public static function newDb($name = 'master')
+    {
+        return DbFactory::newInstance($name);
     }
 
     /**
