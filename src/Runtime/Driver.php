@@ -14,33 +14,18 @@ class Driver extends \Be\F\Runtime\Driver
     /**
      * @var HttpServer
      */
-    protected $server = null;
+    protected $httpServer = null;
 
     public function execute()
     {
-        $this->start();
-    }
-
-    public function start()
-    {
-        if ($this->server == null) {
-            $this->server = new HttpServer();
-            $this->server->start();
+        if ($this->httpServer == null) {
+            $this->httpServer = new HttpServer();
+            $this->httpServer->start();
         }
     }
 
-    public function reload()
-    {
-        if ($this->server !== null) {
-            $this->server->reload();
-        }
-    }
-
-    public function stop()
-    {
-        if ($this->server !== null) {
-            $this->server->stop();
-        }
+    public function getHttpServer() {
+        return $this->httpServer;
     }
 
 }

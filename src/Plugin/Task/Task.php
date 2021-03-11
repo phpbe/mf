@@ -32,14 +32,22 @@ class Task extends Driver
     public function execute($task = null)
     {
         $request = Be::getRequest();
-        $response = Be::getResponse();
+
+        if ($task === null) {
+            $task = $request->request('task', 'lists');
+        }
+
+        if (method_exists($this, $task)) {
+            $this->$task();
+            return;
+        }
 
         $appName = isset($this->setting['appName']) ? $this->setting['appName'] : $request->getAppName();
         if (!isset($this->loaded[$appName])) {
 
             $db = Be::getDb();
             $sql = 'SELECT * FROM system_task WHERE app=' . $db->quoteValue($appName);
-            $dbTasks = $db->getKeyObjects($sql, null, 'driver');
+            $dbTasks = $db->getKeyObjects($sql, null, 'name');
 
             $dir = Be::getRuntime()->getRootPath() . Be::getProperty('App.' . $appName)->getPath() . '/Task';
             if (file_exists($dir) && is_dir($dir)) {
@@ -56,9 +64,9 @@ class Task extends Driver
                                 $annotation = new BeTask($parseClassComments['BeTask'][0]);
                                 $task = $annotation->toArray();
 
-                                if (isset($dbTasks[$className])) {
+                                if (isset($dbTasks[$taskName])) {
                                     $data = [
-                                        'id' => $dbTasks[$className]->id,
+                                        'id' => $dbTasks[$taskName]->id,
                                         'name' => $taskName,
                                         'label' => $task['value'] ?? '',
                                         'schedule' => $task['schedule'] ?? '',
@@ -71,7 +79,6 @@ class Task extends Driver
                                         'app' => $appName,
                                         'name' => $taskName,
                                         'label' => $task['value'] ?? '',
-                                        'driver' => $className,
                                         'schedule' => $task['schedule'] ?? '',
                                         'is_enable' => 0,
                                         'is_delete' => 0,
@@ -113,10 +120,6 @@ class Task extends Driver
                         [
                             'name' => 'label',
                             'label' => '名称',
-                        ],
-                        [
-                            'name' => 'driver',
-                            'label' => '驱动	',
                         ],
                         [
                             'name' => 'last_execute_time',
@@ -179,10 +182,6 @@ class Task extends Driver
                             'label' => '名称',
                         ],
                         [
-                            'name' => 'driver',
-                            'label' => '驱动	',
-                        ],
-                        [
                             'name' => 'schedule',
                             'label' => '执行计划',
                             'width' => '90',
@@ -208,14 +207,14 @@ class Task extends Driver
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '120',
+                    'width' => '150',
                     'items' => [
                         [
                             'label' => '查看',
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'type' => 'success'
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -224,6 +223,14 @@ class Task extends Driver
                             'target' => 'drawer',
                             'ui' => [
                                 'type' => 'primary'
+                            ]
+                        ],
+                        [
+                            'label' => '运行',
+                            'task' => 'run',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'type' => 'success'
                             ]
                         ],
                     ]
@@ -241,10 +248,6 @@ class Task extends Driver
                         [
                             'name' => 'name',
                             'label' => '名称',
-                        ],
-                        [
-                            'name' => 'driver',
-                            'label' => '驱动	',
                         ],
                         [
                             'name' => 'schedule',
@@ -308,12 +311,31 @@ class Task extends Driver
                 'events' => [
                     'before' => function (Tuple $tuple) {
                         $tuple->update_time = date('Y-m-d H:i:s');
-                    },
+                    }
                 ],
             ],
 
         ])->execute();
     }
 
+    /**
+     * 手动运行
+     */
+    public function run()
+    {
+        $response = Be::getResponse();
+        try {
+            $request = Be::getRequest();
+            $postData = $request->json();
+            $task = Be::getTuple('system_task');
+            $task->loadBy($postData['row']['id']);
+            $task->trigger = 'MANUAL';
+            Be::getRuntime()->getHttpServer()->getSwooleHttpServer()->task($task);
+            beOpLog('手工启动任务：' . $task->label . '（' . $task->app . '.' . $task->name . '）');
+            $response->success('任务启动成功！');
+        } catch (\Throwable $t) {
+            $response->error($t->getMessage());
+        }
+    }
 }
 

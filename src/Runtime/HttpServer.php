@@ -16,7 +16,7 @@ class HttpServer
     /**
      * @var \Swoole\Http\Server
      */
-    private $server = null;
+    private $swooleHttpServer = null;
 
     CONST MIME = [
         'html' => 'text/html',
@@ -75,7 +75,7 @@ class HttpServer
 
     public function start()
     {
-        if ($this->server !== null) {
+        if ($this->swooleHttpServer !== null) {
             return;
         }
 
@@ -85,8 +85,11 @@ class HttpServer
         $configSystem = Be::getConfig('System.System');
         date_default_timezone_set($configSystem->timezone);
 
-        $this->server = new \Swoole\Http\Server("0.0.0.0", 80);
-        $this->server->set(['enable_coroutine' => true]);
+        $this->swooleHttpServer = new \Swoole\Http\Server("0.0.0.0", 80);
+        $this->swooleHttpServer->set([
+            'enable_coroutine' => true,
+            'task_worker_num' => 4
+        ]);
 
         // 初始化数据库，Redis连接池
         DbFactory::init();
@@ -98,12 +101,12 @@ class HttpServer
             \Be\F\Util\FileSystem\Dir::rm($dir);
         }
 
-        $this->server->on('request', function ($swRequest, $swResponse) {
+        $this->swooleHttpServer->on('request', function ($swooleRequest, $swooleResponse) {
             /**
-             * @var \Swoole\Http\Response $swResponse
+             * @var \Swoole\Http\Response $swooleResponse
              */
-            $swResponse->header('Server', 'be/mf', false);
-            $uri = $swRequest->server['request_uri'];
+            $swooleResponse->header('Server', 'be/mf', false);
+            $uri = $swooleRequest->server['request_uri'];
 
             $ext = strrchr($uri, '.');
             if ($ext) {
@@ -111,51 +114,51 @@ class HttpServer
                 if (isset(self::MIME[$ext])) {
                     $rootPath = Be::getRuntime()->getRootPath();
                     if (file_exists($rootPath . $uri)) {
-                        $swResponse->header('Content-Type', self::MIME[$ext], false);
+                        $swooleResponse->header('Content-Type', self::MIME[$ext], false);
                         //缓存
                         $lastModified = gmdate('D, d M Y H:i:s', filemtime($rootPath . $uri)) . ' GMT';
-                        if (isset($swRequest->header['if-modified-since']) && $swRequest->header['if-modified-since'] == $lastModified) {
-                            $swResponse->status(304);
-                            $swResponse->end();
+                        if (isset($swooleRequest->header['if-modified-since']) && $swooleRequest->header['if-modified-since'] == $lastModified) {
+                            $swooleResponse->status(304);
+                            $swooleResponse->end();
                             return true;
                         }
 
-                        $swResponse->header('Last-Modified', $lastModified, false);
+                        $swooleResponse->header('Last-Modified', $lastModified, false);
 
                         //发送Expires头标，设置当前缓存的文档过期时间，GMT格式
-                        $swResponse->header('Expires', gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT', false);
+                        $swooleResponse->header('Expires', gmdate('D, d M Y H:i:s', time() + 31536000) . ' GMT', false);
 
                         //发送Cache_Control头标，设置xx秒以后文档过时,可以代替Expires，如果同时出现，max-age优先。
-                        $swResponse->header('Cache-Control', 'max-age=31536000', false);
-                        $swResponse->header('Pragma', 'max-age=31536000', false);
+                        $swooleResponse->header('Cache-Control', 'max-age=31536000', false);
+                        $swooleResponse->header('Pragma', 'max-age=31536000', false);
 
-                        $swResponse->sendfile($rootPath . $uri);
+                        $swooleResponse->sendfile($rootPath . $uri);
                         return true;
                     }
 
                     if ($uri == '/favicon.ico') {
-                        $swResponse->end();
+                        $swooleResponse->end();
                         return true;
                     }
                 }
             }
 
 
-            $swRequest->request = null;
-            if ($swRequest->get !== null) {
-                if ($swRequest->post !== null) {
-                    $swRequest->request = array_merge($swRequest->get, $swRequest->post);
+            $swooleRequest->request = null;
+            if ($swooleRequest->get !== null) {
+                if ($swooleRequest->post !== null) {
+                    $swooleRequest->request = array_merge($swooleRequest->get, $swooleRequest->post);
                 } else {
-                    $swRequest->request = $swRequest->get;
+                    $swooleRequest->request = $swooleRequest->get;
                 }
             } else {
-                if ($swRequest->post !== null) {
-                    $swRequest->request = $swRequest->post;
+                if ($swooleRequest->post !== null) {
+                    $swooleRequest->request = $swooleRequest->post;
                 }
             }
 
-            $request = new \Be\F\Request\Driver($swRequest);
-            $response = new \Be\Mf\Response\Driver($swResponse);
+            $request = new \Be\F\Request\Driver($swooleRequest);
+            $response = new \Be\Mf\Response\Driver($swooleResponse);
 
             RequestFactory::setInstance($request);
             ResponseFactory::setInstance($response);
@@ -205,7 +208,7 @@ class HttpServer
                                 $key = substr($uris[$i], 0, $pos);
                                 $val = substr($uris[$i], $pos + 1);
 
-                                $swRequest->get[$key] = $swRequest->request[$key] = $val;
+                                $swooleRequest->get[$key] = $swooleRequest->request[$key] = $val;
                             }
                         }
                     }
@@ -228,40 +231,36 @@ class HttpServer
 
                 $request->setRoute($app, $controller, $action);
 
-                if ($app != 'System' || $controller != 'Installer') {
+                // 校验权限
+                $role0 = Be::getRole(0);
+                if (!$role0->hasPermission($app, $controller, $action)) {
                     $my = Be::getUser();
                     if ($my->id == 0) {
                         Be::getService('System.User')->rememberMe();
                         $my = Be::getUser();
                     }
 
-                    // 校验权限
-                    $role0 = Be::getRole(0);
-                    if (!$role0->hasPermission($app, $controller, $action)) {
-                        // 访问的不是公共内容，且未登录，跳转到登录页面
-                        if ($my->id == 0) {
-                            $return = $request->get('return', base64_encode($request->getUrl()));
-                            $redirectUrl = beUrl('System.User.login', ['return' => $return]);
-                            $response->error('登录超时，请重新登录！', $redirectUrl);
+                    // 访问的不是公共内容，且未登录，跳转到登录页面
+                    if ($my->id == 0) {
+                        $return = $request->get('return', base64_encode($request->getUrl()));
+                        $redirectUrl = beUrl('System.User.login', ['return' => $return]);
+                        $response->error('登录超时，请重新登录！', $redirectUrl);
+                        Be::release();
+                        return true;
+                    } else {
+                        if (!$my->hasPermission($app, $controller, $action)) {
+                            $response->error('您没有权限操作该功能！');
                             Be::release();
                             return true;
-                        } else {
-                            if (!$my->hasPermission($app, $controller, $action)) {
-                                $response->error('您没有权限操作该功能！');
-                                Be::release();
-                                return true;
-                            }
                         }
-                    }
 
-                    if ($my->id > 0) {
                         // 已登录用户，IP锁定功能校验
                         $configUser = Be::getConfig('System.User');
                         if ($configUser->ipLock) {
                             if ($my->this_login_ip != $request->getIp()) {
                                 Be::getService('System.User')->logout();
                                 $redirectUrl = beUrl('System.User.login');
-                                $response->error('检测到您的账号在其它地点（'.$my->this_login_ip . ' '. $my->this_login_time.'）登录！', $redirectUrl);
+                                $response->error('检测到您的账号在其它地点（' . $my->this_login_ip . ' ' . $my->this_login_time . '）登录！', $redirectUrl);
                                 Be::release();
                                 return true;
                             }
@@ -292,13 +291,21 @@ class HttpServer
             return true;
         });
 
-        $this->server->start();
+        // 注册任务处理方法
+        $this->swooleHttpServer->on('task', [\Be\Mf\Runtime\Task::class, 'onTask']);
+        $this->swooleHttpServer->on('finish', function ($swooleHttpServer, $taskId, $data) {});
+
+        // 定时任务进程
+        $process = new \Swoole\Process([\Be\Mf\Runtime\Task::class, 'process'], false, 0, true);
+        $this->swooleHttpServer->addProcess($process);
+
+        $this->swooleHttpServer->start();
     }
 
 
     public function stop()
     {
-        $this->server->stop();
+        $this->swooleHttpServer->stop();
 
         $sessionConfig = ConfigFactory::getInstance('System.Session');
         if ($sessionConfig->driver == 'File') {
@@ -307,10 +314,20 @@ class HttpServer
         }
     }
 
-
     public function reload()
     {
-        $this->server->reload();
+        $this->swooleHttpServer->reload();
+    }
+
+
+    public function task($data)
+    {
+        $this->swooleHttpServer->task($data);
+    }
+
+    public function getSwooleHttpServer()
+    {
+        return $this->swooleHttpServer;
     }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Be\Mf\Task;
 
+use Be\Mf\Be;
+
 /**
  * 计划任务定时器
  */
@@ -12,6 +14,9 @@ class TaskInterval
     const WEEKLY = -3;
     const MONTHLY = -4;
     const YEARLY = -5;
+
+    // 任务ID
+    protected $id = null;
 
     // 断点
     protected $breakpoint = null;
@@ -34,4 +39,8 @@ class TaskInterval
 
     }
 
+    public function updateBreakpoint($breakpoint) {
+        $sql = 'UPDATE system_task SET breakpoint = ? WHERE id = ?';
+        Be::getDb()->query($sql, [$breakpoint, $this->id]);
+    }
 }
