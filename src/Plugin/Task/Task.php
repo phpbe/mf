@@ -8,6 +8,7 @@ use Be\Mf\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Mf\Plugin\Driver;
 use Be\Mf\Plugin\Form\Item\FormItemCron;
 use Be\Mf\Plugin\Form\Item\FormItemDatePickerRange;
+use Be\Mf\Plugin\Form\Item\FormItemInputNumberInt;
 use Be\Mf\Plugin\Form\Item\FormItemSwitch;
 use Be\Mf\Plugin\Table\Item\TableItemSelection;
 use Be\Mf\Plugin\Table\Item\TableItemSwitch;
@@ -187,6 +188,11 @@ class Task extends Driver
                             'width' => '90',
                         ],
                         [
+                            'name' => 'timeout',
+                            'label' => '超时时间（秒）',
+                            'width' => '120',
+                        ],
+                        [
                             'name' => 'last_execute_time',
                             'label' => '最后执行时间',
                             'width' => '150',
@@ -254,6 +260,10 @@ class Task extends Driver
                             'label' => '执行计划',
                         ],
                         [
+                            'name' => 'timeout',
+                            'label' => '超时时间（秒）',
+                        ],
+                        [
                             'name' => 'is_enable',
                             'label' => '启用/禁用',
                             'driver' => DetailItemSwitch::class,
@@ -292,6 +302,11 @@ class Task extends Driver
                             'name' => 'schedule',
                             'label' => '执行计划',
                             'driver' => FormItemCron::class,
+                        ],
+                        [
+                            'name' => 'timeout',
+                            'label' => '超时时间（秒）',
+                            'driver' => FormItemInputNumberInt::class,
                         ],
                         [
                             'name' => 'is_enable',
