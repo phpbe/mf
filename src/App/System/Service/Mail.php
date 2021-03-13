@@ -1,160 +1,123 @@
 <?php
 namespace Be\Mf\App\System\Service;
 
+use Be\Mf\App\System\Service\Mail\Driver;
 use Be\Mf\Be;
 use Be\F\App\ServiceException;
-use PHPMailer\PHPMailer\PHPMailer;
 
 class Mail
 {
-    private $mailer = null;
+    /**
+     * @var Driver
+     */
+    private $driver = null;
 
     // 构造函数
     public function __construct()
     {
-        $this->mailer = new PHPMailer(true);
-        $this->mailer->SetLanguage('zh_cn');
-
         $config = Be::getConfig('System.Mail');
-        if ($config->fromMail) $this->mailer->From = $config->fromMail;
-        if ($config->fromName) $this->mailer->FromName = $config->fromName;
-
-        $this->mailer->IsHTML(true);
-        $this->mailer->CharSet = 'utf-8';
-        $this->mailer->Encoding = 'base64';
-
-        if ($config->smtp == 1) {
-            $this->mailer->IsSMTP();
-            $this->mailer->Host = $config->smtpHost; // smtp 主机地址
-            $this->mailer->Port = $config->smtpPort; // smtp 主机端口
-            $this->mailer->SMTPAuth = true;
-            $this->mailer->Username = $config->smtpUser; // smtp 用户名
-            $this->mailer->Password = $config->smtpPass; // smtp 用户密码
-            $this->mailer->Timeout = $config->smtpTimeout; // smtp 超时时间 秒
-
-            if ($config->smtpSecure != '0') $this->mailer->SMTPSecure = $config->smtpSecure; // smtp 加密 'ssl' 或 'tls'
-        }
+        $class = '\\Be\\Mf\\App\\System\\Service\\Mail\\' . $config->driver;
+        $this->driver = new $class();
     }
 
-    // 析构函数
-    public function __destruct()
-    {
-        $this->mailer = null;
+    public function getDriver() {
+        return $this->driver;
     }
 
-
-    public function from($fromMail, $fromName = '')
+    /**
+     * 发送邮件
+     *
+     * @param string | array $to 收件人
+     * @param string $subject 主题
+     * @param string $body 内容
+     * @param string | array | null $cc
+     * @param string | array | null $bcc
+     * @throws \Exception
+     */
+    public function send($to, $subject = '', $body = '', $cc = null, $bcc = null)
     {
-        $this->mailer->SetFrom($fromMail, $fromName);
-        return $this;
-    }
-
-
-    public function replyTo($replyToMail, $replyToName = '')
-    {
-        $this->mailer->AddReplyTo($replyToMail, $replyToName);
-        return $this;
-    }
-
-
-    // 添加收件人
-    public function to($email, $name = '')
-    {
-        if (!$this->mailer->AddAddress($email, $name)) {
-            throw new \Exception($this->mailer->ErrorInfo);
-        }
-        return $this;
-    }
-
-
-    // 添加收件人
-    public function cc($email, $name = '')
-    {
-        if (!$this->mailer->AddCC($email, $name)) {
-            throw new ServiceException($this->mailer->ErrorInfo);
-        }
-        return $this;
-    }
-
-
-    // 添加收件人
-    public function bcc($email, $name = '')
-    {
-        if (!$this->mailer->AddBCC($email, $name)) {
-            throw new ServiceException($this->mailer->ErrorInfo);
-        }
-        return $this;
-    }
-
-
-    public function attachment($path)
-    {
-        if (!$this->mailer->AddAttachment($path)) {
-            throw new ServiceException($this->mailer->ErrorInfo);
-        }
-        return $this;
-    }
-
-    public function subject($subject = '')
-    {
-        $this->mailer->Subject = $subject;
-        return $this;
-    }
-
-    public function body($body = '')
-    {
-        $this->mailer->Body = $body;
-        return $this;
-    }
-
-    // 设置不支持 html 的客户端显示的主体内容
-    public function altBody($altNody = '')
-    {
-        $this->mailer->AltBody = $altNody;
-        return $this;
-    }
-
-    // 占位符格式化
-    public function format($text, $data)
-    {
-        if (is_array($data)) {
-            foreach ($data as $key => $val) {
-                $text = str_replace('{' . $key . '}', $val, $text);
-            }
+        $toEmail = '';
+        $toName = '';
+        if (is_string($to)) {
+            $toEmail = $to;
         } else {
-            $text = str_replace('{0}', $data, $text);
+            if (is_array($to)) {
+                if (isset($to['email'])) {
+                    $toEmail = $to['email'];
+                }
+
+                if (isset($to['name'])) {
+                    $toName = $to['name'];
+                }
+            }
         }
 
-        return $text;
-    }
-
-    public function send()
-    {
-        if (!$this->mailer->Send()) {
-            throw new ServiceException($this->mailer->ErrorInfo);
+        if (!$toEmail) {
+            throw new ServiceException('收件人邮箱缺失！');
         }
+
+        if (!$this->driver->verify($toEmail)) {
+            throw new ServiceException('收件人邮箱（' . $toEmail . '）格式错误！');
+        }
+
+        $this->driver->to($toEmail, $toName);
+        $this->driver->subject($subject);
+        $this->driver->body($body);
+
+        if ($cc !== null) {
+            $ccEmail = null;
+            $ccName = '';
+            if (is_string($cc)) {
+                $ccEmail = $cc;
+            } else {
+                if (is_array($cc)) {
+                    if (isset($cc['email'])) {
+                        $ccEmail = $cc['email'];
+
+                        if (isset($cc['name'])) {
+                            $ccName = $cc['name'];
+                        }
+                    }
+                }
+            }
+
+            if ($ccEmail) {
+                if (!$this->driver->verify($ccEmail)) {
+                    throw new ServiceException('抄送人邮箱（' . $ccEmail . '）格式错误！');
+                }
+
+                $this->driver->cc($ccEmail, $ccName);
+            }
+        }
+
+        if ($bcc !== null) {
+            $bccEmail = null;
+            $bccName = '';
+            if (is_string($bcc)) {
+                $bccEmail = $bcc;
+            } else {
+                if (is_array($bcc)) {
+                    if (isset($bcc['email'])) {
+                        $bccEmail = $bcc['email'];
+
+                        if (isset($bcc['name'])) {
+                            $bccName = $bcc['name'];
+                        }
+                    }
+                }
+            }
+
+            if ($bccEmail) {
+                if (!$this->driver->verify($bccEmail)) {
+                    throw new ServiceException('暗送人邮箱（' . $bccEmail . '）格式错误！');
+                }
+
+                $this->driver->bcc($bccEmail, $bccName);
+            }
+        }
+
+        $this->driver->send();
+
     }
 
-    /**
-     * 放到队列中发送
-     * @TODO
-     */
-    public function queueSend() {
-
-    }
-
-    /**
-     * 指定发送时间
-     * @param $timestamp，要发送的时间
-     * @TODO
-     */
-    public function scheduleSend($timestamp) {
-
-    }
-
-    public function verify($email)
-    {
-        return $this->mailer->ValidateAddress($email);
-        //return preg_match("/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/i", $email);
-    }
 }

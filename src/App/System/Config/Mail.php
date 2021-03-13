@@ -17,50 +17,32 @@ class Mail
     public $fromName = 'BE';
 
     /**
-     * @BeConfigItem("是否启用SMTP", driver="FormItemSwitch")
+     * @BeConfigItem("邮件发送器",
+     *     driver = "FormItemSelect",
+     *     keyValues = "return ['Smtp' => 'SMTP'];")
      */
-    public $smtp = 0;
+    public $driver = 'Smtp';
 
     /**
-     * @BeConfigItem("SMTP地址",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
+     * @BeConfigItem("SMTP参数",
+     *     driver="FormItemCode",
+     *     language="json",
+     *     ui="return ['form-item' => ['v-show' => 'formData.driver==\'Smtp\'']];")
      */
-    public $smtpHost = '';
+    public $smtp = [
+        'host' => '',
+        'port' => 25,
+        'username' => '',
+        'password' => '',
+        'secure' => '0', // 0 : 不加密/ssl : SSL/tls : TLS
+        'timeout' => 10,
+    ];
 
     /**
-     * @BeConfigItem("SMTP端口号",
+     * @BeConfigItem("邮件队列重试次数",
      *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'], ':min' => 1];")
+     *     ui="return [':min' => 1];")
      */
-    public $smtpPort = 25;
+    public $mailQueueMaxTryTimes = 10;
 
-    /**
-     * @BeConfigItem("SMTP用户名",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
-     */
-    public $smtpUser = '';
-
-    /**
-     * @BeConfigItem("SMTP密码",
-     *     driver="FormItemInput",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
-     */
-    public $smtpPass = '';
-
-    /**
-     * @BeConfigItem("SMTP安全连接",
-     *     driver="FormItemSelect",
-     *     keyValues="return ['0' => '不加密','ssl' => 'SSL', 'tls' => 'TLS'];",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1']];")
-     */
-    public $smtpSecure = '0';
-
-    /**
-     * @BeConfigItem("SMTP超时时间",
-     *     driver="FormItemInputNumberInt",
-     *     ui="return ['form-item' => ['v-show' => 'formData.smtp==1'],':min' => 1];")
-     */
-    public $smtpTimeout = 10;
 }

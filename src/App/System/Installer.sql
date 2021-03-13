@@ -12,6 +12,25 @@ CREATE TABLE `system_app` (
   UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用';
 
+CREATE TABLE `system_mail_queue` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `to_email` varchar(60) NOT NULL COMMENT '收件人邮箱',
+  `to_name` varchar(60) NOT NULL COMMENT '收件人姓名',
+  `cc_email` varchar(60) NOT NULL COMMENT '抄送人邮箱',
+  `cc_name` varchar(60) NOT NULL COMMENT '抄送人姓名',
+  `bcc_email` varchar(60) NOT NULL COMMENT '暗送人邮箱',
+  `bcc_name` varchar(60) NOT NULL COMMENT '暗送人姓名',
+  `subject` varchar(200) NOT NULL COMMENT '标题',
+  `body` text NOT NULL COMMENT '内容',
+  `sent` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否发送成功',
+  `sent_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '发送时间',
+  `error_message` varchar(200) NOT NULL COMMENT '失败信息',
+  `times` tinyint(4) NOT NULL COMMENT '重试次数',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='发送邮件队列';
+
 CREATE TABLE `system_theme` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `name` varchar(60) NOT NULL COMMENT '应用名',
@@ -26,20 +45,33 @@ INSERT INTO `system_theme` (`id`, `name`, `label`, `install_time`, `update_time`
 (1, 'Admin', '默认主题', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 CREATE TABLE `system_task` (
-  `id` int NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `app` varchar(60) NOT NULL COMMENT '应用	',
   `name` varchar(60) NOT NULL COMMENT '名称',
   `label` varchar(60) NOT NULL COMMENT '中文名称',
-  `driver` varchar(200) NOT NULL DEFAULT '' COMMENT '驱动',
   `schedule` varchar(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
-  `is_enable` tinyint NOT NULL DEFAULT '1' COMMENT '是否可用',
-  `is_delete` tinyint NOT NULL DEFAULT '0' COMMENT '是否已删除',
+  `timeout` int(11) NOT NULL COMMENT '超时时间',
+  `is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否可用',
+  `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `last_execute_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后执行时间',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `app` (`app`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
+
+CREATE TABLE `system_task_log` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
+  `task_id` int(11) NOT NULL COMMENT '任务ID',
+  `status` varchar(30) NOT NULL COMMENT '状态（RUNNING：运行中/COMPLETE：执行完成/ERROR：出错）	',
+  `message` varchar(200) NOT NULL COMMENT '异常信息',
+  `trigger` varchar(30) NOT NULL COMMENT '触发方式：SYSTEM：系统调度/MANUAL：人工启动',
+  `complete_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '完成时间',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `task_id` (`task_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽取数据';
 
 CREATE TABLE `system_op_log` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT '自增编号',

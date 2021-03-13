@@ -28,11 +28,7 @@ class Mail
             $body = $request->json('formData.body', '', 'html');
 
             try {
-                Be::getService('System.Mail')
-                    ->subject($subject)
-                    ->body($body)
-                    ->to($toEmail)
-                    ->send();
+                Be::getService('System.Mail')->send($toEmail, $subject, $body);
 
                 beOpLog('发送测试邮件到 ' . $toEmail . ' -成功',  $request->json('formData'));
                 $response->success('发送邮件成功！', beUrl('System.Mail.test', ['toEmail' => $toEmail]));

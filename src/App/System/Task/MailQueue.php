@@ -2,6 +2,7 @@
 
 namespace Be\Mf\App\System\Task;
 
+use Be\Mf\App\System\Service\Mail\Driver;
 use Be\Mf\Be;
 use Be\Mf\Task\TaskException;
 
@@ -15,96 +16,32 @@ class MailQueue extends \Be\Mf\Task\TaskInterval
     {
         $t0 = microtime(1);
 
-        $db = Be::getDb();
+        $config = Be::getConfig('System.Mail');
+        $mailQueueMaxTryTimes = 10;
+        if (isset($config->mailQueueMaxTryTimes)) {
+            $mailQueueMaxTryTimes = $config->mailQueueMaxTryTimes;
+        }
+
+        $db = Be::newDb();
         while (true) {
-            $sql = 'SELECT * FROM system_mail_queue WHERE sent = 0 AND times<10 ORDER BY create_time ASC, times ASC';
+            $sql = 'SELECT * FROM system_mail_queue WHERE sent = 0 AND times<' . $mailQueueMaxTryTimes . ' ORDER BY create_time ASC, times ASC';
             $queues = $db->getObjects($sql);
             if (count($queues) > 0) {
                 foreach ($queues as $queue) {
-
                     try {
-                        $mail = Be::newService('System.Mail');
+                        $this->send($queue);
 
-                        if (is_string($queue->to)) {
-                            $mail->to($queue->to);
-                        } else {
-                            if (is_array($queue->to)) {
-                                $email = null;
-                                $name = '';
-                                if (isset($queue->to['email'])) {
-                                    $email = $queue->to['email'];
-                                }
-
-                                if (isset($queue->to['name'])) {
-                                    $name = $queue->to['name'];
-                                }
-
-                                if (!$email) {
-                                    throw new TaskException('收件人邮箱缺失！');
-                                }
-
-                                $mail->to($email, $name);
-                            }
-                        }
-
-                        if (isset($queue->cc)) {
-                            if (is_string($queue->cc)) {
-                                $mail->cc($queue->cc);
-                            } else {
-                                if (is_array($queue->cc)) {
-                                    $email = null;
-                                    $name = '';
-                                    if (isset($queue->cc['email'])) {
-                                        $email = $queue->cc['email'];
-                                    }
-
-                                    if (isset($queue->cc['name'])) {
-                                        $name = $queue->cc['name'];
-                                    }
-
-                                    if ($email) {
-                                        $mail->cc($email, $name);
-                                    }
-                                }
-                            }
-                        }
-
-                        if (isset($queue->bcc)) {
-                            if (is_string($queue->bcc)) {
-                                $mail->bcc($queue->bcc);
-                            } else {
-                                if (is_array($queue->bcc)) {
-                                    $email = null;
-                                    $name = '';
-                                    if (isset($queue->bcc['email'])) {
-                                        $email = $queue->bcc['email'];
-                                    }
-
-                                    if (isset($queue->bcc['name'])) {
-                                        $name = $queue->bcc['name'];
-                                    }
-
-                                    if ($email) {
-                                        $mail->bcc($email, $name);
-                                    }
-                                }
-                            }
-                        }
-
-                        $mail->subject($queue->subject ?? '');
-                        $mail->body($queue->body ?? '');
-                        $mail->send();
-
-                        $sql = 'UPDATE system_mail_queue SET sent = 1, sent_time = ? WHERE id = ?';
-                        $db->query($sql, [date('Y-m-d H:i:s'), $queue->id]);
-
+                        $now = date('Y-m-d H:i:s');
+                        $sql = 'UPDATE system_mail_queue SET sent = 1, sent_time = ?, update_time = ? WHERE id = ?';
+                        $db->query($sql, [$now, $now, $queue->id]);
                     } catch (\Throwable $t) {
-                        $sql = 'UPDATE system_mail_queue SET times = times + 1, message = ? WHERE id = ?';
-                        $db->query($sql, [$t->getMessage(), $queue->id]);
+                        $now = date('Y-m-d H:i:s');
+                        $sql = 'UPDATE system_mail_queue SET times = times + 1, error_message = ?, update_time = ? WHERE id = ?';
+                        $db->query($sql, [$t->getMessage(), $now, $queue->id]);
                     }
                 }
             } else {
-                sleep(10);
+                \Swoole\Coroutine::sleep(10);
             }
 
             $t1 = microtime(1);
@@ -112,6 +49,47 @@ class MailQueue extends \Be\Mf\Task\TaskInterval
                 break;
             }
         }
-
     }
+
+    private function send($queue)
+    {
+        $config = Be::getConfig('System.Mail');
+        $class = '\\Be\\Mf\\App\\System\\Service\\Mail\\' . $config->driver;
+
+        /**
+         * @var Driver $mailer
+         */
+        $mailer = new $class();
+
+        if (!$queue->to_email) {
+            throw new TaskException('收件人邮箱缺失！');
+        }
+
+        if (!$mailer->verify($queue->to_email)) {
+            throw new TaskException('收件人邮箱（' . $queue->to_email . '）格式错误！');
+        }
+
+        $mailer->to($queue->to_email, $queue->to_name ?? '');
+        $mailer->subject($queue->subject ?? '');
+        $mailer->body($queue->body ?? '');
+
+        if ($queue->cc_email) {
+            if (!$mailer->verify($queue->cc_email)) {
+                throw new TaskException('抄送人邮箱（' . $queue->cc_email . '）格式错误！');
+            }
+
+            $mailer->cc($queue->cc_email, $queue->cc_name ?? '');
+        }
+
+        if ($queue->bcc_email) {
+            if (!$mailer->verify($queue->bcc_email)) {
+                throw new TaskException('暗送人邮箱（' . $queue->bcc_email . '）格式错误！');
+            }
+
+            $mailer->cc($queue->bcc_email, $queue->bcc_name ?? '');
+        }
+
+        $mailer->send();
+    }
+
 }

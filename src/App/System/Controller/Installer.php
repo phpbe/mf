@@ -519,6 +519,8 @@ class Installer
         $config = Be::getConfig('System.System');
         $config->installable = false;
         ConfigHelper::update('System.System', $config);
+
+        Be::getRuntime()->getHttpServer()->reload();
     }
 
 
