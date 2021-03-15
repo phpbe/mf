@@ -651,6 +651,14 @@ class Curd extends Driver
                     $this->on('after', $this->setting['create']['events']['after']);
                 }
 
+                if (isset($this->setting['create']['events']['success'])) {
+                    $this->on('success', $this->setting['create']['events']['success']);
+                }
+
+                if (isset($this->setting['create']['events']['error'])) {
+                    $this->on('error', $this->setting['create']['events']['error']);
+                }
+
                 if (isset($this->setting['create']['form']['items']) && count($this->setting['create']['form']['items']) > 0) {
                     foreach ($this->setting['create']['form']['items'] as $item) {
                         $driver = null;
@@ -711,10 +719,12 @@ class Curd extends Driver
                     beOpLog($title . '：新建' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
                 }
                 $db->commit();
+                $this->trigger('success', $tuple);
                 $response->success($title . '：新建成功！');
 
             } catch (\Throwable $t) {
                 $db->rollback();
+                $this->trigger('error', $t);
                 $response->error($t->getMessage());
             }
 
@@ -776,6 +786,14 @@ class Curd extends Driver
                     $this->on('after', $this->setting['create']['events']['after']);
                 }
 
+                if (isset($this->setting['edit']['events']['success'])) {
+                    $this->on('success', $this->setting['edit']['events']['success']);
+                }
+
+                if (isset($this->setting['edit']['events']['error'])) {
+                    $this->on('error', $this->setting['edit']['events']['error']);
+                }
+
                 if (isset($this->setting['edit']['form']['items']) && count($this->setting['edit']['form']['items']) > 0) {
                     foreach ($this->setting['edit']['form']['items'] as $item) {
 
@@ -829,7 +847,6 @@ class Curd extends Driver
                 $this->trigger('before', $tuple);
                 $tuple->save();
                 $this->trigger('after', $tuple);
-
                 $strPrimaryKey = null;
                 $strPrimaryKeyValue = null;
                 if (is_array($primaryKey)) {
@@ -844,9 +861,11 @@ class Curd extends Driver
                     beOpLog($title . '：编辑' . $strPrimaryKey . '为' . $strPrimaryKeyValue . '的记录！', $formData);
                 }
                 $db->commit();
+                $this->trigger('success', $tuple);
                 $response->success($title . '：编辑成功！');
             } catch (\Throwable $t) {
                 $db->rollback();
+                $this->trigger('error', $t);
                 $response->error($t->getMessage());
             }
 
@@ -922,6 +941,14 @@ class Curd extends Driver
 
         if (isset($this->setting['fieldEdit']['events']['after'])) {
             $this->on('after', $this->setting['fieldEdit']['events']['after']);
+        }
+
+        if (isset($this->setting['fieldEdit']['events']['success'])) {
+            $this->on('success', $this->setting['fieldEdit']['events']['success']);
+        }
+
+        if (isset($this->setting['fieldEdit']['events']['error'])) {
+            $this->on('error', $this->setting['fieldEdit']['events']['error']);
         }
 
         $postData = $request->json();
@@ -1020,11 +1047,12 @@ class Curd extends Driver
                 }
                 $db->commit();
 
+                $this->trigger('success', null);
                 $response->success($title . '，执行成功！');
 
             } catch (\Throwable $t) {
-
                 $db->rollback();
+                $this->trigger('fail', $t);
                 $response->error($t->getMessage());
             }
 
@@ -1084,9 +1112,11 @@ class Curd extends Driver
                     beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
+                $this->trigger('success', $tuple);
                 $response->success($title . '，执行成功！');
             } catch (\Throwable $t) {
                 $db->rollback();
+                $this->trigger('error', $t);
                 $response->error($t->getMessage());
             }
         } else {
@@ -1110,6 +1140,22 @@ class Curd extends Driver
             $title = $this->setting['delete']['title'];
         } else {
             $title = '删除记录';
+        }
+
+        if (isset($this->setting['delete']['events']['before'])) {
+            $this->on('before', $this->setting['delete']['events']['before']);
+        }
+
+        if (isset($this->setting['delete']['events']['after'])) {
+            $this->on('after', $this->setting['delete']['events']['after']);
+        }
+
+        if (isset($this->setting['delete']['events']['success'])) {
+            $this->on('success', $this->setting['delete']['events']['success']);
+        }
+
+        if (isset($this->setting['delete']['events']['error'])) {
+            $this->on('error', $this->setting['delete']['events']['error']);
         }
 
         $db = Be::getDb($this->setting['db']);
@@ -1177,9 +1223,11 @@ class Curd extends Driver
                     beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
+                $this->trigger('success', null);
                 $response->success($title . '，执行成功！');
             } catch (\Throwable $t) {
                 $db->rollback();
+                $this->trigger('error', $t);
                 $response->error($t->getMessage());
             }
 
@@ -1225,9 +1273,11 @@ class Curd extends Driver
                     beOpLog($title . '（#' . $strPrimaryKey . '：' . $strPrimaryKeyValue . '）');
                 }
                 $db->commit();
+                $this->trigger('success', $tuple);
                 $response->success($title . '，执行成功！');
             } catch (\Throwable $t) {
                 $db->rollback();
+                $this->trigger('error', $t);
                 $response->error($t->getMessage());
             }
         }
