@@ -229,7 +229,11 @@ class Config extends Driver
                 }
             }
 
-            $response->success('保存成功！');
+            $response->success('保存成功，系统将自动重载！');
+
+            // 重启系统
+            Be::getRuntime()->reload();
+
         } catch (\Throwable $t) {
             $response->error('保存失败：' . $t->getMessage());
         }
@@ -269,7 +273,11 @@ class Config extends Driver
                 }
             }
 
-            $response->success('恢复默认值成功！');
+            $response->success('恢复默认值成功，系统将自动重载！');
+
+            // 重启系统
+            Be::getRuntime()->reload();
+
         } catch (\Throwable $t) {
             $response->error('恢复默认值失败：' . $t->getMessage());
         }
