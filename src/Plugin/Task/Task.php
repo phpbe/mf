@@ -3,13 +3,17 @@
 namespace Be\Mf\Plugin\Task;
 
 use Be\F\Db\Tuple;
+use Be\F\Util\Datetime;
 use Be\Mf\Be;
 use Be\Mf\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Mf\Plugin\Driver;
 use Be\Mf\Plugin\Form\Item\FormItemCron;
 use Be\Mf\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Mf\Plugin\Form\Item\FormItemInputNumberInt;
+use Be\Mf\Plugin\Form\Item\FormItemSelect;
 use Be\Mf\Plugin\Form\Item\FormItemSwitch;
+use Be\Mf\Plugin\Table\Item\TableItemCustom;
+use Be\Mf\Plugin\Table\Item\TableItemLink;
 use Be\Mf\Plugin\Table\Item\TableItemSelection;
 use Be\Mf\Plugin\Table\Item\TableItemSwitch;
 use Be\Mf\Task\Annotation\BeTask;
@@ -101,11 +105,11 @@ class Task extends Driver
 
         Be::getPlugin('Curd')->setting([
 
-            'label' => '许划任务',
+            'label' => '计划任务',
             'table' => 'system_task',
 
             'lists' => [
-                'title' => '许划任务',
+                'title' => '计划任务',
 
                 'filter' => [
                     ['app', '=', $appName],
@@ -160,6 +164,15 @@ class Task extends Driver
                                 'type' => 'warning',
                             ]
                         ],
+                        [
+                            'label' => '删除一个月前运行日志',
+                            'task' => 'deleteLogs',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'icon' => 'el-icon-fa fa-remove',
+                                'type' => 'danger',
+                            ]
+                        ],
                     ]
                 ],
 
@@ -173,14 +186,19 @@ class Task extends Driver
                             'name' => 'id',
                             'label' => 'ID',
                             'width' => '60',
+                            'sortable' => true,
                         ],
                         [
                             'name' => 'name',
                             'label' => '类名',
+                            'driver' => TableItemLink::class,
+                            'task' => 'detail',
+                            'target' => 'drawer',
                         ],
                         [
                             'name' => 'label',
                             'label' => '名称',
+                            'align' => 'left',
                         ],
                         [
                             'name' => 'schedule',
@@ -196,6 +214,7 @@ class Task extends Driver
                             'name' => 'last_execute_time',
                             'label' => '最后执行时间',
                             'width' => '150',
+                            'sortable' => true,
                         ],
                         [
                             'name' => 'is_enable',
@@ -216,14 +235,6 @@ class Task extends Driver
                     'width' => '150',
                     'items' => [
                         [
-                            'label' => '查看',
-                            'task' => 'detail',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'type' => 'primary'
-                            ]
-                        ],
-                        [
                             'label' => '编辑',
                             'task' => 'edit',
                             'target' => 'drawer',
@@ -237,6 +248,14 @@ class Task extends Driver
                             'target' => 'ajax',
                             'ui' => [
                                 'type' => 'success'
+                            ]
+                        ],
+                        [
+                            'label' => '日志',
+                            'task' => 'showLogs',
+                            'target' => 'blank',
+                            'ui' => [
+                                'type' => 'info'
                             ]
                         ],
                     ]
@@ -350,6 +369,160 @@ class Task extends Driver
             $response->success('任务启动成功！');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
+        }
+    }
+
+
+    /**
+     * 计划任务日志列表
+     */
+    public function showLogs()
+    {
+        $request = Be::getRequest();
+        $postData = $request->post('data', '', '');
+        $postData = json_decode($postData, true);
+        $taskId = $postData['row']['id'];
+
+        $url = beUrl(null, ['task'=>'logs', 'task_id' => $taskId]);
+        $response = Be::getResponse();
+        $response->redirect($url);
+    }
+
+    /**
+     * 计划任务日志列表
+     */
+    public function logs()
+    {
+        $request = Be::getRequest();
+        $taskId = $request->get('task_id', 0);
+
+        $statusKeyValues = [
+            'RUNNING' => '运行中',
+            'COMPLETE' => '执行完成',
+            'ERROR' => '出错',
+        ];
+
+        $triggerKeyValues = [
+            'SYSTEM' => '系统调度',
+            'MANUAL' => '人工启动',
+        ];
+
+        Be::getPlugin('Curd')->setting([
+            'label' => '计划任务日志',
+            'table' => 'system_task_log',
+
+            'lists' => [
+                'title' => '计划任务日志列表',
+
+                'filter' => [
+                    ['task_id', '=', $taskId],
+                ],
+
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'status',
+                            'label' => '状态',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => array_merge(['' => '所有'], $statusKeyValues)
+                        ],
+                        [
+                            'name' => 'message',
+                            'label' => '异常信息',
+                        ],
+                        [
+                            'name' => 'trigger',
+                            'label' => '触发方式',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => array_merge(['' => '所有'], $triggerKeyValues)
+                        ],
+                        [
+                            'name' => 'complete_time',
+                            'label' => '完成时间',
+                            'driver' => FormItemDatePickerRange::class,
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'driver' => FormItemDatePickerRange::class,
+                        ],
+                    ],
+                ],
+
+                'table' => [
+                    'items' => [
+                        [
+                            'driver' => TableItemSelection::class,
+                            'width' => '50',
+                        ],
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                            'width' => '60',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'status',
+                            'label' => '状态',
+                            'width' => '90',
+                            'driver' => TableItemCustom::class,
+                            'keyValues' => [
+                                'RUNNING' => '<span class="el-tag el-tag--primary el-tag--light el-tag--mini">运行中</span>',
+                                'COMPLETE' => '<span class="el-tag el-tag--success el-tag--light el-tag--mini">执行完成</span>',
+                                'ERROR' => '<span class="el-tag el-tag--danger el-tag--light el-tag--mini">出错</span>',
+                            ],
+                        ],
+                        [
+                            'name' => 'message',
+                            'label' => '异常信息',
+                            'align' => 'left',
+                        ],
+                        [
+                            'name' => 'trigger',
+                            'label' => '触发方式',
+                            'keyValues' => $triggerKeyValues,
+                            'width' => '90',
+                        ],
+                        [
+                            'name' => 'complete_time',
+                            'label' => '完成时间',
+                            'width' => '150',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '150',
+                            'sortable' => true,
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                            'width' => '150',
+                            'sortable' => true,
+                        ],
+                    ],
+                ],
+
+            ]
+        ])->execute('lists');
+    }
+
+    /**
+     * 删除一个月前计划任务日志
+     */
+    public function deleteLogs()
+    {
+        $response = Be::getResponse();
+        try {
+            $lastMonth = Datetime::getLastMonth(date('Y-m-d H:i:s'));
+            Be::newTable('system_task_log')
+                ->where('create_time', '<', $lastMonth)
+                ->delete();
+            beOpLog('删除一个月前计划任务日志！');
+            $response->success('删除一个月前计划任务日志成功！');
+        } catch (\Exception $e) {
+            $response->error($e->getMessage());
         }
     }
 }

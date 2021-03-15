@@ -49,12 +49,11 @@ class Task
      * \Swoole\Http\Server task 回调
      *
      * @param \Swoole\Http\Server $swooleHttpServer
-     * @param int $taskId
-     * @param int $reactorId
-     * @param object $task
+     * @param \Swoole\Server\Task $swooleServerTask
      */
-    public static function onTask($swooleHttpServer, $taskId, $reactorId, $task)
+    public static function onTask(\Swoole\Http\Server $swooleHttpServer, \Swoole\Server\Task $swooleServerTask)
     {
+        $task = $swooleServerTask->data;
         $class = '\\Be\\Mf\\App\\' . $task->app . '\\Task\\' . $task->name;
         if (class_exists($class)) {
             $db = Be::newDb();
@@ -62,16 +61,23 @@ class Task
             // 有任务正在运行
             $sql = 'SELECT * FROM system_task_log WHERE task_id = ' . $task->id . ' AND status = \'RUNNING\'';
             $taskLogs = $db->getObjects($sql);
-            if (count($taskLogs) > 0) {
+
+            $running = count($taskLogs);
+            if ($running > 0) {
                 if ($task->timeout > 0) {
                     $t = time();
                     foreach ($taskLogs as $taskLog) {
                         if ($t - strtotime($taskLog->update_time) >= $task->timeout) {
                             $sql = 'UPDATE system_task_log SET status = \'ERROR\', message=\'执行超时\' WHERE id = ' . $taskLog->id;
                             $db->query($sql);
+                            $running--;
                         }
                     }
                 }
+            }
+
+            if ($running > 0) {
+                return;
             }
 
             $taskLog = new \stdClass();
