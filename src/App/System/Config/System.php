@@ -53,7 +53,7 @@ class System
      *     driver="FormItemInputNumberInt",
      *     ui="return [':min' => 1];")
      */
-    public $pageSize = 10;
+    public $pageSize = 12;
 
     /**
      * @BeConfigItem("是否开启开发者模式", driver="FormItemSwitch")

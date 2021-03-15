@@ -81,15 +81,43 @@ class HttpServer
 
         \Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
-        // 检查网站配置， 是否暂停服务
         $configSystem = Be::getConfig('System.System');
         date_default_timezone_set($configSystem->timezone);
 
-        $this->swooleHttpServer = new \Swoole\Http\Server("0.0.0.0", 80);
-        $this->swooleHttpServer->set([
+        $configServer = Be::getConfig('System.Server');
+        $this->swooleHttpServer = new \Swoole\Http\Server($configServer->host, $configServer->port);
+
+        $setting = [
             'enable_coroutine' => true,
-            'task_worker_num' => 4
-        ]);
+            'task_worker_num' => 4,
+            'task_enable_coroutine' => true,
+        ];
+
+        if ($configServer->reactor_num > 0) {
+            $setting['reactor_num'] = $configServer->reactor_num;
+        }
+
+        if ($configServer->worker_num > 0) {
+            $setting['worker_num'] = $configServer->worker_num;
+        }
+
+        if ($configServer->max_request > 0) {
+            $setting['max_request'] = $configServer->max_request;
+        }
+
+        if ($configServer->max_conn > 0) {
+            $setting['max_conn'] = $configServer->max_conn;
+        }
+
+        if ($configServer->task_worker_num > 0) {
+            $setting['task_worker_num'] = $configServer->task_worker_num;
+        }
+
+        if ($configServer->task_max_request > 0) {
+            $setting['task_max_request'] = $configServer->task_max_request;
+        }
+
+        $this->swooleHttpServer->set($setting);
 
         // 初始化数据库，Redis连接池
         DbFactory::init();
