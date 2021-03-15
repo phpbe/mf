@@ -6,15 +6,15 @@ use Be\Mf\Plugin\Form\Item\FormItemInputTextArea;
 use Be\Mf\Be;
 
 /**
- * @BeMenuGroup("系统配置", icon="el-icon-setting")
+ * @BeMenuGroup("系统配置")
  * @BePermissionGroup("系统配置")
  */
 class Mail
 {
 
     /**
-     * @BeMenu("发送邮件测试", icon="el-icon-fa fa-envelope-o", ordering="20.1")
-     * @BePermission("发送邮件测试", ordering="20.1")
+     * @BeMenu("发送邮件测试", icon="el-icon-fa fa-envelope-o", ordering="3.1")
+     * @BePermission("发送邮件测试", ordering="3.1")
      */
     public function test()
     {

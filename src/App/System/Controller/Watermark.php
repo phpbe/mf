@@ -12,8 +12,8 @@ class Watermark
 {
 
     /**
-     * @BeMenu("水印测试", icon = "el-icon-fa fa-image", ordering="20.2")
-     * @BePermission("水印测试", ordering="20.2")
+     * @BeMenu("水印测试", icon = "el-icon-fa fa-image", ordering="3.2")
+     * @BePermission("水印测试", ordering="3.2")
      */
     public function test()
     {

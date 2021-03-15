@@ -7,8 +7,8 @@ use Be\Mf\Plugin\Form\Item\FormItemSelect;
 use Be\Mf\Be;
 
 /**
- * @BeMenuGroup("日志")
- * @BePermissionGroup("日志")
+ * @BeMenuGroup("日志", icon="el-icon-tickets", ordering="4")
+ * @BePermissionGroup("日志", ordering="4")
  */
 class OpLog
 {
@@ -16,8 +16,8 @@ class OpLog
     /**
      * 操作日志
      *
-     * @BeMenu("操作日志", icon="el-icon-fa fa-video-camera", ordering="10.3")
-     * @BePermission("查看操作日志", ordering="10.3")
+     * @BeMenu("操作日志", icon="el-icon-fa fa-video-camera", ordering="4.1")
+     * @BePermission("查看操作日志", ordering="4.1")
      */
     public function logs()
     {
@@ -196,7 +196,7 @@ class OpLog
     /**
      * 删除操作日志
      *
-     * @BePermission("操作日志", ordering="10.31")
+     * @BePermission("操作日志", ordering="4.11")
      */
     public function deleteLogs()
     {

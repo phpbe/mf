@@ -8,15 +8,15 @@ use Be\Mf\Be;
 
 
 /**
- * @BeMenuGroup("管理", icon = "el-icon-fa fa-database")
+ * @BeMenuGroup("管理")
  * @BePermissionGroup("管理")
  */
 class Cache
 {
 
     /**
-     * @BeMenu("缓存")
-     * @BePermission("缓存列表")
+     * @BeMenu("缓存", icon = "el-icon-fa fa-database", ordering="2.4")
+     * @BePermission("缓存列表", ordering="2.4")
      */
     public function index()
     {
@@ -155,7 +155,7 @@ class Cache
     }
 
     /**
-     * @BePermission("删除缓存")
+     * @BePermission("删除缓存", ordering="2.41")
      */
     public function delete()
     {

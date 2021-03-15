@@ -26,8 +26,8 @@ class Role
 {
 
     /**
-     * @BeMenu("角色管理", icon="el-icon-fa fa-user-secret", ordering="10.10")
-     * @BePermission("角色管理", ordering="10.10")
+     * @BeMenu("角色管理", icon="el-icon-fa fa-user-secret", ordering="1.2")
+     * @BePermission("角色管理", ordering="1.2")
      */
     public function roles()
     {

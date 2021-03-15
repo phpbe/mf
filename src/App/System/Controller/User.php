@@ -21,8 +21,8 @@ use Be\Mf\Be;
  * Class User
  * @package App\System\Controller
  *
- * @BeMenuGroup("用户", icon="el-icon-fa fa-user", ordering="10")
- * @BePermissionGroup("用户", ordering="10")
+ * @BeMenuGroup("用户", icon="el-icon-fa fa-user", ordering="1")
+ * @BePermissionGroup("用户", ordering="1")
  */
 class User
 {
@@ -78,8 +78,8 @@ class User
     /**
      * 用户管理
      *
-     * @BeMenu("用户管理", icon="el-icon-fa fa-users", ordering="10")
-     * @BePermission("用户管理", ordering="10")
+     * @BeMenu("用户管理", icon="el-icon-fa fa-users", ordering="1.1")
+     * @BePermission("用户管理", ordering="1.1")
      */
     public function users()
     {

@@ -6,15 +6,15 @@ use Be\Mf\Be;
 use Be\F\Db\Tuple;
 
 /**
- * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")
+ * @BeMenuGroup("管理")
  * @BePermissionGroup("管理")
  */
 class Theme
 {
 
     /**
-     * @BeMenu("主题", icon="el-icon-fa fa-cubes")
-     * @BePermission("主题列表")
+     * @BeMenu("主题", icon="el-icon-view", ordering="2.2")
+     * @BePermission("主题列表", ordering="2.2")
      */
     public function themes()
     {
@@ -141,7 +141,7 @@ class Theme
     /**
      * 安装新主题
      *
-     * @BePermission("安装主题")
+     * @BePermission("安装主题", ordering="2.21")
      */
     public function install()
     {
@@ -190,7 +190,7 @@ class Theme
     /**
      * 卸载主题
      *
-     * @BePermission("卸载主题")
+     * @BePermission("卸载主题", ordering="2.22")
      */
     public function uninstall()
     {

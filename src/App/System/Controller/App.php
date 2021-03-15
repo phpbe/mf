@@ -8,15 +8,15 @@ use Be\Mf\Be;
 use Be\F\Db\Tuple;
 
 /**
- * @BeMenuGroup("管理", icon="el-icon-fa fa-cube")
- * @BePermissionGroup("管理")
+ * @BeMenuGroup("管理", icon="el-icon-fa fa-cube", ordering="2")
+ * @BePermissionGroup("管理", ordering="2")
  */
 class App
 {
 
     /**
-     * @BeMenu("应用", icon="el-icon-fa fa-cubes")
-     * @BePermission("应用列表")
+     * @BeMenu("应用", icon="el-icon-fa fa-cubes", ordering="2.1")
+     * @BePermission("应用列表", ordering="2.1")
      */
     public function apps()
     {
@@ -163,7 +163,7 @@ class App
     /**
      * 安装新应用
      *
-     * @BePermission("安装应用")
+     * @BePermission("安装应用", ordering="2.11")
      */
     public function install()
     {
@@ -212,7 +212,7 @@ class App
     /**
      * 卸载应用
      *
-     * @BePermission("卸载应用")
+     * @BePermission("卸载应用", ordering="2.12")
      */
     public function uninstall()
     {

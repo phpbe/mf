@@ -15,8 +15,8 @@ class Log
     /**
      * 运行日志
      *
-     * @BeMenu("系统日志", icon="el-icon-fa fa-video-camera", ordering="10.3")
-     * @BePermission("列表", ordering="10.3")
+     * @BeMenu("系统日志", icon="el-icon-fa fa-video-camera", ordering="4.2")
+     * @BePermission("列表", ordering="4.2")
      */
     public function lists()
     {
@@ -234,7 +234,7 @@ class Log
     /**
      * 查看系统日志
      *
-     * @BePermission("明细", ordering="10.3")
+     * @BePermission("明细", ordering="4.21")
      */
     public function detail()
     {
@@ -257,7 +257,7 @@ class Log
     /**
      * 删除系统日志
      *
-     * @BePermission("删除", ordering="10.3")
+     * @BePermission("删除", ordering="4.22")
      */
     public function delete()
     {

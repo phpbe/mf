@@ -19,8 +19,8 @@ class UserLoginLog
     /**
      * 系统日志
      *
-     * @BeMenu("用户登录日志", icon="el-icon-fa fa-user-circle", ordering="10.2")
-     * @BePermission("查看用户登录日志", ordering="10.2")
+     * @BeMenu("用户登录日志", icon="el-icon-fa fa-user-circle", ordering="1.3")
+     * @BePermission("查看用户登录日志", ordering="1.3")
      */
     public function logs()
     {
@@ -132,7 +132,7 @@ class UserLoginLog
     /**
      * 删除用户登录日志
      *
-     * @BePermission("删除用户登录日志", ordering="10.21")
+     * @BePermission("删除用户登录日志", ordering="1.31")
      */
     public function deleteLogs()
     {
