@@ -405,6 +405,7 @@ class Task extends Driver
         $triggerKeyValues = [
             'SYSTEM' => '系统调度',
             'MANUAL' => '人工启动',
+            'RELATED' => '关联启动',
         ];
 
         Be::getPlugin('Curd')->setting([
