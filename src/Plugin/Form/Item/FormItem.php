@@ -100,7 +100,7 @@ abstract class FormItem
         if (isset($params['description'])) {
             $description = $params['description'];
             if ($description instanceof \Closure) {
-                $this->description = $description();
+                $this->description = $description($row);
             } else {
                 $this->description = $description;
             }

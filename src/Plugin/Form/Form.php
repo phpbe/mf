@@ -13,6 +13,7 @@ use Be\Mf\Plugin\Driver;
  */
 class Form extends Driver
 {
+    protected $row = [];
 
     public function setting($setting = [])
     {
@@ -41,6 +42,8 @@ class Form extends Driver
             $row = get_object_vars($row);
         }
 
+        $this->row = $row;
+
         foreach ($this->setting['form']['items'] as &$item) {
             if (isset($item['value'])) {
                 $value = $item['value'];
@@ -66,6 +69,7 @@ class Form extends Driver
     {
         $response = Be::getResponse();
         $response->set('setting', $this->setting);
+        $response->set('row', $this->row);
         $response->display('Plugin.Form.display', $this->setting['theme']);
     }
 

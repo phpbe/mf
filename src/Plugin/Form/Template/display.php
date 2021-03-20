@@ -39,9 +39,9 @@
                     $driver = null;
                     if (isset($item['driver'])) {
                         $driverName = $item['driver'];
-                        $driver = new $driverName($item);
+                        $driver = new $driverName($item, $this->row);
                     } else {
-                        $driver = new \Be\Mf\Plugin\Form\Item\FormItemInput($item);
+                        $driver = new \Be\Mf\Plugin\Form\Item\FormItemInput($item, $this->row);
                     }
                     echo $driver->getHtml();
 
@@ -128,9 +128,9 @@
                         $driver = null;
                         if (isset($item['driver'])) {
                             $driverName = $item['driver'];
-                            $driver = new $driverName($item);
+                            $driver = new $driverName($item, $this->row);
                         } else {
-                            $driver = new \Be\Mf\Plugin\Form\Action\FormActionButton($item);
+                            $driver = new \Be\Mf\Plugin\Form\Action\FormActionButton($item, $this->row);
                         }
                         echo $driver->getHtml() . ' ';
 
