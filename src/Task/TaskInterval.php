@@ -7,7 +7,7 @@ use Be\Mf\Be;
 /**
  * 计划任务定时器
  */
-class TaskInterval
+class TaskInterval extends Task
 {
     const HOURLY = -1;
     const DAILY = -2;
@@ -15,22 +15,22 @@ class TaskInterval
     const MONTHLY = -4;
     const YEARLY = -5;
 
-    // 任务ID
-    protected $id = null;
-
     // 断点
     protected $breakpoint = null;
 
     // 时间间隔
     protected $step = 600;
 
-    // 每分钟执行一次
-    protected $schedule = '* * * * *';
 
-
-    public function __construct($data = [])
+    public function __construct($task, $taskLog)
     {
+        parent::__construct($task, $taskLog);
 
+        if (isset($this->task->data['breakpoint'])) {
+            $this->breakpoint = $this->task->data['breakpoint'];
+        } else {
+            $this->task->data['breakpoint'] = $this->breakpoint;
+        }
     }
 
 
@@ -39,8 +39,4 @@ class TaskInterval
 
     }
 
-    public function updateBreakpoint($breakpoint) {
-        $sql = 'UPDATE system_task SET breakpoint = ? WHERE id = ?';
-        Be::getDb()->query($sql, [$breakpoint, $this->id]);
-    }
 }

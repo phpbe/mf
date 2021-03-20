@@ -50,7 +50,9 @@ CREATE TABLE `system_task` (
   `name` varchar(60) NOT NULL COMMENT '名称',
   `label` varchar(60) NOT NULL COMMENT '中文名称',
   `schedule` varchar(30) NOT NULL DEFAULT '* * * * *' COMMENT '执行计划',
-  `timeout` int(11) NOT NULL COMMENT '超时时间',
+  `schedule_lock` TINYINT NOT NULL DEFAULT '0' COMMENT '是否锁定执行计划',
+  `timeout` int(11) NOT NULL DEFAULT '0' COMMENT '超时时间',
+  `data` VARCHAR(200) NOT NULL DEFAULT '' COMMENT '任务数据（JSON格式）',
   `is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否可用',
   `is_delete` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否已删除',
   `last_execute_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '最后执行时间',
@@ -60,9 +62,11 @@ CREATE TABLE `system_task` (
   KEY `app` (`app`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='计划任务';
 
+
 CREATE TABLE `system_task_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
   `task_id` int(11) NOT NULL COMMENT '任务ID',
+  `data` VARCHAR(200) NOT NULL DEFAULT '' COMMENT '任务数据（JSON格式）',
   `status` varchar(30) NOT NULL COMMENT '状态（RUNNING：运行中/COMPLETE：执行完成/ERROR：出错）	',
   `message` varchar(200) NOT NULL COMMENT '异常信息',
   `trigger` varchar(30) NOT NULL COMMENT '触发方式：SYSTEM：系统调度/MANUAL：人工启动',

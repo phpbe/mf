@@ -7,10 +7,12 @@ use Be\Mf\Be;
 use Be\Mf\Task\TaskException;
 
 /**
- * @BeTask("发邮件队列", schedule="* * * * *")
+ * @BeTask("发邮件队列")
  */
 class MailQueue extends \Be\Mf\Task\TaskInterval
 {
+
+    protected $schedule='* * * * *';
 
     public function execute()
     {

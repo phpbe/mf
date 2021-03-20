@@ -5,7 +5,6 @@ namespace Be\Mf\Runtime;
 
 use Be\Mf\Be;
 use Be\Mf\Task\TaskHelper;
-use Swoole\Coroutine;
 
 class Task
 {
@@ -18,6 +17,13 @@ class Task
     public static function process($process)
     {
         while (true) {
+
+            $swooleHttpServer = Be::getRuntime()->getHttpServer()->getSwooleHttpServer();
+            $taskState = $swooleHttpServer->state->get('task', 'value');
+            if (!$taskState) {
+                return;
+            }
+
             // 每分钟执行一次
             $sec = (int)date('s', time());
             $sleep = 60 - $sec;
@@ -81,10 +87,12 @@ class Task
             }
 
             $taskLog = new \stdClass();
+            $instance = null;
             try {
                 $now = date('Y-m-d H:i:s');
 
                 $taskLog->task_id = $task->id;
+                $taskLog->data = $task->data;
                 $taskLog->status = 'RUNNING';
                 $taskLog->message = '';
                 $taskLog->trigger = $task->trigger ?? 'SYSTEM';
@@ -94,34 +102,29 @@ class Task
                 $taskLogId = $db->insert('system_task_log', $taskLog);
                 $taskLog->id = $taskLogId;
 
+                /**
+                 * @var \Be\Mf\Task\Task $instance
+                 */
                 $instance = new $class($task, $taskLog);
                 $instance->execute();
 
-                $now = date('Y-m-d H:i:s');
-                $db = Be::newDb();
-                $db->update('system_task_log', [
-                    'id' => $taskLog->id,
-                    'status' => 'COMPLETE',
-                    'complete_time' => $now,
-                    'update_time' => $now
-                ]);
+                $instance->complete();
 
-                $db->update('system_task', [
-                    'id' => $task->id,
-                    'last_execute_time' => $now,
-                    'update_time' => $now
-                ]);
                 //返回任务执行的结果
                 //$server->finish("{$data} -> OK");
             } catch (\Throwable $t) {
-                if ($taskLog->id > 0) {
-                    $now = date('Y-m-d H:i:s');
-                    Be::newDb()->update('system_task_log', [
-                        'id' => $taskLog->id,
-                        'status' => 'ERROR',
-                        'message' => $t->getMessage(),
-                        'update_time' => $now
-                    ]);
+                if ($instance !== null) {
+                    $instance->error($t->getMessage());
+                } else {
+                    if ($taskLog->id > 0) {
+                        $now = date('Y-m-d H:i:s');
+                        Be::newDb()->update('system_task_log', [
+                            'id' => $taskLog->id,
+                            'status' => 'ERROR',
+                            'message' => $t->getMessage(),
+                            'update_time' => $now
+                        ]);
+                    }
                 }
             }
         }

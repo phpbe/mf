@@ -6,10 +6,12 @@ use Be\Mf\Be;
 use Be\Mf\Task\TaskException;
 
 /**
- * @BeTask("发短信队列", schedule="* * * * *")
+ * @BeTask("发短信队列")
  */
 class SmsQueue extends \Be\Mf\Task\TaskInterval
 {
+
+    protected $schedule='* * * * *';
 
     public function execute()
     {

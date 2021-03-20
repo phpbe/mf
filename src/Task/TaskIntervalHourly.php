@@ -7,9 +7,6 @@ namespace Be\Mf\Task;
  */
 class TaskIntervalHourly extends TaskInterval
 {
-    // 断点
-    protected $breakpoint = null;
-
     // 时间间隔
     protected $step = TaskInterval::HOURLY;
 

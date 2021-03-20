@@ -68,6 +68,8 @@ class HttpServer
     ];
 
 
+
+
     public function __construct()
     {
     }
@@ -79,6 +81,11 @@ class HttpServer
             return;
         }
 
+        $state = new \Swoole\Table(1024);
+        $state->column('value', \Swoole\Table::TYPE_INT, 64);
+        $state->create();
+        $state->set('task', ['value' => 1]);
+
         \Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
         $configSystem = Be::getConfig('System.System');
@@ -86,6 +93,7 @@ class HttpServer
 
         $configServer = Be::getConfig('System.Server');
         $this->swooleHttpServer = new \Swoole\Http\Server($configServer->host, $configServer->port);
+        $this->swooleHttpServer->state = $state;
 
         $setting = [
             'enable_coroutine' => true,

@@ -51,6 +51,12 @@ class Task extends Driver
         if (!isset($this->loaded[$appName])) {
 
             $db = Be::getDb();
+
+            $sql = 'SELECT * FROM system_task_switch';
+            $dbTasks = $db->getKeyObjects($sql, null, 'name');
+
+            
+
             $sql = 'SELECT * FROM system_task WHERE app=' . $db->quoteValue($appName);
             $dbTasks = $db->getKeyObjects($sql, null, 'name');
 
@@ -69,12 +75,21 @@ class Task extends Driver
                                 $annotation = new BeTask($parseClassComments['BeTask'][0]);
                                 $task = $annotation->toArray();
 
+                                $schedule = $task['schedule'] ?? '';
+                                $scheduleLock = 0;
+                                $defaultProperties = $reflection->getDefaultProperties();
+                                if (isset($defaultProperties['schedule']) && $defaultProperties['schedule']) {
+                                    $schedule = $defaultProperties['schedule'];
+                                    $scheduleLock = 1;
+                                }
+
                                 if (isset($dbTasks[$taskName])) {
                                     $data = [
                                         'id' => $dbTasks[$taskName]->id,
                                         'name' => $taskName,
                                         'label' => $task['value'] ?? '',
-                                        'schedule' => $task['schedule'] ?? '',
+                                        'schedule' => $schedule,
+                                        'schedule_lock' => $scheduleLock,
                                         'is_delete' => 0,
                                         'update_time' => date('Y-m-d H:i:s'),
                                     ];
@@ -84,7 +99,8 @@ class Task extends Driver
                                         'app' => $appName,
                                         'name' => $taskName,
                                         'label' => $task['value'] ?? '',
-                                        'schedule' => $task['schedule'] ?? '',
+                                        'schedule' => $schedule,
+                                        'schedule_lock' => $scheduleLock,
                                         'is_enable' => 0,
                                         'is_delete' => 0,
                                         'last_execute_time' => '0000-00-00 00:00:00',
@@ -206,6 +222,16 @@ class Task extends Driver
                             'width' => '90',
                         ],
                         [
+                            'name' => 'schedule_lock',
+                            'label' => '执行计划锁',
+                            'driver' => TableItemCustom::class,
+                            'keyValues' => [
+                                '1' => '<span class="el-tag el-tag--success el-tag--light el-tag--mini">锁定</span>',
+                                '0' => '',
+                            ],
+                            'width' => '100',
+                        ],
+                        [
                             'name' => 'timeout',
                             'label' => '超时时间（秒）',
                             'width' => '120',
@@ -279,6 +305,11 @@ class Task extends Driver
                             'label' => '执行计划',
                         ],
                         [
+                            'name' => 'schedule_lock',
+                            'label' => '执行计划锁定',
+                            'driver' => DetailItemSwitch::class,
+                        ],
+                        [
                             'name' => 'timeout',
                             'label' => '超时时间（秒）',
                         ],
@@ -313,14 +344,16 @@ class Task extends Driver
                             'readonly' => true,
                         ],
                         [
-                            'name' => 'driver',
-                            'label' => '驱动	',
-                            'readonly' => true,
-                        ],
-                        [
                             'name' => 'schedule',
                             'label' => '执行计划',
                             'driver' => FormItemCron::class,
+                            'ui' => function($row) {
+                                return [
+                                    'form-item' => [
+                                        'v-if' => $row['schedule_lock'] == '0' ? 'true' : 'false'
+                                    ]
+                                ];
+                            }
                         ],
                         [
                             'name' => 'timeout',
@@ -414,7 +447,8 @@ class Task extends Driver
 
             'lists' => [
                 'title' => '计划任务日志列表',
-
+                'orderBy' => 'id',
+                'orderByDir' => 'DESC',
                 'filter' => [
                     ['task_id', '=', $taskId],
                 ],
