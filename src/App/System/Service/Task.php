@@ -25,7 +25,7 @@ class Task
             ]);
             $tuple->trigger = 'RELATED';
 
-            Be::getRuntime()->getHttpServer()->getSwooleHttpServer()->task($tuple);
+            Be::getRuntime()->getHttpServer()->getSwooleHttpServer()->task($tuple->toObject());
 
             beOpLog('触发任务：' . $tuple->label . '（' . $tuple->app . '.' . $tuple->name . '）成功');
         } catch (\Throwable $t) {

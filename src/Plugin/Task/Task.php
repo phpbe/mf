@@ -52,11 +52,6 @@ class Task extends Driver
 
             $db = Be::getDb();
 
-            $sql = 'SELECT * FROM system_task_switch';
-            $dbTasks = $db->getKeyObjects($sql, null, 'name');
-
-            
-
             $sql = 'SELECT * FROM system_task WHERE app=' . $db->quoteValue($appName);
             $dbTasks = $db->getKeyObjects($sql, null, 'name');
 
