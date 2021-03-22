@@ -3,14 +3,10 @@
 namespace Be\Mf\App\System\Config;
 
 /**
- * @BeConfig("Es")
+ * @BeConfig("ES搜索引擎")
  */
-class Es
+class Es extends \Be\F\Es\Config
 {
 
-    /**
-     * @BeConfigItem("ES服务器", driver="FormItemCode", language="json", valueType = "array(string)")
-     */
-    public $hosts = ['172.24.0.130:9200'];
 
 }
