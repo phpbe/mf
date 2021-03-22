@@ -60,6 +60,12 @@ class Task
     public static function onTask(\Swoole\Http\Server $swooleHttpServer, \Swoole\Server\Task $swooleServerTask)
     {
         $task = $swooleServerTask->data;
+        $trigger = 'SYSTEM';
+        if (isset($task->trigger)) {
+            $trigger = $task->trigger;
+            unset($task->trigger);
+        }
+
         $class = '\\Be\\Mf\\App\\' . $task->app . '\\Task\\' . $task->name;
         if (class_exists($class)) {
             $db = Be::newDb();
@@ -95,7 +101,7 @@ class Task
                 $taskLog->data = $task->data;
                 $taskLog->status = 'RUNNING';
                 $taskLog->message = '';
-                $taskLog->trigger = $task->trigger ?? 'SYSTEM';
+                $taskLog->trigger = $trigger;
                 $taskLog->complete_time = '0000-00-00 00:00:00';
                 $taskLog->create_time = $now;
                 $taskLog->update_time = $now;
@@ -126,6 +132,8 @@ class Task
                         ]);
                     }
                 }
+
+                //Be::getLogger()->emergency($t);
             }
         }
     }
