@@ -11,6 +11,7 @@ use Be\F\Db\TupleFactory;
 use Be\F\Lib\LibFactory;
 use Be\F\Logger\LoggerFactory;
 use Be\F\Property\PropertyFactory;
+use Be\F\Redis\EsFactory;
 use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
@@ -151,6 +152,28 @@ abstract class Be
     public static function newRedis($name = 'master')
     {
         return RedisFactory::newInstance($name);
+    }
+
+    /**
+     * 获取ES对象
+     *
+     * @return \Elasticsearch\Client
+     * @throws RuntimeException
+     */
+    public static function getEs()
+    {
+        return EsFactory::getInstance();
+    }
+
+    /**
+     * 新创建一个ES对象
+     *
+     * @return \Elasticsearch\Client
+     * @throws RuntimeException
+     */
+    public static function newEs()
+    {
+        return EsFactory::newInstance();
     }
 
     /**
