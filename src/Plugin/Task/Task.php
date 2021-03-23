@@ -5,8 +5,10 @@ namespace Be\Mf\Plugin\Task;
 use Be\F\Db\Tuple;
 use Be\F\Util\Datetime;
 use Be\Mf\Be;
+use Be\Mf\Plugin\Detail\Item\DetailItemCode;
 use Be\Mf\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Mf\Plugin\Driver;
+use Be\Mf\Plugin\Form\Item\FormItemCode;
 use Be\Mf\Plugin\Form\Item\FormItemCron;
 use Be\Mf\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Mf\Plugin\Form\Item\FormItemInputNumberInt;
@@ -309,6 +311,19 @@ class Task extends Driver
                             'label' => '超时时间（秒）',
                         ],
                         [
+                            'name' => 'data',
+                            'label' => '任务数据',
+                            'driver' => DetailItemCode::class,
+                            'language' => 'json',
+                            'value' => function($row) {
+                                if (!$row['data']) {
+                                    return '{}';
+                                } else {
+                                    return $row['data'];
+                                }
+                            }
+                        ],
+                        [
                             'name' => 'is_enable',
                             'label' => '启用/禁用',
                             'driver' => DetailItemSwitch::class,
@@ -354,6 +369,19 @@ class Task extends Driver
                             'name' => 'timeout',
                             'label' => '超时时间（秒）',
                             'driver' => FormItemInputNumberInt::class,
+                        ],
+                        [
+                            'name' => 'data',
+                            'label' => '任务数据',
+                            'driver' => FormItemCode::class,
+                            'language' => 'json',
+                            'value' => function($row) {
+                                if (!$row['data']) {
+                                    return '{}';
+                                } else {
+                                    return $row['data'];
+                                }
+                            }
                         ],
                         [
                             'name' => 'is_enable',
@@ -534,8 +562,97 @@ class Task extends Driver
                     ],
                 ],
 
+                'operation' => [
+                    'label' => '操作',
+                    'width' => '90',
+                    'items' => [
+                        [
+                            'label' => '查看明细',
+                            'url' => beUrl(null, ['task' => 'logDetail']),
+                            'target' => 'drawer',
+                        ],
+                    ]
+                ],
             ]
         ])->execute('lists');
+    }
+
+
+    /**
+     * 计划任务日志明细
+     */
+    public function logDetail()
+    {
+
+        $statusKeyValues = [
+            'RUNNING' => '运行中',
+            'COMPLETE' => '执行完成',
+            'ERROR' => '出错',
+        ];
+
+        $triggerKeyValues = [
+            'SYSTEM' => '系统调度',
+            'MANUAL' => '人工启动',
+            'RELATED' => '关联启动',
+        ];
+
+        Be::getPlugin('Curd')->setting([
+            'label' => '计划任务日志',
+            'table' => 'system_task_log',
+
+            'lists' => [],
+
+            'detail' => [
+                'form' => [
+                    'items' => [
+                        [
+                            'name' => 'id',
+                            'label' => 'ID',
+                        ],
+                        [
+                            'name' => 'data',
+                            'label' => '任务数据',
+                            'driver' => DetailItemCode::class,
+                            'language' => 'json',
+                            'value' => function($row) {
+                                if (!$row['data']) {
+                                    return '{}';
+                                } else {
+                                    return $row['data'];
+                                }
+                            }
+                        ],
+                        [
+                            'name' => 'status',
+                            'label' => '状态',
+                            'keyValues' => $statusKeyValues,
+                        ],
+                        [
+                            'name' => 'message',
+                            'label' => '异常信息',
+                        ],
+                        [
+                            'name' => 'trigger',
+                            'label' => '触发方式',
+                            'keyValues' => $triggerKeyValues,
+                        ],
+                        [
+                            'name' => 'complete_time',
+                            'label' => '完成时间',
+                        ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                        ],
+                        [
+                            'name' => 'update_time',
+                            'label' => '更新时间',
+                        ],
+                    ]
+                ],
+            ],
+
+        ])->execute('detail');
     }
 
     /**
