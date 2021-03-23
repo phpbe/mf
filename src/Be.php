@@ -11,7 +11,7 @@ use Be\F\Db\TupleFactory;
 use Be\F\Lib\LibFactory;
 use Be\F\Logger\LoggerFactory;
 use Be\F\Property\PropertyFactory;
-use Be\F\Redis\EsFactory;
+use Be\F\Es\EsFactory;
 use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
