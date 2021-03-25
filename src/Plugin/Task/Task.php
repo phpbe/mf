@@ -140,6 +140,17 @@ class Task extends Driver
                             'label' => '名称',
                         ],
                         [
+                            'name' => 'is_enable',
+                            'label' => '启用状态',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => [
+                                '-1' => '不限',
+                                '1' => '启用',
+                                '0' => '禁用',
+                            ],
+                            'nullValue' => '-1',
+                        ],
+                        [
                             'name' => 'last_execute_time',
                             'label' => '最后执行时间',
                             'driver' => FormItemDatePickerRange::class,
