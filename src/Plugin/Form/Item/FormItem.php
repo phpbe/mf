@@ -12,7 +12,7 @@ abstract class FormItem
 
     protected $name = null; // 键名
     protected $label = ''; // 配置项中文名称
-    protected $value = ''; // 值
+    protected $value = null; // 值
     protected $nullValue = ''; // 空值
     protected $valueType = 'string'; // 值类型
     protected $keyValues = null; // 可选值键值对
@@ -65,6 +65,10 @@ abstract class FormItem
             } else {
                 $this->nullValue = $nullValue;
             }
+        }
+
+        if ($this->value === null) {
+            $this->value = $this->nullValue;
         }
 
         if (isset($params['valueType'])) {
