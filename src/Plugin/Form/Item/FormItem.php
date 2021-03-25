@@ -13,6 +13,7 @@ abstract class FormItem
     protected $name = null; // 键名
     protected $label = ''; // 配置项中文名称
     protected $value = ''; // 值
+    protected $nullValue = ''; // 空值
     protected $valueType = 'string'; // 值类型
     protected $keyValues = null; // 可选值键值对
     protected $description = ''; // 描述
@@ -54,6 +55,15 @@ abstract class FormItem
                 $this->value = $value($row);
             } else {
                 $this->value = $value;
+            }
+        }
+
+        if (isset($params['nullValue'])) {
+            $nullValue = $params['nullValue'];
+            if ($nullValue instanceof \Closure) {
+                $this->nullValue = $nullValue($row);
+            } else {
+                $this->nullValue = $nullValue;
             }
         }
 
@@ -242,7 +252,7 @@ abstract class FormItem
      */
     public function submit($data)
     {
-        if (isset($data[$this->name]) && $data[$this->name] != '') {
+        if (isset($data[$this->name]) && $data[$this->name] !== $this->nullValue) {
             $newValue = $data[$this->name];
             switch ($this->valueType) {
                 case 'array(int)':
@@ -306,6 +316,8 @@ abstract class FormItem
                     }
                     $this->newValue = $newValue;
             }
+        } else {
+            $this->newValue = $this->nullValue;
         }
     }
 

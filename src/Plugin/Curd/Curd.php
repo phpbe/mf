@@ -447,7 +447,7 @@ class Curd extends Driver
 
                 $driver->submit($formData);
 
-                if ($driver->newValue === '') {
+                if ($driver->newValue === $driver->nullValue) {
                     continue;
                 }
 
@@ -678,7 +678,7 @@ class Curd extends Driver
 
                         // 必填字段
                         if ($driver->required) {
-                            if ($driver->newValue === '') {
+                            if ($driver->newValue === $driver->nullValue) {
                                 throw new PluginException($driver->label . ' 缺失！');
                             }
                         }
@@ -819,7 +819,7 @@ class Curd extends Driver
 
                         // 必填字段
                         if ($driver->required) {
-                            if ($driver->newValue === '') {
+                            if ($driver->newValue === $driver->nullValue) {
                                 throw new PluginException($driver->label . ' 缺失！');
                             }
                         }
