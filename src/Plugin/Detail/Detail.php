@@ -14,6 +14,8 @@ use Be\Mf\Plugin\Driver;
 class Detail extends Driver
 {
 
+    protected $row = [];
+
     public function setting($setting = [])
     {
         if (!isset($setting['title'])) {
@@ -39,6 +41,8 @@ class Detail extends Driver
         if (is_object($row)) {
             $row = get_object_vars($row);
         }
+
+        $this->row = $row;
 
         foreach ($this->setting['form']['items'] as &$item) {
             $itemName = $item['name'];
@@ -70,6 +74,7 @@ class Detail extends Driver
 
         $response->set('title', $this->setting['title']);
         $response->set('setting', $this->setting);
+        $response->set('row', $this->row);
         $response->display('Plugin.Detail.display', $this->setting['theme']);
     }
 
