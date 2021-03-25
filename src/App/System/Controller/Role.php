@@ -54,7 +54,6 @@ class Role
                             'label' => '启用状态',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '' => '不限',
                                 '1' => '启用',
                                 '0' => '禁用',
                             ],

@@ -42,7 +42,6 @@ class UserLoginLog
                             'label' => '登录结果',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '' => '不限',
                                 '0' => '失败',
                                 '1' => '成功',
                             ],

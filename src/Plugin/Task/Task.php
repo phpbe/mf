@@ -144,7 +144,6 @@ class Task extends Driver
                             'label' => '启用状态',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '-1' => '不限',
                                 '1' => '启用',
                                 '0' => '禁用',
                             ],

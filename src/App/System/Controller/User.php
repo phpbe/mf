@@ -109,7 +109,7 @@ class User
                             'name' => 'role_id',
                             'label' => '角色',
                             'driver' => FormItemSelect::class,
-                            'keyValues' => ['' => '所有角色'] + $roleKeyValues,
+                            'keyValues' => $roleKeyValues,
                         ],
                         [
                             'name' => 'username',
@@ -128,7 +128,6 @@ class User
                             'label' => '启用状态',
                             'driver' => FormItemSelect::class,
                             'keyValues' => [
-                                '' => '不限',
                                 '1' => '启用',
                                 '0' => '禁用',
                             ]
