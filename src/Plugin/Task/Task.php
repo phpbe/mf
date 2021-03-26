@@ -191,6 +191,7 @@ class Task extends Driver
                             'label' => '删除一个月前运行日志',
                             'task' => 'deleteLogs',
                             'target' => 'ajax',
+                            'confirm' => '本操作为物理删除，不可恢复，确认要删除么？',
                             'ui' => [
                                 'icon' => 'el-icon-fa fa-remove',
                                 'type' => 'danger',
@@ -574,16 +575,26 @@ class Task extends Driver
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '90',
+                    'width' => '120',
                     'items' => [
                         [
                             'label' => '查看明细',
                             'url' => beUrl(null, ['task' => 'logDetail']),
                             'target' => 'drawer',
                         ],
+                        [
+                            'label' => '删除',
+                            'url' => beUrl(null, ['task' => 'deleteLog']),
+                            'target' => 'ajax',
+                            'confirm' => '本操作为物理删除，不可恢复，确认要删除么？',
+                            'ui' => [
+                                'type' => 'danger'
+                            ]
+                        ],
                     ]
                 ],
-            ]
+
+            ],
         ])->execute('lists');
     }
 
@@ -666,6 +677,27 @@ class Task extends Driver
     }
 
     /**
+     * 删除一条计划任务日志
+     */
+    public function deleteLog()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        try {
+            $postData = $request->json();
+            $tuple = Be::newTuple('system_task_log');
+            $tuple->load($postData['row']['id']);
+            $taskId = $tuple->task_id;
+            $taskLogId = $tuple->id;
+            $tuple->delete();
+            beOpLog('删除了一条计划任务（#'.$taskId.'）日志（#'.$taskLogId.'）。');
+            $response->success('删除计划任务日志成功！');
+        } catch (\Exception $e) {
+            $response->error($e->getMessage());
+        }
+    }
+
+    /**
      * 删除一个月前计划任务日志
      */
     public function deleteLogs()
@@ -676,7 +708,7 @@ class Task extends Driver
             Be::newTable('system_task_log')
                 ->where('create_time', '<', $lastMonth)
                 ->delete();
-            beOpLog('删除一个月前计划任务日志！');
+            beOpLog('删除了一个月前计划任务日志。');
             $response->success('删除一个月前计划任务日志成功！');
         } catch (\Exception $e) {
             $response->error($e->getMessage());
