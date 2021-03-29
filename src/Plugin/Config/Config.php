@@ -236,7 +236,7 @@ class Config extends Driver
 
         } catch (\Throwable $t) {
             $response->error('保存失败：' . $t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 
@@ -281,7 +281,7 @@ class Config extends Driver
 
         } catch (\Throwable $t) {
             $response->error('恢复默认值失败：' . $t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 

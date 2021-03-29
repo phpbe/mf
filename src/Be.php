@@ -9,7 +9,7 @@ use Be\F\Db\TableFactory;
 use Be\F\Db\TablePropertyFactory;
 use Be\F\Db\TupleFactory;
 use Be\F\Lib\LibFactory;
-use Be\F\Logger\LoggerFactory;
+use Be\F\Log\LogFactory;
 use Be\F\Property\PropertyFactory;
 use Be\F\Es\EsFactory;
 use Be\F\Redis\RedisFactory;
@@ -90,11 +90,11 @@ abstract class Be
     /**
      * 获取日志记录器
      *
-     * @return \Be\F\Logger\Driver
+     * @return \Be\F\Log\Driver
      */
-    public static function getLogger()
+    public static function getLog()
     {
-        return LoggerFactory::getInstance();
+        return LogFactory::getInstance();
     }
 
     /**

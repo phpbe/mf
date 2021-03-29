@@ -243,7 +243,7 @@ class Report extends Driver
                 $response->set('success', false);
                 $response->set('message', $t->getMessage());
                 $response->json();
-                Be::getLogger()->error($t);
+                Be::getLog()->error($t);
             }
 
         } else {
@@ -419,7 +419,7 @@ class Report extends Driver
 
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 

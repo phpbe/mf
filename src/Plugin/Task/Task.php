@@ -436,7 +436,7 @@ class Task extends Driver
             $response->success('任务启动成功！');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 
@@ -695,7 +695,7 @@ class Task extends Driver
             $response->success('删除计划任务日志成功！');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 
@@ -714,7 +714,7 @@ class Task extends Driver
             $response->success('删除一个月前计划任务日志成功！');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
-            Be::getLogger()->error($t);
+            Be::getLog()->error($t);
         }
     }
 }
