@@ -172,6 +172,7 @@ class Curd extends Driver
                 $response->set('success', false);
                 $response->set('message', $t->getMessage());
                 $response->json();
+                Be::getLogger()->error($t);
             }
 
         } else {
@@ -392,6 +393,7 @@ class Curd extends Driver
 
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 
@@ -618,6 +620,7 @@ class Curd extends Driver
 
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 
@@ -726,6 +729,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('error', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
 
         } else {
@@ -867,6 +871,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('error', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
 
         } else {
@@ -923,6 +928,7 @@ class Curd extends Driver
 
             } catch (\Throwable $t) {
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
         }
     }
@@ -1054,6 +1060,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('fail', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
 
         } elseif (isset($postData['row'])) {
@@ -1118,6 +1125,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('error', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
         } else {
             $response->error('参数（rows或row）缺失！');
@@ -1229,6 +1237,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('error', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
 
         } elseif (isset($postData['row'])) {
@@ -1279,6 +1288,7 @@ class Curd extends Driver
                 $db->rollback();
                 $this->trigger('error', $t);
                 $response->error($t->getMessage());
+                Be::getLogger()->error($t);
             }
         }
     }

@@ -700,8 +700,9 @@
                 ?>
             },
             updated: function () {
+                var _this = this;
                 this.$nextTick(function () {
-                    this.$refs['tableRef'].doLayout();
+                    _this.$refs['tableRef'].doLayout();
                 });
                 <?php
                 if (isset($vueHooks['updated'])) {

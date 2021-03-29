@@ -239,10 +239,11 @@ class Report extends Driver
                     'tableData' => $formattedRows,
                 ]);
                 $response->json();
-            } catch (\Exception $e) {
+            } catch (\Throwable $t) {
                 $response->set('success', false);
-                $response->set('message', $e->getMessage());
+                $response->set('message', $t->getMessage());
                 $response->json();
+                Be::getLogger()->error($t);
             }
 
         } else {
@@ -416,8 +417,9 @@ class Report extends Driver
                 beOpLog($content, $postData);
             }
 
-        } catch (\Exception $e) {
-            $response->error($e->getMessage());
+        } catch (\Throwable $t) {
+            $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 

@@ -436,6 +436,7 @@ class Task extends Driver
             $response->success('任务启动成功！');
         } catch (\Throwable $t) {
             $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 
@@ -692,8 +693,9 @@ class Task extends Driver
             $tuple->delete();
             beOpLog('删除了一条计划任务（#'.$taskId.'）日志（#'.$taskLogId.'）。');
             $response->success('删除计划任务日志成功！');
-        } catch (\Exception $e) {
-            $response->error($e->getMessage());
+        } catch (\Throwable $t) {
+            $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 
@@ -710,8 +712,9 @@ class Task extends Driver
                 ->delete();
             beOpLog('删除了一个月前计划任务日志。');
             $response->success('删除一个月前计划任务日志成功！');
-        } catch (\Exception $e) {
-            $response->error($e->getMessage());
+        } catch (\Throwable $t) {
+            $response->error($t->getMessage());
+            Be::getLogger()->error($t);
         }
     }
 }
