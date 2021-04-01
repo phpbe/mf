@@ -61,5 +61,9 @@ class Server
      */
     public $task_max_request = 0;
 
+    /**
+     * @BeConfigItem("启动时清空Cache", driver="FormItemSwitch")
+     */
+    public $clearCacheOnStart = true;
 
 }

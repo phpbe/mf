@@ -131,10 +131,15 @@ class HttpServer
         DbFactory::init();
         RedisFactory::init();
 
-        $sessionConfig = ConfigFactory::getInstance('System.Session');
-        if ($sessionConfig->driver == 'File') {
-            $dir = RuntimeFactory::getInstance()->getCachePath() . '/session';
+        if ($configServer->clearCacheOnStart) {
+            $dir = RuntimeFactory::getInstance()->getCachePath();
             \Be\F\Util\FileSystem\Dir::rm($dir);
+        } else {
+            $sessionConfig = ConfigFactory::getInstance('System.Session');
+            if ($sessionConfig->driver == 'File') {
+                $dir = RuntimeFactory::getInstance()->getCachePath() . '/session';
+                \Be\F\Util\FileSystem\Dir::rm($dir);
+            }
         }
 
         $this->swooleHttpServer->on('request', function ($swooleRequest, $swooleResponse) {
@@ -342,12 +347,6 @@ class HttpServer
     public function stop()
     {
         $this->swooleHttpServer->stop();
-
-        $sessionConfig = ConfigFactory::getInstance('System.Session');
-        if ($sessionConfig->driver == 'File') {
-            $dir = RuntimeFactory::getInstance()->getCachePath() . '/session';
-            \Be\F\Util\FileSystem\Dir::rm($dir);
-        }
     }
 
     public function reload()
