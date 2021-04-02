@@ -88,10 +88,10 @@ class HttpServer
 
         \Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
-        $configSystem = Be::getConfig('System.System');
+        $configSystem = ConfigFactory::getInstance('System.System');
         date_default_timezone_set($configSystem->timezone);
 
-        $configServer = Be::getConfig('System.Server');
+        $configServer = ConfigFactory::getInstance('System.Server');
         $this->swooleHttpServer = new \Swoole\Http\Server($configServer->host, $configServer->port);
         $this->swooleHttpServer->state = $state;
 
@@ -199,7 +199,7 @@ class HttpServer
             }
 
             $request = new \Be\F\Request\Driver($swooleRequest);
-            $response = new \Be\Mf\Response\Driver($swooleResponse);
+            $response = new \Be\F\Response\Driver($swooleResponse);
 
             RequestFactory::setInstance($request);
             ResponseFactory::setInstance($response);
@@ -210,7 +210,7 @@ class HttpServer
             try {
 
                 // 检查网站配置， 是否暂停服务
-                $configSystem = Be::getConfig('System.System');
+                $configSystem = ConfigFactory::getInstance('System.System');
 
                 $app = null;
                 $controller = null;
