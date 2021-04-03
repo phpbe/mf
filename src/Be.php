@@ -58,7 +58,7 @@ abstract class Be
     /**
      * 获取输出对象
      *
-     * @return \Be\F\Response\Driver | \Be\Mf\Response\Driver
+     * @return \Be\F\Response\Driver
      */
     public static function getResponse()
     {
@@ -381,7 +381,7 @@ abstract class Be
         foreach ([
                      '\\Be\\F\\Request\\RequestFactory',
                      '\\Be\\F\\Response\\ResponseFactory',
-                     '\\Be\\F\\Logger\\LoggerFactory',
+                     '\\Be\\F\\Log\\LogFactory',
                      '\\Be\\F\\Session\\SessionFactory',
                      '\\Be\\F\\Cache\\CacheFactory',
                      '\\Be\\F\\Db\\TableFactory',
