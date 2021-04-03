@@ -109,7 +109,6 @@ abstract class Be
         return PropertyFactory::getInstance($name);
     }
 
-
     /**
      * 获取SESSION
      *
@@ -384,6 +383,7 @@ abstract class Be
                      '\\Be\\F\\Log\\LogFactory',
                      '\\Be\\F\\Session\\SessionFactory',
                      '\\Be\\F\\Cache\\CacheFactory',
+                     '\\Be\\F\\Es\\EsFactory',
                      '\\Be\\F\\Db\\TableFactory',
                      '\\Be\\F\\Db\\TupleFactory',
                      '\\Be\\F\\App\\ServiceFactory',
