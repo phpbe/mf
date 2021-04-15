@@ -133,7 +133,7 @@ abstract class Be
      * 获取Redis对象
      *
      * @param string $name Redis名
-     * @return \Be\F\Redis\Driver
+     * @return \Be\F\Redis\Driver|\Redis
      * @throws RuntimeException
      */
     public static function getRedis($name = 'master')
@@ -145,7 +145,7 @@ abstract class Be
      * 新创建一个Redis对象
      *
      * @param string $name Redis名
-     * @return \Be\F\Redis\Driver
+     * @return \Be\F\Redis\Driver|\Redis
      * @throws RuntimeException
      */
     public static function newRedis($name = 'master')
