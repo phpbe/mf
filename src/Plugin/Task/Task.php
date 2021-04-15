@@ -306,6 +306,10 @@ class Task extends Driver
                         ],
                         [
                             'name' => 'name',
+                            'label' => '类名',
+                        ],
+                        [
+                            'name' => 'label',
                             'label' => '名称',
                         ],
                         [
@@ -361,6 +365,11 @@ class Task extends Driver
                     'items' => [
                         [
                             'name' => 'name',
+                            'label' => '类名',
+                            'readonly' => true,
+                        ],
+                        [
+                            'name' => 'label',
                             'label' => '名称',
                             'readonly' => true,
                         ],
