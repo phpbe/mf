@@ -18,6 +18,17 @@ class FormItemSelect extends FormItem
     {
         parent::__construct($params, $row);
 
+        if ($this->keyValues) {
+            $newKeyValues = [];
+            foreach ($this->keyValues as $key => $value) {
+                $newKeyValues[] = [
+                    'key' => $key,
+                    'value' => $value
+                ];
+            }
+            $this->keyValues = $newKeyValues;
+        }
+
         if ($this->required) {
             if (!isset($this->ui['form-item'][':rules'])) {
                 $this->ui['form-item'][':rules'] = '[{required: true, message: \'请选择' . $this->label . '\', trigger: \'change\' }]';
@@ -75,7 +86,7 @@ class FormItemSelect extends FormItem
             }
         }
         $html .= '>';
-        $html .= '<el-option v-for="(v, k) in formItems.' . $this->name . '.keyValues" :key="k" :label="v" :value="k"></el-option>';
+        $html .= '<el-option v-for="(item, k) in formItems.' . $this->name . '.keyValues" :key="k" :label="item.value" :value="item.key"></el-option>';
         $html .= '</el-form-item>';
         return $html;
     }
