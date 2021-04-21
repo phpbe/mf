@@ -242,7 +242,7 @@ class User
                                 if ($row['avatar'] == '') {
                                     return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRequest()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
+                                    return Be::getRequest()->getUploadUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                             'ui' => [
@@ -336,7 +336,7 @@ class User
                                 if ($row['avatar'] == '') {
                                     return Be::getProperty('App.System')->getUrl() . '/Template/User/images/avatar.png';
                                 } else {
-                                    return Be::getRequest()->getDataUrl() . '/System/User/Avatar/' . $row['avatar'];
+                                    return Be::getRequest()->getUploadUrl() . '/System/User/Avatar/' . $row['avatar'];
                                 }
                             },
                         ],

@@ -24,7 +24,7 @@ $configUser = Be::getConfig('System.User');
                 if ($this->user->avatar == '') {
                     echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                 } else {
-                    echo Be::getRequest()->getDataUrl().'/System/User/Avatar/'.$this->user->avatar;
+                    echo Be::getRequest()->getUploadUrl().'/System/User/Avatar/'.$this->user->avatar;
                 }
                 ?>"></el-image>
 

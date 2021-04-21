@@ -181,7 +181,7 @@ $themeUrl = Be::getProperty('Theme.Admin')->getUrl();
                     if ($my->avatar == '') {
                         echo Be::getProperty('App.System')->getUrl().'/Template/User/images/avatar.png';
                     } else {
-                        echo Be::getRequest()->getDataUrl().'/System/User/Avatar/'.$my->avatar;
+                        echo Be::getRequest()->getUploadUrl().'/System/User/Avatar/'.$my->avatar;
                     }
                     ?>" style="max-width:24px;max-height:24px; vertical-align: middle;" />
                     <?php echo $my->name; ?>

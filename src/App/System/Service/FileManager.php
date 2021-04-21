@@ -12,7 +12,7 @@ class FileManager
     public function getFiles($option = array())
     {
         $absPath = $this->getAbsPath($option['path']);
-        if ($absPath == false) $absPath = Be::getRuntime()->getDataPath();
+        if ($absPath == false) $absPath = Be::getRuntime()->getUploadPath();
 
         $return = array();
 
@@ -159,7 +159,7 @@ class FileManager
         }
 
         // 绝对路径
-        $absPath = Be::getRuntime()->getDataPath() . str_replace('/', DIRECTORY_SEPARATOR, $path);
+        $absPath = Be::getRuntime()->getUploadPath() . str_replace('/', DIRECTORY_SEPARATOR, $path);
         if (!is_dir($absPath)) {
             throw new ServiceException('路径不存在！');
         }
