@@ -59,6 +59,7 @@ class Installer
             $value['isRedisInstalled'] = extension_loaded('redis') ? 1 : 0;
             $value['isCacheDirWritable'] = is_writable($runtime->getCachePath()) ? 1 : 0;
             $value['isDataDirWritable'] = is_writable($runtime->getDataPath()) ? 1 : 0;
+            $value['isUploadDirWritable'] = is_writable($runtime->getUploadPath()) ? 1 : 0;
             $isAllPassed = array_sum($value) == count($value);
 
             $response->set('steps', $this->steps);
@@ -98,7 +99,7 @@ class Installer
                                 ]
                             ],
                             [
-                                'label' => 'Cache 目录可写',
+                                'label' => 'cache 目录可写',
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isCacheDirWritable'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
@@ -106,9 +107,17 @@ class Installer
                                 ]
                             ],
                             [
-                                'label' => 'Data 目录可写',
+                                'label' => 'data 目录可写',
                                 'driver' => DetailItemIcon::class,
                                 'value' => $value['isDataDirWritable'] ? 'el-icon-check' : 'el-icon-close',
+                                'ui' => [
+                                    'style' => 'color:' . ($value['isDataDirWritable'] ? '#67C23A' : '#F56C6C')
+                                ]
+                            ],
+                            [
+                                'label' => 'upload 目录可写',
+                                'driver' => DetailItemIcon::class,
+                                'value' => $value['isUploadDirWritable'] ? 'el-icon-check' : 'el-icon-close',
                                 'ui' => [
                                     'style' => 'color:' . ($value['isDataDirWritable'] ? '#67C23A' : '#F56C6C')
                                 ]

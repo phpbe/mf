@@ -20,7 +20,7 @@ class Watermark
         $response = Be::getResponse();
 
         $src = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/material.jpg';
-        $dst = Be::getRuntime()->getDataPath() . '/System/Watermark/rendering.jpg';
+        $dst = Be::getRuntime()->getUploadPath() . '/System/Watermark/rendering.jpg';
 
         if (!file_exists($src)) $response->end($src . ' 不存在');
         if (file_exists($dst)) @unlink($dst);

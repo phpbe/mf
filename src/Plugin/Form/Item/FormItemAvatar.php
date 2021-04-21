@@ -177,7 +177,7 @@ class FormItemAvatar extends FormItem
     {
         $url = '';
         if ($this->value) {
-            $url = Be::getRequest()->getDataUrl() . $this->path . $this->value;
+            $url = Be::getRequest()->getUploadUrl() . $this->path . $this->value;
         } else {
             if ($this->defaultValue) {
                 $url = $this->defaultValue;
@@ -242,18 +242,18 @@ class FormItemAvatar extends FormItem
             $newValue = htmlspecialchars_decode($newValue);
 
             if ($newValue != $this->value && $this->value != '') {
-                $lastPath = Be::getRuntime()->getDataPath() . $this->path . $this->value;
+                $lastPath = Be::getRuntime()->getUploadPath() . $this->path . $this->value;
                 if (file_exists($lastPath)) {
                     @unlink($lastPath);
                 }
             }
 
-            $pathDstDir = Be::getRuntime()->getDataPath() . $this->path;
+            $pathDstDir = Be::getRuntime()->getUploadPath() . $this->path;
             if (!file_exists($pathDstDir)) {
                 mkdir($pathDstDir, 0755, true);
             }
 
-            $pathSrc = Be::getRuntime()->getDataPath() . '/tmp/' . $newValue;
+            $pathSrc = Be::getRuntime()->getUploadPath() . '/tmp/' . $newValue;
             $pathDst = $pathDstDir . $newValue;
             if (file_exists($pathSrc)) {
                 @copy($pathSrc, $pathDst);

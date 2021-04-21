@@ -74,7 +74,7 @@ class Watermark
             $libImage->text($configWatermark->text, $x, $y, 0, $style);
         } else {
 
-            $watermarkImage = Be::getRuntime()->getDataPath() . '/System/Watermark/' .  $configWatermark->image;
+            $watermarkImage = Be::getRuntime()->getUploadPath() . '/System/Watermark/' .  $configWatermark->image;
             if (!$configWatermark->image || !file_exists($watermarkImage)) {
                 $watermarkImage = Be::getRuntime()->getRootPath() . Be::getProperty('App.System')->getPath() . '/Template/Watermark/images/watermark.png';
             }

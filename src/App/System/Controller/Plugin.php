@@ -42,7 +42,7 @@ class Plugin
             }
 
             $newFileName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $ext;
-            $newFilePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newFileName;
+            $newFilePath = Be::getRuntime()->getUploadPath() . '/tmp/' . $newFileName;
 
             $dir = dirname($newFilePath);
             if (!is_dir($dir)) {
@@ -51,7 +51,7 @@ class Plugin
             }
 
             if (move_uploaded_file($file['tmp_name'], $newFilePath)) {
-                $newFileUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newFileName;
+                $newFileUrl = Be::getRequest()->getUploadUrl(). '/tmp/' . $newFileName;
                 $response->set('newValue', $newFileName);
                 $response->set('url', $newFileUrl);
                 $response->set('success', true);
@@ -117,7 +117,7 @@ class Plugin
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+                $newImagePath = Be::getRuntime()->getUploadPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -126,7 +126,7 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newImageName;
+                    $newImageUrl = Be::getRequest()->getUploadUrl(). '/tmp/' . $newImageName;
                     $response->set('newValue', $newImageName);
                     $response->set('url', $newImageUrl);
                     $response->set('success', true);
@@ -193,7 +193,7 @@ class Plugin
                 }
 
                 $newImageName = date('YmdHis') . '-' . \Be\F\Util\Random::simple(10) . '.' . $libImage->getType();
-                $newImagePath = Be::getRuntime()->getDataPath() . '/tmp/' . $newImageName;
+                $newImagePath = Be::getRuntime()->getUploadPath() . '/tmp/' . $newImageName;
 
                 $dir = dirname($newImagePath);
                 if (!is_dir($dir)) {
@@ -202,7 +202,7 @@ class Plugin
                 }
 
                 if ($libImage->save($newImagePath)) {
-                    $newImageUrl = Be::getRequest()->getDataUrl(). '/tmp/' . $newImageName;
+                    $newImageUrl = Be::getRequest()->getUploadUrl(). '/tmp/' . $newImageName;
                     $response->set('newValue', $newImageName);
                     $response->set('url', $newImageUrl);
                     $response->set('success', true);
