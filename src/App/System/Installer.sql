@@ -116,7 +116,7 @@ CREATE TABLE `system_user` (
   `role_id` INT NOT NULL DEFAULT '0' COMMENT '角色ID',
   `avatar` varchar(60) NOT NULL DEFAULT '' COMMENT '头像',
   `email` varchar(120) NOT NULL DEFAULT '' COMMENT '邮箱',
-  `name` varchar(120) NOT NULL DEFAULT '' COMMENT '名称',
+  `name` varchar(30) NOT NULL DEFAULT '' COMMENT '名称',
   `gender` tinyint NOT NULL DEFAULT '-1' COMMENT '性别（0：女/1：男/-1：保密）',
   `phone` varchar(20) NOT NULL DEFAULT '' COMMENT '电话',
   `mobile` varchar(20) NOT NULL DEFAULT '' COMMENT '手机',
