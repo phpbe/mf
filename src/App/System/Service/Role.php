@@ -273,7 +273,7 @@ class Role
                     $treeData[] = [
                         'key' => $app->name,
                         'label' => $app->label,
-                        'ordering' => $app->ordering,
+                        'ordering' => 0,
                         'children' => $filteredChildren,
                     ];
                 }

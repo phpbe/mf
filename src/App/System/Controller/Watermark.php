@@ -23,7 +23,12 @@ class Watermark
         $dst = Be::getRuntime()->getUploadPath() . '/System/Watermark/rendering.jpg';
 
         if (!file_exists($src)) $response->end($src . ' 不存在');
-        if (file_exists($dst)) @unlink($dst);
+        $dir = dirname($dst);
+        if (!file_exists($dir)) {
+            mkdir($dir, 0755, true);
+        } else {
+            if (file_exists($dst)) @unlink($dst);
+        }
 
         copy($src, $dst);
 
