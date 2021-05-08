@@ -2,6 +2,7 @@
 
 namespace Be\Mf\App\System\Service;
 
+use Be\F\Config\ConfigHelper;
 use Be\Mf\Be;
 use Be\F\App\ServiceException;
 
@@ -94,21 +95,11 @@ class Installer
             $installer = new $class();
             $installer->install();
 
-            $property = Be::getProperty('App.' . $app);
-
-            $tuple = Be::newTuple('system_app');
-            try {
-                $tuple->loadBy('name', $app);
-            } catch (\Throwable $t) {
-
-            }
-            $tuple->name = $app;
-            $tuple->label = $property->getLabel();
-            $tuple->icon = $property->getIcon();
-            $tuple->install_time = date('Y-m-d H:i:s');
-            $tuple->update_time = date('Y-m-d H:i:s');
-            $tuple->save();
-
+            $configApp = Be::getConfig('System.App');
+            $names = $configApp->names;
+            $names[] = $app;
+            $configApp->names = array_unique($names);
+            ConfigHelper::update('System.App', $configApp);
         }
     }
 
@@ -127,12 +118,17 @@ class Installer
             $unInstaller = new $class();
             $unInstaller->uninstall();
 
-            $tuple = Be::newTuple('system_app');
-            try {
-                $tuple->loadBy('name', $app);
-                $tuple->delete();
-            } catch (\Throwable $t) {
+            $configApp = Be::getConfig('System.App');
+            $names = $configApp->names;
+            $newNames = [];
+            foreach ($names as $name) {
+                if ($name == $app) {
+                    continue;
+                }
+                $newNames[] = $name;
             }
+            $configApp->names = array_unique($newNames);
+            ConfigHelper::update('System.App', $configApp);
         }
     }
 

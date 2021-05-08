@@ -27,24 +27,6 @@ class App
 
             'lists' => [
                 'title' => '已安装的应用列表',
-                'form' => [
-                    'items' => [
-                        [
-                            'name' => 'name',
-                            'label' => '应用名',
-                        ],
-                        [
-                            'name' => 'label',
-                            'label' => '应用中文名',
-                        ],
-                        [
-                            'name' => 'install_time',
-                            'label' => '安装时间',
-                            'driver' => FormItemDatePickerRange::class,
-                        ],
-                    ],
-                ],
-
 
                 'toolbar' => [
 
@@ -64,11 +46,6 @@ class App
                 'table' => [
                     'items' => [
                         [
-                            'name' => 'id',
-                            'label' => 'ID',
-                            'width' => '90',
-                        ],
-                        [
                             'name' => 'icon',
                             'label' => '图标',
                             'driver' => TableItemIcon::class,
@@ -83,21 +60,6 @@ class App
                         [
                             'name' => 'label',
                             'label' => '应用中文名',
-                        ],
-                        [
-                            'name' => 'ordering',
-                            'label' => '排序',
-                            'width' => '90',
-                        ],
-                        [
-                            'name' => 'install_time',
-                            'label' => '安装时间',
-                            'width' => '150',
-                        ],
-                        [
-                            'name' => 'update_time',
-                            'label' => '更新时间',
-                            'width' => '150',
                         ],
                     ],
                 ],
@@ -143,11 +105,6 @@ class App
                         [
                             'name' => 'icon',
                             'label' => '图标',
-                        ],
-                        [
-                            'name' => 'ordering',
-                            'label' => '排序',
-                            'driver' => FormItemInputNumberInt::class,
                         ],
                     ]
                 ],

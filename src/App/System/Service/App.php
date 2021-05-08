@@ -2,6 +2,7 @@
 
 namespace Be\Mf\App\System\Service;
 
+use Be\F\Config\ConfigHelper;
 use Be\Mf\Be;
 use Be\F\App\ServiceException;
 
@@ -16,7 +17,18 @@ class App
     public function getApps()
     {
         if ($this->apps == null) {
-            $this->apps = Be::getDb()->getKeyObjects('SELECT * FROM system_app', null, 'name');
+            $configApp = Be::getConfig('System.App');
+            $apps = [];
+            foreach( $configApp->names as $appName) {
+                $appProperty = Be::getProperty('App.' . $appName);
+                $apps[] = (object)[
+                    'name' => $appName,
+                    'label' => $appProperty->getLabel(),
+                    'icon' => $appProperty->getIcon(),
+                ];
+            }
+
+            $this->apps = $apps;
         }
 
         return $this->apps;
@@ -27,7 +39,8 @@ class App
      */
     public function getAppNames()
     {
-        return array_keys($this->getApps());
+        $configApp = Be::getConfig('System.App');
+        return $configApp->names;
     }
 
     /**
@@ -69,19 +82,11 @@ class App
             $installer->install();
         }
 
-        $lastOrdering = Be::getDb()->getValue('SELECT ordering FROM system_app ORDER BY ordering DESC LIMIT 1');
-        if (!$lastOrdering) {
-            $lastOrdering = 0;
-        }
-
-        $property = Be::getProperty('App.' . $appName);
-        Be::getDb()->insert('system_app', [
-            'name' => $property->getName(),
-            'label' => $property->getLabel(),
-            'icon' => $property->getIcon(),
-            'ordering' => $lastOrdering + 1,
-            'install_time' => date('Y-m-d H:i:s')
-        ]);
+        $configApp = Be::getConfig('System.App');
+        $names = $configApp->names;
+        $names[] = $appName;
+        $configApp->names = array_unique($names);
+        ConfigHelper::update('System.App', $configApp);
 
         return true;
     }
@@ -95,13 +100,6 @@ class App
      */
     public function uninstall($appName)
     {
-        $exist = null;
-        try {
-            $exist = Be::getTuple('system_app')->loadBy('name', $appName);
-        } catch (\Throwable $t) {
-            throw new ServiceException('该应用尚未安装！');
-        }
-
         $class = '\\Be\\App\\' . $appName . '\\UnInstaller';
         if (class_exists($class)) {
             /**
@@ -111,7 +109,18 @@ class App
             $unInstaller->uninstall();
         }
 
-        $exist->delete();
+        $configApp = Be::getConfig('System.App');
+        $names = $configApp->names;
+        $newNames = [];
+        foreach ($names as $name) {
+            if ($name == $appName) {
+                continue;
+            }
+            $newNames[] = $name;
+        }
+        $configApp->names = array_unique($newNames);
+        ConfigHelper::update('System.App', $configApp);
+
         return true;
     }
 
