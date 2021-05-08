@@ -33,19 +33,13 @@ class FormItemUEditor extends FormItem
         }
 
         $this->js = [
-            'lib/codemirror.js',
-            'mode/javascript/javascript.js',
-        ];
-
-        $this->css = [
-            'lib/codemirror.css',
+            'ueditor.config.js',
+            'ueditor.all.min.js',
+            'lang/zh-cn/zh-cn.js',
         ];
 
         $this->option = [
-            'theme' => 'default',
-            'mode' => 'javascript',
-            'lineNumbers' => true,
-            'lineWrapping' => true,
+            'serverUrl' => beUrl('System.Plugin.formItemUEditor')
         ];
 
         if (isset($params['js'])) {
@@ -90,7 +84,7 @@ class FormItemUEditor extends FormItem
      */
     public function getJs()
     {
-        $baseUrl = Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
+        $baseUrl = Be::getProperty('Plugin.Form')->getUrl() . '/Template/ueditor1_4_3_3/';
         $js = [];
         foreach ($this->js as $x) {
             $js[] = $baseUrl . $x;
@@ -106,7 +100,7 @@ class FormItemUEditor extends FormItem
      */
     public function getCss()
     {
-        $baseUrl = Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
+        $baseUrl = Be::getProperty('Plugin.Form')->getUrl() . '/Template/ueditor1_4_3_3/';
         $css = [];
         foreach ($this->css as $x) {
             $css[] = $baseUrl . $x;
@@ -133,7 +127,7 @@ class FormItemUEditor extends FormItem
         $html .= '>';
 
         $html .= '<textarea ref="refFormItemCode_' . $this->name . '" v-model="formData.' . $this->name . '"></textarea>';
-
+        //<script id="editor" type="text/plain" style="width:1024px;height:500px;"></script>
         $html .= '</el-form-item>';
         return $html;
     }
@@ -148,7 +142,7 @@ class FormItemUEditor extends FormItem
         return [
             'formItems' => [
                 $this->name => [
-                    'codeMirror' => false,
+                    'uEditor' => false,
                 ]
             ]
         ];
@@ -161,10 +155,9 @@ class FormItemUEditor extends FormItem
      */
     public function getVueHooks()
     {
-        $mountedCode = 'this.formItems.' . $this->name . '.codeMirror = CodeMirror.fromTextArea(this.$refs.refFormItemCode_' . $this->name . ',' . json_encode($this->option) . ');';
+        $mountedCode = 'this.formItems.' . $this->name . '.uEditor = UE.getEditor(this.$refs.refFormItemCode_' . $this->name . ',' . json_encode($this->option) . ');';
 
-        $updatedCode = 'this.formItems.' . $this->name . '.codeMirror && this.formItems.' . $this->name . '.codeMirror.refresh();';
-        $updatedCode .= 'this.formData.' . $this->name . ' = this.formItems.' . $this->name . '.codeMirror.getValue();';
+        $updatedCode = 'this.formData.' . $this->name . ' = this.formItems.' . $this->name . '.uEditor.getContent();';
         return [
             'mounted' => $mountedCode,
             'updated' => $updatedCode,
