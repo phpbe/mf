@@ -20,101 +20,90 @@ class App
      */
     public function apps()
     {
-        Be::getPlugin('Curd')->setting([
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+        if ($request->isAjax()) {
+            try {
+                $postData = $request->json();
+                $apps = Be::getService('System.App')->getApps();
+                $page = $postData['page'];
+                $pageSize = $postData['pageSize'];
+                $tableData = array_slice($apps, ($page - 1) * $pageSize, $pageSize);
+                $response->set('success', true);
+                $response->set('data', [
+                    'total' => count($apps),
+                    'tableData' => $tableData,
+                ]);
+                $response->json();
+            } catch (\Throwable $t) {
+                $response->set('success', false);
+                $response->set('message', $t->getMessage());
+                $response->json();
+                Be::getLog()->error($t);
+            }
 
-            'label' => '应用管理',
-            'table' => 'system_app',
+        } else {
 
-            'lists' => [
-                'title' => '已安装的应用列表',
+            Be::getPlugin('Lists')
+                ->setting([
+                    'title' => '已安装的应用列表',
 
-                'toolbar' => [
+                    'toolbar' => [
 
-                    'items' => [
-                        [
-                            'label' => '安装',
-                            'action' => 'install',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'icon' => 'el-icon-plus',
-                                'type' => 'primary',
-                            ]
-                        ],
-                    ]
-                ],
+                        'items' => [
+                            [
+                                'label' => '安装',
+                                'action' => 'install',
+                                'target' => 'drawer',
+                                'ui' => [
+                                    'icon' => 'el-icon-plus',
+                                    'type' => 'primary',
+                                ]
+                            ],
+                        ]
+                    ],
 
-                'table' => [
-                    'items' => [
-                        [
-                            'name' => 'icon',
-                            'label' => '图标',
-                            'driver' => TableItemIcon::class,
-                            'width' => '90',
-                        ],
-                        [
-                            'name' => 'name',
-                            'label' => '应用名',
-                            'width' => '120',
-                            'align' => 'left',
-                        ],
-                        [
-                            'name' => 'label',
-                            'label' => '应用中文名',
+                    'table' => [
+                        'items' => [
+                            [
+                                'name' => 'icon',
+                                'label' => '图标',
+                                'driver' => TableItemIcon::class,
+                                'width' => '90',
+                            ],
+                            [
+                                'name' => 'name',
+                                'label' => '应用名',
+                                'width' => '120',
+                                'align' => 'left',
+                            ],
+                            [
+                                'name' => 'label',
+                                'label' => '应用中文名',
+                            ],
                         ],
                     ],
-                ],
 
-                'operation' => [
-                    'label' => '操作',
-                    'width' => '120',
-                    'items' => [
-                        [
-                            'label' => '编辑',
-                            'task' => 'edit',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'type' => 'primary'
-                            ]
-                        ],
-                        [
-                            'label' => '卸载',
-                            'action' => 'uninstall',
-                            'confirm' => '应用数据将被清除，且不可恢复，确认要卸载么？',
-                            'target' => 'ajax',
-                            'ui' => [
-                                'type' => 'danger'
-                            ]
-                        ],
-                    ]
-                ],
-            ],
+                    'operation' => [
+                        'label' => '操作',
+                        'width' => '120',
+                        'items' => [
+                            [
+                                'label' => '卸载',
+                                'action' => 'uninstall',
+                                'confirm' => '应用数据将被清除，且不可恢复，确认要卸载么？',
+                                'target' => 'ajax',
+                                'ui' => [
+                                    'type' => 'danger'
+                                ]
+                            ],
+                        ]
+                    ],
+                ])
+                ->display();
 
-            'edit' => [
-                'title' => '编辑应用',
-                'form' => [
-                    'items' => [
-                        [
-                            'name' => 'name',
-                            'label' => '应用名',
-                            'disabled' => true,
-                        ],
-                        [
-                            'name' => 'label',
-                            'label' => '应用中文名',
-                        ],
-                        [
-                            'name' => 'icon',
-                            'label' => '图标',
-                        ],
-                    ]
-                ],
-                'events' => [
-                    'before' => function (Tuple &$tuple) {
-                        $tuple->update_time = date('Y-m-d H:i:s');
-                    }
-                ]
-            ],
-        ])->execute();
+            $response->createHistory();
+        }
     }
 
     /**
