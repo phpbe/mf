@@ -48,7 +48,7 @@ class FormItemInputNumberFloat extends FormItem
      *
      * @return string
      */
-    public function getEditHtml()
+    public function getHtml()
     {
         $html = '<el-form-item';
         foreach ($this->ui['form-item'] as $k => $v) {
