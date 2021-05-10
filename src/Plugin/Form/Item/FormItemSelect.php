@@ -22,7 +22,7 @@ class FormItemSelect extends FormItem
             $newKeyValues = [];
             foreach ($this->keyValues as $key => $value) {
                 $newKeyValues[] = [
-                    'key' => $key,
+                    'key' => '' . $key,
                     'value' => $value
                 ];
             }
