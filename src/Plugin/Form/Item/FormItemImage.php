@@ -144,7 +144,7 @@ class FormItemImage extends FormItem
     public function getVueData()
     {
         $url = null;
-        if (strpos($this->value, '/') == false) {
+        if (strpos($this->value, '/') === false) {
             $url = Be::getRequest()->getUploadUrl() . $this->path . $this->value;
         } else {
             $url = $this->value;
