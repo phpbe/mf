@@ -4,6 +4,7 @@ namespace Be\Mf\Runtime;
 
 use Be\F\Config\ConfigFactory;
 use Be\F\Db\DbFactory;
+use Be\F\Gc;
 use Be\F\Redis\RedisFactory;
 use Be\F\Request\RequestFactory;
 use Be\F\Response\ResponseFactory;
@@ -265,7 +266,7 @@ class HttpServer
                         $action = $routes[2];
                     } else {
                         $response->error('路由参数（' . $route . '）无法识别！');
-                        Be::release();
+                        Gc::release(\Swoole\Coroutine::getuid());
                         return true;
                     }
                 }
@@ -286,12 +287,12 @@ class HttpServer
                         $return = $request->get('return', base64_encode($request->getUrl()));
                         $redirectUrl = beUrl('System.User.login', ['return' => $return]);
                         $response->error('登录超时，请重新登录！', $redirectUrl);
-                        Be::release();
+                        Gc::release(\Swoole\Coroutine::getuid());
                         return true;
                     } else {
                         if (!$my->hasPermission($app, $controller, $action)) {
                             $response->error('您没有权限操作该功能！');
-                            Be::release();
+                            Gc::release(\Swoole\Coroutine::getuid());
                             return true;
                         }
 
@@ -302,7 +303,7 @@ class HttpServer
                                 Be::getService('System.User')->logout();
                                 $redirectUrl = beUrl('System.User.login');
                                 $response->error('检测到您的账号在其它地点（' . $my->this_login_ip . ' ' . $my->this_login_time . '）登录！', $redirectUrl);
-                                Be::release();
+                                Gc::release(\Swoole\Coroutine::getuid());
                                 return true;
                             }
                         }
@@ -328,7 +329,7 @@ class HttpServer
                 Be::getLog()->emergency($t);
             }
 
-            Be::release();
+            Gc::release(\Swoole\Coroutine::getuid());
             return true;
         });
 
